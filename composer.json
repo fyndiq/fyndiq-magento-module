@@ -1,0 +1,10 @@
+{
+    "name": "fyndiq/fyndiq-magento-module",
+    "license": "OSL-3.0",
+    "type": "magento-module",
+    "description": "Fyndiq Magento Integration",
+    "homepage": "http://www.fyndiq.se",
+    "require": {
+        "magento-hackathon/magento-composer-installer": "*"
+    }
+}
