@@ -1,83 +1,36 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!-- The root node for Magento module configuration -->
+<?xml version="1.0" ?>
 <config>
-
-    <!--
-        The module's node contains basic
-        information about each Magento module
-    -->
     <modules>
-
-        <!--
-            This must exactly match the namespace and module's folder
-            names, with directory separators replaced by underscores
-        -->
         <Fyndiq_Fyndiq>
-
-            <!-- The version of our module, starting at 0.0.1 -->
-            <version>0.0.1</version>
-
+            <version>1.0.0</version>
         </Fyndiq_Fyndiq>
-
     </modules>
-    
-    <!-- Configure our module's behavior in the global scope -->
     <global>
-    
-    	<!-- Defining models -->
         <models>
-
-            <!--
-                Unique identifier in the model's node.
-                By convention, we put the module's name in lowercase.
-            -->
             <fyndiq_fyndiq>
-
-                <!--
-                    The path to our models directory, with directory
-                    separators replaced by underscores
-                -->
                 <class>Fyndiq_Fyndiq_Model</class>
-
             </fyndiq_fyndiq>
-
         </models>
-
-        <!-- Defining an event observer -->
-        <events>
-
-            <!-- The code of the event we want to observe -->
-            <catalog_product_save_after>
-
-                <!-- Defining an observer for this event -->
-                <observers>
-
-                    <!--
-                        Unique identifier within the
-                        catalog_product_save_after node.
-                        By convention, we write the module's
-                        name in lowercase.
-                    -->
-                    <fyndiq_fyndiq>
-
-                        <!-- The model to be instantiated -->
-                        <class>fyndiq_fyndiq/observer</class>
-
-                        <!-- The method of the class to be called -->
-                        <method>logUpdate</method>
-
-                        <!-- The type of class to instantiate -->
-                        <type>singleton</type>
-
-                    </fyndiq_fyndiq>>
-
-                </observers>
-
-            </catalog_product_save_after>
-
-        </events>
-
+        <helpers>
+            <fyndiq_fyndiq>
+                <class>Fyndiq_Fyndiq_Model</class>
+            </fyndiq_fyndiq>
+        </helpers>
     </global>
-
+    <events>
+        <!-- The code of the event we want to observe -->
+        <catalog_product_save_after>
+            <!-- Defining an observer for this event -->
+            <observers>
+                <fyndiq_fyndiq>
+                    <!-- The model to be instantiated -->
+                    <class>fyndiq_fyndiq/observer</class>
+                    <!-- The method of the class to be called -->
+                    <method>logUpdate</method>
+                    <!-- The type of class to instantiate -->
+                    <type>singleton</type>
+                </fyndiq_fyndiq>>
+            </observers>
+        </catalog_product_save_after>
+    </events>
 </config>
