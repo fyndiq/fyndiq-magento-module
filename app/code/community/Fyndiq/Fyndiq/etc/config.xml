@@ -11,12 +11,18 @@
                 <class>Fyndiq_Fyndiq_Model</class>
             </fyndiq_fyndiq>
         </models>
-        <helpers>
-            <fyndiq_fyndiq>
-                <class>Fyndiq_Fyndiq_Model</class>
-            </fyndiq_fyndiq>
-        </helpers>
     </global>
+    <admin>
+        <routers>
+            <fyndiq>
+                <use>admin</use>
+                <args>
+                        <module>Fyndiq_Fyndiq</module>
+                        <frontName>fyndiq</frontName>
+                </args>
+            </fyndiq>
+        </routers>
+    </admin>
     <events>
         <!-- The code of the event we want to observe -->
         <catalog_product_save_after>
