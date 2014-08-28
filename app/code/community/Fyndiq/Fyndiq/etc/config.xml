@@ -11,6 +11,13 @@
                 <class>Fyndiq_Fyndiq_Model</class>
             </fyndiq_fyndiq>
         </models>
+        <blocks>
+            <fyndiq>
+                <rewrite>
+                    <exportproducts>Fyndiq_Fyndiq_Block_Exportproducts</exportproducts>
+                </rewrite>
+            </fyndiq>
+        </blocks>
     </global>
     <admin>
         <routers>
@@ -22,7 +29,27 @@
                 </args>
             </fyndiq>
         </routers>
+        <layout>
+            <updates>
+                <fyndiq>
+                    <file>fyndiqadmin.xml</file>
+                </fyndiq>
+            </updates>
+        </layout>
     </admin>
+    <adminhtml>
+        <menu>
+            <system>
+                <children>
+                    <fyndiq>
+                        <title>Fyndiq Export/Import</title>
+                        <sort_order>0</sort_order>
+                        <action>fyndiq/admin/exportproducts</action>
+                    </fyndiq>
+                </children>
+            </system>
+        </menu>
+    </adminhtml>
     <events>
         <!-- The code of the event we want to observe -->
         <catalog_product_save_after>

@@ -88,6 +88,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
                         </automaticOrderImport>
                         <automaticProductExport translate="label">
                             <label>Automatic Product Export</label>
@@ -96,6 +97,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
                         </automaticProductExport>
                     </fields>
                 </fyndiq_group4>
