@@ -5,7 +5,7 @@
  * Date: 28/08/14
  * Time: 17:12
  */
-
+require_once(dirname(dirname(__FILE__)) . '/includes/messages.php');
 class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action {
 
     /**
@@ -22,8 +22,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action {
         $json = json_encode($response);
         if (json_last_error() != JSON_ERROR_NONE) {
             $this->response_error(
-                "Error",
-                "Not work yo"
+                FmMessages::get('unhandled-error-title'),
+                FmMessages::get('unhandled-error-message')
             );
         } else {
             echo $json;
