@@ -8,6 +8,11 @@ class Fyndiq_Fyndiq_Block_Exportproducts extends Mage_Core_Block_Template
         return Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB) . "app/code/community/Fyndiq/Fyndiq/";
     }
 
+    function getAdminPath($path, $section = null)
+    {
+        return Mage::helper("adminhtml")->getUrl($path, $section);
+    }
+
     public function getLanguage()
     {
         return Mage::getStoreConfig('fyndiq/fyndiq_group4/country');
@@ -32,5 +37,6 @@ class Fyndiq_Fyndiq_Block_Exportproducts extends Mage_Core_Block_Template
     {
         return Mage::getStoreConfig('fyndiq/fyndiq_group/username');
     }
+
 
 }

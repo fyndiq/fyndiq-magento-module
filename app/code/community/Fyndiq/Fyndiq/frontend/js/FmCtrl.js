@@ -4,8 +4,8 @@ var FmCtrl = {
     call_service: function(action, args, callback) {
         $.ajax({
             type: 'POST',
-            url: module_path+'backoffice/service.php',
-            data: {'action': action, 'args': args},
+            url: module_path + '?isAjax=true',
+            data: {'action': action, 'args': args, 'form_key': window.FORM_KEY},
             dataType: 'json'
         }).always(function(data) {
             var status = 'error';
