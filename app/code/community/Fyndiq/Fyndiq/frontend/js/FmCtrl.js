@@ -1,8 +1,8 @@
 "use strict";
-
+var $j = jQuery.noConflict();
 var FmCtrl = {
     call_service: function(action, args, callback) {
-        $.ajax({
+        $j.ajax({
             type: 'POST',
             url: module_path + '?isAjax=true',
             data: {'action': action, 'args': args, 'form_key': window.FORM_KEY},
@@ -10,7 +10,7 @@ var FmCtrl = {
         }).always(function(data) {
             var status = 'error';
             var result = null;
-            if ($.isPlainObject(data) && ('fm-service-status' in data)) {
+            if ($j.isPlainObject(data) && ('fm-service-status' in data)) {
                 if (data['fm-service-status'] == 'error') {
                     FmGui.show_message('error', data['title'], data['message']);
                 }
@@ -31,7 +31,7 @@ var FmCtrl = {
     load_categories: function(callback) {
         FmCtrl.call_service('get_categories', {}, function(status, categories) {
             if (status == 'success') {
-                $('.fm-category-tree-container').html(tpl['category-tree']({
+                $j('.fm-category-tree-container').html(tpl['category-tree']({
                     'categories': categories
                 }));
             }
@@ -44,23 +44,23 @@ var FmCtrl = {
 
     load_products: function(category_id, callback) {
         // unset active class on previously selected category
-        $('.fm-category-tree li').removeClass('active');
+        $j('.fm-category-tree li').removeClass('active');
 
         FmCtrl.call_service('get_products', {'category': category_id}, function(status, products) {
             if (status == 'success') {
-                $('.fm-product-list-container').html(tpl['product-list']({
+                $j('.fm-product-list-container').html(tpl['product-list']({
                     'module_path': module_path,
                     'products': products
                 }));
 
                 // set active class on selected category
-                $('.fm-category-tree li[data-category_id='+category_id+']').addClass('active');
+                $j('.fm-category-tree li[data-category_id='+category_id+']').addClass('active');
 
                 // http://stackoverflow.com/questions/5943994/jquery-slidedown-snap-back-issue
                 // set correct height on combinations to fix jquery slideDown jump issue
-                $('.fm-product-list .combinations').each(function(k, v) {
-                    $(v).css('height', $(v).height());
-                    $(v).hide();
+                $j('.fm-product-list .combinations').each(function(k, v) {
+                    $j(v).css('height', $j(v).height());
+                    $j(v).hide();
                 });
             }
 
@@ -85,7 +85,7 @@ var FmCtrl = {
                     messages['products-exported-message']);
 
                 // reload category to ensure that everything is reset properly
-                var category = $('.fm-category-tree li.active').attr('data-category_id');
+                var category = $j('.fm-category-tree li.active').attr('data-category_id');
                 FmCtrl.load_products(category, function() {
                     if (callback) {
                         callback();
@@ -102,7 +102,7 @@ var FmCtrl = {
     bind_event_handlers: function() {
 
         // import orders submit button
-        $(document).on('submit', '.fm-form.orders', function(e) {
+        $j(document).on('submit', '.fm-form.orders', function(e) {
             e.preventDefault();
             FmGui.show_load_screen();
             FmCtrl.import_orders(function() {
@@ -111,9 +111,9 @@ var FmCtrl = {
         });
 
         // when clicking category in tree, load its products
-        $(document).on('click', '.fm-category-tree a', function(e) {
+        $j(document).on('click', '.fm-category-tree a', function(e) {
             e.preventDefault();
-            var category_id = $(this).parent().attr('data-category_id');
+            var category_id = $j(this).parent().attr('data-category_id');
             FmGui.show_load_screen(function(){
                 FmCtrl.load_products(category_id, function() {
                     FmGui.hide_load_screen();
@@ -122,35 +122,35 @@ var FmCtrl = {
         });
 
         // when clicking product's expand icon, show its combinations
-        $(document).on('click', '.fm-product-list .product .expand a', function(e) {
+        $j(document).on('click', '.fm-product-list .product .expand a', function(e) {
             e.preventDefault();
-            $(this).parents('li').find('.combinations').slideToggle(250);
+            $j(this).parents('li').find('.combinations').slideToggle(250);
         });
 
         // when clicking product's checkbox, toggle checked on all its combination's checkboxes
-        $(document).on('change', '.fm-product-list .product .select input', function(e) {
-            var combination_checkboxes = $(this).parents('li').find('.combinations .select input');
-            combination_checkboxes.prop('checked', $(this).prop('checked'));
+        $j(document).on('change', '.fm-product-list .product .select input', function(e) {
+            var combination_checkboxes = $j(this).parents('li').find('.combinations .select input');
+            combination_checkboxes.prop('checked', $j(this).prop('checked'));
         });
 
         // when clicking a combination's checkbox, set checked on its parent product's checkbox
-        $(document).on('change', '.fm-product-list .combinations .select input', function(e) {
-            $(this).parents('li').find('.product .select input').prop('checked', true);
+        $j(document).on('change', '.fm-product-list .combinations .select input', function(e) {
+            $j(this).parents('li').find('.product .select input').prop('checked', true);
         });
 
         // when clicking select all products checkbox, set checked on all product's checkboxes
-        $(document).on('click', '.fm-product-list-controls .select button', function(e) {
+        $j(document).on('click', '.fm-product-list-controls .select button', function(e) {
             e.preventDefault();
-            if ($(this).attr('name') == 'select-all') {
-                $('.fm-product-list .product .select input').prop('checked', true).change();
+            if ($j(this).attr('name') == 'select-all') {
+                $j('.fm-product-list .product .select input').prop('checked', true).change();
             }
-            if ($(this).attr('name') == 'deselect-all') {
-                $('.fm-product-list .product .select input').prop('checked', false).change();
+            if ($j(this).attr('name') == 'deselect-all') {
+                $j('.fm-product-list .product .select input').prop('checked', false).change();
             }
         });
 
         // when clicking the export products submit buttons, export products
-        $(document).on('click', '.fm-product-list-controls button[name=export-products]', function(e) {
+        $j(document).on('click', '.fm-product-list-controls button[name=export-products]', function(e) {
             e.preventDefault();
 
             var products = [];
@@ -159,20 +159,20 @@ var FmCtrl = {
             $('.fm-product-list > li').each(function(k, v) {
 
                 // check if product is selected
-                var active = $(this).find('.product .select input').prop('checked');
+                var active = $j(this).find('.product .select input').prop('checked');
                 if (active) {
 
                     // find all combinations
                     var combinations = [];
-                    $(this).find('.combinations > li').each(function(k, v) {
+                    $j(this).find('.combinations > li').each(function(k, v) {
 
                         // check if combination is selected, and store it
-                        var active = $(this).find('> .select input').prop('checked');
+                        var active = $j(this).find('> .select input').prop('checked');
                         if (active) {
                             combinations.push({
-                                'id': $(this).data('id'),
-                                'price': $(this).data('price'),
-                                'quantity': $(this).data('quantity'),
+                                'id': $j(this).data('id'),
+                                'price': $j(this).data('price'),
+                                'quantity': $j(this).data('quantity'),
                             });
                         }
                     });
@@ -180,11 +180,11 @@ var FmCtrl = {
                     // store product id and combinations
                     products.push({
                         'product': {
-                            'id': $(this).data('id'),
-                            'name': $(this).data('name'),
-                            'image': $(this).data('image'),
-                            'price': $(this).data('price'),
-                            'quantity': $(this).data('quantity')
+                            'id': $j(this).data('id'),
+                            'name': $j(this).data('name'),
+                            'image': $j(this).data('image'),
+                            'price': $j(this).data('price'),
+                            'quantity': $j(this).data('quantity')
                         },
                         'combinations': combinations
                     });
