@@ -9,6 +9,8 @@
 class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
 {
 
+    
+
     public function indexAction()
     {
         $this->loadLayout();
@@ -30,20 +32,17 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
         //$this->Heads();
 
         if($this->getAPIToken() == "" OR $this->getUsername() == "") {
-            $block = $this->getLayout()
-                ->createBlock('Fyndiq_Fyndiq_Block_Exportproducts', 'fyndiq.exportproducts')
-                ->setTemplate('fyndiq/needapiinfo.phtml');
+            $this->setupTemplate('fyndiq/needapiinfo.phtml');
         }
         else {
-            //create a text block with the name of "example-block"
-            $block = $this->getLayout()
-            ->createBlock('Fyndiq_Fyndiq_Block_Exportproducts', 'fyndiq.exportproducts')
-            ->setTemplate('fyndiq/exportproducts.phtml');
+            $this->setupTemplate('fyndiq/exportproducts.phtml');
         }
-        $logo = Mage::getBaseUrl(
-                Mage_Core_Model_Store::URL_TYPE_WEB
-            ) . "app/code/community/Fyndiq/Fyndiq/frontend/images/logo.png";
+    }
 
+    private function setupTemplate($template) {
+        $block = $this->getLayout()
+            ->createBlock('Fyndiq_Fyndiq_Block_Admin', 'fyndiq.admin')
+            ->setTemplate($template);
         $this->getLayout()->getBlock('content')->append($block);
 
         $this->renderLayout();
