@@ -1,0 +1,23 @@
+<link rel="stylesheet" type="text/css" href="<?php echo $this->getModulePath(); ?>frontend/css/main.css" media="all">
+
+<div class="fm-container">
+
+    <img class="fyndiqlogo" src="<?php echo $this->getModulePath(); ?>frontend/images/logo.png" alt="Fyndiq logotype">
+
+    <div class="fm-main-panel">
+        <form action="" method="post" class="fm-form orders">
+            <fieldset>
+                <h1>Setup</h1>
+                <a class="fm-button" type="submit" name="submit_show_settings"
+                   href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>">Go to
+                    Settings</a>
+
+                <p>
+                    By authenticating you will create a permanent connection to your Fyndiq merchant account.<br>
+                    You will not have to authenticate again when coming here next time.
+                </p>
+            </fieldset>
+        </form>
+    </div>
+
+</div>

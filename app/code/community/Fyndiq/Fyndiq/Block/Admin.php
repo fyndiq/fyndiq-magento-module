@@ -1,6 +1,6 @@
 <?php
 
-class Fyndiq_Fyndiq_Block_Exportproducts extends Mage_Core_Block_Template
+class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
 {
 
     public function getModulePath()
