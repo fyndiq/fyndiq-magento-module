@@ -1,5 +1,5 @@
 <?php
-
+require_once(dirname(dirname(__FILE__)) . '/includes/messages.php');
 class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
 {
 
@@ -38,5 +38,8 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
         return Mage::getStoreConfig('fyndiq/fyndiq_group/username');
     }
 
-
+    public function getMessage($key)
+    {
+        return FmMessages::get($key);
+    }
 }

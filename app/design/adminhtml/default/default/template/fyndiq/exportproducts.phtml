@@ -321,7 +321,7 @@
 
                 <p>By clicking this button, you can disconnect from your Fyndiq merchant account.</p>
                 <button class="fm-button" type="submit" name="submit_disconnect"
-                        onclick="return confirm('{FmMessages::get('disconnect-confirm')}');"
+                        onclick="return confirm('<?php echo $this->getMessage('disconnect-confirm'); ?>');"
                     >Disconnect Account
                 </button>
             </fieldset>

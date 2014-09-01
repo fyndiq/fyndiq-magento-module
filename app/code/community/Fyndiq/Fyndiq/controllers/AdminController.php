@@ -9,8 +9,6 @@
 class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
 {
 
-    
-
     public function indexAction()
     {
         $this->loadLayout();
