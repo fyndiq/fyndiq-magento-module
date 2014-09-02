@@ -156,7 +156,7 @@ var FmCtrl = {
             var products = [];
 
             // find all products
-            $('.fm-product-list > li').each(function(k, v) {
+            $j('.fm-product-list > li').each(function(k, v) {
 
                 // check if product is selected
                 var active = $j(this).find('.product .select input').prop('checked');
@@ -172,7 +172,7 @@ var FmCtrl = {
                             combinations.push({
                                 'id': $j(this).data('id'),
                                 'price': $j(this).data('price'),
-                                'quantity': $j(this).data('quantity'),
+                                'quantity': $j(this).data('quantity')
                             });
                         }
                     });

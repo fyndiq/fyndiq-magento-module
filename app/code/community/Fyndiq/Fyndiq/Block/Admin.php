@@ -42,4 +42,10 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
     {
         return FmMessages::get($key);
     }
+
+    public function getMessages()
+    {
+        return FmMessages::get_all();
+    }
+
 }
