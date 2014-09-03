@@ -8,7 +8,7 @@
 
 class FmConfig {
 
-    private static $config_name = "fyndiq/fyndiq_group/";
+    private static $config_name = "fyndiq/fyndiq_group";
 
     public static function delete($name) {
         return Mage::getConfig()->deleteConfig(self::$config_name.'/'.$name);
