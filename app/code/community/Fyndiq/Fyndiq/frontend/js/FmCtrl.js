@@ -163,7 +163,7 @@ var FmCtrl = {
                 if (active) {
 
                     // find all combinations
-                    var combinations = [];
+                    /*var combinations = [];
                     $j(this).find('.combinations > li').each(function(k, v) {
 
                         // check if combination is selected, and store it
@@ -175,7 +175,7 @@ var FmCtrl = {
                                 'quantity': $j(this).data('quantity')
                             });
                         }
-                    });
+                    });*/
 
                     // store product id and combinations
                     products.push({
@@ -186,7 +186,7 @@ var FmCtrl = {
                             'price': $j(this).data('price'),
                             'quantity': $j(this).data('quantity')
                         },
-                        'combinations': combinations
+                        //'combinations': combinations
                     });
                 }
             });
@@ -208,7 +208,7 @@ var FmCtrl = {
                     var highest_price = false;
 
                     // check each combination for warnings
-                    for (var j = 0; j < product['combinations'].length; j++) {
+                    /*for (var j = 0; j < product['combinations'].length; j++) {
                         var combination = product['combinations'][j];
 
                         // if combination price differs from product price, show warning for this product
@@ -223,16 +223,11 @@ var FmCtrl = {
                                 highest_price = combination['price'];
                             }
                         }
-                    }
-
+                    }*/
                     // if product needs a warning, store relevant data
-                    if (product_warning) {
                         product_warnings.push({
-                            'product': product,
-                            'highest_price': highest_price,
-                            'lowest_price': lowest_price
+                            'product': product
                         });
-                    }
                 }
 
                 // helper function that does the actual product export

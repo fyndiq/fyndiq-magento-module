@@ -74,13 +74,15 @@
                     </div>
 
                     <div class="price-info">
+                        {{#with product}}{{#with product}}
                         <div class="highest-price">
-                            Highest: {{highest_price}}
+                            Highest: {{price}}
                         </div>
 
                         <div class="lowest-price">
-                            Lowest: {{lowest_price}}
+                            Lowest: {{price}}
                         </div>
+                        {{/with}}{{/with}}
                     </div>
                 </div>
 
