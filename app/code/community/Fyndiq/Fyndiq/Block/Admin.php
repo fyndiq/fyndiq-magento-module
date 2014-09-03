@@ -1,5 +1,6 @@
 <?php
 require_once(dirname(dirname(__FILE__)) . '/includes/messages.php');
+require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
 class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
 {
 
@@ -15,27 +16,27 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
 
     public function getLanguage()
     {
-        return Mage::getStoreConfig('fyndiq/fyndiq_group4/country');
+        return FmConfig::get('country');
     }
 
     public function getCurrency()
     {
-        return Mage::getStoreConfig('fyndiq/fyndiq_group4/currency');
+        return FmConfig::get('currency');
     }
 
     public function getAutoOrderImport()
     {
-        return (bool)Mage::getStoreConfigFlag('fyndiq/fyndiq_group4/automaticOrderImport');
+        return FmConfig::getBool('automaticOrderImport');
     }
 
     public function getAutoProductExport()
     {
-        return (bool)Mage::getStoreConfigFlag('fyndiq/fyndiq_group4/automaticProductExport');
+        return FmConfig::getBool('automaticProductExport');
     }
 
     public function getUsername()
     {
-        return Mage::getStoreConfig('fyndiq/fyndiq_group/username');
+        return FmConfig::get('username');
     }
 
     public function getMessage($key)
@@ -48,4 +49,8 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
         return FmMessages::get_all();
     }
 
+    public function getVersion()
+    {
+        return FmConfig::getVersion();
+    }
 }
