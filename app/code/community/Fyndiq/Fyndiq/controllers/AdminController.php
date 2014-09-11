@@ -6,6 +6,7 @@
  * Date: 18/08/14
  * Time: 09:50
  */
+require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
 class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
 {
 
@@ -28,19 +29,33 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
         $this->loadLayout(array('default'));
 
         //$this->Heads();
-
+        try {
+            FmHelpers::call_api('GET', 'account/');
+            $api_available = true;
+        }
+        catch (Exception $e) {
+            $api_available = false;
+            $page_args['message'] = $e->getMessage();
+        }
         if($this->getAPIToken() == "" OR $this->getUsername() == "") {
             $this->setupTemplate('fyndiq/needapiinfo.phtml');
+        }
+        else if(!$api_available) {
+
+            $this->setupTemplate('fyndiq/apierror.phtml', $page_args);
         }
         else {
             $this->setupTemplate('fyndiq/exportproducts.phtml');
         }
     }
 
-    private function setupTemplate($template) {
+    private function setupTemplate($template, $data = null) {
         $block = $this->getLayout()
             ->createBlock('Fyndiq_Fyndiq_Block_Admin', 'fyndiq.admin')
             ->setTemplate($template);
+        if($data != null) {
+            $block->setData('data', $data);
+        }
         $this->getLayout()->getBlock('content')->append($block);
 
         $this->renderLayout();

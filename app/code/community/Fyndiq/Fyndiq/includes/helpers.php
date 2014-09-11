@@ -5,7 +5,7 @@
  * Date: 03/09/14
  * Time: 10:33
  */
-
+require_once(dirname(dirname(__FILE__)) . '/includes/messages.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/api.php');
 class FmHelpers {
@@ -30,7 +30,7 @@ class FmHelpers {
     # uses stored connection credentials for authentication
     public static function call_api($method, $path, $data=array()) {
         $username = FmConfig::get('username');
-        $api_token = FmConfig::get('api_token');
+        $api_token = FmConfig::get('apikey');
 
         return FmHelpers::call_api_raw($username, $api_token, $method, $path, $data);
     }
