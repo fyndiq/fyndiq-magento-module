@@ -70,7 +70,7 @@
     color: black;
     cursor: pointer;
     outline: none;
-
+    text-decoration: none;
     line-height: 16px;
 
     @include border-radius(3px);
@@ -78,6 +78,11 @@
     @include gradient($color-button-light, $color-button-dark);
     &:active {
         @include gradient($color-button-dark, $color-button-light);
+    }
+    &:hover {
+      text-decoration: none;
+      color: black;
+      @include gradient($color-button-dark, $color-button-light);
     }
 
     &.fyndiq {
@@ -89,6 +94,11 @@
         @include gradient($color-button-fyndiq-light, $color-button-fyndiq-dark);
         &:active {
             @include gradient($color-button-fyndiq-dark, $color-button-fyndiq-light);
+        }
+        &:hover {
+          text-decoration: none;
+          color: white;
+          @include gradient($color-button-fyndiq-dark, $color-button-fyndiq-light);
         }
     }
 }
