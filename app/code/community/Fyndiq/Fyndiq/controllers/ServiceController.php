@@ -6,6 +6,9 @@
  * Time: 17:12
  */
 require_once(dirname(dirname(__FILE__)) . '/includes/messages.php');
+require_once(dirname(dirname(__FILE__)) . '/Model/Order.php');
+require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
+require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
 class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action {
 
     /**
@@ -151,6 +154,29 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action {
             }
 
         $this->response($data);
+    }
+
+    /**
+     * Getting the orders to be saved in Magento.
+     *
+     * @param $args
+     */
+    public function import_orders($args) {
+        try {
+            $ret = FmHelpers::call_api('GET', 'order/');
+
+            foreach ($ret["data"]->objects as $order) {
+                if(!Mage::getModel('fyndiq/order')->orderExists($order->id)) {
+                    //Mage::getModel('fyndiq/order')->create($order);
+                }
+            }
+            self::response($ret);
+        } catch (Exception $e) {
+            self::response_error(
+                FmMessages::get('unhandled-error-title'),
+                FmMessages::get('unhandled-error-message') . ' (' . $e->getMessage() . ')'
+            );
+        }
     }
 
 } 
