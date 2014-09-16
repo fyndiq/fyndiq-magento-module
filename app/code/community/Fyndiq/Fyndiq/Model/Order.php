@@ -37,7 +37,8 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
                 $customer->save();
             }
             catch (Exception $ex) {
-
+                Zend_Debug::dump($ex->getMessage());
+                echo "ERROR1";
             }
 
             $delivery_address = array (
@@ -107,7 +108,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             $postcode = $address->getPostcode();
             $phoneNumber = $address->getTelephone();
             $countryId = $address->getCountryId();
-            $regionId = $address->getRegionId();
+            $regionId = "";
             // otherwise, setup some custom entry values so we don't have a bunch of confusing un-descriptive orders in the backend
         }else{
             $address = 'No address';
@@ -123,6 +124,12 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $quote = Mage::getModel('sales/quote')->setStoreId(Mage::app('default')->getStore('default')->getId());
         $quote->assignCustomer($customer);
 
+
+        $_product = Mage::getModel('catalog/product')->load(1); //getting product model
+
+        // Add the product with the product options
+        $quote->addProduct($_product);
+
         //Low lets setup a shipping / billing array of current customer's session
         $addressData = array(
             'firstname' => $firstName,
@@ -135,19 +142,83 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             'region_id' => $regionId
         );
         //Add address array to both billing AND shipping address objects.
-        $billingAddress = $quote->getBillingAddress()->addData($addressData);
-        $shippingAddress = $quote->getShippingAddress()->addData($addressData);
+        //$billingAddress = $quote->getBillingAddress()->addData($addressData);
+        $shipping = $customer->getDefaultShippingAddress();
+        $shippingAddress = Mage::getModel('sales/order_address')
+            ->setStoreId(Mage::app()->getWebsite()->getId())
+            ->setAddressType(Mage_Sales_Model_Quote_Address::TYPE_SHIPPING)
+            ->setCustomerId($customer->getId())
+            ->setCustomerAddressId($customer->getDefaultShipping())
+            ->setCustomer_address_id($shipping->getEntityId())
+            ->setPrefix($shipping->getPrefix())
+            ->setFirstname($shipping->getFirstname())
+            ->setMiddlename($shipping->getMiddlename())
+            ->setLastname($shipping->getLastname())
+            ->setSuffix($shipping->getSuffix())
+            ->setCompany($shipping->getCompany())
+            ->setStreet($shipping->getStreet())
+            ->setCity($shipping->getCity())
+            ->setCountry_id($shipping->getCountryId())
+            ->setRegion($shipping->getRegion())
+            ->setRegion_id($shipping->getRegionId())
+            ->setPostcode($shipping->getPostcode())
+            ->setTelephone($shipping->getTelephone())
+            ->setFax($shipping->getFax());
+
+        $delivery = $customer->getDefaultShippingAddress();
+        $deliveryAddress = Mage::getModel('sales/order_address')
+            ->setStoreId(Mage::app()->getWebsite()->getId())
+            ->setAddressType(Mage_Sales_Model_Quote_Address::TYPE_SHIPPING)
+            ->setCustomerId($customer->getId())
+            ->setCustomerAddressId($customer->getDefaultDelivery())
+            ->setCustomer_address_id($delivery->getEntityId())
+            ->setPrefix($delivery->getPrefix())
+            ->setFirstname($delivery->getFirstname())
+            ->setMiddlename($delivery->getMiddlename())
+            ->setLastname($delivery->getLastname())
+            ->setSuffix($delivery->getSuffix())
+            ->setCompany($delivery->getCompany())
+            ->setStreet($delivery->getStreet())
+            ->setCity($delivery->getCity())
+            ->setCountry_id($delivery->getCountryId())
+            ->setRegion($delivery->getRegion())
+            ->setRegion_id($delivery->getRegionId())
+            ->setPostcode($delivery->getPostcode())
+            ->setTelephone($delivery->getTelephone())
+            ->setFax($delivery->getFax());
 
         //Set shipping objects rates to true to then gather any accrued shipping method costs a product main contain
-        $shippingAddress->setCollectShippingRates(true)->collectShippingRates()->
-            setShippingMethod('flatrate_flatrate')->setPaymentMethod('checkmo');
+        //$shippingAddress->setCollectShippingRates(true)->collectShippingRates()->
+        //    setShippingMethod('flatrate_flatrate');
 
         //Set quote object's payment method to check / money order to allow progromatic entries of orders
         //(kind of hard to programmatically guess and enter a customer's credit/debit cart so only money orders are allowed to be entered via api)
-        $quote->getPayment()->importData(array('method' => 'checkmo'));
+        //$quote->getPayment()->importData(array('method' => 'checkmo'));
 
-        //Save collected totals to quote object
-        $quote->collectTotals()->save();
+        // Set the payment method
+        $paymentMethod = 'checkmo';
+
+        // Set the shipping method
+        $shippingMethod = 'flatrate_flatrate';
+
+        // Add the address data to the billing address
+        $billingAddress  = $quote->getBillingAddress()->addData($addressData);
+
+        // Add the adress data to the shipping address
+        $shippingAddress = $quote->getShippingAddress()->addData($addressData);
+
+        // Collect the shipping rates
+        $shippingAddress->setCollectShippingRates(true)->collectShippingRates();
+
+        // Set the shipping method /////////// Here i set my own shipping method
+        $shippingAddress->setShippingMethod($shippingMethod);
+        $quote->getShippingAddress()->setFreeShipping(true);
+
+        // Set the payment method
+        $shippingAddress->setPaymentMethod($paymentMethod);
+
+        // Set the payment method
+        $quote->getPayment()->importData(array('method' => $paymentMethod));
 
         //Feed quote object into sales model
         $service = Mage::getModel('sales/service_quote', $quote);
@@ -157,6 +228,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
 
         //Setup order object and gather newly entered order
         $order = $service->getOrder();
+
 
         //Now set newly entered order's status to complete so customers can enjoy their goods.
         //(optional of course, but most would like their orders created this way to be set to complete automagicly)
