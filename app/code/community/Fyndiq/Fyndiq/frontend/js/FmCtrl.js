@@ -71,7 +71,11 @@ var FmCtrl = {
     },
 
     import_orders: function(callback) {
-        FmCtrl.call_service('import_orders', {}, function() {
+        FmCtrl.call_service('import_orders', {}, function(status, orders) {
+            if (status == 'success') {
+                FmGui.show_message('success', messages['orders-imported-title'],
+                    messages['orders-imported-message']);
+            }
             if (callback) {
                 callback();
             }
