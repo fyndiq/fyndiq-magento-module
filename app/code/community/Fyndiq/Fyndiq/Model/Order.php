@@ -20,6 +20,12 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         }
     }
 
+    public function addCheckData($fyndiq_orderid, $orderid) {
+        $data = array('fyndiq_orderid'=>$fyndiq_orderid,'order_id'=>$orderid);
+        $model = $this->setData($data);
+        return $model->save()->getId();
+    }
+
     public function create($fyndiq_order) {
 
         //get customer by mail
@@ -217,5 +223,8 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
 
         //Finally we save our order after setting it's status to complete.
         $order->save();
+
+        //add it to the table for check
+        $this->addCheckData($fyndiq_order->id,$order->getIncrementId());
     }
 }
