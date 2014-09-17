@@ -1,13 +1,16 @@
 <?php
-class Fyndiq_Fyndiq_Model_Carrier
-    extends Mage_Shipping_Model_Carrier_Abstract
-    implements Mage_Shipping_Model_Carrier_Interface
+
+class Fyndiq_Fyndiq_Model_Carrier extends Mage_Shipping_Model_Carrier_Abstract implements Mage_Shipping_Model_Carrier_Interface
 {
     protected $_code = 'fyndiq';
 
-    public function collectRates(
-        Mage_Shipping_Model_Rate_Request $request
-    )
+    /**
+     * Get rates of the shipping method
+     *
+     * @param Mage_Shipping_Model_Rate_Request $request
+     * @return Mage_Shipping_Model_Rate_Result
+     */
+    public function collectRates(Mage_Shipping_Model_Rate_Request $request)
     {
         $result = Mage::getModel('shipping/rate_result');
         /* @var $result Mage_Shipping_Model_Rate_Result */
@@ -17,6 +20,11 @@ class Fyndiq_Fyndiq_Model_Carrier
         return $result;
     }
 
+    /**
+     * Get standard rate for this method
+     *
+     * @return Mage_Shipping_Model_Rate_Result_Method
+     */
     protected function _getStandardShippingRate()
     {
         $rate = Mage::getModel('shipping/rate_result_method');
@@ -38,6 +46,11 @@ class Fyndiq_Fyndiq_Model_Carrier
         return $rate;
     }
 
+    /**
+     * Get allowed type of methods.
+     *
+     * @return array
+     */
     public function getAllowedMethods()
     {
         return array(

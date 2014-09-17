@@ -1,4 +1,5 @@
 <?php
+
 class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
 {
 
@@ -8,30 +9,53 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $this->_init('fyndiq/order');
     }
 
-    public function orderExists($fyndiq_order) {
+    /**
+     * Check if order already exists
+     *
+     * @param $fyndiq_order
+     * @return bool
+     */
+    public function orderExists($fyndiq_order)
+    {
         $collection = $this->getCollection()
             ->addFieldToFilter('fyndiq_orderid', $fyndiq_order)
             ->getFirstItem();
-        if($collection->getId()){
+        if ($collection->getId()) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
 
-    public function addCheckData($fyndiq_orderid, $orderid) {
-        $data = array('fyndiq_orderid'=>$fyndiq_orderid,'order_id'=>$orderid);
+    /**
+     * Add to check table to check if order already exists.
+     *
+     * @param $fyndiq_orderid
+     * @param $orderid
+     * @return mixed
+     */
+    public function addCheckData($fyndiq_orderid, $orderid)
+    {
+        $data = array('fyndiq_orderid' => $fyndiq_orderid, 'order_id' => $orderid);
         $model = $this->setData($data);
+
         return $model->save()->getId();
     }
 
-    public function create($fyndiq_order) {
+    /**
+     * Create a order in magento based on Fyndiq Order
+     *
+     * @param $fyndiq_order
+     */
+    public function create($fyndiq_order)
+    {
 
         //get customer by mail
         $customer = Mage::getModel("customer/customer");
         $customer->setWebsiteId(Mage::app()->getWebsite()->getId());
-        $customer->loadByEmail($fyndiq_order->customer_email); //load customer by email id - See more at: http://www.techdilate.com/code/magento-get-customer-details-by-email-id/#sthash.1wlIxutE.dpuf
+        $customer->loadByEmail(
+            $fyndiq_order->customer_email
+        ); //load customer by email id - See more at: http://www.techdilate.com/code/magento-get-customer-details-by-email-id/#sthash.1wlIxutE.dpuf
         if (!$customer->getId()) {
             $customer->setEmail($fyndiq_order->customer_email);
             $customer->setFirstname($fyndiq_order->delivery_firstname);
@@ -41,19 +65,17 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
                 $customer->save();
                 $customer->setConfirmation(null);
                 $customer->save();
-            }
-            catch (Exception $ex) {
+            } catch (Exception $ex) {
                 Zend_Debug::dump($ex->getMessage());
                 echo "ERROR1";
             }
 
-            $delivery_address = array (
+            $delivery_address = array(
                 'firstname' => $fyndiq_order->delivery_firstname,
                 'lastname' => $fyndiq_order->delivery_lastname,
-                'street' => array (
+                'street' => array(
                     '0' => $fyndiq_order->delivery_address,
                 ),
-
                 'city' => $fyndiq_order->delivery_city,
                 'region_id' => '',
                 'region' => '',
@@ -61,13 +83,12 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
                 'country_id' => 'SE', /* SWEDEN */
                 'telephone' => $fyndiq_order->customer_phone,
             );
-            $invoice_address = array (
+            $invoice_address = array(
                 'firstname' => $fyndiq_order->invoice_firstname,
                 'lastname' => $fyndiq_order->invoice_lastname,
-                'street' => array (
+                'street' => array(
                     '0' => $fyndiq_order->invoice_address,
                 ),
-
                 'city' => $fyndiq_order->invoice_city,
                 'region_id' => '',
                 'region' => '',
@@ -93,8 +114,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             try {
                 $delivery_addressmodel->save();
                 $invoice_addressmodel->save();
-            }
-            catch (Exception $ex) {
+            } catch (Exception $ex) {
                 //Zend_Debug::dump($ex->getMessage());
             }
         }
@@ -119,26 +139,26 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $shippingAddressId = $customer->getDefaultShipping(); //get default billing address from session
 
         //if we have a default billing address, try gathering its values into variables we need
-        if ($billingaddressId){
+        if ($billingaddressId) {
             $address = Mage::getModel('customer/address')->load($billingaddressId);
             $billingAddressArray = array(
                 'firstname' => $firstName,
                 'lastname' => $lastName,
                 'street' => $address->getStreet(),
                 'city' => $address->getCity(),
-                'postcode'=>$address->getPostcode(),
+                'postcode' => $address->getPostcode(),
                 'telephone' => $address->getTelephone(),
                 'country_id' => $address->getCountryId(),
                 'region_id' => ""
             );
             // otherwise, setup some custom entry values so we don't have a bunch of confusing un-descriptive orders in the backend
-        }else{
+        } else {
             $billingAddressArray = array(
                 'firstname' => $firstName,
                 'lastname' => $lastName,
                 'street' => 'No address',
                 'city' => 'No City',
-                'postcode'=>'No post code',
+                'postcode' => 'No post code',
                 'telephone' => 'No phone',
                 'country_id' => 'No country',
                 'region_id' => "No region"
@@ -146,40 +166,31 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         }
 
         //if we have a default shipping address, try gathering its values into variables we need
-        if ($shippingAddressId){
+        if ($shippingAddressId) {
             $address = Mage::getModel('customer/address')->load($shippingAddressId);
             $shippingAddressArray = array(
                 'firstname' => $firstName,
                 'lastname' => $lastName,
                 'street' => $address->getStreet(),
                 'city' => $address->getCity(),
-                'postcode'=>$address->getPostcode(),
+                'postcode' => $address->getPostcode(),
                 'telephone' => $address->getTelephone(),
                 'country_id' => $address->getCountryId(),
                 'region_id' => ""
             );
             // otherwise, setup some custom entry values so we don't have a bunch of confusing un-descriptive orders in the backend
-        }else{
+        } else {
             $shippingAddressArray = array(
                 'firstname' => $firstName,
                 'lastname' => $lastName,
                 'street' => 'No address',
                 'city' => 'No City',
-                'postcode'=>'No post code',
+                'postcode' => 'No post code',
                 'telephone' => 'No phone',
                 'country_id' => 'No country',
                 'region_id' => "No region"
             );
         }
-
-
-        //Set shipping objects rates to true to then gather any accrued shipping method costs a product main contain
-        //$shippingAddress->setCollectShippingRates(true)->collectShippingRates()->
-        //    setShippingMethod('flatrate_flatrate');
-
-        //Set quote object's payment method to check / money order to allow progromatic entries of orders
-        //(kind of hard to programmatically guess and enter a customer's credit/debit cart so only money orders are allowed to be entered via api)
-        //$quote->getPayment()->importData(array('method' => 'checkmo'));
 
         // Set the payment method
         $paymentMethod = 'checkmo';
@@ -206,7 +217,6 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $quote->getPayment()->importData(array('method' => $paymentMethod));
 
 
-
         //Feed quote object into sales model
         $service = Mage::getModel('sales/service_quote', $quote);
 
@@ -225,6 +235,6 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $order->save();
 
         //add it to the table for check
-        $this->addCheckData($fyndiq_order->id,$order->getIncrementId());
+        $this->addCheckData($fyndiq_order->id, $order->getIncrementId());
     }
 }
