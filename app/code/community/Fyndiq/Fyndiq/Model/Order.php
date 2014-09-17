@@ -93,99 +93,79 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             }
         }
 
-        //$product_id = $_POST['id']; //id of product we want to purchase that was posted to this script
-
-        //Shipping / Billing information gather
-        $firstName = $customer->getFirstname(); //get customers first name
-        $lastName = $customer->getLastname(); //get customers last name
-        $customerAddressId = $customer->getDefaultBilling(); //get default billing address from session
-
-        //if we have a default billing addreess, try gathering its values into variables we need
-        if ($customerAddressId){
-            $address = Mage::getModel('customer/address')->load($customerAddressId);
-            $street = $address->getStreet();
-            $city = $address->getCity();
-            $postcode = $address->getPostcode();
-            $phoneNumber = $address->getTelephone();
-            $countryId = $address->getCountryId();
-            $regionId = "";
-            // otherwise, setup some custom entry values so we don't have a bunch of confusing un-descriptive orders in the backend
-        }else{
-            $address = 'No address';
-            $street = 'No street';
-            $city = 'No City';
-            $postcode = 'No post code';
-            $phoneNumber = 'No phone';
-            $countryId = 'No country';
-            $regionId = 'No region';
-        }
 
         //Start a new order quote and assign current customer to it.
         $quote = Mage::getModel('sales/quote')->setStoreId(Mage::app('default')->getStore('default')->getId());
         $quote->assignCustomer($customer);
 
 
+        //TODO: add product from fyndiq here
         $_product = Mage::getModel('catalog/product')->load(1); //getting product model
-
         // Add the product with the product options
         $quote->addProduct($_product);
 
-        //Low lets setup a shipping / billing array of current customer's session
-        $addressData = array(
-            'firstname' => $firstName,
-            'lastname' => $lastName,
-            'street' => $street,
-            'city' => $city,
-            'postcode'=>$postcode,
-            'telephone' => $phoneNumber,
-            'country_id' => $countryId,
-            'region_id' => $regionId
-        );
-        //Add address array to both billing AND shipping address objects.
-        //$billingAddress = $quote->getBillingAddress()->addData($addressData);
-        $shipping = $customer->getDefaultShippingAddress();
-        $shippingAddress = Mage::getModel('sales/order_address')
-            ->setStoreId(Mage::app()->getWebsite()->getId())
-            ->setAddressType(Mage_Sales_Model_Quote_Address::TYPE_SHIPPING)
-            ->setCustomerId($customer->getId())
-            ->setCustomerAddressId($customer->getDefaultShipping())
-            ->setCustomer_address_id($shipping->getEntityId())
-            ->setPrefix($shipping->getPrefix())
-            ->setFirstname($shipping->getFirstname())
-            ->setMiddlename($shipping->getMiddlename())
-            ->setLastname($shipping->getLastname())
-            ->setSuffix($shipping->getSuffix())
-            ->setCompany($shipping->getCompany())
-            ->setStreet($shipping->getStreet())
-            ->setCity($shipping->getCity())
-            ->setCountry_id($shipping->getCountryId())
-            ->setRegion($shipping->getRegion())
-            ->setRegion_id($shipping->getRegionId())
-            ->setPostcode($shipping->getPostcode())
-            ->setTelephone($shipping->getTelephone())
-            ->setFax($shipping->getFax());
+        //$product_id = $_POST['id']; //id of product we want to purchase that was posted to this script
 
-        $delivery = $customer->getDefaultShippingAddress();
-        $deliveryAddress = Mage::getModel('sales/order_address')
-            ->setStoreId(Mage::app()->getWebsite()->getId())
-            ->setAddressType(Mage_Sales_Model_Quote_Address::TYPE_SHIPPING)
-            ->setCustomerId($customer->getId())
-            ->setCustomerAddressId($customer->getDefaultDelivery())
-            ->setCustomer_address_id($delivery->getEntityId())
-            ->setPrefix($delivery->getPrefix())
-            ->setFirstname($delivery->getFirstname())
-            ->setMiddlename($delivery->getMiddlename())
-            ->setLastname($delivery->getLastname())
-            ->setSuffix($delivery->getSuffix())
-            ->setCompany($delivery->getCompany())
-            ->setStreet($delivery->getStreet())
-            ->setCity($delivery->getCity())
-            ->setCountry_id($delivery->getCountryId())
-            ->setRegion($delivery->getRegion())
-            ->setRegion_id($delivery->getRegionId())
-            ->setPostcode($delivery->getPostcode())
-            ->setTelephone($delivery->getTelephone())
-            ->setFax($delivery->getFax());
+        //Shipping / Billing information gather
+        $firstName = $customer->getFirstname(); //get customers first name
+        $lastName = $customer->getLastname(); //get customers last name
+        $billingaddressId = $customer->getDefaultBilling(); //get default billing address from session
+        $shippingAddressId = $customer->getDefaultShipping(); //get default billing address from session
+
+        //if we have a default billing address, try gathering its values into variables we need
+        if ($billingaddressId){
+            $address = Mage::getModel('customer/address')->load($billingaddressId);
+            $billingAddressArray = array(
+                'firstname' => $firstName,
+                'lastname' => $lastName,
+                'street' => $address->getStreet(),
+                'city' => $address->getCity(),
+                'postcode'=>$address->getPostcode(),
+                'telephone' => $address->getTelephone(),
+                'country_id' => $address->getCountryId(),
+                'region_id' => ""
+            );
+            // otherwise, setup some custom entry values so we don't have a bunch of confusing un-descriptive orders in the backend
+        }else{
+            $billingAddressArray = array(
+                'firstname' => $firstName,
+                'lastname' => $lastName,
+                'street' => 'No address',
+                'city' => 'No City',
+                'postcode'=>'No post code',
+                'telephone' => 'No phone',
+                'country_id' => 'No country',
+                'region_id' => "No region"
+            );
+        }
+
+        //if we have a default shipping address, try gathering its values into variables we need
+        if ($shippingAddressId){
+            $address = Mage::getModel('customer/address')->load($shippingAddressId);
+            $shippingAddressArray = array(
+                'firstname' => $firstName,
+                'lastname' => $lastName,
+                'street' => $address->getStreet(),
+                'city' => $address->getCity(),
+                'postcode'=>$address->getPostcode(),
+                'telephone' => $address->getTelephone(),
+                'country_id' => $address->getCountryId(),
+                'region_id' => ""
+            );
+            // otherwise, setup some custom entry values so we don't have a bunch of confusing un-descriptive orders in the backend
+        }else{
+            $shippingAddressArray = array(
+                'firstname' => $firstName,
+                'lastname' => $lastName,
+                'street' => 'No address',
+                'city' => 'No City',
+                'postcode'=>'No post code',
+                'telephone' => 'No phone',
+                'country_id' => 'No country',
+                'region_id' => "No region"
+            );
+        }
+
 
         //Set shipping objects rates to true to then gather any accrued shipping method costs a product main contain
         //$shippingAddress->setCollectShippingRates(true)->collectShippingRates()->
@@ -199,26 +179,27 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $paymentMethod = 'checkmo';
 
         // Set the shipping method
-        $shippingMethod = 'flatrate_flatrate';
+        $shippingMethod = 'fyndiq_fyndiq';
 
         // Add the address data to the billing address
-        $billingAddress  = $quote->getBillingAddress()->addData($addressData);
+        $quote->getBillingAddress()->addData($billingAddressArray);
 
         // Add the adress data to the shipping address
-        $shippingAddress = $quote->getShippingAddress()->addData($addressData);
+        $shippingAddress = $quote->getShippingAddress()->addData($shippingAddressArray);
 
         // Collect the shipping rates
         $shippingAddress->setCollectShippingRates(true)->collectShippingRates();
 
         // Set the shipping method /////////// Here i set my own shipping method
         $shippingAddress->setShippingMethod($shippingMethod);
-        $quote->getShippingAddress()->setFreeShipping(true);
 
         // Set the payment method
         $shippingAddress->setPaymentMethod($paymentMethod);
 
         // Set the payment method
         $quote->getPayment()->importData(array('method' => $paymentMethod));
+
+
 
         //Feed quote object into sales model
         $service = Mage::getModel('sales/service_quote', $quote);

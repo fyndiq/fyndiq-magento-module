@@ -82,4 +82,16 @@
             </observers>
         </catalog_product_save_after>
     </events>
+    <default>
+        <carriers>
+            <fyndiq_fyndiq>
+                <active>1</active>
+                <model>fyndiq/carrier</model>
+                <title>Fyndiq Carrier</title>
+                <sort_order>10</sort_order>
+                <sallowspecific>0</sallowspecific>
+                <express_max_weight>1</express_max_weight>
+            </fyndiq_fyndiq>
+        </carriers>
+    </default>
 </config>
