@@ -231,6 +231,11 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         //(optional of course, but most would like their orders created this way to be set to complete automagicly)
         $order->setStatus('complete');
 
+
+        //Add delivery note as comment
+        $comment = "Fyndiq delivery note: http://fyndiq.se" . $fyndiq_order->delivery_note . " \n just copy url and paste in the browser to download the delivery note.";
+        $order->addStatusHistoryComment($comment);
+
         //Finally we save our order after setting it's status to complete.
         $order->save();
 
