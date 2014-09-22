@@ -46,8 +46,9 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
      * Create a order in magento based on Fyndiq Order
      *
      * @param $fyndiq_order
+     * @param $order_infos
      */
-    public function create($fyndiq_order)
+    public function create($fyndiq_order, $order_infos)
     {
 
         //get customer by mail
@@ -124,19 +125,28 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $quote = Mage::getModel('sales/quote')->setStoreId(Mage::app('default')->getStore('default')->getId());
         $quote->assignCustomer($customer);
 
-
-        //TODO: add product from fyndiq here
-        $_product = Mage::getModel('catalog/product')->load(1); //getting product model
-        // Add the product with the product options
-        $quote->addProduct($_product);
-
         //$product_id = $_POST['id']; //id of product we want to purchase that was posted to this script
+        foreach ($order_infos["data"]->objects as $row) {
+            // Get article for order row
+            $article_id = $row->article;
+            //$row_article = FmHelpers::call_api('GET', 'article/'.$article_id.'/');
+
+            // get id of the product
+            // TODO: shall be from a table later (to connect a product in magento with a id for a article in Fyndiq)
+            $product_id = 1;
+
+            $_product = Mage::getModel('catalog/product')->load($product_id);
+            //add product to the cart
+            $product_info = array('qty' => $row->num_articles, 'price' => $_product->getPrice());
+            $quote->addProduct($_product, new Varien_Object($product_info));
+        }
+
 
         //Shipping / Billing information gather
         $firstName = $customer->getFirstname(); //get customers first name
         $lastName = $customer->getLastname(); //get customers last name
         $billingaddressId = $customer->getDefaultBilling(); //get default billing address from session
-        $shippingAddressId = $customer->getDefaultShipping(); //get default billing address from session
+        $shippingAddressId = $customer->getDefaultShipping(); //get default shipping address from session
 
         //if we have a default billing address, try gathering its values into variables we need
         if ($billingaddressId) {
