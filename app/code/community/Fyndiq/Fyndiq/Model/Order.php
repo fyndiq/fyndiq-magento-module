@@ -239,7 +239,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
 
         //Now set newly entered order's status to complete so customers can enjoy their goods.
         //(optional of course, but most would like their orders created this way to be set to complete automagicly)
-        $order->setStatus('complete');
+        $order->setStatus(Mage_Sales_Model_Order::STATE_COMPLETE);
 
 
         //Add delivery note as comment
