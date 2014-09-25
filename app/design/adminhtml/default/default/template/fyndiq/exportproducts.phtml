@@ -1,17 +1,17 @@
-<link rel="stylesheet" type="text/css" href="<?php echo $this->getModulePath(); ?>frontend/css/main.css" media="all">
+<link rel="stylesheet" type="text/css" href="<?php echo $this->getFrontendPath(); ?>frontend/css/main.css" media="all">
 <script type="text/javascript">
     module_path = "<?php echo $this->getAdminPath("fyndiq/service"); ?>";
 </script>
 
 <script type="text/x-handlebars-template" class="handlebars-template" id="fm-loading-overlay">
     <div class="fm-loading-overlay">
-        <img src="<?php echo $this->getModulePath(); ?>frontend/images/ajax-loader.gif" alt="Loading animation">
+        <img src="<?php echo $this->getFrontendPath(); ?>frontend/images/ajax-loader.gif" alt="Loading animation">
     </div>
 </script>
 
 <script type="text/x-handlebars-template" class="handlebars-template" id="fm-message-overlay">
     <div class="fm-message-overlay fm-{{type}}">
-        <img class="close" src="<?php echo $this->getModulePath(); ?>frontend/images/icons/close-icon.png" alt="Close" title="Close message">
+        <img class="close" src="<?php echo $this->getFrontendPath(); ?>frontend/images/icons/close-icon.png" alt="Close" title="Close message">
         <h3>{{title}}</h3>
         <p>{{message}}</p>
     </div>
@@ -28,11 +28,11 @@
 <script type="text/x-handlebars-template" class="handlebars-partial" id="fm-product-price-warning-controls">
     <div class="controls">
         <button class="fm-button cancel" name="cancel" data-modal-type="cancel">
-            <img src="<?php echo $this->getModulePath(); ?>frontend/images/icons/cancel.png">
+            <img src="<?php echo $this->getFrontendPath(); ?>frontend/images/icons/cancel.png">
             Cancel
         </button>
         <button class="fm-button accept" name="accept" data-modal-type="accept">
-            <img src="<?php echo $this->getModulePath(); ?>frontend/images/icons/accept.png">
+            <img src="<?php echo $this->getFrontendPath(); ?>frontend/images/icons/accept.png">
             Accept
         </button>
     </div>
@@ -180,7 +180,7 @@
                         {{/unless}}
                         ">
                     <a href="#">
-                        <img src="<?php echo $this->getModulePath(); ?>frontend/images/icons/down-arrow.png"
+                        <img src="<?php echo $this->getFrontendPath(); ?>frontend/images/icons/down-arrow.png"
                              alt="Down pointing arrow"
                         {{#if combinations}}
                         title="Show combinations"
@@ -239,8 +239,8 @@
     {{> fm-product-list-controls}}
 </script>
 
-<script type="text/javascript" src="<?php echo $this->getModulePath(); ?>frontend/js/jquery-1.11.1.min.js"></script>
-<script type="text/javascript" src="<?php echo $this->getModulePath(); ?>frontend/js/handlebars-v1.1.2.js"></script>
+<script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/handlebars-v1.1.2.js"></script>
 
 <script type="text/javascript">
     var messages = {};
@@ -249,14 +249,14 @@
     <? } ?>
 </script>
 
-<script type="text/javascript" src="<?php echo $this->getModulePath(); ?>frontend/js/FmGui.js"></script>
-<script type="text/javascript" src="<?php echo $this->getModulePath(); ?>frontend/js/FmCtrl.js"></script>
-<script type="text/javascript" src="<?php echo $this->getModulePath(); ?>frontend/js/main.js"></script>
+<script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/FmGui.js"></script>
+<script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/FmCtrl.js"></script>
+<script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/main.js"></script>
 
 
 <div class="fm-container">
 
-    <img class="fyndiqlogo" src="<?php echo $this->getModulePath(); ?>frontend/images/logo.png" alt="Fyndiq logotype">
+    <img class="fyndiqlogo" src="<?php echo $this->getFrontendPath(); ?>frontend/images/logo.png" alt="Fyndiq logotype">
 
     <div class="fm-main-panel">
 
