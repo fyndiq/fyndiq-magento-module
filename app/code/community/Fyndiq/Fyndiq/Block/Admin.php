@@ -4,9 +4,9 @@ require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
 class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
 {
 
-    public function getModulePath()
+    public function getFrontendPath()
     {
-        return Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB) . "app/code/community/Fyndiq/Fyndiq/";
+        return Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB) . "fyndiq/";
     }
 
     function getAdminPath($path, $section = null)
