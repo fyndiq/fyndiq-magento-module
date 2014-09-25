@@ -7,33 +7,33 @@
     </modules>
     <global>
         <models>
-            <fyndiq_fyndiq>
+            <Fyndiq_Fyndiq>
                 <class>Fyndiq_Fyndiq_Model</class>
-            </fyndiq_fyndiq>
+            </Fyndiq_Fyndiq>
         </models>
         <blocks>
-            <fyndiq>
+            <Fyndiq>
                 <rewrite>
                     <exportproducts>Fyndiq_Fyndiq_Block_Exportproducts</exportproducts>
                 </rewrite>
-            </fyndiq>
+            </Fyndiq>
         </blocks>
     </global>
     <admin>
         <routers>
-            <fyndiq>
+            <Fyndiq>
                 <use>admin</use>
                 <args>
                         <module>Fyndiq_Fyndiq</module>
                         <frontName>fyndiq</frontName>
                 </args>
-            </fyndiq>
+            </Fyndiq>
         </routers>
         <layout>
             <updates>
-                <fyndiq>
+                <Fyndiq>
                     <file>fyndiqadmin.xml</file>
-                </fyndiq>
+                </Fyndiq>
             </updates>
         </layout>
     </admin>
@@ -55,14 +55,14 @@
         <catalog_product_save_after>
             <!-- Defining an observer for this event -->
             <observers>
-                <fyndiq_fyndiq>
+                <Fyndiq_Fyndiq>
                     <!-- The model to be instantiated -->
                     <class>fyndiq_fyndiq/observer</class>
                     <!-- The method of the class to be called -->
                     <method>logUpdate</method>
                     <!-- The type of class to instantiate -->
                     <type>singleton</type>
-                </fyndiq_fyndiq>>
+                </Fyndiq_Fyndiq>>
             </observers>
         </catalog_product_save_after>
     </events>
