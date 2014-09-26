@@ -3,7 +3,7 @@ Fyndiq's official Magento module
 
 
 
-##INSTALL
+### INSTALL
 You can just drag the app directory to your magento directory to make the files get added to right place.
 
 We recommend modgit or magento composer installer though, which make it easy with just one command to install the module.
