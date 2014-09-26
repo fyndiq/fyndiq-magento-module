@@ -54,9 +54,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         //get customer by mail
         $customer = Mage::getModel("customer/customer");
         $customer->setWebsiteId(Mage::app()->getWebsite()->getId());
-        $customer->loadByEmail(
-            $fyndiq_order->customer_email
-        );
+        $customer->loadByEmail($fyndiq_order->customer_email);
         if (!$customer->getId()) {
             $customer->setEmail($fyndiq_order->customer_email);
             $customer->setFirstname($fyndiq_order->delivery_firstname);
