@@ -2,6 +2,10 @@
 Fyndiq's official Magento module
 
 
+## Requirements
+Magento 1.8-
+
+
 
 ### INSTALL
 You can just drag the app directory to your magento directory to make the files get added to right place.

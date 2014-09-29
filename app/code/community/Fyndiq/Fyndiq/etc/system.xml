@@ -41,7 +41,7 @@
                         </currency>
                         <automaticOrderImport translate="label">
                             <label>Automatic Order Import</label>
-                            <frontend_type>checkbox</frontend_type>
+                            <frontend_type>select</frontend_type>
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -50,7 +50,7 @@
                         </automaticOrderImport>
                         <automaticProductExport translate="label">
                             <label>Automatic Product Export</label>
-                            <frontend_type>checkbox</frontend_type>
+                            <frontend_type>select</frontend_type>
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
