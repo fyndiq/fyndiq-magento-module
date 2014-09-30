@@ -29,9 +29,9 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
         return FmConfig::getBool('automaticOrderImport');
     }
 
-    public function getAutoProductExport()
+    public function getAutoQuantityExport()
     {
-        return FmConfig::getBool('automaticProductExport');
+        return FmConfig::getBool('automaticquantityexport');
     }
 
     public function getUsername()
