@@ -52,18 +52,18 @@
     </adminhtml>
     <events>
         <!-- The code of the event we want to observe -->
-        <catalog_product_save_after>
+        <sales_order_save_after>
             <!-- Defining an observer for this event -->
             <observers>
                 <Fyndiq_Fyndiq>
                     <!-- The model to be instantiated -->
                     <class>fyndiq_fyndiq/observer</class>
                     <!-- The method of the class to be called -->
-                    <method>logUpdate</method>
+                    <method>exportQuantity</method>
                     <!-- The type of class to instantiate -->
                     <type>singleton</type>
                 </Fyndiq_Fyndiq>>
             </observers>
-        </catalog_product_save_after>
+        </sales_order_save_after>
     </events>
 </config>
