@@ -28,7 +28,7 @@ class FyndiqAPI
 
         $request_body = json_encode($data);
 
-# if json encode failed
+        // if json encode failed
         if (json_last_error() != JSON_ERROR_NONE) {
             throw new FyndiqAPIDataInvalid('Error in request data');
         }
@@ -43,25 +43,25 @@ class FyndiqAPI
             CURLOPT_HEADER => true,
             CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
             CURLOPT_USERPWD => $username . ':' . $token,
-#CURLOPT_SSLVERSION => 3,
-#CURLOPT_SSL_VERIFYPEER => true,
-#CURLOPT_SSL_VERIFYHOST => 2,
+            #CURLOPT_SSLVERSION => 3,
+            #CURLOPT_SSL_VERIFYPEER => true,
+            #CURLOPT_SSL_VERIFYHOST => 2,
 
             CURLOPT_CONNECTTIMEOUT => 20,
             CURLOPT_RETURNTRANSFER => 1,
         );
 
-# make the call
+        // make the call
         $ch = curl_init();
         curl_setopt_array($ch, $curl_opts);
         $response['data'] = curl_exec($ch);
 
-# if call failed
+        // if call failed
         if ($response['data'] === false) {
             throw new FyndiqAPIConnectionFailed('Curl error: ' . curl_error($ch));
         }
 
-# extract different parts of the response
+        // extract different parts of the response
         $response['http_status'] = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $response['header_size'] = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $response['header'] = substr($response['data'], 0, $response['header_size']);
@@ -85,57 +85,57 @@ class FyndiqAPI
             throw new FyndiqAPIServerError('Server Error');
         }
 
-// pd($response['body']);
+        // pd($response['body']);
 
-# try to json decode repsonse data
+        // try to json decode repsonse data
         $result = json_decode($response['body']);
 
-// switch (json_last_error()) {
-//     case JSON_ERROR_NONE:
-//         echo ' - No errors';
-//     break;
-//     case JSON_ERROR_DEPTH:
-//         echo ' - Maximum stack depth exceeded';
-//     break;
-//     case JSON_ERROR_STATE_MISMATCH:
-//         echo ' - Underflow or the modes mismatch';
-//     break;
-//     case JSON_ERROR_CTRL_CHAR:
-//         echo ' - Unexpected control character found';
-//     break;
-//     case JSON_ERROR_SYNTAX:
-//         echo ' - Syntax error, malformed JSON';
-//         pd($response['body']);
-//     break;
-//     case JSON_ERROR_UTF8:
-//         echo ' - Malformed UTF-8 characters, possibly incorrectly encoded';
-//     break;
-//     default:
-//         echo ' - Unknown error';
-//     break;
-// }
+        // switch (json_last_error()) {
+        //     case JSON_ERROR_NONE:
+        //         echo ' - No errors';
+        //     break;
+        //     case JSON_ERROR_DEPTH:
+        //         echo ' - Maximum stack depth exceeded';
+        //     break;
+        //     case JSON_ERROR_STATE_MISMATCH:
+        //         echo ' - Underflow or the modes mismatch';
+        //     break;
+        //     case JSON_ERROR_CTRL_CHAR:
+        //         echo ' - Unexpected control character found';
+        //     break;
+        //     case JSON_ERROR_SYNTAX:
+        //         echo ' - Syntax error, malformed JSON';
+        //         pd($response['body']);
+        //     break;
+        //     case JSON_ERROR_UTF8:
+        //         echo ' - Malformed UTF-8 characters, possibly incorrectly encoded';
+        //     break;
+        //     default:
+        //         echo ' - Unknown error';
+        //     break;
+        // }
 
-# if json_decode failed
+        // if json_decode failed
         if (json_last_error() != JSON_ERROR_NONE) {
             throw new FyndiqAPIDataInvalid('Error in response data');
         }
 
-# 400 may contain error messages intended for the user
+        // 400 may contain error messages intended for the user
         if ($response['http_status'] == 400) {
             $message = '';
 
-# if there are any error messages, save them to class static member
+            // if there are any error messages, save them to class static member
             if (property_exists($result, 'error_messages')) {
                 $error_messages = $result->error_messages;
 
-# if it contains several messages as an array
+                // if it contains several messages as an array
                 if (is_array($error_messages)) {
 
                     foreach ($result->error_messages as $error_message) {
                         self::$error_messages[] = $error_message;
                     }
 
-# if it contains just one message as a string
+                // if it contains just one message as a string
                 } else {
                     self::$error_messages[] = $error_messages;
                 }

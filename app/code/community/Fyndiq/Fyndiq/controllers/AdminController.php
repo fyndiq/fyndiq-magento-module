@@ -11,20 +11,6 @@ require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
 class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
 {
 
-    public function indexAction()
-    {
-        $this->loadLayout();
-
-        //create a text block with the name of "example-block"
-        $block = $this->getLayout()
-            ->createBlock('core/text', 'example-block')
-            ->setText('<h1>This is a text block</h1>');
-
-        $this->_addContent($block);
-
-        $this->renderLayout();
-    }
-
     /**
      * The page where everything happens.
      * TODO: maybe move this to index instead?

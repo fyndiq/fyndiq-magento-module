@@ -1,14 +1,30 @@
 <?php
 require_once(dirname(dirname(__FILE__)) . '/includes/messages.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
+
+/**
+ * Admin block handling all the data to the view
+ */
 class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
 {
 
+    /**
+     * Get frontend path
+     *
+     * @return string
+     */
     public function getFrontendPath()
     {
         return Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB) . "fyndiq/";
     }
 
+    /**
+     * Get admin path
+     *
+     * @param $path
+     * @param null $section
+     * @return mixed
+     */
     function getAdminPath($path, $section = null)
     {
         return Mage::helper("adminhtml")->getUrl($path, $section);
