@@ -24,8 +24,8 @@
             <Fyndiq>
                 <use>admin</use>
                 <args>
-                        <module>Fyndiq_Fyndiq</module>
-                        <frontName>fyndiq</frontName>
+                    <module>Fyndiq_Fyndiq</module>
+                    <frontName>fyndiq</frontName>
                 </args>
             </Fyndiq>
         </routers>
@@ -62,7 +62,7 @@
                     <method>exportQuantity</method>
                     <!-- The type of class to instantiate -->
                     <type>singleton</type>
-                </Fyndiq_Fyndiq>>
+                </Fyndiq_Fyndiq>
             </observers>
         </sales_order_save_after>
     </events>
