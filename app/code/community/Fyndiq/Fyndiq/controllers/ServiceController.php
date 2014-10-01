@@ -164,7 +164,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action {
         foreach ($args['products'] as $v) {
             $product = $v['product'];
 
-
+            //structing up the product data in a array
             $product_result = array(
                 'title'=> $product['name'],
                 'description'=> 'asdf8u4389j34g98j34g98',
@@ -176,6 +176,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action {
                 'moms_percent'=> '25'
             );
 
+            // Setting combinations, also known as articles of a product.
             // when posting empty array, it's removed completely from the request, so check for key
             if (array_key_exists('combinations', $v)) {
                 $combinations = $v['combinations'];
@@ -195,9 +196,11 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action {
                 );
             }
 
+            // Sending the data to Fyndiq
             try {
                 $result = FmHelpers::call_api('POST', 'products/', $product_result);
                 if ($result['status'] != 201) {
+                    // error occurred
                     $error = true;
                     self::response_error(
                         FmMessages::get('unhandled-error-title'),
@@ -205,6 +208,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action {
                     );
                 }
             } catch (FyndiqAPIBadRequest $e) {
+                // Got error response from the api library
                 $error = true;
                 $message = '';
                 foreach (FyndiqAPI::$error_messages as $error_message) {
@@ -215,6 +219,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action {
                     $message
                 );
             } catch (Exception $e) {
+                // Other error occurred - send error message to frontend
                 $error = true;
                 self::response_error(
                     FmMessages::get('unhandled-error-title'),
