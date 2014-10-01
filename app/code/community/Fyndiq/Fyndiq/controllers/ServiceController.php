@@ -6,6 +6,7 @@
  * Time: 17:12
  */
 require_once(dirname(dirname(__FILE__)) . '/includes/messages.php');
+require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
 class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action {
 
     /**
@@ -151,6 +152,84 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action {
             }
 
         $this->response($data);
+    }
+
+    /**
+     * Exporting the products from Magento
+     *
+     * @param $args
+     */
+    public static function export_products($args)
+    {
+        foreach ($args['products'] as $v) {
+            $product = $v['product'];
+
+
+            $product_result = array(
+                'title'=> $product['name'],
+                'description'=> 'asdf8u4389j34g98j34g98',
+                'images'=> array($product['image']),
+                'oldprice'=> '9999',
+                'brand' => 31,
+                'categories' => array("10", "11"),
+                'price'=> $product['price'],
+                'moms_percent'=> '25'
+            );
+
+            // when posting empty array, it's removed completely from the request, so check for key
+            if (array_key_exists('combinations', $v)) {
+                $combinations = $v['combinations'];
+
+                foreach ($combinations as $combination) {
+                    $product_result['articles'][] = array(
+                        'num_in_stock' => '7',
+                        'merchant_item_no' => '2',
+                        'description' => 'asdfjeroijergo'
+                    );
+                }
+            } else {
+                $product_result['articles'][] = array(
+                    'num_in_stock' => '99',
+                    'merchant_item_no' => '99',
+                    'description' => 'qwer99qwer98referf'
+                );
+            }
+
+            try {
+                $result = FmHelpers::call_api('POST', 'products/', $product_result);
+                if ($result['status'] != 201) {
+                    $error = true;
+                    self::response_error(
+                        FmMessages::get('unhandled-error-title'),
+                        FmMessages::get('unhandled-error-message')
+                    );
+                }
+            } catch (FyndiqAPIBadRequest $e) {
+                $error = true;
+                $message = '';
+                foreach (FyndiqAPI::$error_messages as $error_message) {
+                    $message .= $error_message;
+                }
+                self::response_error(
+                    FmMessages::get('products-bad-params-title'),
+                    $message
+                );
+            } catch (Exception $e) {
+                $error = true;
+                self::response_error(
+                    FmMessages::get('unhandled-error-title'),
+                    $e->getMessage()
+                );
+            }
+
+            if ($error) {
+                break;
+            }
+        }
+
+        if (!$error) {
+            self::response();
+        }
     }
 
 } 
