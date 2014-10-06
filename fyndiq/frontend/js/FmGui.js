@@ -94,8 +94,6 @@ var FmGui = {
 
             //get the updated variables for products
             attached_overlay.find("li").each(function(index) {
-                console.log("I'm IN! - " + $j(this).html());
-                console.log($j(this).find('.data .title input').html());
                 var name = $j(this).find('.data .title input').val();
                 var price = $j(this).find('.final-price input').val();
 
@@ -103,7 +101,6 @@ var FmGui = {
                 products[index]["product"]["price"] = price;
             });
 
-            console.log(products);
             if (callback) {
                 callback(products, $j(this).attr('data-modal-type'));
             }
