@@ -57,7 +57,7 @@ var FmGui = {
         }, 12000);
     },
 
-    show_modal: function(content, callback) {
+    show_modal: function(products, content, callback) {
         var overlay = $j(tpl['modal-overlay']({}));
 
         // attach the overlay to the general container
@@ -83,6 +83,7 @@ var FmGui = {
             }
         });
 
+
         // attach close button event handler
         attached_overlay.find('.controls button').bind('click', function(e) {
             e.preventDefault();
@@ -91,8 +92,20 @@ var FmGui = {
             // set container height back to default auto height so it continues adapting to its content
             $j('.fm-container').css({'height': 'auto'});
 
+            //get the updated variables for products
+            attached_overlay.find("li").each(function(index) {
+                console.log("I'm IN! - " + $j(this).html());
+                console.log($j(this).find('.data .title input').html());
+                var name = $j(this).find('.data .title input').val();
+                var price = $j(this).find('.final-price input').val();
+
+                products[index]["product"]["name"] = name;
+                products[index]["product"]["price"] = price;
+            });
+
+            console.log(products);
             if (callback) {
-                callback($j(this).attr('data-modal-type'));
+                callback(products, $j(this).attr('data-modal-type'));
             }
         });
     }

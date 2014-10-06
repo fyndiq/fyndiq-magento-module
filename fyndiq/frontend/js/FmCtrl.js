@@ -248,11 +248,11 @@ var FmCtrl = {
                     });
 
                     // show modal describing the issue, and ask for acceptance
-                    FmGui.show_modal(content, function(type) {
+                    FmGui.show_modal(products,content, function(products_to_export, type) {
                         if (type == 'accept') {
 
                             // export the products
-                            export_products(products);
+                            export_products(products_to_export);
                         } else {
                         }
                     });
