@@ -203,6 +203,42 @@
       background: linear-gradient(to bottom, #f39e09 0%, #fdc500 100%);
       filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f39e09', endColorstr='#fdc500',GradientType=0 ); }
 
+table {
+  width: 100%;
+  border-spacing: 0;
+  border-collapse: collapse;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px; }
+  table thead {
+    font-size: 10pt;
+    text-shadow: 0px 0px 1px rgba(0, 0, 0, 0.8);
+    background-color: #f39e09;
+    border: 0px;
+    border-spacing: 0; }
+    table thead th {
+      border: 0px;
+      color: white;
+      padding: 6px;
+      border-spacing: 0;
+      border-collapse: collapse; }
+  table tbody {
+    border: 0px;
+    border-collapse: collapse;
+    font-size: 8pt; }
+    table tbody tr {
+      padding: 4px;
+      border: 0px;
+      border-collapse: collapse;
+      border-spacing: 0; }
+      table tbody tr:nth-child {
+        background-color: lightgray; }
+      table tbody tr td {
+        padding: 4px;
+        border: 0px;
+        border-spacing: 0;
+        border-collapse: collapse; }
+
 .fm-accept-product-export h3 {
   margin: 0; }
 .fm-accept-product-export ul {

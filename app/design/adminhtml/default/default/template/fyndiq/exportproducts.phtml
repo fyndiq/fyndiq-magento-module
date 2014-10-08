@@ -127,10 +127,18 @@
 <script type="text/x-handlebars-template" class="handlebars-template" id="fm-product-list">
     {{> fm-product-list-controls}}
     {{#if products}}
-    <ul class="fm-product-list">
+    <table>
+        <thead>
+        <tr>
+            <th colspan="3">Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+        </tr>
+        </thead>
+        <tbody class="fm-product-list">
         {{#each products}}
         {{#with this}}
-        <li
+        <tr
             data-id="{{id}}"
             data-name="{{name}}"
             data-reference="{{reference}}"
@@ -138,101 +146,29 @@
             data-quantity="{{quantity}}"
             data-image="{{image}}"
             >
-            <div class="product">
-                <div class="title">
-                    <label for="select_product_{{id}}">
-                        <h4>{{name}} <span class="reference">({{reference}})</span></h4>
-                    </label>
+            <td class="select"><input type="checkbox" id="select_product_{{id}}"></td>
+            <td><img src="{{image}}" alt="Product image"></td>
+            <td>{{name}} ({{reference}})</td>
+            <td><div class="prices">
+                <div class="price">
+                    <label>Price:</label>
+                    <input type="text" value="{{price}}">
                 </div>
-
-                <div class="select">
-                    <input type="checkbox" id="select_product_{{id}}">
+                <div class="price">
+                    <label>Fyndiq Price:</label>
+                    <input type="text">
                 </div>
-
-                <div class="image">
-                    {{#if image}}
-                    <label for="select_product_{{id}}">
-                        <img src="{{image}}" alt="Product image">
-                    </label>
-                    {{/if}}
-                </div>
-
-                <div class="prices">
-                    <div class="price">
-                        <label>Price:</label>
-                        <input type="text" value="{{price}}">
-                    </div>
-                    <div class="price">
-                        <label>Fyndiq Price:</label>
-                        <input type="text">
-                    </div>
-                </div>
-
-                <div class="quantities">
-                    <div>Qty: {{quantity}}</div>
-                    <div>Exported Qty: 6</div>
-                    <div>Fyndiq Qty: 4</div>
-                </div>
-
-                <div class="expand
-                        {{#unless combinations}}
-                            inactive
-                        {{/unless}}
-                        ">
-                    <a href="#">
-                        <img src="<?php echo $this->getFrontendPath(); ?>frontend/images/icons/down-arrow.png"
-                             alt="Down pointing arrow"
-                        {{#if combinations}}
-                        title="Show combinations"
-                        {{else}}
-                        title="Product does not have any combinations"
-                        {{/if}}
-                        >
-                    </a>
-                </div>
-            </div>
-            {{#if combinations}}
-            <ul class="combinations">
-                {{#each combinations}}
-                <li
-                    data-id="{{id}}"
-                    data-price="{{price}}"
-                    data-quantity="{{quantity}}"
-                    >
-                    <div class="select">
-                        <input type="checkbox" class="checkbox" id="select_combination_{{id}}">
-                    </div>
-
-                    <div class="image">
-                        {{#if image}}
-                        <label for="select_combination_{{id}}">
-                            <img src="{{image}}" alt="Product combination image">
-                        </label>
-                        {{/if}}
-                    </div>
-
-                    <div class="data">
-                        <ul class="attributes">
-                            {{#each attributes}}
-                            <li>
-                                {{name}}: {{value}}<span class="separator">,&nbsp;</span>
-                            </li>
-                            {{/each}}
-                        </ul>
-
-                        <div>
-                            Price: {{price}}
-                            Qty: {{quantity}}
-                        </div>
-                    </div>
-                </li>
-                {{/each}}
-            </ul>
-            {{/if}}
-        </li>
+            </div></td>
+            <td><div class="quantities">
+                <div>Qty: {{quantity}}</div>
+                <div>Exported Qty: 6</div>
+                <div>Fyndiq Qty: 4</div>
+            </div></td>
+            </tr>
         {{/with}}
         {{/each}}
-    </ul>
+    </tbody>
+    </table>
     {{else}}
     Category is empty.
     {{/if}}

@@ -142,10 +142,10 @@ var FmCtrl = {
         $j(document).on('click', '.fm-product-list-controls .select button', function(e) {
             e.preventDefault();
             if ($j(this).attr('name') == 'select-all') {
-                $j('.fm-product-list .product .select input').prop('checked', true).change();
+                $j('.fm-product-list tr .select input').prop('checked', true).change();
             }
             if ($j(this).attr('name') == 'deselect-all') {
-                $j('.fm-product-list .product .select input').prop('checked', false).change();
+                $j('.fm-product-list tr .select input').prop('checked', false).change();
             }
         });
 
@@ -156,10 +156,10 @@ var FmCtrl = {
             var products = [];
 
             // find all products
-            $j('.fm-product-list > li').each(function(k, v) {
+            $j('.fm-product-list > tr').each(function(k, v) {
 
                 // check if product is selected
-                var active = $j(this).find('.product .select input').prop('checked');
+                var active = $j(this).find('.select input').prop('checked');
                 if (active) {
 
                     // find all combinations
