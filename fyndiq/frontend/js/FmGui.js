@@ -7,7 +7,7 @@ var FmGui = {
         var overlay = tpl['loading-overlay']({
             'module_path': module_path
         });
-        $j(overlay).hide().prependTo($j('.fm-container'));
+        $j(overlay).hide().prependTo($j('body'));
         var attached_overlay = $j('.fm-loading-overlay');
 
         var top = $j(document).scrollTop() + 100;
@@ -41,7 +41,7 @@ var FmGui = {
 
         overlay.hide()
             .css({'z-index': 999+FmGui.messages_z_index_counter++})
-            .prependTo($j('.fm-container'));
+            .prependTo($j('body'));
 
         var attached_overlay = $j('.fm-message-overlay');
         attached_overlay.slideDown(300);
@@ -61,7 +61,7 @@ var FmGui = {
         var overlay = $j(tpl['modal-overlay']({}));
 
         // attach the overlay to the general container
-        overlay.hide().prependTo($j('.fm-container'));
+        overlay.hide().prependTo($j('body'));
         var attached_overlay = $j('.fm-modal-overlay');
 
         // insert the content
@@ -89,7 +89,7 @@ var FmGui = {
             attached_overlay.remove();
 
             // set container height back to default auto height so it continues adapting to its content
-            $j('.fm-container').css({'height': 'auto'});
+            $j('body').css({'height': 'auto'});
 
             if (callback) {
                 callback($j(this).attr('data-modal-type'));
