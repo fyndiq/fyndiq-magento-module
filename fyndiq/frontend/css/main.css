@@ -284,9 +284,13 @@ table {
   .fm-accept-product-export .controls button {
     display: inline-block; }
 
+.fm-left-sidebar {
+  width: 160px;
+  float: left; }
+
 .fm-container {
   position: relative;
-  width: 920px;
+  width: 1080px;
   margin: 0 auto;
   overflow: hidden; }
   .fm-container .fyndiqlogo {
