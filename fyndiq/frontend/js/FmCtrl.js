@@ -121,23 +121,6 @@ var FmCtrl = {
             });
         });
 
-        // when clicking product's expand icon, show its combinations
-        $j(document).on('click', '.fm-product-list .product .expand a', function(e) {
-            e.preventDefault();
-            $j(this).parents('li').find('.combinations').slideToggle(250);
-        });
-
-        // when clicking product's checkbox, toggle checked on all its combination's checkboxes
-        $j(document).on('change', '.fm-product-list .product .select input', function(e) {
-            var combination_checkboxes = $j(this).parents('li').find('.combinations .select input');
-            combination_checkboxes.prop('checked', $j(this).prop('checked'));
-        });
-
-        // when clicking a combination's checkbox, set checked on its parent product's checkbox
-        $j(document).on('change', '.fm-product-list .combinations .select input', function(e) {
-            $j(this).parents('li').find('.product .select input').prop('checked', true);
-        });
-
         // when clicking select all products checkbox, set checked on all product's checkboxes
         $j(document).on('click', '#select-all', function(e) {
             if ($j(this).is(':checked')) {
