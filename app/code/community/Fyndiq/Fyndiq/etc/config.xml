@@ -66,4 +66,11 @@
             </observers>
         </sales_order_save_after>
     </events>
+    <default>
+        <fyndiq>
+            <fyndiq_group>
+                <percentage>10</percentage>
+            </fyndiq_group>
+        </fyndiq>
+    </default>
 </config>

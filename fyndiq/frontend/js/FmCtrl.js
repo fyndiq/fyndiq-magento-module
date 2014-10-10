@@ -178,14 +178,18 @@ var FmCtrl = {
                     });*/
 
                     // store product id and combinations
+                    var price = $j(this).find("td.prices > div.price > input").val();
+                    var fyndiq_price = $j(this).find("td.prices > div.fyndiq_price > input").val();
+                    console.log(price);
                     products.push({
                         'product': {
                             'id': $j(this).data('id'),
                             'name': $j(this).data('name'),
                             'image': $j(this).data('image'),
-                            'price': $j(this).data('price'),
+                            'price': price,
+                            'fyndiq_price':fyndiq_price,
                             'quantity': $j(this).data('quantity')
-                        },
+                        }
                         //'combinations': combinations
                     });
                 }

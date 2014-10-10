@@ -5,6 +5,7 @@
  * Date: 28/08/14
  * Time: 17:12
  */
+require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/messages.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
 class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action {
@@ -126,6 +127,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action {
             {
                 //var_dump($prod);
                 $qtyStock = Mage::getModel('cataloginventory/stock_item')->loadByProduct($prod->getId())->getQty();
+                $fyndiq_price = ((double)$prod->getPrice())-($prod->getPrice()*(FmConfig::get('percentage')/100));
                 try {
                     $prodData = array('id'=>$prod->getId(),
                         'url'=>$prod->getUrl(),
@@ -133,6 +135,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action {
                         'image'=> $prod->getImageUrl(),
                         'quantity' => $qtyStock,
                         'price' =>  $prod->getPrice(),
+                        'fyndiq_price' => $fyndiq_price,
                         'reference' => $prod->getSKU(),
                         'isActive'=>$prod->getIsActive()
                     );
@@ -142,6 +145,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action {
                         'url'=>$prod->getUrl(),
                         'name'=>$prod->getName(),
                         'price' =>  $prod->getPrice(),
+                        'fyndiq_price' => $fyndiq_price,
                         'reference' => $prod->getSKU(),
                         'quantity' => $qtyStock,
                         'image'=> false,
