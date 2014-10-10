@@ -69,7 +69,7 @@
     <default>
         <fyndiq>
             <fyndiq_group>
-                <percentage>10</percentage>
+                <precentage>10</precentage>
             </fyndiq_group>
         </fyndiq>
     </default>
