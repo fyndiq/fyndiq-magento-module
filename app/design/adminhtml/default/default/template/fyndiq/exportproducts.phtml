@@ -108,10 +108,6 @@
 
 <script type="text/x-handlebars-template" class="handlebars-partial" id="fm-product-list-controls">
     <div class="fm-product-list-controls">
-        <div class="select">
-            <button class="fm-button" name="select-all">Select All</button>
-            <button class="fm-button" name="deselect-all">Deselect All</button>
-        </div>
         <div class="export">
             <button class="fm-button fyndiq" name="export-products">Export Products</button>
         </div>
@@ -124,7 +120,8 @@
     <table>
         <thead>
         <tr>
-            <th colspan="3">Product</th>
+            <th><input id="select-all" type="checkbox"></th>
+            <th colspan="2">Product</th>
             <th>Price</th>
             <th>Quantity</th>
         </tr>
@@ -188,6 +185,11 @@
 
     <img class="fyndiqlogo" src="<?php echo $this->getFrontendPath(); ?>frontend/images/logo.png" alt="Fyndiq logotype">
 
+    <div class="fm-left-sidebar">
+        <h2>Categories</h2>
+        <div class="fm-category-tree-container"></div>
+    </div>
+
     <div class="fm-main-panel">
 
         <h2>Products</h2>
@@ -196,7 +198,7 @@
                 <legend>Products</legend>
                 <p>By using this form, you can export products from the local webshop into Fyndiq.</p>
 
-                <div class="fm-category-tree-container"></div>
+
                 <div class="fm-product-list-container"></div>
             </fieldset>
         </form>
