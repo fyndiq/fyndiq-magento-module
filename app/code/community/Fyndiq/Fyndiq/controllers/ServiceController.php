@@ -127,13 +127,15 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action {
             {
                 //var_dump($prod);
                 $qtyStock = Mage::getModel('cataloginventory/stock_item')->loadByProduct($prod->getId())->getQty();
-                $fyndiq_price = ((double)$prod->getPrice())-($prod->getPrice()*(FmConfig::get('precentage')/100));
+                $fyndiq_stock = (int)round(($qtyStock*(FmConfig::get('quantity_percentage')/100)), 0, PHP_ROUND_HALF_UP);
+                $fyndiq_price = ((double)$prod->getPrice())-($prod->getPrice()*(FmConfig::get('price_percentage')/100));
                 try {
                     $prodData = array('id'=>$prod->getId(),
                         'url'=>$prod->getUrl(),
                         'name'=>$prod->getName(),
                         'image'=> $prod->getImageUrl(),
                         'quantity' => $qtyStock,
+                        'fyndiq_quantity' => $fyndiq_stock,
                         'price' =>  $prod->getPrice(),
                         'fyndiq_price' => $fyndiq_price,
                         'reference' => $prod->getSKU(),
@@ -148,6 +150,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action {
                         'fyndiq_price' => $fyndiq_price,
                         'reference' => $prod->getSKU(),
                         'quantity' => $qtyStock,
+                        'fyndiq_quantity' => $fyndiq_stock,
                         'image'=> false,
                         'isActive'=>$prod->getIsActive()
                     );
