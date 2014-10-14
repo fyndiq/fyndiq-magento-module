@@ -161,11 +161,8 @@
         }
     }
     .product {
-        position: relative;
-        overflow: hidden;
 
         .title {
-            margin-bottom: 5px;
 
             h4 {
                 font-size: 14px;
@@ -179,7 +176,6 @@
 
         .select {
             float: left;
-            margin: 15px 5px 0;
         }
 
         .image {
@@ -203,30 +199,32 @@
         }
 
         .prices {
-            float: left;
-            margin-left: 10px;
 
             .price {
                 margin-bottom: 2px;
             }
 
+            .fyndiq_price {
+              clear:both;
+            }
+
             label {
                 display: block;
-                width: 90px;
+                width: 70px;
                 text-align: right;
                 float: left;
+                padding-right: 4px;
             }
 
             input {
                 display: block;
                 float: left;
-                width: 100px;
+                width: 70px;
             }
         }
 
         .quantities {
-            float: left;
-            margin-left: 20px;
+
         }
 
         .expand {
