@@ -1,29 +1,30 @@
 <?php
+require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
 /**
- * Our class name should follow the directory structure of
- * our Observer.php model, starting from the namespace,
- * replacing directory separators with underscores.
- * i.e. app/code/local/SmashingMagazine/
- *                     LogProductUpdate/Model/Observer.php
+ * Class Fyndiq_Fyndiq_Model_Observer
  */
 class Fyndiq_Fyndiq_Model_Observer
 {
     /**
-     * Magento passes a Varien_Event_Observer object as
-     * the first parameter of dispatched events.
+     * exporting a quantity of a product when selling to Fyndiq
+     *
+     * @param Varien_Event_Observer $observer
      */
-    public function logUpdate(Varien_Event_Observer $observer)
+    public function exportQuantity(Varien_Event_Observer $observer)
     {
-        // Retrieve the product being updated from the event observer
-        $product = $observer->getEvent()->getProduct();
+        //Check if settings for automatic product export is set
+        if(FmConfig::getBool('automaticquantityexport')) {
+            // Retrieve the product being updated from the event observer
+            $product = $observer->getEvent()->getProduct();
 
-        // Write a new line to var/log/product-updates.log
-        $name = $product->getName();
-        $sku = $product->getSku();
-        Mage::log(
-            "{$name} ({$sku}) updated",
-            null,
-            'Fyndiq_module.log'
-        );
+            // Write a new line to var/log/product-updates.log
+            $name = $product->getName();
+            $sku = $product->getSku();
+            Mage::log(
+                "{$name} ({$sku}) updated",
+                null,
+                'Fyndiq_module.log'
+            );
+        }
     }
 }

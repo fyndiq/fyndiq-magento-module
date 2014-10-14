@@ -41,22 +41,22 @@
                         </currency>
                         <automaticOrderImport translate="label">
                             <label>Automatic Order Import</label>
-                            <frontend_type>checkbox</frontend_type>
+                            <frontend_type>select</frontend_type>
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                         </automaticOrderImport>
-                        <automaticProductExport translate="label">
-                            <label>Automatic Product Export</label>
-                            <frontend_type>checkbox</frontend_type>
+                        <automaticquantityexport translate="label">
+                            <label>Automatic Quantity Export</label>
+                            <frontend_type>select</frontend_type>
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                        </automaticProductExport>
+                        </automaticquantityexport>
                         <!-- New fields go here -->
                         <username translate="label">
                             <label>Username</label>
