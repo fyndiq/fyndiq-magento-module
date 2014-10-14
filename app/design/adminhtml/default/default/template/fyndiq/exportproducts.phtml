@@ -148,11 +148,11 @@
                     <input type="text" value="{{fyndiq_price}}">
                 </div>
             </td>
-            <td><div class="quantities">
-                <div>Qty: {{quantity}}</div>
+            <td class="quantities">
+                <div id="quantity">Qty: {{quantity}}</div>
                 <div>Exported Qty: ?</div>
-                <div>Fyndiq Qty: {{fyndiq_quantity}}</div>
-            </div></td>
+                <div class="fyndiq">Fyndiq Qty: <span class="fyndiq-quantity">{{fyndiq_quantity}}</span></div>
+            </td>
             </tr>
         {{/with}}
         {{/each}}

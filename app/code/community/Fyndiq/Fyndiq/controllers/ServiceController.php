@@ -8,14 +8,16 @@
 require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/messages.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
-class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action {
+
+class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
+{
 
     /**
      * Structure the response back to the client
      *
      * @param string $data
      */
-    public function response($data = '')
+    public static function response($data = '')
     {
         $response = array(
             'fm-service-status' => 'success',
@@ -23,7 +25,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action {
         );
         $json = json_encode($response);
         if (json_last_error() != JSON_ERROR_NONE) {
-            $this->response_error(
+            self::response_error(
                 FmMessages::get('unhandled-error-title'),
                 FmMessages::get('unhandled-error-message')
             );
@@ -33,14 +35,13 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action {
     }
 
 
-
     /**
      * create a error to be send back to client.
      *
      * @param $title
      * @param $message
      */
-    public function response_error($title, $message)
+    public static function response_error($title, $message)
     {
         $response = array(
             'fm-service-status' => 'error',
@@ -87,17 +88,16 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action {
 
         $data = array();
 
-        if (!empty($ids))
-        {
-            foreach ($ids as $id)
-            {
+        if (!empty($ids)) {
+            foreach ($ids as $id) {
                 $cat = Mage::getModel('catalog/category');
                 $cat->load($id);
-                $categoryData = array('id'=>$cat->getId(),
-                    'url'=>$cat->getUrl(),
-                    'name'=>$cat->getName(),
-                    'image'=>$cat->getImageUrl(),
-                    'isActive'=>$cat->getIsActive()
+                $categoryData = array(
+                    'id' => $cat->getId(),
+                    'url' => $cat->getUrl(),
+                    'name' => $cat->getName(),
+                    'image' => $cat->getImageUrl(),
+                    'isActive' => $cat->getIsActive()
                 );
                 array_push($data, $categoryData);
             }
@@ -123,40 +123,48 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action {
 
         $data = array();
 
-            foreach ($products as $prod)
-            {
-                //var_dump($prod);
-                $qtyStock = Mage::getModel('cataloginventory/stock_item')->loadByProduct($prod->getId())->getQty();
-                $fyndiq_stock = (int)round(($qtyStock*(FmConfig::get('quantity_percentage')/100)), 0, PHP_ROUND_HALF_UP);
-                $fyndiq_price = ((double)$prod->getPrice())-($prod->getPrice()*(FmConfig::get('price_percentage')/100));
-                try {
-                    $prodData = array('id'=>$prod->getId(),
-                        'url'=>$prod->getUrl(),
-                        'name'=>$prod->getName(),
-                        'image'=> $prod->getImageUrl(),
-                        'quantity' => $qtyStock,
-                        'fyndiq_quantity' => $fyndiq_stock,
-                        'price' =>  $prod->getPrice(),
-                        'fyndiq_price' => $fyndiq_price,
-                        'reference' => $prod->getSKU(),
-                        'isActive'=>$prod->getIsActive()
-                    );
-                }
-                catch(Exception $e) {
-                    $prodData = array('id'=>$prod->getId(),
-                        'url'=>$prod->getUrl(),
-                        'name'=>$prod->getName(),
-                        'price' =>  $prod->getPrice(),
-                        'fyndiq_price' => $fyndiq_price,
-                        'reference' => $prod->getSKU(),
-                        'quantity' => $qtyStock,
-                        'fyndiq_quantity' => $fyndiq_stock,
-                        'image'=> false,
-                        'isActive'=>$prod->getIsActive()
-                    );
-                }
-                array_push($data, $prodData);
+        // get all the products
+        foreach ($products as $prod) {
+            // setting up price and quantity for fyndiq.
+            $qtyStock = Mage::getModel('cataloginventory/stock_item')->loadByProduct($prod->getId())->getQty();
+            $fyndiq_stock = (int)round(
+                ($qtyStock * (FmConfig::get('quantity_percentage') / 100)),
+                0,
+                PHP_ROUND_HALF_UP
+            );
+            $fyndiq_price = ((double)$prod->getPrice()) - ($prod->getPrice() * (FmConfig::get(
+                            'price_percentage'
+                        ) / 100));
+            //trying to get image, if not image will be false
+            try {
+                $prodData = array(
+                    'id' => $prod->getId(),
+                    'url' => $prod->getUrl(),
+                    'name' => $prod->getName(),
+                    'image' => $prod->getImageUrl(),
+                    'quantity' => $qtyStock,
+                    'fyndiq_quantity' => $fyndiq_stock,
+                    'price' => $prod->getPrice(),
+                    'fyndiq_price' => $fyndiq_price,
+                    'reference' => $prod->getSKU(),
+                    'isActive' => $prod->getIsActive()
+                );
+            } catch (Exception $e) {
+                $prodData = array(
+                    'id' => $prod->getId(),
+                    'url' => $prod->getUrl(),
+                    'name' => $prod->getName(),
+                    'price' => $prod->getPrice(),
+                    'fyndiq_price' => $fyndiq_price,
+                    'reference' => $prod->getSKU(),
+                    'quantity' => $qtyStock,
+                    'fyndiq_quantity' => $fyndiq_stock,
+                    'image' => false,
+                    'isActive' => $prod->getIsActive()
+                );
             }
+            array_push($data, $prodData);
+        }
 
         $this->response($data);
     }
@@ -173,37 +181,17 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action {
 
             //structing up the product data in a array
             $product_result = array(
-                'title'=> $product['name'],
-                'description'=> 'asdf8u4389j34g98j34g98',
-                'images'=> array($product['image']),
-                'oldprice'=> '9999',
+                'title' => $product['name'],
+                'description' => 'asdf8u4389j34g98j34g98',
+                'images' => array($product['image']),
+                'oldprice' => '9999',
                 'brand' => 31,
                 'categories' => array("10", "11"),
-                'price'=> $product['price'],
-                'moms_percent'=> '25'
+                'price' => $product['price'],
+                'moms_percent' => '25'
             );
 
-            // Setting combinations, also known as articles of a product.
-            // when posting empty array, it's removed completely from the request, so check for key
-            if (array_key_exists('combinations', $v)) {
-                $combinations = $v['combinations'];
-
-                foreach ($combinations as $combination) {
-                    $product_result['articles'][] = array(
-                        'num_in_stock' => '7',
-                        'merchant_item_no' => '2',
-                        'description' => 'asdfjeroijergo'
-                    );
-                }
-            } else {
-                $product_result['articles'][] = array(
-                    'num_in_stock' => '99',
-                    'merchant_item_no' => '99',
-                    'description' => 'qwer99qwer98referf'
-                );
-            }
-
-            // Sending the data to Fyndiq
+            // Sending the product to Fyndiq
             try {
                 $result = FmHelpers::call_api('POST', 'products/', $product_result);
                 if ($result['status'] != 201) {
@@ -213,7 +201,28 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action {
                         FmMessages::get('unhandled-error-title'),
                         FmMessages::get('unhandled-error-message')
                     );
+
                 }
+
+                //Setup the articles for the product
+                $article_result[] = array(
+                    'num_in_stock' => $product['fyndiq_quantity'],
+                    'product' => $result['data']->id,
+                    'property_values' => array("10", "11"),
+                    'item_no' => '2',
+                    'description' => 'An test Description'
+                );
+
+                //send the articles to Fyndiq
+                $result_article = FmHelpers::call_api('POST', 'article/', $article_result);
+                if ($result_article['status'] != 201) {
+                    $error = true;
+                    self::response_error(
+                        FmMessages::get('unhandled-error-title'),
+                        FmMessages::get('unhandled-error-message')
+                    );
+                }
+
             } catch (FyndiqAPIBadRequest $e) {
                 // Got error response from the api library
                 $error = true;
