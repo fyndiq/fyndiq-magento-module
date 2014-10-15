@@ -77,10 +77,14 @@
 
                     </div>
                 </div>
+                <div class="description-showbutton">
+                    <button>Show Description</button>
+                </div>
                 <div class="final-price">
                     <label>Price:</label>
                     <input type="text" value="{{fyndiq_price}}">
                 </div>
+                <div class="description-container"><textarea class="description">{{description}}</textarea></div>
                 {{/with}}{{/with}}
             </li>
             {{/each}}
@@ -131,6 +135,7 @@
             data-id="{{id}}"
             data-name="{{name}}"
             data-reference="{{reference}}"
+            data-description="{{description}}"
             data-price="{{price}}"
             data-quantity="{{quantity}}"
             data-image="{{image}}"

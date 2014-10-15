@@ -173,6 +173,7 @@ var FmCtrl = {
                             'id': $j(this).data('id'),
                             'name': $j(this).data('name'),
                             'image': $j(this).data('image'),
+                            'description': $j(this).data('description'),
                             'price': price,
                             'fyndiq_price':fyndiq_price,
                             'fyndiq_quantity':fyndiq_quantity,

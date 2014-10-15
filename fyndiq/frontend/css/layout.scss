@@ -64,6 +64,17 @@
         }
     }
 
+    .description-container {
+      clear:both;
+      display: none;
+      padding:4px;
+
+      textarea {
+        width:99%;
+        min-height:100px;
+      }
+    }
+
     .controls {
 
         text-align: right;

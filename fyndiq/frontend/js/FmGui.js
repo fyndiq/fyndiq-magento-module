@@ -72,6 +72,17 @@ var FmGui = {
             'scrollTop': 0
         });
 
+        attached_overlay.on('click', 'div.description-showbutton > button', function(e) {
+            e.preventDefault();
+            var description = $j(this).parent().parent().find('.description-container');
+            if(description.css("display") == "none") {
+                description.css({'display': 'block'});
+            }
+            else {
+                description.css({'display': 'none'});
+            }
+        });
+
         // fade in the overlay
         attached_overlay.fadeIn(300, function() {
 
@@ -82,7 +93,6 @@ var FmGui = {
                 $j('.fm-container').css({'height': new_height+'px'});
             }
         });
-
 
         // attach close button event handler
         attached_overlay.find('.controls button').bind('click', function(e) {
@@ -96,9 +106,11 @@ var FmGui = {
             attached_overlay.find("li").each(function(index) {
                 var name = $j(this).find('.data .title input').val();
                 var price = $j(this).find('.final-price input').val();
+                var description = $j(this).find('.description-container .description').val();
 
                 products[index]["product"]["name"] = name;
                 products[index]["product"]["price"] = price;
+                products[index]["product"]["description"] = description;
             });
 
             if (callback) {
