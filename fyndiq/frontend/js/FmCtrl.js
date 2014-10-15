@@ -167,7 +167,6 @@ var FmCtrl = {
                     var price = $j(this).find("td.prices > div.price > input").val();
                     var fyndiq_price = $j(this).find("td.prices > div.fyndiq_price > input").val();
                     var fyndiq_quantity = $j(this).find("td.quantities > div.fyndiq > span").text();
-                    console.log(fyndiq_quantity);
                     products.push({
                         'product': {
                             'id': $j(this).data('id'),
