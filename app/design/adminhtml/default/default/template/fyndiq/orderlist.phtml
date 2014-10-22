@@ -1,0 +1,96 @@
+<link rel="stylesheet" type="text/css" href="<?php echo $this->getFrontendPath(); ?>frontend/css/main.css" media="all">
+<script type="text/javascript">
+    module_path = "<?php echo $this->getAdminPath("fyndiq/service"); ?>";
+</script>
+<script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/handlebars-v1.1.2.js"></script>
+
+<script type="text/javascript">
+    var messages = {};
+    <?php foreach($this->getMessages() as $k => $v) {?>
+    messages['<?php echo $k; ?>'] = '<?php echo $v; ?>';
+    <? } ?>
+</script>
+
+<script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/FmGui.js"></script>
+<script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/FmCtrl.js"></script>
+<script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/main.js"></script>
+
+
+<div class="fm-container">
+
+    <img class="fyndiqlogo" src="<?php echo $this->getFrontendPath(); ?>frontend/images/logo.png" alt="Fyndiq logotype">
+
+    <div class="fm-orderlist-panel">
+
+        <h2>Orders</h2>
+        <form action="" method="post" class="fm-form orderslist">
+
+                <div class="fm-order-list-container"></div>
+        </form>
+    </div>
+
+    <div class="fm-sidebar">
+
+        <h3>Back to main</h3>
+
+        <form action="" method="post" class="fm-form orders">
+            <fieldset>
+                <a class="fm-button" href="<?php echo $this->getAdminPath("fyndiq/admin/exportproducts"); ?>" >Go Back to product list</a>
+            </fieldset>
+        </form>
+
+        <h3>Settings</h3>
+
+        <form action="" method="post" class="fm-form settings">
+            <fieldset>
+                <legend>Settings</legend>
+                <p>
+                <ul>
+                    <li>
+                        Language: <b><?php echo $this->getLanguage(); ?></b>
+                    </li>
+
+                    <li>
+                        Currency: <b><?php echo $this->getCurrency(); ?></b>
+                    </li>
+
+                    <li>
+                        Automatic order import: <b><?php if ($this->getAutoOrderImport()) {
+                                echo "Enabled";
+                            } else {
+                                echo "Disabled";
+                            } ?></b>
+                    </li>
+
+                    <li>
+                        Automatic quantity export: <b><?php if ($this->getAutoQuantityExport()) {
+                                echo "Enabled";
+                            } else {
+                                echo "Disabled";
+                            } ?></b>
+                    </li>
+                </ul>
+                </p>
+
+                <a class="fm-button" type="submit" name="submit_show_settings"
+                   href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>">Change Settings</a>
+            </fieldset>
+        </form>
+
+        <h3>Disconnect account</h3>
+
+        <form action="" method="post" class="fm-form disconnect">
+            <fieldset>
+                <legend>Account</legend>
+                <p>Current user: <b><?php echo $this->getUsername(); ?></b></p>
+
+                <p>By clicking this button, you can disconnect from your Fyndiq merchant account.</p>
+                <button class="fm-button" type="submit" name="submit_disconnect"
+                        onclick="return confirm('<?php echo $this->getMessage('disconnect-confirm'); ?>');"
+                    >Disconnect Account
+                </button>
+            </fieldset>
+        </form>
+    </div>
+</div>
