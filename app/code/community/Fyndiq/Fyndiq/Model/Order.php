@@ -42,6 +42,24 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         return $model->save()->getId();
     }
 
+
+    /**
+     * Loading Imported orders
+     * @return array
+     */
+    public function getImportedOrders()
+    {
+        $return_array = array();
+        $orders = $this->getCollection();
+        $orders = $orders->getItems();
+        foreach($orders as $order){
+            $order = $order->getData();
+            $magorder = Mage::getModel('sales/order')->load($order["order_id"]);
+            $return_array[] = $magorder->getData();
+        }
+        return $return_array;
+    }
+
     /**
      * Create a order in magento based on Fyndiq Order
      *
