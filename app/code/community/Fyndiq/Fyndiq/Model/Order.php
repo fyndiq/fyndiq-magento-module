@@ -248,6 +248,6 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $order->save();
 
         //add it to the table for check
-        $this->addCheckData($fyndiq_order->id, $order->getIncrementId());
+        $this->addCheckData($fyndiq_order->id, $order->getId());
     }
 }
