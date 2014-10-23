@@ -157,6 +157,18 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action {
     }
 
     /**
+     * Loading imported orders
+     *
+     * @param $args
+     */
+    public function load_orders($args) {
+        self::response_error(
+            FmMessages::get('unhandled-error-title'),
+            FmMessages::get('unhandled-error-message') . ' (Not working yet)'
+        );
+    }
+
+    /**
      * Getting the orders to be saved in Magento.
      *
      * @param $args

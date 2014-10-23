@@ -70,6 +70,21 @@ var FmCtrl = {
         });
     },
 
+    load_orders: function(callback) {
+        FmCtrl.call_service('load_orders', {}, function(status, orders) {
+            if (status == 'success') {
+                $j('.fm-order-list-container').html(tpl['orders-list']({
+                    'module_path': module_path,
+                    'orders': orders
+                }));
+            }
+
+            if (callback) {
+                callback();
+            }
+        });
+    },
+
     import_orders: function(callback) {
         FmCtrl.call_service('import_orders', {}, function(status, orders) {
             if (status == 'success') {

@@ -2,6 +2,72 @@
 <script type="text/javascript">
     module_path = "<?php echo $this->getAdminPath("fyndiq/service"); ?>";
 </script>
+
+<script type="text/x-handlebars-template" class="handlebars-template" id="fm-loading-overlay">
+    <div class="fm-loading-overlay">
+        <img src="<?php echo $this->getFrontendPath(); ?>frontend/images/ajax-loader.gif" alt="Loading animation">
+    </div>
+</script>
+
+<script type="text/x-handlebars-template" class="handlebars-template" id="fm-message-overlay">
+    <div class="fm-message-overlay fm-{{type}}">
+        <img class="close" src="<?php echo $this->getFrontendPath(); ?>frontend/images/icons/close-icon.png" alt="Close" title="Close message">
+        <h3>{{title}}</h3>
+        <p>{{message}}</p>
+    </div>
+</script>
+<script type="text/x-handlebars-template" class="handlebars-template" id="fm-orders-list">
+    {{> fm-product-list-controls}}
+    {{#if products}}
+    <table>
+        <thead>
+        <tr>
+            <th><input id="select-all" type="checkbox"></th>
+            <th colspan="2">Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+        </tr>
+        </thead>
+        <tbody class="fm-orders-list">
+        {{#each products}}
+        {{#with this}}
+        <tr
+            data-id="{{id}}"
+            data-name="{{name}}"
+            data-reference="{{reference}}"
+            data-price="{{price}}"
+            data-quantity="{{quantity}}"
+            data-image="{{image}}"
+            >
+            <td class="select"><input type="checkbox" id="select_product_{{id}}"></td>
+            <td><img src="{{image}}" alt="Product image"></td>
+            <td>{{name}} ({{reference}})</td>
+            <td><div class="prices">
+                <div class="price">
+                    <label>Price:</label>
+                    <input type="text" value="{{price}}">
+                </div>
+                <div class="price">
+                    <label>Fyndiq Price:</label>
+                    <input type="text">
+                </div>
+            </div></td>
+            <td><div class="quantities">
+                <div>Qty: {{quantity}}</div>
+                <div>Exported Qty: 6</div>
+                <div>Fyndiq Qty: 4</div>
+            </div></td>
+        </tr>
+        {{/with}}
+        {{/each}}
+        </tbody>
+    </table>
+    {{else}}
+    Category is empty.
+    {{/if}}
+    {{> fm-product-list-controls}}
+</script>
+
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/jquery-1.11.1.min.js"></script>
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/handlebars-v1.1.2.js"></script>
 
@@ -14,7 +80,7 @@
 
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/FmGui.js"></script>
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/FmCtrl.js"></script>
-<script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/main.js"></script>
+<script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/orderlist.js"></script>
 
 
 <div class="fm-container">
@@ -24,7 +90,7 @@
     <div class="fm-orderlist-panel">
 
         <h2>Orders</h2>
-        <form action="" method="post" class="fm-form orderslist">
+        <form action="" method="post" class="fm-form orders-form">
 
                 <div class="fm-order-list-container"></div>
         </form>
