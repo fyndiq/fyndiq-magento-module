@@ -146,6 +146,20 @@
     }
 }
 
+.fm-order-list-controls {
+  overflow: hidden;
+  margin: 10px 0;
+
+  .select {
+    float: left;
+    margin: 0;
+  }
+
+  .export {
+    float: right;
+    margin: 0;
+  }
+}
 
 .fm-product-list {
     margin: 0;
