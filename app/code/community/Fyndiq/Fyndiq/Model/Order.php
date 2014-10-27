@@ -50,7 +50,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
     public function getImportedOrders()
     {
         $return_array = array();
-        $orders = $this->getCollection();
+        $orders = $this->getCollection()->setOrder('id', 'DESC');;
         $orders = $orders->getItems();
         foreach($orders as $order){
             $order = $order->getData();
