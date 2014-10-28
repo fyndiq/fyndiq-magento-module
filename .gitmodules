@@ -1,3 +1,3 @@
 [submodule "app/code/community/Fyndiq/Fyndiq/includes/api"]
 	path = app/code/community/Fyndiq/Fyndiq/includes/api
-	url = git@github.com:fyndiq/fyndiq-api-wrapper-php.git
+	url = https://github.com/fyndiq/fyndiq-api-wrapper-php.git
