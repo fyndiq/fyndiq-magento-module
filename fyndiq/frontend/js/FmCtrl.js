@@ -270,5 +270,20 @@ var FmCtrl = {
                 }
             }
         });
+    },
+    bind_order_event_handlers: function() {
+        // when clicking select all orders checkbox, set checked on all order's checkboxes
+        $j(document).on('click', '#select-all', function(e) {
+            if ($j(this).is(':checked')) {
+                $j(".fm-orders-list tr .select input").each(function () {
+                    $j(this).prop("checked", true);
+                });
+
+            } else {
+                $j(".fm-orders-list tr .select input").each(function () {
+                    $j(this).prop("checked", false);
+                });
+            }
+        });
     }
 };

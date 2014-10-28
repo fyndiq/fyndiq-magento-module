@@ -18,11 +18,12 @@ $j('script.handlebars-template').each(function(k, v) {
 $j(document).ready(function() {
 
     FmGui.show_load_screen(function(){
-        FmCtrl.bind_event_handlers();
+        FmCtrl.bind_order_event_handlers();
 
         // load all categories
         FmCtrl.load_orders(function() {
             FmGui.hide_load_screen();
         });
     });
+
 });
