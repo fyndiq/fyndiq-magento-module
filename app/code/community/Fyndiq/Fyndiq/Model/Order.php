@@ -55,7 +55,9 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         foreach($orders as $order){
             $order = $order->getData();
             $magorder = Mage::getModel('sales/order')->load($order["order_id"]);
-            $return_array[] = $magorder->getData();
+            $magarray = $magorder->getData();
+            $magarray["fyndiq_order"] = $order["fyndiq_orderid"];
+            $return_array[] = $magarray;
         }
         return $return_array;
     }
