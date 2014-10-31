@@ -12,12 +12,15 @@ $table = $installer->getConnection()
             'nullable'  => false,
             'primary'   => true,
         ), 'Id')
+    ->addColumn('order_id', Varien_Db_Ddl_Table::TYPE_INTEGER, null, array(
+            'nullable'  => false,
+        ), 'Magento Order')
     ->addColumn('fyndiq_orderid', Varien_Db_Ddl_Table::TYPE_INTEGER, null, array(
             'nullable'  => false,
         ), 'Fyndiq Order')
-    ->addColumn('order_id', Varien_Db_Ddl_Table::TYPE_INTEGER, null, array(
+    ->addColumn('fyndiq_stock', Varien_Db_Ddl_Table::TYPE_INTEGER, null, array(
             'nullable'  => false,
-        ), 'Magento Order');
+        ), 'amount of stock been sent to Fyndiq last time.');
 $installer->getConnection()->createTable($table);
 
 $installer->endSetup();

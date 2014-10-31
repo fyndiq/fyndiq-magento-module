@@ -34,9 +34,9 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
      * @param $orderid
      * @return mixed
      */
-    public function addCheckData($fyndiq_orderid, $orderid)
+    public function addCheckData($fyndiq_orderid, $orderid, $stock)
     {
-        $data = array('fyndiq_orderid' => $fyndiq_orderid, 'order_id' => $orderid);
+        $data = array('fyndiq_orderid' => $fyndiq_orderid, 'order_id' => $orderid, 'fyndiq_stock' => $stock);
         $model = $this->setData($data);
 
         return $model->save()->getId();
@@ -57,6 +57,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             $magorder = Mage::getModel('sales/order')->load($order["order_id"]);
             $magarray = $magorder->getData();
             $magarray["fyndiq_order"] = $order["fyndiq_orderid"];
+            $magarray["fyndiq_stock"] = $order["fyndiq_stock"];
             $return_array[] = $magarray;
         }
         return $return_array;
@@ -143,6 +144,9 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $quote = Mage::getModel('sales/quote')->setStoreId(Mage::app('default')->getStore('default')->getId());
         $quote->assignCustomer($customer);
 
+        // saving total qty to being saved for the order in the database
+        $fyndiq_allqty = 0;
+
         //$product_id = $_POST['id']; //id of product we want to purchase that was posted to this script
         foreach ($order_infos["data"]->objects as $row) {
             // Get article for order row
@@ -152,6 +156,8 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             // get id of the product
             // TODO: shall be from a table later (to connect a product in magento with a id for a article in Fyndiq)
             $product_id = 1;
+
+            $fyndiq_allqty += $row->num_articles;
 
             $_product = Mage::getModel('catalog/product')->load($product_id);
             //add product to the cart
@@ -268,6 +274,6 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $order->save();
 
         //add it to the table for check
-        $this->addCheckData($fyndiq_order->id, $order->getId());
+        $this->addCheckData($fyndiq_order->id, $order->getId(), $fyndiq_allqty);
     }
 }
