@@ -24,7 +24,9 @@ class FmMessages {
         'orders-imported-message'=>    'The orders from Fyndiq have been imported to Magento.',
 
         'products-not-selected-title'=>     'No products selected',
-        'products-not-selected-message'=>   'You have to select at least one product to export.'
+        'products-not-selected-message'=>   'You have to select at least one product to export.',
+
+        'delivery-note-imported-title' => 'Delivery Notes downloaded!'
     );
 
     public static function get($name) {

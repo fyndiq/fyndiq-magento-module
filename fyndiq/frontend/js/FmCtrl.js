@@ -97,6 +97,18 @@ var FmCtrl = {
         });
     },
 
+    get_delivery_notes: function(orders, callback) {
+        FmCtrl.call_service('get_delivery_notes', {"orders": orders}, function(status) {
+            if (status == 'success') {
+                FmGui.show_message('success', messages['delivery-note-imported-title'],
+                    'You can get the notes <a href="' + module_path + '/fyndiq/files/deliverynote.pdf">here</a>');
+            }
+            if (callback) {
+                callback();
+            }
+        });
+    },
+
     export_products: function(products, callback) {
         FmCtrl.call_service('export_products', {'products': products}, function(status, data) {
             if (status == 'success') {
@@ -284,6 +296,13 @@ var FmCtrl = {
                     $j(this).prop("checked", false);
                 });
             }
+        });
+        $j(document).on('click', '#getdeliverynote', function() {
+            FmGui.show_load_screen(function() {
+               FmCtrl.get_delivery_notes([{"order": 12}], function() {
+                   FmGui.hide_load_screen();
+               });
+            });
         });
     }
 };

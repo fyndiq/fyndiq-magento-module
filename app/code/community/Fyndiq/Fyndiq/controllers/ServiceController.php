@@ -190,4 +190,24 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action {
         }
     }
 
+    public function get_delivery_notes($args) {
+        try {
+            //TESTDATA!!!!
+            // TODO: fix this testdata to real data
+            $orders = new stdClass();
+            $orders->orders = array();
+            $orders->orders[] = 17;
+            $orders->orders[] = 1;
+            $orders->orders[] = 12;
+
+            $ret = FmHelpers::call_api('POST', 'function/delivery_note/', $orders, "fyndiq/files/deliverynote.pdf");
+            self::response($ret);
+        } catch (Exception $e) {
+            self::response_error(
+                FmMessages::get('unhandled-error-title'),
+                FmMessages::get('unhandled-error-message') . ' (' . $e->getMessage() . ')'
+            );
+        }
+    }
+
 } 
