@@ -208,6 +208,7 @@ class FmHelpers
             fputs($fp, $response['data']);
             # closing the file
             fclose($fp);
+            unset($response['data']);
         }
 
         return $response;
