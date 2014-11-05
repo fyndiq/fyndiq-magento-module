@@ -10,6 +10,10 @@ class FmFileHandler
     private $filepath = "fyndiq/files/feed.csv";
     private $fileresource = null;
 
+    function __construct($mode = "w+",$remove = false) {
+        $this->openFile($mode, $remove);
+    }
+
     /**
      * Add lines to a already used file
      *
@@ -17,11 +21,9 @@ class FmFileHandler
      */
     function appendToFile($products)
     {
-        $this->openFile();
         foreach ($products as $product) {
             $this->writeToFile($product);
         }
-        $this->closeFile();
     }
 
     /**
@@ -31,11 +33,18 @@ class FmFileHandler
      */
     function writeOverFile($products)
     {
-        $this->openFile(true);
         foreach ($products as $product) {
             $this->writeToFile($product);
         }
-        $this->closeFile();
+    }
+
+    function removeFile($recreate = false) {
+        if (file_exists($this->filepath)) {
+            unlink($this->filepath);
+        }
+        if($recreate) {
+            touch($this->filepath);
+        }
     }
 
     /**
@@ -52,21 +61,22 @@ class FmFileHandler
     /**
      * opening the file resource
      *
+     * @param string $mode
      * @param bool $removeFile
      */
-    private function openFile($removeFile = false)
+    function openFile($mode = "w+",$removeFile = false)
     {
         if ($removeFile && file_exists($this->filepath)) {
             unlink($this->filepath);
         }
         $this->closeFile();
-        $this->fileresource = fopen($this->filepath, 'w+');
+        $this->fileresource = fopen($this->filepath, $mode);
     }
 
     /**
      * Closing the file if isn't already closed
      */
-    private function closeFile()
+    function closeFile()
     {
         if ($this->fileresource != null) {
             fclose($this->fileresource);

@@ -8,6 +8,7 @@
 require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/messages.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
+require_once(dirname(dirname(__FILE__)) . '/includes/file/fileHandler.php');
 
 class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 {
@@ -178,6 +179,9 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     public static function export_products($args)
     {
+        $filehandler = new FmFileHandler("w+");
+        $filehandler->removeFile();
+        $filehandler->openFile("a");
         foreach ($args['products'] as $v) {
             $product = $v['product'];
 
@@ -185,74 +189,23 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             $product_result = array(
                 'title' => $product['name'],
                 'description' => 'asdf8u4389j34g98j34g98',
-                'images' => array($product['image']),
+                'images' => $product['image'],
                 'oldprice' => '9999',
                 'brand' => 31,
-                'categories' => array("10", "11"),
                 'price' => $product['price'],
+                'num_in_stock' => $product['fyndiq_quantity'],
                 'moms_percent' => '25'
             );
 
-            // Sending the product to Fyndiq
             try {
-                $result = FmHelpers::call_api('POST', 'products/', $product_result);
-                if ($result['status'] != 201) {
-                    // error occurred
-                    $error = true;
-                    self::response_error(
-                        FmMessages::get('unhandled-error-title'),
-                        FmMessages::get('unhandled-error-message')
-                    );
-
-                }
-
-                //Setup the articles for the product
-                $article_result[] = array(
-                    'num_in_stock' => $product['fyndiq_quantity'],
-                    'product' => $result['data']->id,
-                    'property_values' => array("10", "11"),
-                    'item_no' => '2',
-                    'description' => 'An test Description'
-                );
-
-                //send the articles to Fyndiq
-                $result_article = FmHelpers::call_api('POST', 'article/', $article_result);
-                if ($result_article['status'] != 201) {
-                    $error = true;
-                    self::response_error(
-                        FmMessages::get('unhandled-error-title'),
-                        FmMessages::get('unhandled-error-message')
-                    );
-                }
-
-            } catch (FyndiqAPIBadRequest $e) {
-                // Got error response from the api library
-                $error = true;
-                $message = '';
-                foreach (FyndiqAPI::$error_messages as $error_message) {
-                    $message .= $error_message;
-                }
-                self::response_error(
-                    FmMessages::get('products-bad-params-title'),
-                    $message
-                );
-            } catch (Exception $e) {
-                // Other error occurred - send error message to frontend
-                $error = true;
-                self::response_error(
-                    FmMessages::get('unhandled-error-title'),
-                    $e->getMessage()
-                );
+                $filehandler->appendToFile(array($product_result));
             }
+            catch(Exception $err) {
 
-            if ($error) {
-                break;
             }
         }
+        self::response();
 
-        if (!$error) {
-            self::response();
-        }
     }
 
 } 
