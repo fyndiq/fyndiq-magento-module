@@ -179,9 +179,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     public static function export_products($args)
     {
-        $filehandler = new FmFileHandler("w+");
-        $filehandler->removeFile();
-        $filehandler->openFile("a");
+        $products = array();
+        // Getting all data
         foreach ($args['products'] as $v) {
             $product = $v['product'];
 
@@ -197,13 +196,17 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 'moms_percent' => '25'
             );
 
-            try {
-                $filehandler->appendToFile(array($product_result));
-            }
-            catch(Exception $err) {
-
-            }
+            $products[] = $product_result;
         }
+        //Saving to file
+        try {
+            $filehandler = new FmFileHandler("w+");
+            $filehandler->writeOverFile($products);
+        }
+        catch(Exception $err) {
+
+        }
+
         self::response();
 
     }

@@ -14,16 +14,19 @@ class FmFileHandler
         $this->openFile($mode, $remove);
     }
 
+    function keyvalueFirst($products) {
+        $arraykeys = array_keys($products[0]);
+        $this->writeToFile($arraykeys);
+    }
+
     /**
      * Add lines to a already used file
      *
-     * @param $products
+     * @param $product
      */
-    function appendToFile($products)
+    function appendToFile($product)
     {
-        foreach ($products as $product) {
-            $this->writeToFile($product);
-        }
+        $this->writeToFile($product);
     }
 
     /**
@@ -33,6 +36,7 @@ class FmFileHandler
      */
     function writeOverFile($products)
     {
+        $this->keyvalueFirst($products);
         foreach ($products as $product) {
             $this->writeToFile($product);
         }
