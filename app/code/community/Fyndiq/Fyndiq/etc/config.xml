@@ -7,10 +7,26 @@
     </modules>
     <global>
         <models>
-            <Fyndiq_Fyndiq>
+            <fyndiq>
                 <class>Fyndiq_Fyndiq_Model</class>
-            </Fyndiq_Fyndiq>
+                <resourceModel>fyndiq_resource</resourceModel>
+            </fyndiq>
+            <fyndiq_resource>
+                <class>Fyndiq_Fyndiq_Model_Resource</class>
+                <entities>
+                    <product>
+                        <table>fyndiq_products</table>
+                    </product>
+                </entities>
+            </fyndiq_resource>
         </models>
+        <resources>
+            <fyndiq_fyndiq_setup>
+                <setup>
+                    <module>Fyndiq_Fyndiq</module>
+                </setup>
+            </fyndiq_fyndiq_setup>
+        </resources>
         <blocks>
             <Fyndiq>
                 <rewrite>
