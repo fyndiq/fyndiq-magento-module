@@ -17,9 +17,9 @@ $productstable = $installer->getConnection()
     ->addColumn('exported_qty', Varien_Db_Ddl_Table::TYPE_INTEGER, null, array(
             'nullable'  => false,
         ), 'Exported qty')
-    ->addColumn('exported_price', Varien_Db_Ddl_Table::TYPE_INTEGER, null, array(
+    ->addColumn('exported_price_percentage', Varien_Db_Ddl_Table::TYPE_INTEGER, null, array(
             'nullable'  => false,
-        ), 'Exported price');
+        ), 'Exported price percentage');
 
 $installer->getConnection()->createTable($productstable);
 

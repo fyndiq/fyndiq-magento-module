@@ -20,18 +20,18 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
         }
     }
 
-    function addProduct($product_id, $export_qty, $export_price)
+    function addProduct($product_id, $export_qty, $exported_price_percentage)
     {
-        $data = array('product_id' => $product_id, 'exported_qty' => $export_qty, 'exported_price' => $export_price);
+        $data = array('product_id' => $product_id, 'exported_qty' => $export_qty, 'exported_price_percentage' => $exported_price_percentage);
         $model = $this->setData($data);
 
         return $model->save()->getId();
     }
 
-    function updateProduct($product_id, $export_qty, $export_price)
+    function updateProduct($product_id, $export_qty, $exported_price_percentage)
     {
         $collection = $this->getCollection()->addFieldToFilter('product_id', $product_id)->getFirstItem();
-        $data = array('exported_qty' => $export_qty, 'exported_price' => $export_price);
+        $data = array('exported_qty' => $export_qty, 'exported_price_percentage' => $exported_price_percentage);
         $model = $this->load($collection->getId())->addData($data);
         try {
             $model->setId($collection->getId())->save();
@@ -60,16 +60,28 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
         $products = $this->getCollection()->setOrder('id', 'DESC');;
         $products = $products->getItems();
         $return_array = array();
-        foreach ($products as $product) {
-            $product = $product->getData();
-            $magorder = Mage::getModel('catalog/product')->load($product["product_id"]);
-            $magarray = $magorder->getData();
-            $return_array[] = $magarray;
-        }
+        foreach ($products as $producted) {
 
+            $product = $producted->getData();
+            var_dump($product);
+            $magorder = Mage::getModel('catalog/product')->load($product["product_id"]);
+
+            $magarray = $magorder->getData();
+            var_dump($magarray);
+            $real_array = array();
+            $real_array["id"] = $product["product_id"];
+            $real_array["exported_id"] = $product["exported_qty"];
+            $real_array["exported_price"] = $magarray["price"]-($magarray["price"]*($product["exported_price_percentage"] / 100));
+            $real_array["image"] = $producted->getImageUrl();
+            $real_array["title"] = $magarray["name"];
+            $return_array[] = $real_array;
+        }
+           $first_array = array_values($return_array)[0];
+        $key_values = array_keys($first_array);
+        array_unshift($return_array, $key_values);
         $filehandler = new FmFileHandler("w+");
         foreach ($return_array as $product_array) {
-            $filehandler->writeOverFile($product_array);
+            $filehandler->appendToFile($product_array);
         }
     }
 

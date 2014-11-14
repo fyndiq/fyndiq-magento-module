@@ -133,9 +133,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 0,
                 PHP_ROUND_HALF_UP
             );
-            $fyndiq_price = ((double)$prod->getPrice()) - ($prod->getPrice() * (FmConfig::get(
-                            'price_percentage'
-                        ) / 100));
+            $fyndiq_price = FmConfig::get('price_percentage');
             //trying to get image, if not image will be false
             try {
                 $prodData = array(
@@ -179,33 +177,19 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     public static function export_products($args)
     {
-        $products = array();
         // Getting all data
+        $productModel = Mage::getModel('fyndiq/product');
         foreach ($args['products'] as $v) {
             $product = $v['product'];
 
-            //structing up the product data in a array
-            $product_result = array(
-                'title' => $product['name'],
-                'description' => 'asdf8u4389j34g98j34g98',
-                'images' => $product['image'],
-                'oldprice' => '9999',
-                'brand' => 31,
-                'price' => $product['price'],
-                'num_in_stock' => $product['fyndiq_quantity'],
-                'moms_percent' => '25'
-            );
-
-            $products[] = $product_result;
+            if($productModel->productExist($product["id"])) {
+                $productModel->updateProduct($product["id"], $product['fyndiq_quantity'], $product['fyndiq_price']);
+            }
+            else {
+                $productModel->addProduct($product["id"],$product['fyndiq_quantity'], $product['fyndiq_price']);
+            }
         }
-        //Saving to file
-        try {
-            $filehandler = new FmFileHandler("w+");
-            $filehandler->writeOverFile($products);
-        }
-        catch(Exception $err) {
-
-        }
+        Mage::getModel('fyndiq/product')->saveFile();
 
         self::response();
 
