@@ -69,11 +69,11 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
             $magarray = $magorder->getData();
             var_dump($magarray);
             $real_array = array();
-            $real_array["id"] = $product["product_id"];
-            $real_array["exported_id"] = $product["exported_qty"];
-            $real_array["exported_price"] = $magarray["price"]-($magarray["price"]*($product["exported_price_percentage"] / 100));
-            $real_array["image"] = $producted->getImageUrl();
-            $real_array["title"] = $magarray["name"];
+            $real_array["product-id"] = $product["product_id"];
+            $real_array["article-num-in-stock"] = $product["exported_qty"];
+            $real_array["product-price"] = $magarray["price"]-($magarray["price"]*($product["exported_price_percentage"] / 100));
+            $real_array["product-img-1"] = $producted->getImageUrl();
+            $real_array["product-title"] = $magarray["name"];
             $return_array[] = $real_array;
         }
            $first_array = array_values($return_array)[0];

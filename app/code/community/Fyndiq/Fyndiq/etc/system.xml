@@ -21,7 +21,7 @@
                     <fields>
                         <!-- New fields go here -->
                         <price_percentage translate="label">
-                            <label>Percentage of price to be the Fyndiq price</label>
+                            <label>Global percentage of price</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>7</sort_order>
                             <show_in_default>1</show_in_default>
@@ -29,7 +29,7 @@
                             <show_in_store>1</show_in_store>
                         </price_percentage>
                         <quantity_percentage translate="label">
-                            <label>Percentage of stock to be allocated to Fyndiq</label>
+                            <label>Global percentage of stock</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>8</sort_order>
                             <show_in_default>1</show_in_default>
@@ -83,7 +83,7 @@
                             <show_in_store>1</show_in_store>
                         </username>
                         <apikey translate="label">
-                            <label>API-KEY</label>
+                            <label>API token</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>1</sort_order>
                             <show_in_default>1</show_in_default>
