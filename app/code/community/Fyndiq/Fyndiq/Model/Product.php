@@ -20,6 +20,15 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
         }
     }
 
+    function getProductExportData($product_id) {
+        $collection = $this->getCollection()->addFieldToFilter('product_id', $product_id)->getFirstItem();
+        if ($collection->getId()) {
+            return $collection->getData();
+        } else {
+            return false;
+        }
+    }
+
     function addProduct($product_id, $export_qty, $exported_price_percentage)
     {
         $data = array('product_id' => $product_id, 'exported_qty' => $export_qty, 'exported_price_percentage' => $exported_price_percentage);

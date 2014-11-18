@@ -154,7 +154,7 @@
             </td>
             <td class="quantities">
                 <div id="quantity">Qty: {{quantity}}</div>
-                <div>Exported Qty: ?</div>
+                <div>Exported Qty: {{#if fyndiq_exported_stock}}{{fyndiq_exported_stock}}{{else}}?{{/if}}</div>
                 <div class="fyndiq">Fyndiq Qty: <span class="fyndiq-quantity">{{fyndiq_quantity}}</span></div>
             </td>
             </tr>

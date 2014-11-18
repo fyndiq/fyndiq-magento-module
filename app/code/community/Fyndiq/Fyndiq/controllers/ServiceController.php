@@ -127,6 +127,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         foreach ($products as $prod) {
             // setting up price and quantity for fyndiq.
             $qtyStock = Mage::getModel('cataloginventory/stock_item')->loadByProduct($prod->getId())->getQty();
+            $fyndiq_exported_stock = Mage::getModel('fyndiq/product')->getProductExportData($prod->getId())["exported_qty"];
             $fyndiq_stock = (int)round(
                 ($qtyStock * (FmConfig::get('quantity_percentage') / 100)),
                 0,
@@ -144,6 +145,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                     'fyndiq_quantity' => $fyndiq_stock,
                     'price' => $prod->getPrice(),
                     'fyndiq_price' => $fyndiq_price,
+                    'fyndiq_exported_stock' => $fyndiq_exported_stock,
                     'description' => $prod->getDescription(),
                     'reference' => $prod->getSKU(),
                     'isActive' => $prod->getIsActive()
@@ -155,6 +157,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                     'name' => $prod->getName(),
                     'price' => $prod->getPrice(),
                     'fyndiq_price' => $fyndiq_price,
+                    'fyndiq_exported_stock' => $fyndiq_exported_stock,
                     'description' => $prod->getDescription(),
                     'reference' => $prod->getSKU(),
                     'quantity' => $qtyStock,
