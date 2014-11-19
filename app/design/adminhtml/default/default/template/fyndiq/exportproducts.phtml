@@ -191,6 +191,19 @@
 
     <img class="fyndiqlogo" src="<?php echo $this->getFrontendPath(); ?>frontend/images/logo.png" alt="Fyndiq logotype">
 
+    <div class="fm-menu">
+        <ul>
+            <li><a href="#">Export products</a></li>
+            <li><a href="#">Exported products</a></li>
+            <li><a href="#">Imported Orders</a></li>
+            <li><a href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>">Settings</a></li>
+        </ul>
+        <ul class="right">
+            <li><a href="#" id="fm-import-orders">Import Orders</a></li>
+            <li><a href="#" onclick="return confirm('<?php echo $this->getMessage('disconnect-confirm'); ?>');">Disconnect Account</a></li>
+        </ul>
+    </div>
+
     <div class="fm-left-sidebar">
         <h2>Categories</h2>
         <div class="fm-category-tree-container"></div>
@@ -206,72 +219,6 @@
 
 
                 <div class="fm-product-list-container"></div>
-            </fieldset>
-        </form>
-    </div>
-
-    <div class="fm-sidebar">
-
-        <h3>Import orders</h3>
-
-        <form action="" method="post" class="fm-form orders">
-            <fieldset>
-                <legend>Orders</legend>
-                <p>By clicking this button, you can import all orders from Fyndiq into the local webshop.</p>
-                <button class="fm-button fyndiq" name="import-orders">Import Orders</button>
-            </fieldset>
-        </form>
-
-        <h3>Settings</h3>
-
-        <form action="" method="post" class="fm-form settings">
-            <fieldset>
-                <legend>Settings</legend>
-                <p>
-                <ul>
-                    <li>
-                        Language: <b><?php echo $this->getLanguage(); ?></b>
-                    </li>
-
-                    <li>
-                        Currency: <b><?php echo $this->getCurrency(); ?></b>
-                    </li>
-
-                    <li>
-                        Automatic order import: <b><?php if ($this->getAutoOrderImport()) {
-                                echo "Enabled";
-                            } else {
-                                echo "Disabled";
-                            } ?></b>
-                    </li>
-
-                    <li>
-                        Automatic quantity export: <b><?php if ($this->getAutoQuantityExport()) {
-                                echo "Enabled";
-                            } else {
-                                echo "Disabled";
-                            } ?></b>
-                    </li>
-                </ul>
-                </p>
-
-                <a class="fm-button" type="submit" name="submit_show_settings"
-                   href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>">Change Settings</a>
-            </fieldset>
-        </form>
-
-        <h3>Disconnect account</h3>
-
-        <form action="" method="post" class="fm-form disconnect">
-            <fieldset>
-                <legend>Account</legend>
-                <p>Current user: <b><?php echo $this->getUsername(); ?></b></p>
-
-                <p>By clicking this button, you can disconnect from your Fyndiq merchant account.</p>
-                <button class="fm-button" type="submit" name="submit_disconnect"
-                        onclick="return confirm('<?php echo $this->getMessage('disconnect-confirm'); ?>');"
-                    >Disconnect Account
-                </button>
             </fieldset>
         </form>
     </div>
