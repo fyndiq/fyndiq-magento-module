@@ -267,7 +267,7 @@
     width: 160px; }
   .fm-container .fm-main-panel {
     float: left;
-    width: 660px; }
+    width: 920px; }
   .fm-container .fm-sidebar {
     float: left;
     width: 245px;
@@ -295,6 +295,59 @@
   .fm-product-list-controls .export {
     float: right;
     margin: 0; }
+
+.fm-menu {
+  width: 99%;
+  clear: both;
+  padding-left: 4px;
+  padding-right: -4px;
+  height: 40px;
+  background: #fec600;
+  background: -moz-linear-gradient(top, #fec600 0%, #f39e0a 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #fec600), color-stop(100%, #f39e0a));
+  background: -webkit-linear-gradient(top, #fec600 0%, #f39e0a 100%);
+  background: -o-linear-gradient(top, #fec600 0%, #f39e0a 100%);
+  background: -ms-linear-gradient(top, #fec600 0%, #f39e0a 100%);
+  background: linear-gradient(to bottom, #fec600 0%, #f39e0a 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fec600', endColorstr='#f39e0a',GradientType=0 );
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  -webkit-box-shadow: 1px 1px 0px 0px #ba7a01;
+  -moz-box-shadow: 1px 1px 0px 0px #ba7a01;
+  box-shadow: 1px 1px 0px 0px #ba7a01; }
+  .fm-menu ul {
+    list-style: none;
+    float: left; }
+    .fm-menu ul li {
+      float: left;
+      display: inline-block;
+      height: 40px;
+      padding-left: 5px;
+      padding-right: 5px; }
+      .fm-menu ul li a {
+        text-decoration: none;
+        height: 25px;
+        display: inline-block;
+        padding: 5px;
+        padding-top: 10px;
+        text-align: center;
+        color: white;
+        text-shadow: 1px 1px 1px #ba7a01; }
+        .fm-menu ul li a:hover {
+          background: #f39e0a;
+          background: -moz-linear-gradient(top, #f39e0a 0%, #fec600 100%);
+          background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f39e0a), color-stop(100%, #fec600));
+          background: -webkit-linear-gradient(top, #f39e0a 0%, #fec600 100%);
+          background: -o-linear-gradient(top, #f39e0a 0%, #fec600 100%);
+          background: -ms-linear-gradient(top, #f39e0a 0%, #fec600 100%);
+          background: linear-gradient(to bottom, #f39e0a 0%, #fec600 100%);
+          filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f39e0a', endColorstr='#fec600',GradientType=0 );
+          -moz-box-shadow: inset 0 0 6px #ba7a01;
+          -webkit-box-shadow: inset 0 0 6px #ba7a01;
+          box-shadow: inset 0 0 6px #ba7a01; }
+    .fm-menu ul.right {
+      float: right; }
 
 .fm-product-list {
   margin: 0;
