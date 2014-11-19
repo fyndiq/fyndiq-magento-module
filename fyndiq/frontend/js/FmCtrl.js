@@ -165,7 +165,7 @@ var FmCtrl = {
 
                     // store product id and combinations
                     var price = $j(this).find("td.prices > div.price > input").val();
-                    var fyndiq_price = $j(this).find("td.prices > div.fyndiq_price > input").val();
+                    var fyndiq_precentage = $j(this).find("td.prices > div.fyndiq_price > input").val();
                     var fyndiq_quantity = $j(this).find("td.quantities > div.fyndiq > span").text();
                     products.push({
                         'product': {
@@ -173,8 +173,8 @@ var FmCtrl = {
                             'name': $j(this).data('name'),
                             'image': $j(this).data('image'),
                             'description': $j(this).data('description'),
-                            'price': price,
-                            'fyndiq_price':fyndiq_price,
+                            'price': $j(this).data('price'),
+                            'fyndiq_precentage':fyndiq_precentage,
                             'fyndiq_quantity':fyndiq_quantity,
                             'quantity': $j(this).data('quantity')
                         }
