@@ -277,6 +277,19 @@
   text-align: center;
   font-size: 14px; }
 
+.label {
+  display: block;
+  padding: 4px;
+  text-align: center;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  color: white; }
+  .label.green {
+    background-color: #298724; }
+  .label.yellow {
+    background-color: #B3B835; }
+
 .fm-category-tree {
   margin: 0;
   padding: 0; }
@@ -310,9 +323,9 @@
   background: -ms-linear-gradient(top, #fec600 0%, #f39e0a 100%);
   background: linear-gradient(to bottom, #fec600 0%, #f39e0a 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fec600', endColorstr='#f39e0a',GradientType=0 );
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  border-radius: 4px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
   -webkit-box-shadow: 1px 1px 0px 0px #ba7a01;
   -moz-box-shadow: 1px 1px 0px 0px #ba7a01;
   box-shadow: 1px 1px 0px 0px #ba7a01; }
@@ -332,6 +345,7 @@
         padding: 5px;
         padding-top: 10px;
         text-align: center;
+        font-size: 10pt;
         color: white;
         text-shadow: 1px 1px 1px #ba7a01; }
         .fm-menu ul li a:hover {
@@ -446,6 +460,18 @@
             .fm-product-list .combinations > li .data .attributes li:last-child .separator {
               display: none; }
 
+table tr:first-child th:first-child,
+table.Info tr:first-child td:first-child {
+  border-top-left-radius: 4px; }
+
+table tr:first-child th:last-child,
+table.Info tr:first-child td:last-child {
+  border-top-right-radius: 4px; }
+
+/* bottom-left border-radius */
+table tr:last-child td:first-child {
+  border-bottom-left-radius: 4px; }
+
 table {
   width: 100%;
   border-spacing: 0;
@@ -455,7 +481,7 @@ table {
   border-radius: 3px; }
   table thead {
     font-size: 10pt;
-    text-shadow: 0px 0px 1px rgba(0, 0, 0, 0.8);
+    text-shadow: 1px 1px 1px #ba7a01;
     background-color: #f39e09;
     border: 0px;
     border-spacing: 0; }
@@ -476,6 +502,8 @@ table {
       border-spacing: 0; }
       table tbody tr:nth-child(2n) {
         background-color: #f5f5f5; }
+      table tbody tr:last-child {
+        border-bottom-right-radius: 4px; }
       table tbody tr td {
         padding: 4px;
         border: 0px;

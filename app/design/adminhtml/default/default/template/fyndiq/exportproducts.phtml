@@ -126,6 +126,7 @@
             <th colspan="2">Product</th>
             <th>Price</th>
             <th>Quantity</th>
+            <th>Status</th>
         </tr>
         </thead>
         <tbody class="fm-product-list">
@@ -154,8 +155,14 @@
             </td>
             <td class="quantities">
                 <div id="quantity">Qty: {{quantity}}</div>
-                <div>Exported Qty: {{#if fyndiq_exported_stock}}{{fyndiq_exported_stock}}{{else}}?{{/if}}</div>
                 <div class="fyndiq">Fyndiq Qty: <span class="fyndiq-quantity">{{fyndiq_quantity}}</span></div>
+            </td>
+            <td class="status">
+                {{#if fyndiq_exported_stock}}
+                <div class="label green">Exported</div>
+                {{else}}
+                <div class="label yellow">Not exported</div>
+                {{/if}}
             </td>
             </tr>
         {{/with}}
@@ -195,7 +202,6 @@
             <li><a href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>">Settings</a></li>
         </ul>
         <ul class="right">
-            <li><a href="#" id="fm-import-orders">Import Orders</a></li>
             <li><a href="#" onclick="return confirm('<?php echo $this->getMessage('disconnect-confirm'); ?>');">Disconnect Account</a></li>
         </ul>
     </div>
