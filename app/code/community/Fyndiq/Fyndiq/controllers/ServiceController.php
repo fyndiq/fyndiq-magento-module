@@ -238,16 +238,25 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             $product = $v['product'];
 
             if($productModel->productExist($product["id"])) {
-                $productModel->updateProduct($product["id"], $product['fyndiq_quantity'], $product['fyndiq_price']);
+                $productModel->updateProduct($product["id"], $product['fyndiq_quantity'], $product['fyndiq_precentage']);
             }
             else {
-                $productModel->addProduct($product["id"],$product['fyndiq_quantity'], $product['fyndiq_price']);
+                $productModel->addProduct($product["id"],$product['fyndiq_quantity'], $product['fyndiq_precentage']);
             }
         }
         Mage::getModel('fyndiq/product')->saveFile();
 
         self::response();
 
+    }
+
+    public function delete_exported_products($args) {
+        foreach ($args['products'] as $v) {
+            $product = $v["product"];
+            $productModel = Mage::getModel('fyndiq/product')->getCollection()->addFieldToFilter('product_id', $product["id"])->getFirstItem();
+            $productModel->delete();
+        }
+        $this->response();
     }
 
 } 

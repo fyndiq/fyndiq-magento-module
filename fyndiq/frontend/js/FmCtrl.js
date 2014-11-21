@@ -123,6 +123,25 @@ var FmCtrl = {
         });
     },
 
+    products_delete: function(products, callback) {
+
+        FmCtrl.call_service('delete_exported_products', {'products': products}, function(status, data) {
+            if (status == 'success') {
+                FmGui.show_message('success', messages['products-deleted-title'],
+                    messages['products-deleted-message']);
+
+                // reload category to ensure that everything is reset properly
+                if(callback) {
+                    callback();
+                }
+            } else {
+                if (callback) {
+                    callback();
+                }
+            }
+        });
+    },
+
     bind_event_handlers: function() {
 
         // import orders submit button
@@ -280,6 +299,49 @@ var FmCtrl = {
                     export_products(products);
                 }
             }
+        });
+
+        //Deleting selected products from export table
+        $j(document).on('click', '.fm-product-list-controls button[name=delete-products]', function(e) {
+            e.preventDefault();
+
+            FmGui.show_load_screen(function() {
+                var products = [];
+
+                // find all products
+                $j('.fm-product-list > tr').each(function(k, v) {
+
+                    // check if product is selected
+                    var active = $j(this).find('.select input').prop('checked');
+                    if (active) {
+                        // store product id and combinations
+                        var price = $j(this).find("td.prices > div.price > input").val();
+                        var fyndiq_precentage = $j(this).find("td.prices > div.fyndiq_price > input").val();
+                        var fyndiq_quantity = $j(this).find("td.quantities > div.fyndiq > span").text();
+                        products.push({
+                            'product': {
+                                'id': $j(this).data('id')
+                            }
+                        });
+                    }
+                });
+
+                // if no products selected, show info message
+                if (products.length == 0) {
+                    FmGui.show_message('info', messages['products-not-selected-title'],
+                        messages['products-not-selected-message']);
+
+                } else {
+                    FmCtrl.products_delete(products,function() {
+                        FmCtrl.load_exported_products(function() {
+                            FmGui.hide_load_screen();
+                        });
+
+                    });
+
+                }
+            });
+
         });
     }
 };
