@@ -198,6 +198,10 @@
           @include gradient(#f39e0a,#fec600);
           @include innershadow(#ba7a01, 6px);
         }
+        &.active {
+          @include gradient(#de981f,#f39e0a);
+          @include innershadow(#ba7a01, 6px);
+        }
       }
       &:last-child {
       }
