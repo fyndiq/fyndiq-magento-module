@@ -62,7 +62,7 @@
                     <div class="title">
                         {{#with product}}{{#with product}}
                         <input type="text" value="{{name}}">
-                            {{/with}}{{/with}}
+                        {{/with}}{{/with}}
                     </div>
 
                     <div class="price-info">
@@ -111,7 +111,7 @@
 <script type="text/x-handlebars-template" class="handlebars-partial" id="fm-product-list-controls">
     <div class="fm-product-list-controls">
         <div class="export">
-            <button class="fm-button fyndiq" name="export-products">Export Products</button>
+            <button class="fm-button fyndiq" name="export-products">Change Products</button>
         </div>
     </div>
 </script>
@@ -124,9 +124,8 @@
         <tr>
             <th><input id="select-all" type="checkbox"></th>
             <th colspan="2">Product</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Status</th>
+            <th>Exported Price</th>
+            <th>Exported Quantity</th>
         </tr>
         </thead>
         <tbody class="fm-product-list">
@@ -146,28 +145,21 @@
             <td>{{name}} ({{reference}})</td>
             <td class="prices">
                 <div class="price">
-                    Price: {{price}}
+                    Price: {{fyndiq_price}}
                 </div>
                 <div class="fyndiq_price">
                     <label>Fyndiq Discount:</label>
-                    <input type="text" value="{{fyndiq_price}}">%
+                    <input type="text" value="{{fyndiq_precentage}}">%
                 </div>
             </td>
             <td class="quantities">
                 <div id="quantity">Qty: {{quantity}}</div>
                 <div class="fyndiq">Fyndiq Qty: <span class="fyndiq-quantity">{{fyndiq_quantity}}</span></div>
             </td>
-            <td class="status">
-                {{#if fyndiq_exported_stock}}
-                <div class="label green">Exported</div>
-                {{else}}
-                <div class="label yellow">Not exported</div>
-                {{/if}}
-            </td>
-            </tr>
+        </tr>
         {{/with}}
         {{/each}}
-    </tbody>
+        </tbody>
     </table>
     {{else}}
     Category is empty.
@@ -187,7 +179,7 @@
 
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/FmGui.js"></script>
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/FmCtrl.js"></script>
-<script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/main.js"></script>
+<script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/exportedproducts.js"></script>
 
 
 <div class="fm-container">
@@ -206,21 +198,16 @@
         </ul>
     </div>
 
-    <div class="fm-left-sidebar">
-        <h2>Categories</h2>
-        <div class="fm-category-tree-container"></div>
-    </div>
-
     <div class="fm-main-panel">
 
-        <h2>Products</h2>
+        <h2>Exported Products</h2>
         <form action="" method="post" class="fm-form products">
             <fieldset>
                 <legend>Products</legend>
                 <p>By using this form, you can export products from the local webshop into Fyndiq.</p>
 
 
-                <div class="fm-product-list-container"></div>
+                <div class="fm-exported-product-list-container"></div>
             </fieldset>
         </form>
     </div>

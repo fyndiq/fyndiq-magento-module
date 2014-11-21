@@ -69,6 +69,30 @@ var FmCtrl = {
             }
         });
     },
+    load_exported_products: function(callback) {
+        // unset active class on previously selected category
+        $j('.fm-category-tree li').removeClass('active');
+
+        FmCtrl.call_service('get_exported_products', {}, function(status, products) {
+            if (status == 'success') {
+                $j('.fm-exported-product-list-container').html(tpl['product-list']({
+                    'module_path': module_path,
+                    'products': products
+                }));
+
+                // http://stackoverflow.com/questions/5943994/jquery-slidedown-snap-back-issue
+                // set correct height on combinations to fix jquery slideDown jump issue
+                $j('.fm-exported-product-list .combinations').each(function(k, v) {
+                    $j(v).css('height', $j(v).height());
+                    $j(v).hide();
+                });
+            }
+
+            if (callback) {
+                callback();
+            }
+        });
+    },
 
     import_orders: function(callback) {
         FmCtrl.call_service('import_orders', {}, function() {
