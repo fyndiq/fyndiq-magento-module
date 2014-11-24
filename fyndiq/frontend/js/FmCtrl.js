@@ -330,6 +330,7 @@ var FmCtrl = {
                 if (products.length == 0) {
                     FmGui.show_message('info', messages['products-not-selected-title'],
                         messages['products-not-selected-message']);
+                    FmGui.hide_load_screen();
 
                 } else {
                     FmCtrl.products_delete(products,function() {
