@@ -314,10 +314,7 @@ var FmCtrl = {
                     // check if product is selected
                     var active = $j(this).find('.select input').prop('checked');
                     if (active) {
-                        // store product id and combinations
-                        var price = $j(this).find("td.prices > div.price > input").val();
-                        var fyndiq_precentage = $j(this).find("td.prices > div.fyndiq_price > input").val();
-                        var fyndiq_quantity = $j(this).find("td.quantities > div.fyndiq > span").text();
+                        // store product id
                         products.push({
                             'product': {
                                 'id': $j(this).data('id')
@@ -333,6 +330,7 @@ var FmCtrl = {
                     FmGui.hide_load_screen();
 
                 } else {
+                    // delete selected products
                     FmCtrl.products_delete(products,function() {
                         FmCtrl.load_exported_products(function() {
                             FmGui.hide_load_screen();
