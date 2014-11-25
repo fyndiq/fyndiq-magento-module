@@ -133,7 +133,7 @@ var FmCtrl = {
     bind_event_handlers: function() {
 
         // import orders submit button
-        $j(document).on('submit', '.fm-form.orders', function(e) {
+        $j(document).on('click', '#fm-import-orders', function(e) {
             e.preventDefault();
             FmGui.show_load_screen();
             FmCtrl.import_orders(function() {
