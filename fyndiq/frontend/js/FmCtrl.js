@@ -132,15 +132,6 @@ var FmCtrl = {
 
     bind_event_handlers: function() {
 
-        // import orders submit button
-        $j(document).on('click', '#fm-import-orders', function(e) {
-            e.preventDefault();
-            FmGui.show_load_screen();
-            FmCtrl.import_orders(function() {
-                FmGui.hide_load_screen();
-            });
-        });
-
         // when clicking category in tree, load its products
         $j(document).on('click', '.fm-category-tree a', function(e) {
             e.preventDefault();
@@ -284,6 +275,15 @@ var FmCtrl = {
         });
     },
     bind_order_event_handlers: function() {
+        // import orders submit button
+        $j(document).on('click', '#fm-import-orders', function(e) {
+            e.preventDefault();
+            FmGui.show_load_screen();
+            FmCtrl.import_orders(function() {
+                FmGui.hide_load_screen();
+            });
+        });
+
         // when clicking select all orders checkbox, set checked on all order's checkboxes
         $j(document).on('click', '#select-all', function(e) {
             if ($j(this).is(':checked')) {
