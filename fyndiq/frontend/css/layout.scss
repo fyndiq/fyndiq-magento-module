@@ -432,6 +432,9 @@ table {
         border:0px;
         border-spacing: 0;
         border-collapse: collapse;
+        img {
+          max-height: 80px;
+        }
       }
     }
   }
