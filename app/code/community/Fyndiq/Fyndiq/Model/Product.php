@@ -71,18 +71,23 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
         $return_array = array();
         foreach ($products as $producted) {
 
+            //Getting more data from Magento.
             $product = $producted->getData();
-            var_dump($product);
             $magorder = Mage::getModel('catalog/product')->load($product["product_id"]);
 
             $magarray = $magorder->getData();
-            var_dump($magarray);
             $real_array = array();
             $real_array["product-id"] = $product["product_id"];
-            $real_array["article-num-in-stock"] = $product["exported_qty"];
-            $real_array["product-price"] = $magarray["price"]-($magarray["price"]*($product["exported_price_percentage"] / 100));
             $real_array["product-img-1"] = $producted->getImageUrl();
             $real_array["product-title"] = $magarray["name"];
+            $real_array["product-description"] = $magorder->getDescription();
+            $real_array["product-price"] = $magarray["price"]-($magarray["price"]*($product["exported_price_percentage"] / 100));
+            $real_array["product-oldprice"] = $magarray["price"];
+            $real_array["product-market"] = "SE"; // TODO: fix so this use the settings or being get from Magento itself.
+            $real_array["product-currency"] = "SEK"; // TODO: same here as above
+
+            //Articles
+            $real_array["article-quantity"] = $product["exported_qty"];
             $return_array[] = $real_array;
         }
            $first_array = array_values($return_array)[0];
