@@ -59,7 +59,8 @@ class FmFileHandler
      */
     private function writeToFile($fields)
     {
-        return fputcsv($this->fileresource, $fields);
+        $row = '"' . implode('", "', $fields) . '"' . "\n";
+        return fputs($this->fileresource, $row);
     }
 
     /**
