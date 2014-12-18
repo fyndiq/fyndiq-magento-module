@@ -54,6 +54,6 @@ var FmGui = {
 
         setTimeout(function() {
             attached_overlay.find('.close').click();
-        }, 12000);
+        }, 6000);
     }
 };
