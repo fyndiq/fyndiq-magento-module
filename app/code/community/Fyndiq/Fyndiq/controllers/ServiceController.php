@@ -244,7 +244,6 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 $productModel->addProduct($product["id"],$product['fyndiq_quantity'], $product['fyndiq_precentage']);
             }
         }
-        Mage::getModel('fyndiq/product')->saveFile();
 
         self::response();
 
