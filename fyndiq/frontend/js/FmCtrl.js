@@ -282,15 +282,8 @@ var FmCtrl = {
                         'product_warnings': product_warnings
                     });
 
-                    // show modal describing the issue, and ask for acceptance
-                    FmGui.show_modal(products,content, function(products_to_export, type) {
-                        if (type == 'accept') {
-
-                            // export the products
-                            export_products(products_to_export);
-                        } else {
-                        }
-                    });
+                    // export the products
+                    export_products(products);
 
                 // if there were no product warnings
                 } else {
@@ -332,8 +325,13 @@ var FmCtrl = {
                 } else {
                     // delete selected products
                     FmCtrl.products_delete(products,function() {
-                        FmCtrl.load_exported_products(function() {
+                        // reload category to ensure that everything is reset properly
+                        var category = $j('.fm-category-tree li.active').attr('data-category_id');
+                        FmCtrl.load_products(category, function() {
                             FmGui.hide_load_screen();
+                            if (callback) {
+                                callback();
+                            }
                         });
 
                     });
