@@ -191,21 +191,6 @@ var FmCtrl = {
                 var active = $j(this).find('.select input').prop('checked');
                 if (active) {
 
-                    // find all combinations
-                    /*var combinations = [];
-                    $j(this).find('.combinations > li').each(function(k, v) {
-
-                        // check if combination is selected, and store it
-                        var active = $j(this).find('> .select input').prop('checked');
-                        if (active) {
-                            combinations.push({
-                                'id': $j(this).data('id'),
-                                'price': $j(this).data('price'),
-                                'quantity': $j(this).data('quantity')
-                            });
-                        }
-                    });*/
-
                     // store product id and combinations
                     var price = $j(this).find("td.prices > div.price > input").val();
                     var fyndiq_precentage = $j(this).find("td.prices > div.fyndiq_price > input").val();
@@ -221,7 +206,6 @@ var FmCtrl = {
                             'fyndiq_quantity':fyndiq_quantity,
                             'quantity': $j(this).data('quantity')
                         }
-                        //'combinations': combinations
                     });
                 }
             });
@@ -233,39 +217,6 @@ var FmCtrl = {
 
             } else {
 
-                // check all products for warnings
-                var product_warnings = [];
-                for (var i = 0; i < products.length; i++) {
-                    var product = products[i];
-
-                    var product_warning = false;
-                    var lowest_price = false;
-                    var highest_price = false;
-
-                    // check each combination for warnings
-                    /*for (var j = 0; j < product['combinations'].length; j++) {
-                        var combination = product['combinations'][j];
-
-                        // if combination price differs from product price, show warning for this product
-                        if (combination['price'] != product['price']) {
-                            product_warning = true;
-
-                            // also record the highest and lowest price
-                            if (combination['price'] < lowest_price || lowest_price === false) {
-                                lowest_price = combination['price'];
-                            }
-                            if (combination['price'] > highest_price || highest_price === false) {
-                                highest_price = combination['price'];
-                            }
-                        }
-                    }*/
-                    // if product needs a warning, store relevant data
-                        product_warnings.push({
-                            'product': product
-                        });
-                }
-
-                // helper function that does the actual product export
                 var export_products = function(products) {
                     FmGui.show_load_screen(function() {
                         FmCtrl.export_products(products, function() {
@@ -274,23 +225,8 @@ var FmCtrl = {
                     });
                 };
 
-                // if there were any product warnings
-                if (product_warnings.length > 0) {
+                export_products(products);
 
-                    var content = tpl['accept-product-export']({
-                        'module_path': module_path,
-                        'product_warnings': product_warnings
-                    });
-
-                    // export the products
-                    export_products(products);
-
-                // if there were no product warnings
-                } else {
-
-                    // export the products
-                    export_products(products);
-                }
             }
         });
 
@@ -329,9 +265,6 @@ var FmCtrl = {
                         var category = $j('.fm-category-tree li.active').attr('data-category_id');
                         FmCtrl.load_products(category, function() {
                             FmGui.hide_load_screen();
-                            if (callback) {
-                                callback();
-                            }
                         });
 
                     });
