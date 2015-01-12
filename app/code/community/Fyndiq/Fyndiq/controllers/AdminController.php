@@ -19,7 +19,6 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
     {
         $this->loadLayout(array('default'));
 
-        //$this->Heads();
         try {
             FmHelpers::call_api('GET', 'account/');
             $api_available = true;
@@ -35,6 +34,32 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
                 $this->setupTemplate('fyndiq/apierror.phtml', $page_args);
             } else {
                 $this->setupTemplate('fyndiq/exportproducts.phtml');
+            }
+        }
+    }
+
+
+    /**
+     * Show order list
+     */
+    public function orderlistAction()
+    {
+        $this->loadLayout(array('default'));
+
+        try {
+            FmHelpers::call_api('GET', 'account/');
+            $api_available = true;
+        } catch (Exception $e) {
+            $api_available = false;
+            $page_args['message'] = $e->getMessage();
+        }
+        if ($this->getAPIToken() == "" OR $this->getUsername() == "") {
+            $this->setupTemplate('fyndiq/needapiinfo.phtml');
+        } else {
+            if (!$api_available) {
+                $this->setupTemplate('fyndiq/apierror.phtml', $page_args);
+            } else {
+                $this->setupTemplate('fyndiq/orderlist.phtml');
             }
         }
     }

@@ -23,4 +23,15 @@ $productstable = $installer->getConnection()
 
 $installer->getConnection()->createTable($productstable);
 
+$table = $installer->getConnection()
+    ->newTable($installer->getTable('fyndiq/order'))
+    ->addColumn('order_id', Varien_Db_Ddl_Table::TYPE_INTEGER, null, array(
+            'nullable'  => false,
+        ), 'Magento Order')
+    ->addColumn('fyndiq_orderid', Varien_Db_Ddl_Table::TYPE_INTEGER, null, array(
+            'nullable'  => false,
+        ), 'Fyndiq Order');
+
+$installer->getConnection()->createTable($table);
+
 $installer->endSetup();

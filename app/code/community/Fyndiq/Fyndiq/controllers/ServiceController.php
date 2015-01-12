@@ -5,6 +5,7 @@
  * Date: 28/08/14
  * Time: 17:12
  */
+require_once(dirname(dirname(__FILE__)) . '/Model/Order.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/messages.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
@@ -256,6 +257,60 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             $productModel->delete();
         }
         $this->response();
+    }
+
+    /**
+     * Loading imported orders
+     *
+     * @param $args
+     */
+    public function load_orders($args) {
+        $orders = Mage::getModel('fyndiq/order')->getImportedOrders();
+        self::response($orders);
+    }
+
+    /**
+     * Getting the orders to be saved in Magento.
+     *
+     * @param $args
+     */
+    public function import_orders($args) {
+        try {
+            $ret = FmHelpers::call_api('GET', 'order/');
+
+            foreach ($ret["data"]->objects as $order) {
+                if(!Mage::getModel('fyndiq/order')->orderExists($order->id)) {
+                    $fyndiq_order_infos = FmHelpers::call_api('GET', 'order_row/?order__exact=' . $order->id);
+                    Mage::getModel('fyndiq/order')->create($order,$fyndiq_order_infos);
+                }
+            }
+            self::response($ret);
+        } catch (Exception $e) {
+            self::response_error(
+                FmMessages::get('unhandled-error-title'),
+                FmMessages::get('unhandled-error-message') . ' (' . $e->getMessage() . ')'
+            );
+        }
+    }
+
+    public function get_delivery_notes($args) {
+        try {
+            //TESTDATA!!!!
+            // TODO: fix this testdata to real data
+            $orders = new stdClass();
+            $orders->orders = array();
+            $orders->orders[] = 17;
+            $orders->orders[] = 1;
+            $orders->orders[] = 12;
+
+            $ret = FmHelpers::call_api('POST', 'function/delivery_note/', $orders, "fyndiq/files/deliverynote.pdf");
+            self::response($ret);
+        } catch (Exception $e) {
+            self::response_error(
+                FmMessages::get('unhandled-error-title'),
+                FmMessages::get('unhandled-error-message') . ' (' . $e->getMessage() . ')'
+            );
+        }
     }
 
 } 

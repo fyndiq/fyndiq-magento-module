@@ -94,8 +94,39 @@ var FmCtrl = {
         });
     },
 
+    load_orders: function(callback) {
+        FmCtrl.call_service('load_orders', {}, function(status, orders) {
+            if (status == 'success') {
+                $j('.fm-order-list-container').html(tpl['orders-list']({
+                    'module_path': module_path,
+                    'orders': orders
+                }));
+            }
+
+            if (callback) {
+                callback();
+            }
+        });
+    },
+
     import_orders: function(callback) {
-        FmCtrl.call_service('import_orders', {}, function() {
+        FmCtrl.call_service('import_orders', {}, function(status, orders) {
+            if (status == 'success') {
+                FmGui.show_message('success', messages['orders-imported-title'],
+                    messages['orders-imported-message']);
+            }
+            if (callback) {
+                callback();
+            }
+        });
+    },
+
+    get_delivery_notes: function(orders, callback) {
+        FmCtrl.call_service('get_delivery_notes', {"orders": orders}, function(status) {
+            if (status == 'success') {
+                FmGui.show_message('success', messages['delivery-note-imported-title'],
+                    'You can get the notes <a href="' + module_path + '/fyndiq/files/deliverynote.pdf">here</a>');
+            }
             if (callback) {
                 callback();
             }
@@ -143,15 +174,6 @@ var FmCtrl = {
     },
 
     bind_event_handlers: function() {
-
-        // import orders submit button
-        $j(document).on('click', '#fm-import-orders', function(e) {
-            e.preventDefault();
-            FmGui.show_load_screen();
-            FmCtrl.import_orders(function() {
-                FmGui.hide_load_screen();
-            });
-        });
 
         // when clicking category in tree, load its products
         $j(document).on('click', '.fm-category-tree a', function(e) {
@@ -272,6 +294,37 @@ var FmCtrl = {
                 }
             });
 
+        });
+    },
+    bind_order_event_handlers: function() {
+        // import orders submit button
+        $j(document).on('click', '#fm-import-orders', function(e) {
+            e.preventDefault();
+            FmGui.show_load_screen();
+            FmCtrl.import_orders(function() {
+                FmGui.hide_load_screen();
+            });
+        });
+
+        // when clicking select all orders checkbox, set checked on all order's checkboxes
+        $j(document).on('click', '#select-all', function(e) {
+            if ($j(this).is(':checked')) {
+                $j(".fm-orders-list tr .select input").each(function () {
+                    $j(this).prop("checked", true);
+                });
+
+            } else {
+                $j(".fm-orders-list tr .select input").each(function () {
+                    $j(this).prop("checked", false);
+                });
+            }
+        });
+        $j(document).on('click', '#getdeliverynote', function() {
+            FmGui.show_load_screen(function() {
+               FmCtrl.get_delivery_notes([{"order": 12}], function() {
+                   FmGui.hide_load_screen();
+               });
+            });
         });
     }
 };

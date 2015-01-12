@@ -17,6 +17,9 @@
                     <product>
                         <table>fyndiq_products</table>
                     </product>
+                    <order>
+                        <table>fyndiq_orders</table>
+                    </order>
                 </entities>
             </fyndiq_resource>
         </models>
@@ -100,5 +103,15 @@
                 <quantity_percentage>10</quantity_percentage>
             </fyndiq_group>
         </fyndiq>
+        <carriers>
+            <fyndiq_fyndiq>
+                <active>1</active>
+                <model>fyndiq/carrier</model>
+                <title>Fyndiq Carrier</title>
+                <sort_order>10</sort_order>
+                <sallowspecific>0</sallowspecific>
+                <express_max_weight>1</express_max_weight>
+            </fyndiq_fyndiq>
+        </carriers>
     </default>
 </config>

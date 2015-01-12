@@ -108,6 +108,11 @@
         width: 920px;
     }
 
+    .fm-orderlist-panel {
+      float: left;
+      width: 820px;
+    }
+
     .fm-sidebar {
         float: left;
         width: 245px;
@@ -166,6 +171,22 @@
     }
 }
 
+
+.fm-order-list-controls {
+  overflow: hidden;
+  margin: 10px 0;
+
+  .select {
+    float: left;
+    margin: 0;
+  }
+
+  .export {
+    float: right;
+    margin: 0;
+  }
+}
+
 .fm-menu {
   width:99%;
   clear:both;
@@ -206,9 +227,9 @@
       &:last-child {
       }
     }
-  &.right {
-    float: right;
-  }
+    &.right {
+      float: right;
+    }
   }
 }
 

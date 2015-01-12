@@ -21,13 +21,16 @@ class FmMessages {
         'products-exported-message'=>   'The products you selected have been exported to Fyndiq.',
 
         'orders-imported-title'=>       'Orders imported!',
-        'orders-imported-message'=>    'The orders from Fyndiq have been imported to Prestashop.',
+        'orders-imported-message'=>    'The orders from Fyndiq have been imported to Magento.',
 
         'products-not-selected-title'=>     'No products selected',
         'products-not-selected-message'=>   'You have to select at least one product to export.',
 
         'products-deleted-title'=>     'Products Deleted!',
-        'products-deleted-message'=>   'The products you selected have been deleted from the feed.'
+        'products-deleted-message'=>   'The products you selected have been deleted from the feed.',
+
+
+        'delivery-note-imported-title' => 'Delivery Notes downloaded!'
     );
 
     public static function get($name) {
