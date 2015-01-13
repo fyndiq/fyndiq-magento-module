@@ -114,4 +114,12 @@
             </fyndiq_fyndiq>
         </carriers>
     </default>
+    <crontab>
+        <jobs>
+            <feed_products>
+                <schedule><cron_expr>*/30 * * * *</cron_expr></schedule>
+                <run><model>fyndiq/cron::exportProducts</model></run>
+            </feed_products>
+        </jobs>
+    </crontab>
 </config>

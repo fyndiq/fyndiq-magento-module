@@ -29,4 +29,8 @@ class FmConfig {
     public static function getVersion() {
         return (string)Mage::getConfig()->getNode()->modules->Fyndiq_Fyndiq->version;
     }
+
+    public static function getFeedPath() {
+        return "fyndiq/files/feed.csv";
+    }
 } 
