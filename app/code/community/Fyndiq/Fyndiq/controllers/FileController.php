@@ -5,7 +5,10 @@ class Fyndiq_Fyndiq_FileController extends Mage_Core_Controller_Front_Action {
 
 
     function indexAction() {
+        //Setting content type to csv.
         $this->getResponse()->setHeader('Content-type', 'text/csv');
+
+        //Check if feed file exist and if it is too old
         try {
             $fileexists = file_get_contents(FmConfig::getFeedPath());
         }
@@ -14,20 +17,20 @@ class Fyndiq_Fyndiq_FileController extends Mage_Core_Controller_Front_Action {
         }
 
         if($fileexists) {
+            // If feed last modified date is older than 1 hour, create a new one
+            // just if the cronjob didn't run.
             if(filemtime(FmConfig::getFeedPath()) < strtotime('-1 hour',time())) {
                 $FyndiqCron = new Fyndiq_Fyndiq_Model_Cron();
                 $FyndiqCron->exportProducts();
-                $this->getResponse()->setBody(file_get_contents(FmConfig::getFeedPath()));
-            }
-            else {
-                $this->getResponse()->setBody(file_get_contents(FmConfig::getFeedPath()));
             }
         }
         else {
+            //The file hasn't been created yet, create it.
             $FyndiqCron = new Fyndiq_Fyndiq_Model_Cron();
             $FyndiqCron->exportProducts();
-            $this->getResponse()->setBody(file_get_contents(FmConfig::getFeedPath()));
         }
 
+        //printing out the content from feed file to the visitor.
+        $this->getResponse()->setBody(file_get_contents(FmConfig::getFeedPath()));
     }
 }

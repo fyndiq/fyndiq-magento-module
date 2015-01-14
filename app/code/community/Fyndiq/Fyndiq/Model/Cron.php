@@ -10,10 +10,18 @@ class Fyndiq_Fyndiq_Model_Cron
 {
     private $fileresource = null;
 
+    /**
+     * Saving products to the file.
+     */
     function exportProducts() {
         $this->writeOverFile($this->printFile());
     }
 
+    /**
+     * Adding products added for export to the feed file
+     *
+     * @return string
+     */
     private function printFile() {
         $products = Mage::getModel('fyndiq/product')->getCollection()->setOrder('id', 'DESC');
         $products = $products->getItems();
@@ -32,6 +40,7 @@ class Fyndiq_Fyndiq_Model_Cron
                 $imgSrc = "";
             }
 
+            // Setting the data
             $magarray = $magorder->getData();
             $real_array = array();
             $real_array["product-id"] = $product["product_id"];
