@@ -13,9 +13,8 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
 
     /**
      * The page where everything happens.
-     * TODO: maybe move this to index instead?
      */
-    public function exportproductsAction()
+    public function indexAction()
     {
         $this->loadLayout(array('default'));
 
