@@ -293,6 +293,11 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         }
     }
 
+    /**
+     * Getting a pdf of orders.
+     *
+     * @param $args
+     */
     public function get_delivery_notes($args) {
         try {
             //TESTDATA!!!!

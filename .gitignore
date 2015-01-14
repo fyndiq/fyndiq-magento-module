@@ -1,2 +1,4 @@
 .idea
 fyndiq/frontend/css/.sass-cache
+fyndiq/files/*.csv
+fyndiq/files/*.pdf
