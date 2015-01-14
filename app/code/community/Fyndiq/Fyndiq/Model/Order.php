@@ -68,12 +68,13 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
      * @param $fyndiq_order
      * @param $order_infos
      */
-    public function create($fyndiq_order, $order_infos)
+    public function create($fyndiq_order)
     {
 
         //get customer by mail
         $customer = Mage::getModel("customer/customer");
         $customer->setWebsiteId(Mage::app()->getWebsite()->getId());
+        // TODO: Needs to fix email for the one fyndiq email.
         $customer->loadByEmail($fyndiq_order->customer_email);
         if (!$customer->getId()) {
             $customer->setEmail($fyndiq_order->customer_email);
@@ -143,19 +144,16 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $quote = Mage::getModel('sales/quote')->setStoreId(Mage::app('default')->getStore('default')->getId());
         $quote->assignCustomer($customer);
 
-        //$product_id = $_POST['id']; //id of product we want to purchase that was posted to this script
-        foreach ($order_infos["data"]->objects as $row) {
-            // Get article for order row
-            $article_id = $row->article;
-            //$row_article = FmHelpers::call_api('GET', 'article/'.$article_id.'/');
+        //Adding products to order
+        $articles = $fyndiq_order->order_rows;
+        foreach ($articles as $row) {
 
-            // get id of the product
-            // TODO: shall be from a table later (to connect a product in magento with a id for a article in Fyndiq)
-            $product_id = 1;
+            // get sku of the product
+            $sku = $row->sku;
 
-            $_product = Mage::getModel('catalog/product')->load($product_id);
+            $_product = Mage::getModel('catalog/product')->loadByAttribute('sku', $sku);
             //add product to the cart
-            $product_info = array('qty' => $row->num_articles, 'price' => $_product->getPrice());
+            $product_info = array('qty' => $row->quantity, 'price' => $_product->getPrice());
             $quote->addProduct($_product, new Varien_Object($product_info));
         }
 

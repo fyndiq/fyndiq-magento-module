@@ -280,8 +280,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
             foreach ($ret["data"]->objects as $order) {
                 if(!Mage::getModel('fyndiq/order')->orderExists($order->id)) {
-                    $fyndiq_order_infos = FmHelpers::call_api('GET', 'order_row/?order__exact=' . $order->id);
-                    Mage::getModel('fyndiq/order')->create($order,$fyndiq_order_infos);
+                    Mage::getModel('fyndiq/order')->create($order);
                 }
             }
             self::response($ret);
