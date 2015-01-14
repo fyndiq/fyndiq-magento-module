@@ -49,8 +49,8 @@ class Fyndiq_Fyndiq_Model_Cron
             $real_array["product-description"] = $magorder->getDescription();
             $real_array["product-price"] = $magarray["price"]-($magarray["price"]*($product["exported_price_percentage"] / 100));
             $real_array["product-oldprice"] = $magarray["price"];
-            $real_array["product-market"] = "SE"; // TODO: fix so this use the settings or being get from Magento itself.
-            $real_array["product-currency"] = "SEK"; // TODO: same here as above
+            $real_array["product-market"] = FmConfig::get('country');
+            $real_array["product-currency"] = FmConfig::get('currency');
 
             //Articles
             $real_array["article-quantity"] = $product["exported_qty"];
