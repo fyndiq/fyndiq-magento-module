@@ -54,6 +54,7 @@ class Fyndiq_Fyndiq_Model_Cron
 
             //Articles
             $real_array["article-quantity"] = $product["exported_qty"];
+            $real_array["article-sku"] = $magorder->getSKU();
             $return_array[] = $real_array;
         }
         $first_array = array_values($return_array)[0];
