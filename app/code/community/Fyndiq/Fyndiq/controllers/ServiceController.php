@@ -299,13 +299,11 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     public function get_delivery_notes($args) {
         try {
-            //TESTDATA!!!!
-            // TODO: fix this testdata to real data
             $orders = new stdClass();
             $orders->orders = array();
-            $orders->orders[] = 17;
-            $orders->orders[] = 1;
-            $orders->orders[] = 12;
+            foreach($args["orders"] as $order) {
+                $orders->orders[] = $order;
+            }
 
             $ret = FmHelpers::call_api('POST', 'function/delivery_note/', $orders, "fyndiq/files/deliverynote.pdf");
             self::response($ret);

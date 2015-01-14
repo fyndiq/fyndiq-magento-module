@@ -320,8 +320,19 @@ var FmCtrl = {
             }
         });
         $j(document).on('click', '#getdeliverynote', function() {
+            var orders = [];
+
+            $j('.fm-orders-list > tr').each(function(k, v) {
+                // check if product is selected
+                var active = $j(this).find('.select input').prop('checked');
+                if (active) {
+                    console.log($j(this));
+                    orders.push($j(this).data('id'));
+                }
+            });
+
             FmGui.show_load_screen(function() {
-               FmCtrl.get_delivery_notes([{"order": 12}], function() {
+               FmCtrl.get_delivery_notes(orders, function() {
                    FmGui.hide_load_screen();
                });
             });
