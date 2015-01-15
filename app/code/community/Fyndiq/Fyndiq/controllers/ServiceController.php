@@ -305,7 +305,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 $orders->orders[] = $order;
             }
 
-            $ret = FmHelpers::call_api('POST', 'function/delivery_note/', $orders, "fyndiq/files/deliverynote.pdf");
+            $ret = FmHelpers::call_api('POST', 'delivery_notes/', $orders, "fyndiq/files/deliverynote.pdf");
             self::response($ret);
         } catch (Exception $e) {
             self::response_error(

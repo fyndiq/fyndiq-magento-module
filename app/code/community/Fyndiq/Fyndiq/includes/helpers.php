@@ -155,7 +155,7 @@ class FmHelpers
     {
         $module = "FyndiqMechantMagento" . FmConfig::getVersion();
 
-        $response = FyndiqAPI::call_file($module, $username, $api_token, $method, $path, $data);
+        $response = FyndiqAPI::call($module, $username, $api_token, $method, $path, $data);
 
         if ($response['status'] == 404) {
             throw new FyndiqAPIPageNotFound('Not Found: ' . $path);
@@ -176,13 +176,13 @@ class FmHelpers
         // 400 may contain error messages intended for the user
         if ($response['status'] == 400) {
             // if there are any error messages, save them to class static member
-            if (!is_null($response["raw-data"]) && property_exists($response["raw-data"], 'error_messages')) {
-                $error_messages = $response["raw-data"]->error_messages;
+            if (!is_null($response["data"]) && property_exists($response["data"], 'error_messages')) {
+                $error_messages = $response["data"]->error_messages;
 
                 // if it contains several messages as an array
                 if (is_array($error_messages)) {
 
-                    foreach ($response["raw-data"]->error_messages as $error_message) {
+                    foreach ($response["data"]->error_messages as $error_message) {
                         self::$error_messages[] = $error_message;
                     }
 
