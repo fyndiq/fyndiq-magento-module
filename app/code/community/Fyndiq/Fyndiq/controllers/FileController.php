@@ -1,5 +1,5 @@
 <?php
-require_once(dirname(dirname(__FILE__)) . '/Model/Cron.php');
+require_once(dirname(dirname(__FILE__)) . '/Model/Fyndiqcron.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
 class Fyndiq_Fyndiq_FileController extends Mage_Core_Controller_Front_Action {
 
@@ -20,13 +20,13 @@ class Fyndiq_Fyndiq_FileController extends Mage_Core_Controller_Front_Action {
             // If feed last modified date is older than 1 hour, create a new one
             // just if the cronjob didn't run.
             if(filemtime(FmConfig::getFeedPath()) < strtotime('-1 hour',time())) {
-                $FyndiqCron = new Fyndiq_Fyndiq_Model_Cron();
+                $FyndiqCron = new Fyndiq_Fyndiq_Model_FyndiqCron();
                 $FyndiqCron->exportProducts();
             }
         }
         else {
             //The file hasn't been created yet, create it.
-            $FyndiqCron = new Fyndiq_Fyndiq_Model_Cron();
+            $FyndiqCron = new Fyndiq_Fyndiq_Model_FyndiqCron();
             $FyndiqCron->exportProducts();
         }
 

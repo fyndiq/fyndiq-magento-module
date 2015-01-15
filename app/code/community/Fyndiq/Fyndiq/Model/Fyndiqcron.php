@@ -6,14 +6,14 @@
  * @author Håkan Nylén <hakan.nylen@fyndiq.se>
  */
 require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
-class Fyndiq_Fyndiq_Model_Cron
+class Fyndiq_Fyndiq_Model_FyndiqCron
 {
     private $fileresource = null;
 
     /**
      * Saving products to the file.
      */
-    function exportProducts() {
+    public function exportProducts() {
         $this->writeOverFile($this->printFile());
     }
 

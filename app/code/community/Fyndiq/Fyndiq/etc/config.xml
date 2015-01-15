@@ -11,6 +11,9 @@
                 <class>Fyndiq_Fyndiq_Model</class>
                 <resourceModel>fyndiq_resource</resourceModel>
             </fyndiq>
+            <cron>
+                <class>Fyndiq_Fyndiq_Model_FyndiqCron</class>
+            </cron>
             <fyndiq_resource>
                 <class>Fyndiq_Fyndiq_Model_Resource</class>
                 <entities>
