@@ -276,9 +276,9 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     public function import_orders($args) {
         try {
-            $ret = FmHelpers::call_api('GET', 'order/');
+            $ret = FmHelpers::call_api('GET', 'orders/');
 
-            foreach ($ret["data"]->objects as $order) {
+            foreach ($ret["data"] as $order) {
                 if(!Mage::getModel('fyndiq/order')->orderExists($order->id)) {
                     Mage::getModel('fyndiq/order')->create($order);
                 }

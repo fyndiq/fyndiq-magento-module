@@ -69,34 +69,11 @@ var FmCtrl = {
             }
         });
     },
-    load_exported_products: function(callback) {
-        // unset active class on previously selected category
-        $j('.fm-category-tree li').removeClass('active');
-
-        FmCtrl.call_service('get_exported_products', {}, function(status, products) {
-            if (status == 'success') {
-                $j('.fm-exported-product-list-container').html(tpl['product-list']({
-                    'module_path': module_path,
-                    'products': products
-                }));
-
-                // http://stackoverflow.com/questions/5943994/jquery-slidedown-snap-back-issue
-                // set correct height on combinations to fix jquery slideDown jump issue
-                $j('.fm-exported-product-list .combinations').each(function(k, v) {
-                    $j(v).css('height', $j(v).height());
-                    $j(v).hide();
-                });
-            }
-
-            if (callback) {
-                callback();
-            }
-        });
-    },
 
     load_orders: function(callback) {
         FmCtrl.call_service('load_orders', {}, function(status, orders) {
             if (status == 'success') {
+                $j('.fm-order-list-container').html("");
                 $j('.fm-order-list-container').html(tpl['orders-list']({
                     'module_path': module_path,
                     'orders': orders
@@ -302,7 +279,9 @@ var FmCtrl = {
             e.preventDefault();
             FmGui.show_load_screen();
             FmCtrl.import_orders(function() {
-                FmGui.hide_load_screen();
+                FmCtrl.load_orders(function() {
+                    FmGui.hide_load_screen();
+                });
             });
         });
 
