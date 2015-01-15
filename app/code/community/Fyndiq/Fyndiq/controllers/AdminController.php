@@ -19,7 +19,7 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
         $this->loadLayout(array('default'));
 
         try {
-            FmHelpers::call_api('GET', 'account/');
+            FmHelpers::call_api('GET', 'orders/');
             $api_available = true;
         } catch (Exception $e) {
             $api_available = false;
@@ -46,7 +46,7 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
         $this->loadLayout(array('default'));
 
         try {
-            FmHelpers::call_api('GET', 'account/');
+            FmHelpers::call_api('GET', 'orders/');
             $api_available = true;
         } catch (Exception $e) {
             $api_available = false;
