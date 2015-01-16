@@ -66,7 +66,6 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
      * Create a order in magento based on Fyndiq Order
      *
      * @param $fyndiq_order
-     * @param $order_infos
      */
     public function create($fyndiq_order)
     {
