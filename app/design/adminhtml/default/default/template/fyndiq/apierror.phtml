@@ -1,17 +1,21 @@
-<link rel="stylesheet" type="text/css" href="<?php echo $this->getFrontendPath(); ?>/fyndiq/frontend/css/main.css" media="all">
+<link rel="stylesheet" type="text/css" href="<?php echo $this->getFrontendPath(); ?>frontend/css/main.css" media="all">
 
 <div class="fm-container">
 
     <img class="fyndiqlogo" src="<?php echo $this->getFrontendPath(); ?>frontend/images/logo.png" alt="Fyndiq logotype">
 
-    <div class="fm-api-unavailable">
-        <h2>Unfortunately, Fyndiq API is currently not available.</h2>
-        <p>
-            If this problem persists, please contact integration support, and attach the error message shown below.
-        </p>
-        <p>
-            Error message: <?php echo $this->data["message"]; ?>
-        </p>
+    <div class="fm-main-panel">
+        <form action="" method="post" class="fm-form orders">
+            <fieldset>
+                <h2>Unfortunately, Fyndiq API is currently not available.</h2>
+                <p>
+                    If this problem persists, please contact integration support, and attach the error message shown below.
+                </p>
+                <p>
+                    Error message: <?php echo $this->data["message"]; ?>
+                </p>
+            </fieldset>
+        </form>
     </div>
 
 </div>
