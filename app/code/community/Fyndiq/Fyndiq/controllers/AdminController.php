@@ -25,7 +25,7 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
             $api_available = false;
             $page_args['message'] = $e->getMessage();
         }
-        if ($this->getAPIToken() == "" OR $this->getUsername() == "" OR $page_args['message'] == "Unauthorized") {
+        if ($this->getAPIToken() == "" OR $this->getUsername() == "" OR isset($page_args['message']) AND $page_args['message'] == "Unauthorized") {
             $this->setupTemplate('fyndiq/needapiinfo.phtml');
         } else {
             if (!$api_available) {
@@ -52,7 +52,7 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
             $api_available = false;
             $page_args['message'] = $e->getMessage();
         }
-        if ($this->getAPIToken() == "" OR $this->getUsername() == "" OR $page_args['message'] == "Unauthorized") {
+        if ($this->getAPIToken() == "" OR $this->getUsername() == "" OR isset($page_args['message']) AND $page_args['message'] == "Unauthorized") {
             $this->setupTemplate('fyndiq/needapiinfo.phtml');
         } else {
             if (!$api_available) {
