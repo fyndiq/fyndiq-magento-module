@@ -306,13 +306,14 @@ var FmCtrl = {
                 var active = $j(this).find('.select input').prop('checked');
                 if (active) {
                     console.log($j(this));
-                    orders.push($j(this).data('id'));
+                    orders.push($j(this).data('fyndiqid'));
                 }
             });
 
             FmGui.show_load_screen(function() {
                FmCtrl.get_delivery_notes(orders, function() {
                    FmGui.hide_load_screen();
+                   window.location.replace(urlpath0 + "fyndiq/files/deliverynote.pdf");
                });
             });
         });

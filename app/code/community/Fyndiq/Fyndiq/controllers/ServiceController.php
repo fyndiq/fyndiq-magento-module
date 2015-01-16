@@ -302,7 +302,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             $orders = new stdClass();
             $orders->orders = array();
             foreach($args["orders"] as $order) {
-                $orders->orders[] = $order;
+                $orders->orders[] = intval($order);
             }
 
             $ret = FmHelpers::call_api('POST', 'delivery_notes/', $orders, "fyndiq/files/deliverynote.pdf");
