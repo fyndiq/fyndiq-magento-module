@@ -150,6 +150,14 @@ var FmCtrl = {
         });
     },
 
+    disconnect_account: function(callback) {
+        FmCtrl.call_service('disconnect_account', {}, function(status) {
+            if(callback) {
+                callback();
+            }
+        });
+    },
+
     bind_event_handlers: function() {
 
         // when clicking category in tree, load its products

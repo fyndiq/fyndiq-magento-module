@@ -27,3 +27,10 @@ $j(document).ready(function() {
     });
 
 });
+function confirmRemoval() {
+    if(confirm(messages["disconnect-confirm"])) {
+        FmCtrl.disconnect_account(function() {
+            location.reload();
+        });
+    }
+}

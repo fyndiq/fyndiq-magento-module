@@ -315,4 +315,11 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         }
     }
 
+    public function disconnect_account($args) {
+        $config = new Mage_Core_Model_Config();
+        $config ->saveConfig('fyndiq/fyndiq_group/apikey', "", 'default', "");
+        $config ->saveConfig('fyndiq/fyndiq_group/username', "", 'default', "");
+        self::response(true);
+    }
+
 } 
