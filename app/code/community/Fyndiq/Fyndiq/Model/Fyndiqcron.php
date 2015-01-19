@@ -14,7 +14,13 @@ class Fyndiq_Fyndiq_Model_FyndiqCron
      * Saving products to the file.
      */
     public function exportProducts() {
+        $this->fileresource = new Varien_File_Csv();
         $this->writeOverFile($this->printFile());
+    }
+
+    function writeOverFile($data) {
+        $path = FmConfig::getFeedPath();
+        $this->fileresource->saveData($path,$data);
     }
 
     /**
@@ -54,11 +60,11 @@ class Fyndiq_Fyndiq_Model_FyndiqCron
             $magarray = $magproduct->getData();
             $real_array = array();
             if(isset($magarray["price"])) {
-                $real_array["product-id"] = $product["product_id"];
+                $real_array["product-id"] = $productinfo[$magarray["entity_id"]]["product_id"];
                 $real_array["product-image-1"] = strval($imgSrc);
                 $real_array["product-title"] = $magarray["name"];
                 $real_array["product-description"] = $magproduct->getDescription();
-                $real_array["product-price"] = $magarray["price"]-($magarray["price"]*($productinfo[$product["product_id"]]["exported_price_percentage"] / 100));
+                $real_array["product-price"] = $magarray["price"]-($magarray["price"]*($productinfo[$magarray["entity_id"]]["exported_price_percentage"] / 100));
                 $real_array["product-price"] = number_format((float)$real_array["product-price"], 2, '.', '');
                 $real_array["product-vat-percent"] = "25";
                 $real_array["product-oldprice"] = number_format((float)$magarray["price"], 2, '.', '');
@@ -70,7 +76,7 @@ class Fyndiq_Fyndiq_Model_FyndiqCron
                 //Category
                 $categoryIds = $magproduct->getCategoryIds();
 
-                if(count($categoryIds) ){
+                if(count($categoryIds) > 0){
                     $firstCategoryId = $categoryIds[0];
                     $_category = $category_model->load($firstCategoryId);
 
@@ -79,7 +85,7 @@ class Fyndiq_Fyndiq_Model_FyndiqCron
                 }
 
                 //Articles
-                $real_array["article-quantity"] = $productinfo[$product["product_id"]]["exported_qty"];
+                $real_array["article-quantity"] = $productinfo[$magarray["entity_id"]]["exported_qty"];
                 $real_array["article-name"] = $magarray["name"];
                 // TODO: fix location to something except test
                 $real_array["article-location"] = "test";
@@ -91,57 +97,6 @@ class Fyndiq_Fyndiq_Model_FyndiqCron
         $key_values = array_keys($first_array);
         array_unshift($return_array, $key_values);
         return $return_array;
-    }
-
-    /**
-     * Write over a existing file if it exists and write all fields.
-     *
-     * @param $products
-     */
-    function writeOverFile($products)
-    {
-        $this->openFile(true);
-        foreach($products as $product) {
-            $this->writeToFile($product);
-        }
-        $this->closeFile();
-    }
-
-    /**
-     * simplifying the way to write to the file.
-     *
-     * @param $fields
-     * @return int|boolean
-     */
-    private function writeToFile($fields)
-    {
-        return fputcsv($this->fileresource, $fields);
-    }
-
-    /**
-     * opening the file resource
-     *
-     * @param bool $removeFile
-     */
-    private function openFile($removeFile = false)
-    {
-        $path = FmConfig::getFeedPath();
-        if ($removeFile && file_exists($path)) {
-            unlink($path);
-        }
-        $this->closeFile();
-        $this->fileresource = fopen($path, 'w+');
-    }
-
-    /**
-     * Closing the file if isn't already closed
-     */
-    private function closeFile()
-    {
-        if ($this->fileresource != null) {
-            fclose($this->fileresource);
-            $this->fileresource = null;
-        }
     }
 
 }
