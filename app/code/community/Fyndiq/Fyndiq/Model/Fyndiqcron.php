@@ -26,11 +26,21 @@ class Fyndiq_Fyndiq_Model_FyndiqCron
         $products = Mage::getModel('fyndiq/product')->getCollection()->setOrder('id', 'DESC');
         $products = $products->getItems();
         $return_array = array();
-        foreach ($products as $producted) {
+        $ids_to_export = array();
+        $productinfo = array();
+        foreach($products as $producted) {
+           $product = $producted->getData();
+           $ids_to_export[] = intval($product["product_id"]);
+           $productinfo[$product["product_id"]] = $producted;
+        }
 
-            //Getting more data from Magento.
-            $product = $producted->getData();
-            $magproduct = Mage::getModel('catalog/product')->load($product["product_id"]);
+        //Initialize models here so it saves memory.
+        $product_model = Mage::getModel('catalog/product');
+        $category_model = Mage::getModel('catalog/category');
+
+        $products_to_export = $product_model->getCollection()->addAttributeToSelect('*')->addAttributeToFilter( 'entity_id', array( 'in' => $ids_to_export))->load();
+
+        foreach ($products_to_export as $magproduct) {
 
             // Get image
             try {
@@ -43,37 +53,39 @@ class Fyndiq_Fyndiq_Model_FyndiqCron
             // Setting the data
             $magarray = $magproduct->getData();
             $real_array = array();
-            $real_array["product-id"] = $product["product_id"];
-            $real_array["product-image-1"] = strval($imgSrc);
-            $real_array["product-title"] = $magarray["name"];
-            $real_array["product-description"] = $magproduct->getDescription();
-            $real_array["product-price"] = $magarray["price"]-($magarray["price"]*($product["exported_price_percentage"] / 100));
-            $real_array["product-price"] = number_format((float)$real_array["product-price"], 2, '.', '');
-            $real_array["product-vat-percent"] = "25";
-            $real_array["product-oldprice"] = number_format((float)$magarray["price"], 2, '.', '');
-            $real_array["product-market"] = FmConfig::get('country');
-            $real_array["product-currency"] = FmConfig::get('currency');
-            // TODO: plan how to fix this brand issue
-            $real_array["product-brand"] = "test";
+            if(isset($magarray["price"])) {
+                $real_array["product-id"] = $product["product_id"];
+                $real_array["product-image-1"] = strval($imgSrc);
+                $real_array["product-title"] = $magarray["name"];
+                $real_array["product-description"] = $magproduct->getDescription();
+                $real_array["product-price"] = $magarray["price"]-($magarray["price"]*($productinfo[$product["product_id"]]["exported_price_percentage"] / 100));
+                $real_array["product-price"] = number_format((float)$real_array["product-price"], 2, '.', '');
+                $real_array["product-vat-percent"] = "25";
+                $real_array["product-oldprice"] = number_format((float)$magarray["price"], 2, '.', '');
+                $real_array["product-market"] = FmConfig::get('country');
+                $real_array["product-currency"] = FmConfig::get('currency');
+                // TODO: plan how to fix this brand issue
+                $real_array["product-brand"] = "test";
 
-            //Category
-            $categoryIds = $magproduct->getCategoryIds();
+                //Category
+                $categoryIds = $magproduct->getCategoryIds();
 
-            if(count($categoryIds) ){
-                $firstCategoryId = $categoryIds[0];
-                $_category = Mage::getModel('catalog/category')->load($firstCategoryId);
+                if(count($categoryIds) ){
+                    $firstCategoryId = $categoryIds[0];
+                    $_category = $category_model->load($firstCategoryId);
 
-                $real_array["product-category-name"] = $_category->getName();
-                $real_array["product-category-id"] = $firstCategoryId;
+                    $real_array["product-category-name"] = $_category->getName();
+                    $real_array["product-category-id"] = $firstCategoryId;
+                }
+
+                //Articles
+                $real_array["article-quantity"] = $productinfo[$product["product_id"]]["exported_qty"];
+                $real_array["article-name"] = $magarray["name"];
+                // TODO: fix location to something except test
+                $real_array["article-location"] = "test";
+                $real_array["article-sku"] = $magproduct->getSKU();
+                $return_array[] = $real_array;
             }
-
-            //Articles
-            $real_array["article-quantity"] = $product["exported_qty"];
-            $real_array["article-name"] = $magarray["name"];
-            // TODO: fix location to something except test
-            $real_array["article-location"] = "test";
-            $real_array["article-sku"] = $magproduct->getSKU();
-            $return_array[] = $real_array;
         }
         $first_array = array_values($return_array)[0];
         $key_values = array_keys($first_array);
