@@ -87,7 +87,7 @@ class Fyndiq_Fyndiq_Model_Observer
 
                 //Articles
                 $qtyStock = $stock_model->loadByProduct($real_array["product-id"])->getQty();
-                $real_array["article-quantity"] = $qtyStock;
+                $real_array["article-quantity"] = intval($qtyStock);
                 $real_array["article-name"] = addslashes($magarray["name"]);
                 // TODO: fix location to something except test
                 $real_array["article-location"] = "test";
