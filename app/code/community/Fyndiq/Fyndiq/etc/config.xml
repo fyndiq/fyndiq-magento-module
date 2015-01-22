@@ -11,9 +11,9 @@
                 <class>Fyndiq_Fyndiq_Model</class>
                 <resourceModel>fyndiq_resource</resourceModel>
             </fyndiq>
-            <cron>
-                <class>Fyndiq_Fyndiq_Model_FyndiqCron</class>
-            </cron>
+            <observer>
+                <class>Fyndiq_Fyndiq_Model_Observer</class>
+            </observer>
             <fyndiq_resource>
                 <class>Fyndiq_Fyndiq_Model_Resource</class>
                 <entities>
@@ -83,22 +83,6 @@
             </Fyndiq>
         </routers>
     </frontend>
-    <events>
-        <!-- The code of the event we want to observe -->
-        <sales_order_save_after>
-            <!-- Defining an observer for this event -->
-            <observers>
-                <Fyndiq_Fyndiq>
-                    <!-- The model to be instantiated -->
-                    <class>fyndiq_fyndiq/observer</class>
-                    <!-- The method of the class to be called -->
-                    <method>exportQuantity</method>
-                    <!-- The type of class to instantiate -->
-                    <type>singleton</type>
-                </Fyndiq_Fyndiq>
-            </observers>
-        </sales_order_save_after>
-    </events>
     <default>
         <fyndiq>
             <fyndiq_group>
@@ -123,7 +107,7 @@
         <jobs>
             <feed_products>
                 <schedule><cron_expr>*/30 * * * *</cron_expr></schedule>
-                <run><model>fyndiq/cron::exportProducts</model></run>
+                <run><model>fyndiq/observer::exportProducts</model></run>
             </feed_products>
         </jobs>
     </crontab>

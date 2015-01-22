@@ -1,12 +1,11 @@
 <?php
-
+require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
 /**
  * Taking care of cron jobs for product feed.
  *
  * @author Håkan Nylén <hakan.nylen@fyndiq.se>
  */
-require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
-class Fyndiq_Fyndiq_Model_FyndiqCron
+class Fyndiq_Fyndiq_Model_Observer
 {
     private $fileresource = null;
 
@@ -14,7 +13,10 @@ class Fyndiq_Fyndiq_Model_FyndiqCron
      * Saving products to the file.
      */
     public function exportProducts() {
+        print "Saving feed file\n";
         $this->writeOverFile($this->printFile());
+        print "Done saving feed file\n";
+
     }
 
     /**
@@ -29,9 +31,9 @@ class Fyndiq_Fyndiq_Model_FyndiqCron
         $ids_to_export = array();
         $productinfo = array();
         foreach($products as $producted) {
-           $product = $producted->getData();
-           $ids_to_export[] = intval($product["product_id"]);
-           $productinfo[$product["product_id"]] = $producted;
+            $product = $producted->getData();
+            $ids_to_export[] = intval($product["product_id"]);
+            $productinfo[$product["product_id"]] = $producted;
         }
 
         //Initialize models here so it saves memory.
@@ -143,5 +145,4 @@ class Fyndiq_Fyndiq_Model_FyndiqCron
             $this->fileresource = null;
         }
     }
-
 }
