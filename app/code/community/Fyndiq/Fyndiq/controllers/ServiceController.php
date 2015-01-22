@@ -133,6 +133,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         foreach ($products as $prod) {
             // setting up price and quantity for fyndiq.
             $qtyStock = Mage::getModel('cataloginventory/stock_item')->loadByProduct($prod->getId())->getQty();
+            $fyndiq = Mage::getModel('fyndiq/product')->productExist($prod->getId());
             $fyndiq_price = FmConfig::get('price_percentage');
             //trying to get image, if not image will be false
             try {
@@ -146,6 +147,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                     'price' => $prod->getPrice(),
                     'fyndiq_price' => $fyndiq_price,
                     'fyndiq_exported_stock' => $qtyStock,
+                    'fyndiq_exported' => $fyndiq,
                     'description' => $prod->getDescription(),
                     'reference' => $prod->getSKU(),
                     'isActive' => $prod->getIsActive()
@@ -162,6 +164,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                     'reference' => $prod->getSKU(),
                     'quantity' => $qtyStock,
                     'fyndiq_quantity' => $qtyStock,
+                    'fyndiq_exported' => $fyndiq,
                     'image' => false,
                     'isActive' => $prod->getIsActive()
                 );
