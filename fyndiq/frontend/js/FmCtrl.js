@@ -120,7 +120,8 @@ var FmCtrl = {
 
                 // reload category to ensure that everything is reset properly
                 var category = $j('.fm-category-tree li.active').attr('data-category_id');
-                FmCtrl.load_products(category, function() {
+                var page = $j('div.pages > ol > li.current').html();
+                FmCtrl.load_products(category,page, function() {
                     if (callback) {
                         callback();
                     }
@@ -284,7 +285,8 @@ var FmCtrl = {
                     FmCtrl.products_delete(products,function() {
                         // reload category to ensure that everything is reset properly
                         var category = $j('.fm-category-tree li.active').attr('data-category_id');
-                        FmCtrl.load_products(category, function() {
+                        var page = $j('div.pages > ol > li.current').html();
+                        FmCtrl.load_products(category,page, function() {
                             FmGui.hide_load_screen();
                         });
 
