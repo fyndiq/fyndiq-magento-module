@@ -121,6 +121,9 @@ var FmCtrl = {
                 // reload category to ensure that everything is reset properly
                 var category = $j('.fm-category-tree li.active').attr('data-category_id');
                 var page = $j('div.pages > ol > li.current').html();
+                if (page == 'undefined') {
+                    page = 1;
+                }
                 FmCtrl.load_products(category,page, function() {
                     if (callback) {
                         callback();
@@ -286,6 +289,9 @@ var FmCtrl = {
                         // reload category to ensure that everything is reset properly
                         var category = $j('.fm-category-tree li.active').attr('data-category_id');
                         var page = $j('div.pages > ol > li.current').html();
+                        if (page == 'undefined') {
+                            page = 1;
+                        }
                         FmCtrl.load_products(category,page, function() {
                             FmGui.hide_load_screen();
                         });

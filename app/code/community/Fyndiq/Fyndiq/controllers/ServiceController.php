@@ -173,7 +173,11 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         }
         $object = new stdClass();
         $object->products = $data;
-        $object->pagination = $this->getPagerHtml($category, $args["page"]);
+        if(!isset($args["page"])) {
+            $object->pagination = $this->getPagerHtml($category, 1);
+        } else {
+            $object->pagination = $this->getPagerHtml($category, $args["page"]);
+        }
         $this->response($object);
     }
 
