@@ -108,6 +108,13 @@
     </ul>
 </script>
 
+<script type="text/x-handlebars-template" class="handlebars-partial" id="fm-product-pagination">
+    {{#if pagination}}
+    <div class="pages">
+        {{{pagination}}}
+    </div>
+    {{/if}}
+</script>
 <script type="text/x-handlebars-template" class="handlebars-partial" id="fm-product-list-controls">
     <div class="fm-product-list-controls">
         <div class="export">
@@ -174,6 +181,7 @@
     Category is empty.
     {{/if}}
     {{> fm-product-list-controls}}
+    {{> fm-product-pagination}}
 </script>
 
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/jquery-1.11.1.min.js"></script>

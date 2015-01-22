@@ -119,8 +119,13 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $products = Mage::getModel('catalog/product')
             ->getCollection()
             ->addCategoryFilter($category)
-            ->addAttributeToSelect('*')
-            ->load();
+            ->addAttributeToSelect('*');
+
+        if(isset($args["page"]) AND $args["page"] != -1) {
+            $products->setCurPage($args["page"]);
+            $products->setPageSize(10);
+        }
+        $products->load();
 
         $data = array();
 
@@ -163,8 +168,60 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             }
             array_push($data, $prodData);
         }
+        $object = new stdClass();
+        $object->products = $data;
+        $object->pagination = $this->getPagerHtml($category, $args["page"]);
+        $this->response($object);
+    }
 
-        $this->response($data);
+    private $_itemPerPage = 10;
+    private $_pageFrame = 8;
+
+    private function getPagerHtml($category, $currentpage)
+    {
+        $html = false;
+        $collection = Mage::getModel('catalog/product')
+            ->getCollection()
+            ->addCategoryFilter($category)
+            ->addAttributeToSelect('*');
+        if($collection == 'null') return;
+        if($collection->count() > 10)
+        {
+            $curPage = $currentpage;
+            $pager = (int)($collection->count() / $this->_itemPerPage);
+            $count = ($collection->count() % $this->_itemPerPage == 0) ? $pager : $pager + 1 ;
+            $start = 1;
+            $end = $this->_pageFrame;
+
+            $html .= '<ol class="pageslist">';
+            if(isset($curPage) && $curPage != 1){
+                $start = $curPage - 1;
+                $end = $start + $this->_pageFrame;
+            }else{
+                $end = $start + $this->_pageFrame;
+            }
+            if($end > $count){
+                $start = $count - ($this->_pageFrame-1);
+            }else{
+                $count = $end-1;
+            }
+
+            for($i = $start; $i<=$count; $i++)
+            {
+                if($i >= 1){
+                    if($curPage){
+                        $html .= ($curPage == $i) ? '<li class="current">'. $i .'</li>' : '<li><a href="#" data-page="'.$i.'">'. $i .'</a></li>';
+                    }else{
+                        $html .= ($i == 1) ? '<li class="current">'. $i .'</li>' : '<li><a href="#" data-page="'.$i.'">'. $i .'</a></li>';
+                    }
+                }
+
+            }
+
+            $html .= '</ol>';
+        }
+
+        return $html;
     }
 
     /**

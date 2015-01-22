@@ -460,3 +460,46 @@ table {
     }
   }
 }
+.pages {
+  ol {
+    float:left;
+    li {
+      float:left;
+      margin-right:5px;
+      &.current {
+        border: 1px solid #a5a5a5;
+        padding: 6px 6px;
+        font-size: 12px;
+        color: white;
+        outline: none;
+        text-decoration: none;
+        line-height: 16px;
+        text-shadow: 1px 1px 1px #ba7a01;
+        @include border-radius(3px);
+        @include gradient(#de981f,#f39e0a);
+        @include innershadow(#ba7a01, 6px);
+        display:inline-block;
+      }
+      a {
+        border: 1px solid #a5a5a5;
+        padding: 6px 6px;
+        font-size: 12px;
+        color: black;
+        cursor: pointer;
+        outline: none;
+        text-decoration: none;
+        line-height: 16px;
+        display:inline-block;
+        @include border-radius(3px);
+        &:active {
+          @include gradient($color-button-dark, $color-button-light);
+        }
+        &:hover {
+          text-decoration: none;
+          color: black;
+          @include gradient($color-button-dark, $color-button-light);
+        }
+      }
+    }
+  }
+}

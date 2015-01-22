@@ -42,15 +42,17 @@ var FmCtrl = {
         });
     },
 
-    load_products: function(category_id, callback) {
+    load_products: function(category_id,currentpage, callback) {
         // unset active class on previously selected category
         $j('.fm-category-tree li').removeClass('active');
 
-        FmCtrl.call_service('get_products', {'category': category_id}, function(status, products) {
+        FmCtrl.call_service('get_products', {'category': category_id, 'page': currentpage}, function(status, products) {
             if (status == 'success') {
+                $j('.fm-product-list-container').html("");
                 $j('.fm-product-list-container').html(tpl['product-list']({
                     'module_path': module_path,
-                    'products': products
+                    'products': products.products,
+                    'pagination': products.pagination
                 }));
 
                 // set active class on selected category
@@ -165,7 +167,19 @@ var FmCtrl = {
             e.preventDefault();
             var category_id = $j(this).parent().attr('data-category_id');
             FmGui.show_load_screen(function(){
-                FmCtrl.load_products(category_id, function() {
+                FmCtrl.load_products(category_id, 1, function() {
+                    FmGui.hide_load_screen();
+                });
+            });
+        });
+
+        $j(document).on('click', 'div.pages > ol > li > a', function(e) {
+            e.preventDefault();
+
+            var category = $j('.fm-category-tree li.active').attr('data-category_id');
+            FmGui.show_load_screen(function(){
+                var page = $j(e.target).attr('data-page');
+                FmCtrl.load_products(category, page, function() {
                     FmGui.hide_load_screen();
                 });
             });
