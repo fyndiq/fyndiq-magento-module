@@ -137,10 +137,10 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                     'name' => $prod->getName(),
                     'image' => $prod->getImageUrl(),
                     'quantity' => $qtyStock,
-                    'fyndiq_quantity' => $fyndiq_stock,
+                    'fyndiq_quantity' => $qtyStock,
                     'price' => $prod->getPrice(),
                     'fyndiq_price' => $fyndiq_price,
-                    'fyndiq_exported_stock' => $fyndiq_exported_stock,
+                    'fyndiq_exported_stock' => $qtyStock,
                     'description' => $prod->getDescription(),
                     'reference' => $prod->getSKU(),
                     'isActive' => $prod->getIsActive()
@@ -152,11 +152,11 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                     'name' => $prod->getName(),
                     'price' => $prod->getPrice(),
                     'fyndiq_price' => $fyndiq_price,
-                    'fyndiq_exported_stock' => $fyndiq_exported_stock,
+                    'fyndiq_exported_stock' => $qtyStock,
                     'description' => $prod->getDescription(),
                     'reference' => $prod->getSKU(),
                     'quantity' => $qtyStock,
-                    'fyndiq_quantity' => $fyndiq_stock,
+                    'fyndiq_quantity' => $qtyStock,
                     'image' => false,
                     'isActive' => $prod->getIsActive()
                 );
