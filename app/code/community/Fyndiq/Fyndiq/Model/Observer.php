@@ -14,11 +14,11 @@ class Fyndiq_Fyndiq_Model_Observer
      */
     public function exportProducts($print = true) {
         if($print) {
-            print "Saving feed file\n";
+            print "Fyndiq :: Saving feed file\n";
         }
         $this->writeOverFile($this->printFile());
         if($print) {
-            print "Done saving feed file\n";
+            print "Fyndiq :: Done saving feed file\n";
         }
 
     }
@@ -43,6 +43,7 @@ class Fyndiq_Fyndiq_Model_Observer
         //Initialize models here so it saves memory.
         $product_model = Mage::getModel('catalog/product');
         $category_model = Mage::getModel('catalog/category');
+        $stock_model = Mage::getModel('cataloginventory/stock_item');
 
         $products_to_export = $product_model->getCollection()->addAttributeToSelect('*')->addAttributeToFilter( 'entity_id', array( 'in' => $ids_to_export))->load();
 
@@ -85,7 +86,8 @@ class Fyndiq_Fyndiq_Model_Observer
                 }
 
                 //Articles
-                $real_array["article-quantity"] = $productinfo[$magarray["entity_id"]]["exported_qty"];
+                $qtyStock = $stock_model->loadByProduct($real_array["product-id"])->getQty();
+                $real_array["article-quantity"] = $qtyStock;
                 $real_array["article-name"] = addslashes($magarray["name"]);
                 // TODO: fix location to something except test
                 $real_array["article-location"] = "test";
