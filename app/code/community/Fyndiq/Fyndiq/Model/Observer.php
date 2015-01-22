@@ -12,10 +12,14 @@ class Fyndiq_Fyndiq_Model_Observer
     /**
      * Saving products to the file.
      */
-    public function exportProducts() {
-        print "Saving feed file\n";
+    public function exportProducts($print = true) {
+        if($print) {
+            print "Saving feed file\n";
+        }
         $this->writeOverFile($this->printFile());
-        print "Done saving feed file\n";
+        if($print) {
+            print "Done saving feed file\n";
+        }
 
     }
 
