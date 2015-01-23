@@ -45,13 +45,18 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
 
     /**
      * Loading Imported orders
+     * @param $page
      * @return array
      */
-    public function getImportedOrders()
+    public function getImportedOrders($page = -1)
     {
         $return_array = array();
-        $orders = $this->getCollection()->setOrder('id', 'DESC');;
-        $orders = $orders->getItems();
+        $orders = $this->getCollection()->setOrder('id', 'DESC');
+        if($page != -1) {
+            $orders->setCurPage($page);
+            $orders->setPageSize(10);
+        }
+        $orders = $orders->load()->getItems();
         foreach($orders as $order){
             $order = $order->getData();
             $magorder = Mage::getModel('sales/order')->load($order["order_id"]);
@@ -102,10 +107,12 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             $sku = $row->sku;
 
             $id = Mage::getModel('catalog/product')->getResource()->getIdBySku($sku);
-            $_product = Mage::getModel('catalog/product')->load($id);
-            //add product to the cart
-            $product_info = array('qty' => $row->quantity);
-            $quote->addProduct($_product, new Varien_Object($product_info));
+            if($id != false) {
+                $_product = Mage::getModel('catalog/product')->load($id);
+                //add product to the cart
+                $product_info = array('qty' => $row->quantity);
+                $quote->addProduct($_product, new Varien_Object($product_info));
+            }
         }
 
 
@@ -138,7 +145,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         );
 
         // Set the payment method
-        $paymentMethod = 'checkmo';
+        $paymentMethod = 'fyndiq_fyndiq';
 
         // Set the shipping method
         $shippingMethod = 'fyndiq_fyndiq';

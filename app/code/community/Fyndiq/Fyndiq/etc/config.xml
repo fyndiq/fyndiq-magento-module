@@ -102,12 +102,29 @@
                 <express_max_weight>1</express_max_weight>
             </fyndiq_fyndiq>
         </carriers>
+        <payment>
+            <fyndiq_fyndiq>
+                <model>fyndiq/payment</model>
+                <active>1</active>
+                <order_status>pending</order_status>
+                <title>Fyndiq</title>
+                <visible_on_cart>0</visible_on_cart>
+                <visible_on_product>0</visible_on_product>
+                <payment_action>sale</payment_action>
+                <allowspecific>0</allowspecific>
+                <sort_order>1</sort_order>
+            </fyndiq_fyndiq>
+        </payment>
     </default>
     <crontab>
         <jobs>
             <feed_products>
-                <schedule><cron_expr>*/30 * * * *</cron_expr></schedule>
-                <run><model>fyndiq/observer::exportProducts</model></run>
+                <schedule>
+                    <cron_expr>*/30 * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>fyndiq/observer::exportProducts</model>
+                </run>
             </feed_products>
         </jobs>
     </crontab>
