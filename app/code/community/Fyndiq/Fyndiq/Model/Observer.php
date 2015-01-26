@@ -44,10 +44,16 @@ class Fyndiq_Fyndiq_Model_Observer
         $product_model = Mage::getModel('catalog/product');
         $category_model = Mage::getModel('catalog/category');
         $stock_model = Mage::getModel('cataloginventory/stock_item');
+        $grouped_model = Mage::getModel('catalog/product_type_grouped');
+        $configurable_model = Mage::getModel('catalog/product_type_configurable');
 
         $products_to_export = $product_model->getCollection()->addAttributeToSelect('*')->addAttributeToFilter( 'entity_id', array( 'in' => $ids_to_export))->load();
 
         foreach ($products_to_export as $magproduct) {
+
+            // Get the data
+            $magarray = $magproduct->getData();
+            $real_array = array();
 
             // Get image
             try {
@@ -57,11 +63,28 @@ class Fyndiq_Fyndiq_Model_Observer
                 $imgSrc = "";
             }
 
+
+            //Check if product has a parent
+            if($magproduct->getTypeId() == "simple"){
+                //Get parent
+                $parentIds = $grouped_model->getParentIdsByChild($magproduct->getId());
+                if(!$parentIds)
+                    //Couldn't get parent, try configurable model instead
+                    $parentIds = $configurable_model->getParentIdsByChild($magproduct->getId());
+                // set parent id if exist
+                if(isset($parentIds[0])){
+                    $parent = $parentIds[0];
+                }
+            }
+
             // Setting the data
-            $magarray = $magproduct->getData();
-            $real_array = array();
             if(isset($magarray["price"])) {
-                $real_array["product-id"] = $productinfo[$magarray["entity_id"]]["product_id"];
+                if(isset($parent)) {
+                    $real_array["product-id"] = $parent;
+                }
+                else {
+                    $real_array["product-id"] = $productinfo[$magarray["entity_id"]]["product_id"];
+                }
                 $real_array["product-image-1"] = addslashes(strval($imgSrc));
                 $real_array["product-title"] = addslashes($magarray["name"]);
                 $real_array["product-description"] = addslashes($magproduct->getDescription());
