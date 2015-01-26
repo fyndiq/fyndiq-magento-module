@@ -2,7 +2,7 @@
 Fyndiq's official Magento module
 
 
-## Requirements
+### Requirements
 Magento 1.8-
 
 
