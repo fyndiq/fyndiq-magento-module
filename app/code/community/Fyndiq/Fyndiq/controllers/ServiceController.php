@@ -370,6 +370,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             $start = 1;
             $end = $this->_pageFrame;
 
+
             $html .= '<ol class="pageslist">';
             if(isset($curPage) && $curPage != 1){
                 $start = $curPage - 1;
@@ -383,6 +384,10 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 $count = $end-1;
             }
 
+            if($curPage > $count-1) {
+                $html .= '<li><a href="#" data-page="'.($curPage-1).'"><< Previous</a></li>';
+            }
+
             for($i = $start; $i<=$count; $i++)
             {
                 if($i >= 1){
@@ -393,6 +398,10 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                     }
                 }
 
+            }
+
+            if($curPage < $count) {
+                $html .= '<li><a href="#" data-page="'.($curPage+1).'">Next >></a></li>';
             }
 
             $html .= '</ol>';
