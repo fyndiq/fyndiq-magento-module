@@ -72,13 +72,14 @@ var FmCtrl = {
         });
     },
 
-    load_orders: function(callback) {
-        FmCtrl.call_service('load_orders', {}, function(status, orders) {
+    load_orders: function(currentpage,callback) {
+        FmCtrl.call_service('load_orders', {'page':currentpage}, function(status, orders) {
             if (status == 'success') {
                 $j('.fm-order-list-container').html("");
                 $j('.fm-order-list-container').html(tpl['orders-list']({
                     'module_path': module_path,
-                    'orders': orders
+                    'orders': orders.orders,
+                    'pagination': orders.pagination
                 }));
             }
 
@@ -309,7 +310,8 @@ var FmCtrl = {
             e.preventDefault();
             FmGui.show_load_screen();
             FmCtrl.import_orders(function() {
-                FmCtrl.load_orders(function() {
+                var page = $j('div.pages > ol > li.current').html();
+                FmCtrl.load_orders(page, function() {
                     FmGui.hide_load_screen();
                 });
             });

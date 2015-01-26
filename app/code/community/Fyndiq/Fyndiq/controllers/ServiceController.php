@@ -13,6 +13,9 @@ require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
 class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 {
 
+    private $_itemPerPage = 10;
+    private $_pageFrame = 8;
+
     /**
      * Structure the response back to the client
      *
@@ -174,62 +177,13 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $object = new stdClass();
         $object->products = $data;
         if(!isset($args["page"])) {
-            $object->pagination = $this->getPagerHtml($category, 1);
+            $object->pagination = $this->getPagerProductsHtml($category, 1);
         } else {
-            $object->pagination = $this->getPagerHtml($category, $args["page"]);
+            $object->pagination = $this->getPagerProductsHtml($category, $args["page"]);
         }
         $this->response($object);
     }
 
-    private $_itemPerPage = 10;
-    private $_pageFrame = 8;
-
-    private function getPagerHtml($category, $currentpage)
-    {
-        $html = false;
-        $collection = Mage::getModel('catalog/product')
-            ->getCollection()
-            ->addCategoryFilter($category)
-            ->addAttributeToSelect('*');
-        if($collection == 'null') return;
-        if($collection->count() > 10)
-        {
-            $curPage = $currentpage;
-            $pager = (int)($collection->count() / $this->_itemPerPage);
-            $count = ($collection->count() % $this->_itemPerPage == 0) ? $pager : $pager + 1 ;
-            $start = 1;
-            $end = $this->_pageFrame;
-
-            $html .= '<ol class="pageslist">';
-            if(isset($curPage) && $curPage != 1){
-                $start = $curPage - 1;
-                $end = $start + $this->_pageFrame;
-            }else{
-                $end = $start + $this->_pageFrame;
-            }
-            if($end > $count){
-                $start = $count - ($this->_pageFrame-1);
-            }else{
-                $count = $end-1;
-            }
-
-            for($i = $start; $i<=$count; $i++)
-            {
-                if($i >= 1){
-                    if($curPage){
-                        $html .= ($curPage == $i) ? '<li class="current">'. $i .'</li>' : '<li><a href="#" data-page="'.$i.'">'. $i .'</a></li>';
-                    }else{
-                        $html .= ($i == 1) ? '<li class="current">'. $i .'</li>' : '<li><a href="#" data-page="'.$i.'">'. $i .'</a></li>';
-                    }
-                }
-
-            }
-
-            $html .= '</ol>';
-        }
-
-        return $html;
-    }
 
     /**
      * Get exported products
@@ -320,8 +274,23 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      * @param $args
      */
     public function load_orders($args) {
-        $orders = Mage::getModel('fyndiq/order')->getImportedOrders();
-        self::response($orders);
+
+
+        if(isset($args["page"]) AND $args["page"] != -1) {
+            $orders = Mage::getModel('fyndiq/order')->getImportedOrders($args["page"]);
+        }
+        else {
+            $orders = Mage::getModel('fyndiq/order')->getImportedOrders(1);
+        }
+
+        $object = new stdClass();
+        $object->orders = $orders;
+        if(!isset($args["page"])) {
+            $object->pagination = $this->getPagerOrdersHtml(1);
+        } else {
+            $object->pagination = $this->getPagerOrdersHtml($args["page"]);
+        }
+        self::response($object);
     }
 
     /**
@@ -377,4 +346,109 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         self::response(true);
     }
 
+
+    /**
+     * Get pagination
+     *
+     * @param $category
+     * @param $currentpage
+     * @return bool|string
+     */
+    private function getPagerProductsHtml($category, $currentpage)
+    {
+        $html = false;
+        $collection = Mage::getModel('catalog/product')
+            ->getCollection()
+            ->addCategoryFilter($category)
+            ->addAttributeToSelect('*');
+        if($collection == 'null') return;
+        if($collection->count() > 10)
+        {
+            $curPage = $currentpage;
+            $pager = (int)($collection->count() / $this->_itemPerPage);
+            $count = ($collection->count() % $this->_itemPerPage == 0) ? $pager : $pager + 1 ;
+            $start = 1;
+            $end = $this->_pageFrame;
+
+            $html .= '<ol class="pageslist">';
+            if(isset($curPage) && $curPage != 1){
+                $start = $curPage - 1;
+                $end = $start + $this->_pageFrame;
+            }else{
+                $end = $start + $this->_pageFrame;
+            }
+            if($end > $count){
+                $start = $count - ($this->_pageFrame-1);
+            }else{
+                $count = $end-1;
+            }
+
+            for($i = $start; $i<=$count; $i++)
+            {
+                if($i >= 1){
+                    if($curPage){
+                        $html .= ($curPage == $i) ? '<li class="current">'. $i .'</li>' : '<li><a href="#" data-page="'.$i.'">'. $i .'</a></li>';
+                    }else{
+                        $html .= ($i == 1) ? '<li class="current">'. $i .'</li>' : '<li><a href="#" data-page="'.$i.'">'. $i .'</a></li>';
+                    }
+                }
+
+            }
+
+            $html .= '</ol>';
+        }
+
+        return $html;
+    }
+
+    /**
+     * Get pagination for orders
+     *
+     * @param integer $currentpage
+     * @return bool|string
+     */
+    private function getPagerOrdersHtml($currentpage)
+    {
+        $html = false;
+        $collection = Mage::getModel('fyndiq/order')
+            ->getCollection();
+        if($collection == 'null') return;
+        if($collection->count() > 10)
+        {
+            $curPage = $currentpage;
+            $pager = (int)($collection->count() / $this->_itemPerPage);
+            $count = ($collection->count() % $this->_itemPerPage == 0) ? $pager : $pager + 1 ;
+            $start = 1;
+            $end = $this->_pageFrame;
+
+            $html .= '<ol class="pageslist">';
+            if(isset($curPage) && $curPage != 1){
+                $start = $curPage - 1;
+                $end = $start + $this->_pageFrame;
+            }else{
+                $end = $start + $this->_pageFrame;
+            }
+            if($end > $count){
+                $start = $count - ($this->_pageFrame-1);
+            }else{
+                $count = $end-1;
+            }
+
+            for($i = $start; $i<=$count; $i++)
+            {
+                if($i >= 1){
+                    if($curPage){
+                        $html .= ($curPage == $i) ? '<li class="current">'. $i .'</li>' : '<li><a href="#" data-page="'.$i.'">'. $i .'</a></li>';
+                    }else{
+                        $html .= ($i == 1) ? '<li class="current">'. $i .'</li>' : '<li><a href="#" data-page="'.$i.'">'. $i .'</a></li>';
+                    }
+                }
+
+            }
+
+            $html .= '</ol>';
+        }
+
+        return $html;
+    }
 } 

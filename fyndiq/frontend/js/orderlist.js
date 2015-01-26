@@ -21,7 +21,7 @@ $j(document).ready(function() {
         FmCtrl.bind_order_event_handlers();
 
         // load all categories
-        FmCtrl.load_orders(function() {
+        FmCtrl.load_orders(1,function() {
             FmGui.hide_load_screen();
         });
     });
