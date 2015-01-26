@@ -1,5 +1,6 @@
 <?php
 require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
+
 /**
  * Taking care of cron jobs for product feed.
  *
@@ -12,12 +13,13 @@ class Fyndiq_Fyndiq_Model_Observer
     /**
      * Saving products to the file.
      */
-    public function exportProducts($print = true) {
-        if($print) {
+    public function exportProducts($print = true)
+    {
+        if ($print) {
             print "Fyndiq :: Saving feed file\n";
         }
         $this->writeOverFile($this->printFile());
-        if($print) {
+        if ($print) {
             print "Fyndiq :: Done saving feed file\n";
         }
 
@@ -28,13 +30,14 @@ class Fyndiq_Fyndiq_Model_Observer
      *
      * @return string
      */
-    private function printFile() {
+    private function printFile()
+    {
         $products = Mage::getModel('fyndiq/product')->getCollection()->setOrder('id', 'DESC');
         $products = $products->getItems();
         $return_array = array();
         $ids_to_export = array();
         $productinfo = array();
-        foreach($products as $producted) {
+        foreach ($products as $producted) {
             $product = $producted->getData();
             $ids_to_export[] = intval($product["product_id"]);
             $productinfo[$product["product_id"]] = $producted;
@@ -47,7 +50,10 @@ class Fyndiq_Fyndiq_Model_Observer
         $grouped_model = Mage::getModel('catalog/product_type_grouped');
         $configurable_model = Mage::getModel('catalog/product_type_configurable');
 
-        $products_to_export = $product_model->getCollection()->addAttributeToSelect('*')->addAttributeToFilter( 'entity_id', array( 'in' => $ids_to_export))->load();
+        $products_to_export = $product_model->getCollection()->addAttributeToSelect('*')->addAttributeToFilter(
+            'entity_id',
+            array('in' => $ids_to_export)
+        )->load();
 
         foreach ($products_to_export as $magproduct) {
 
@@ -58,37 +64,36 @@ class Fyndiq_Fyndiq_Model_Observer
             // Get image
             try {
                 $imgSrc = (string)Mage::helper('catalog/image')->init($magproduct, 'image');
-            }
-            catch(Exception $e) {
+            } catch (Exception $e) {
                 $imgSrc = "";
             }
 
 
             //Check if product has a parent
-            if($magproduct->getTypeId() == "simple"){
+            if ($magproduct->getTypeId() == "simple") {
                 //Get parent
                 $parentIds = $grouped_model->getParentIdsByChild($magproduct->getId());
-                if(!$parentIds)
-                    //Couldn't get parent, try configurable model instead
+                if (!$parentIds) //Couldn't get parent, try configurable model instead
+                {
                     $parentIds = $configurable_model->getParentIdsByChild($magproduct->getId());
+                }
                 // set parent id if exist
-                if(isset($parentIds[0])){
+                if (isset($parentIds[0])) {
                     $parent = $parentIds[0];
                 }
             }
 
             // Setting the data
-            if(isset($magarray["price"])) {
-                if(isset($parent)) {
+            if (isset($magarray["price"])) {
+                if (isset($parent)) {
                     $real_array["product-id"] = $parent;
-                }
-                else {
+                } else {
                     $real_array["product-id"] = $productinfo[$magarray["entity_id"]]["product_id"];
                 }
                 $real_array["product-image-1"] = addslashes(strval($imgSrc));
                 $real_array["product-title"] = addslashes($magarray["name"]);
                 $real_array["product-description"] = addslashes($magproduct->getDescription());
-                $real_array["product-price"] = $magarray["price"]-($magarray["price"]*($productinfo[$magarray["entity_id"]]["exported_price_percentage"] / 100));
+                $real_array["product-price"] = $magarray["price"] - ($magarray["price"] * ($productinfo[$magarray["entity_id"]]["exported_price_percentage"] / 100));
                 $real_array["product-price"] = number_format((float)$real_array["product-price"], 2, '.', '');
                 $real_array["product-vat-percent"] = "25";
                 $real_array["product-oldprice"] = number_format((float)$magarray["price"], 2, '.', '');
@@ -100,7 +105,7 @@ class Fyndiq_Fyndiq_Model_Observer
                 //Category
                 $categoryIds = $magproduct->getCategoryIds();
 
-                if(count($categoryIds) > 0){
+                if (count($categoryIds) > 0) {
                     $firstCategoryId = $categoryIds[0];
                     $_category = $category_model->load($firstCategoryId);
 
@@ -109,18 +114,49 @@ class Fyndiq_Fyndiq_Model_Observer
                 }
 
                 //Articles
-                $qtyStock = $stock_model->loadByProduct($real_array["product-id"])->getQty();
+                $qtyStock = $stock_model->loadByProduct($magproduct->getId())->getQty();
                 $real_array["article-quantity"] = intval($qtyStock);
                 $real_array["article-name"] = addslashes($magarray["name"]);
                 // TODO: fix location to something except test
                 $real_array["article-location"] = "test";
                 $real_array["article-sku"] = $magproduct->getSKU();
+
+
+                // GEt attributes for article
+                if(isset($parent)) {
+                    $parentprod = $product_model->load($parent);
+                    $productAttributeOptions = $parentprod->getTypeInstance()->getConfigurableAttributes();
+                    
+                    $attrid = 1;
+                    foreach ($productAttributeOptions as $productAttribute) {
+                        $attrValue = $parentprod->getResource()->getAttribute($productAttribute->getProductAttribute()->getAttributeCode())->getFrontend();
+                        $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
+                        $value = $attrValue->getValue($magproduct);
+
+                        $real_array["article-property-name-".$attrid] = $attrCode;
+                        $real_array["article-property-value-".$attrid] = $value[0];
+                        $attrid++;
+                    }
+                }
+                /*$attrid = 1;
+                foreach ($attributes as $attribute) {
+                    $attributeCode = $attribute->getAttributeCode();
+                    $label = $attribute->getStoreLabel($magproduct->getId());
+
+                    $value = $magproduct->getAttributeText($label);
+
+                    $real_array["article-property-name-".$attrid] = $label;
+                    $real_array["article-property-value-".$attrid] = $value;
+
+                    $attrid++;
+                }*/
                 $return_array[] = $real_array;
             }
         }
         $first_array = array_values($return_array)[0];
         $key_values = array_keys($first_array);
         array_unshift($return_array, $key_values);
+
         return $return_array;
     }
 
@@ -132,7 +168,7 @@ class Fyndiq_Fyndiq_Model_Observer
     function writeOverFile($products)
     {
         $this->openFile(true);
-        foreach($products as $product) {
+        foreach ($products as $product) {
             $this->writeToFile($product);
         }
         $this->closeFile();
