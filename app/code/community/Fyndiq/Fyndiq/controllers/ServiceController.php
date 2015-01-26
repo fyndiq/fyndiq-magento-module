@@ -14,7 +14,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 {
 
     private $_itemPerPage = 10;
-    private $_pageFrame = 8;
+    private $_pageFrame = 4;
 
     /**
      * Structure the response back to the client
