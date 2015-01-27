@@ -117,6 +117,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     public function get_products($args)
     {
+        $grouped_model = Mage::getModel('catalog/product_type_grouped');
+        $configurable_model = Mage::getModel('catalog/product_type_configurable');
         $category = Mage::getModel('catalog/category')->load($args['category']);
 
         $products = Mage::getModel('catalog/product')
@@ -139,6 +141,40 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             $qtyStock = Mage::getModel('cataloginventory/stock_item')->loadByProduct($prod->getId())->getQty();
             $fyndiq = Mage::getModel('fyndiq/product')->productExist($prod->getId());
             $fyndiq_price = FmConfig::get('price_percentage');
+
+            if ($prod->getTypeId() == "simple") {
+                //Get parent
+                $parentIds = $grouped_model->getParentIdsByChild($prod->getId());
+                if (!$parentIds) //Couldn't get parent, try configurable model instead
+                {
+                    $parentIds = $configurable_model->getParentIdsByChild($prod->getId());
+                }
+                // set parent id if exist
+                if (isset($parentIds[0])) {
+                    $parent = $parentIds[0];
+                }
+            }
+            $tags = "";
+            if(isset($parent)) {
+                $parentprod = Mage::getModel('catalog/product')->load($parent);
+                $productAttributeOptions = $parentprod->getTypeInstance()->getConfigurableAttributes();
+
+                $attrid = 1;
+                foreach ($productAttributeOptions as $productAttribute) {
+                    $attrValue = $parentprod->getResource()->getAttribute($productAttribute->getProductAttribute()->getAttributeCode())->getFrontend();
+                    $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
+                    $value = $attrValue->getValue($prod);
+
+                    if($attrid == 1) {
+                        $tags .= $attrCode.": ".$value[0];
+                    }
+                    else {
+                        $tags .= ", ".$attrCode.": ".$value[0];
+                    }
+                    $attrid++;
+                }
+            }
+
             //trying to get image, if not image will be false
             try {
                 $prodData = array(
@@ -154,6 +190,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                     'fyndiq_exported' => $fyndiq,
                     'description' => $prod->getDescription(),
                     'reference' => $prod->getSKU(),
+                    'type' => $prod->getTypeId(),
+                    'properties' => $tags,
                     'isActive' => $prod->getIsActive()
                 );
             } catch (Exception $e) {
@@ -170,6 +208,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                     'fyndiq_quantity' => $qtyStock,
                     'fyndiq_exported' => $fyndiq,
                     'image' => false,
+                    'properties' => $tags,
+                    'type' => $prod->getTypeId(),
                     'isActive' => $prod->getIsActive()
                 );
             }
