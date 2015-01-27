@@ -1,0 +1,6 @@
+# My_Module, just an example
+code                   app/code/local/Fyndiq/Fyndiq/
+frontend/layout/*      app/design/frontend/base/default/layout/
+frontend/template/*    app/design/frontend/base/default/template/fyndiq
+Fyndiq_Fyndiq.xml      app/etc/modules/Fyndiq_Fyndiq.xml
+fyndiq/*               fyndiq/
