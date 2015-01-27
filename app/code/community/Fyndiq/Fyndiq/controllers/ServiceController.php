@@ -119,11 +119,17 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     {
         $grouped_model = Mage::getModel('catalog/product_type_grouped');
         $configurable_model = Mage::getModel('catalog/product_type_configurable');
-        $category = Mage::getModel('catalog/category')->load($args['category']);
+        $product_model = Mage::getModel('catalog/product');
 
-        $products = Mage::getModel('catalog/product')
+        $category = Mage::getModel('catalog/category')->load($args['category']);
+        $products = $product_model
             ->getCollection()
-            ->addAttributeToFilter('type_id', array('eq' => 'simple'))
+            ->addAttributeToFilter(
+                array(
+                    array('attribute'=> 'type_id','eq' => 'configurable'),
+                    array('attribute'=> 'type_id','eq' => 'simple'),
+                )
+            )
             ->addCategoryFilter($category)
             ->addAttributeToSelect('*');
 
@@ -156,7 +162,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             }
             $tags = "";
             if(isset($parent)) {
-                $parentprod = Mage::getModel('catalog/product')->load($parent);
+                $parentprod = $product_model->load($parent);
                 $productAttributeOptions = $parentprod->getTypeInstance()->getConfigurableAttributes();
 
                 $attrid = 1;
@@ -190,7 +196,6 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                     'fyndiq_exported' => $fyndiq,
                     'description' => $prod->getDescription(),
                     'reference' => $prod->getSKU(),
-                    'type' => $prod->getTypeId(),
                     'properties' => $tags,
                     'isActive' => $prod->getIsActive()
                 );
@@ -209,7 +214,6 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                     'fyndiq_exported' => $fyndiq,
                     'image' => false,
                     'properties' => $tags,
-                    'type' => $prod->getTypeId(),
                     'isActive' => $prod->getIsActive()
                 );
             }
