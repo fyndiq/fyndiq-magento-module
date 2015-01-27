@@ -114,9 +114,10 @@ class Fyndiq_Fyndiq_Model_Observer
                 }
 
                 //Articles
+
                 $qtyStock = $stock_model->loadByProduct($magproduct->getId())->getQty();
                 $real_array["article-quantity"] = intval($qtyStock);
-                $real_array["article-name"] = addslashes($magarray["name"]);
+
                 // TODO: fix location to something except test
                 $real_array["article-location"] = "test";
                 $real_array["article-sku"] = $magproduct->getSKU();
@@ -128,6 +129,7 @@ class Fyndiq_Fyndiq_Model_Observer
                     $productAttributeOptions = $parentprod->getTypeInstance()->getConfigurableAttributes();
                     
                     $attrid = 1;
+                    $tags = "";
                     foreach ($productAttributeOptions as $productAttribute) {
                         $attrValue = $parentprod->getResource()->getAttribute($productAttribute->getProductAttribute()->getAttributeCode())->getFrontend();
                         $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
@@ -135,21 +137,20 @@ class Fyndiq_Fyndiq_Model_Observer
 
                         $real_array["article-property-name-".$attrid] = $attrCode;
                         $real_array["article-property-value-".$attrid] = $value[0];
+                        if($attrid == 1) {
+                            $tags .= $attrCode.": ".$value[0];
+                        }
+                        else {
+                            $tags .= ", ".$attrCode.": ".$value[0];
+                        }
                         $attrid++;
                     }
+                    $real_array["article-name"] = substr(addslashes($tags),0,30);
                 }
-                /*$attrid = 1;
-                foreach ($attributes as $attribute) {
-                    $attributeCode = $attribute->getAttributeCode();
-                    $label = $attribute->getStoreLabel($magproduct->getId());
+                else {
+                    $real_array["article-name"] = substr(addslashes($magarray["name"]),0,30);
+                }
 
-                    $value = $magproduct->getAttributeText($label);
-
-                    $real_array["article-property-name-".$attrid] = $label;
-                    $real_array["article-property-value-".$attrid] = $value;
-
-                    $attrid++;
-                }*/
                 $return_array[] = $real_array;
             }
         }
