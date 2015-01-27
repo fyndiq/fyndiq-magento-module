@@ -121,6 +121,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
         $products = Mage::getModel('catalog/product')
             ->getCollection()
+            ->addAttributeToFilter('type_id', array('eq' => 'simple'))
             ->addCategoryFilter($category)
             ->addAttributeToSelect('*');
 
