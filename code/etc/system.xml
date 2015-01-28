@@ -22,22 +22,21 @@
                         <!-- New fields go here -->
                         <price_percentage translate="label">
                             <label>Global percentage of price</label>
+                            <comment>
+                            <![CDATA[The percentage that will be removed from the price when sending to fyndiq.
+                            Can be 0 if the price should be the same as in your shop.]]>
+                            </comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>7</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </price_percentage>
-                        <quantity_percentage translate="label">
-                            <label>Global percentage of stock</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>8</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </quantity_percentage>
                         <country translate="label">
                             <label>Country</label>
+                            <comment>
+                                <![CDATA[The country you want to sell on, on Fyndiq. It's either Sweden or Germany.]]>
+                            </comment>
                             <frontend_type>select</frontend_type>
                             <sort_order>6</sort_order>
                             <show_in_default>1</show_in_default>
@@ -49,6 +48,9 @@
                         <currency translate="label">
                             <label>Currency</label>
                             <frontend_type>select</frontend_type>
+                            <comment>
+                                <![CDATA[The currency you want to sell on Fyndiq. It's either SEK or EUR.]]>
+                            </comment>
                             <sort_order>5</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -58,6 +60,9 @@
                         <!-- New fields go here -->
                         <username translate="label">
                             <label>Username</label>
+                            <comment>
+                                <![CDATA[Your login username to the merchant page.]]>
+                            </comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>2</sort_order>
                             <show_in_default>1</show_in_default>
@@ -67,6 +72,9 @@
                         <apikey translate="label">
                             <label>API token</label>
                             <frontend_type>text</frontend_type>
+                            <comment>
+                                <![CDATA[The api-key that is long randomly generated string you got from Fyndiq.]]>
+                            </comment>
                             <sort_order>1</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
