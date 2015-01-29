@@ -90,7 +90,8 @@ class Fyndiq_Fyndiq_Model_Observer
                 } else {
                     $real_array["product-id"] = $productinfo[$magarray["entity_id"]]["product_id"];
                 }
-                $real_array["product-image-1"] = addslashes(strval($imgSrc));
+                $real_array["product-image-1-url"] = addslashes(strval($imgSrc));
+                $real_array["product-image-1-identifier"] = addslashes(substr(md5(strval($imgSrc)),0,10));
                 $real_array["product-title"] = addslashes($magarray["name"]);
                 $real_array["product-description"] = addslashes($magproduct->getDescription());
                 $real_array["product-price"] = $magarray["price"] - ($magarray["price"] * ($productinfo[$magarray["entity_id"]]["exported_price_percentage"] / 100));
