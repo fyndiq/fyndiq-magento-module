@@ -120,15 +120,15 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
 
         //if we have a default billing address, try gathering its values into variables we need
         $billingAddressArray = array(
-                'firstname' => $fyndiq_order->invoice_firstname,
-                'lastname' => $fyndiq_order->invoice_lastname,
-                'street' => $fyndiq_order->invoice_address,
-                'city' => $fyndiq_order->invoice_city,
+                'firstname' => $fyndiq_order->delivery_firstname,
+                'lastname' => $fyndiq_order->delivery_lastname,
+                'street' => $fyndiq_order->delivery_address,
+                'city' => $fyndiq_order->delivery_city,
                 'region_id' => '',
                 'region' => '',
-                'postcode' => $fyndiq_order->invoice_postalcode,
+                'postcode' => $fyndiq_order->delivery_postalcode,
                 'country_id' => 'SE', /* SWEDEN */
-                'telephone' => $fyndiq_order->invoice_phone,
+                'telephone' => $fyndiq_order->delivery_phone,
         );
 
         //if we have a default shipping address, try gathering its values into variables we need
@@ -141,7 +141,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
                 'region' => '',
                 'postcode' => $fyndiq_order->delivery_postalcode,
                 'country_id' => 'SE', /* SWEDEN */
-                'telephone' => $fyndiq_order->invoice_phone,
+                'telephone' => $fyndiq_order->delivery_phone,
         );
 
         // Set the payment method
