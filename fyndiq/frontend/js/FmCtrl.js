@@ -108,7 +108,7 @@ var FmCtrl = {
                     'You can get the notes <a href="' + module_path + '/fyndiq/files/deliverynote.pdf">here</a>');
             }
             if (callback) {
-                callback();
+                callback(status);
             }
         });
     },
@@ -343,9 +343,11 @@ var FmCtrl = {
             });
 
             FmGui.show_load_screen(function() {
-               FmCtrl.get_delivery_notes(orders, function() {
+               FmCtrl.get_delivery_notes(orders, function(status) {
                    FmGui.hide_load_screen();
-                   window.location.replace(urlpath0 + "fyndiq/files/deliverynote.pdf");
+                   if(status == 'success') {
+                        window.location.replace(urlpath0 + "fyndiq/files/deliverynote.pdf");
+                   }
                });
             });
         });
