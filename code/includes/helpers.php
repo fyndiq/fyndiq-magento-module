@@ -202,6 +202,9 @@ class FmHelpers
 
         if($response['status'] == 200) {
 
+            if (file_exists($filename)) {
+                unlink($filename);
+            }
             // Open the file to save the pdf
             $fp = fopen ($filename, 'w+');
             // Saving data to file
