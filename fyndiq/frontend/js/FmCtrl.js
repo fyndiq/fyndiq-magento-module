@@ -337,7 +337,6 @@ var FmCtrl = {
                 // check if product is selected
                 var active = $j(this).find('.select input').prop('checked');
                 if (active) {
-                    console.log($j(this));
                     orders.push($j(this).data('fyndiqid'));
                 }
             });
@@ -346,7 +345,11 @@ var FmCtrl = {
                FmCtrl.get_delivery_notes(orders, function(status) {
                    FmGui.hide_load_screen();
                    if(status == 'success') {
-                        window.location.replace(urlpath0 + "fyndiq/files/deliverynote.pdf");
+                       var wins = window.open(urlpath0 + "fyndiq/files/deliverynote.pdf", '_blank');
+                       if(wins){
+                           //Browser has allowed it to be opened
+                           wins.focus();
+                       }
                    }
                });
             });
