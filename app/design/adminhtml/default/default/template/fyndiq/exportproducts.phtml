@@ -118,8 +118,8 @@
 <script type="text/x-handlebars-template" class="handlebars-partial" id="fm-product-list-controls">
     <div class="fm-product-list-controls">
         <div class="export">
-            <button class="fm-button" name="delete-products">Delete Products</button>
-            <button class="fm-button fyndiq" name="export-products">Export Products</button>
+            <button class="fm-button" name="delete-products">Remove from Fyndiq</button>
+            <button class="fm-button fyndiq" name="export-products">Send to Fyndiq</button>
         </div>
     </div>
 </script>
@@ -168,9 +168,9 @@
             </td>
             <td class="status">
                 {{#if fyndiq_exported}}
-                <div class="label green">Exported</div>
+                <div class="label green">On Fyndiq</div>
                 {{else}}
-                <div class="label yellow">Not exported</div>
+                <div class="label yellow">Not on Fyndiq</div>
                 {{/if}}
             </td>
             </tr>
