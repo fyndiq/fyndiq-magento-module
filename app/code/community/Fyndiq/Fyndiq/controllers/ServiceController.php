@@ -98,14 +98,30 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             foreach ($ids as $id) {
                 $cat = Mage::getModel('catalog/category');
                 $cat->load($id);
-                $categoryData = array(
-                    'id' => $cat->getId(),
-                    'url' => $cat->getUrl(),
-                    'name' => $cat->getName(),
-                    'image' => $cat->getImageUrl(),
-                    'isActive' => $cat->getIsActive()
-                );
-                array_push($data, $categoryData);
+                // If it is a category
+                if ($cat->getEntityTypeId() == 3) {
+
+                    $products = Mage::getResourceModel('catalog/product_collection')
+                        ->addCategoryFilter($cat)
+                        ->addAttributeToFilter('image', array('neq' => 'no_selection'));
+
+                    $prodcount = $products->count();
+
+                    /*if ($item->getProductCount() < 1) {
+                        $collection->removeItemByKey($key);
+                    }*/
+
+                    if ($prodcount >= 1){
+                        $categoryData = array(
+                            'id' => $cat->getId(),
+                            'url' => $cat->getUrl(),
+                            'name' => $cat->getName(),
+                            'image' => $cat->getImageUrl(),
+                            'isActive' => $cat->getIsActive()
+                        );
+                        array_push($data, $categoryData);
+                    }
+                }
             }
         }
 
