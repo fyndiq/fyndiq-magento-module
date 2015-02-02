@@ -21,7 +21,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      *
      * @param string $data
      */
-    public static function response($data = '')
+    public function response($data = '')
     {
         $response = array(
             'fm-service-status' => 'success',
@@ -34,7 +34,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 FmMessages::get('unhandled-error-message')
             );
         } else {
-            echo $json;
+            $this->getResponse()->clearHeaders()->setHeader('Content-type','application/json',true);
+            $this->getResponse()->setBody($json);
         }
     }
 
@@ -45,7 +46,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      * @param $title
      * @param $message
      */
-    public static function response_error($title, $message)
+    public function response_error($title, $message)
     {
         $response = array(
             'fm-service-status' => 'error',
@@ -53,7 +54,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             'message' => $message,
         );
         $json = json_encode($response);
-        echo $json;
+        $this->getResponse()->clearHeaders()->setHeader('Content-type','application/json',true);
+        $this->getResponse()->setBody($json);
     }
 
     /**
@@ -376,7 +378,23 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 $orders->orders[] = $object;
             }
 
-            $ret = FmHelpers::call_api('POST', 'delivery_notes/', $orders, "fyndiq/files/deliverynote.pdf");
+            $ret = FmHelpers::call_api('POST', 'delivery_notes/', $orders, true);
+
+
+            if($ret['status'] == 200) {
+
+                if (file_exists("fyndiq/files/deliverynote.pdf")) {
+                    unlink("fyndiq/files/deliverynote.pdf");
+                }
+                // Open the file to save the pdf
+                $fp = fopen ("fyndiq/files/deliverynote.pdf", 'w+');
+                // Saving data to file
+                fputs($fp, $ret['data']);
+                # closing the file
+                fclose($fp);
+                unset($ret['data']);
+            }
+
             self::response($ret);
         } catch (Exception $e) {
             self::response_error(
@@ -507,4 +525,4 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
         return $html;
     }
-} 
+}
