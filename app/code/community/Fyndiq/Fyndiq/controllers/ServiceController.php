@@ -164,6 +164,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             // setting up price and quantity for fyndiq.
             $qtyStock = Mage::getModel('cataloginventory/stock_item')->loadByProduct($prod->getId())->getQty();
             $fyndiq = Mage::getModel('fyndiq/product')->productExist($prod->getId());
+            $fyndiq_data = Mage::getModel('fyndiq/product')->getProductExportData($prod->getId());
             $fyndiq_price = FmConfig::get('price_percentage');
 
             if ($prod->getTypeId() == "simple") {
@@ -199,41 +200,31 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 }
             }
 
+            $prodData = array(
+                'id' => $prod->getId(),
+                'url' => $prod->getUrl(),
+                'name' => $prod->getName(),
+                'quantity' => intval($qtyStock),
+                'fyndiq_quantity' => intval($qtyStock),
+                'price' => number_format((float)$prod->getPrice(), 2, '.', ''),
+                'fyndiq_price' => $fyndiq_price,
+                'fyndiq_exported_stock' => intval($qtyStock),
+                'fyndiq_exported' => $fyndiq,
+                'description' => $prod->getDescription(),
+                'reference' => $prod->getSKU(),
+                'properties' => $tags,
+                'isActive' => $prod->getIsActive()
+            );
+
             //trying to get image, if not image will be false
             try {
-                $prodData = array(
-                    'id' => $prod->getId(),
-                    'url' => $prod->getUrl(),
-                    'name' => $prod->getName(),
-                    'image' => $prod->getImageUrl(),
-                    'quantity' => intval($qtyStock),
-                    'fyndiq_quantity' => intval($qtyStock),
-                    'price' => number_format((float)$prod->getPrice(), 2, '.', ''),
-                    'fyndiq_price' => $fyndiq_price,
-                    'fyndiq_exported_stock' => intval($qtyStock),
-                    'fyndiq_exported' => $fyndiq,
-                    'description' => $prod->getDescription(),
-                    'reference' => $prod->getSKU(),
-                    'properties' => $tags,
-                    'isActive' => $prod->getIsActive()
-                );
+                $prodData["image"] = $prod->getImageUrl();
             } catch (Exception $e) {
-                $prodData = array(
-                    'id' => $prod->getId(),
-                    'url' => $prod->getUrl(),
-                    'name' => $prod->getName(),
-                    'price' => number_format((float)$prod->getPrice(), 2, '.', ''),
-                    'fyndiq_price' => $fyndiq_price,
-                    'fyndiq_exported_stock' => $qtyStock,
-                    'description' => $prod->getDescription(),
-                    'reference' => $prod->getSKU(),
-                    'quantity' => intval($qtyStock),
-                    'fyndiq_quantity' => intval($qtyStock),
-                    'fyndiq_exported' => $fyndiq,
-                    'image' => false,
-                    'properties' => $tags,
-                    'isActive' => $prod->getIsActive()
-                );
+                $prodData["image"] = false;
+            }
+
+            if($fyndiq) {
+                $prodData["fyndiq_price"] = $fyndiq_data["exported_price_percentage"];
             }
             array_push($data, $prodData);
         }
