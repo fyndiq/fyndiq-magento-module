@@ -303,7 +303,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      *
      * @param $args
      */
-    public static function export_products($args)
+    public function export_products($args)
     {
         // Getting all data
         $productModel = Mage::getModel('fyndiq/product');
@@ -318,7 +318,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             }
         }
 
-        self::response();
+        $this->response();
 
     }
 
@@ -353,7 +353,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         } else {
             $object->pagination = $this->getPagerOrdersHtml($args["page"]);
         }
-        self::response($object);
+        $this->response($object);
     }
 
     /**
@@ -411,7 +411,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 unset($ret['data']);
             }
 
-            self::response($ret);
+            $this->response($ret);
         } catch (Exception $e) {
             self::response_error(
                 FmMessages::get('unhandled-error-title'),
@@ -424,7 +424,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $config = new Mage_Core_Model_Config();
         $config ->saveConfig('fyndiq/fyndiq_group/apikey', "", 'default', "");
         $config ->saveConfig('fyndiq/fyndiq_group/username', "", 'default', "");
-        self::response(true);
+        $this->response(true);
     }
 
 
