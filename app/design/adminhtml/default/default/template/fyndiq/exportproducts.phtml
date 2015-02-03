@@ -159,7 +159,8 @@
                 </div>
                 <div class="fyndiq_price">
                     <label>Fyndiq Discount:</label>
-                    <input type="text" value="{{fyndiq_price}}">%
+                    <input type="text" value="{{fyndiq_price}}" class="fyndiq_dicsount">%<br />
+                    <span class="price_preview">Expected Price: {{expected_price}}</span>  <?php echo $this->getCurrency(); ?>
                 </div>
             </td>
             <td class="quantities">

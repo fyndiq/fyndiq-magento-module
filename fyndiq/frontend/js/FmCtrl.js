@@ -190,6 +190,15 @@ var FmCtrl = {
             });
         });
 
+        $j(document).on('keyup','.fm-product-list tr .prices .fyndiq_price .fyndiq_dicsount', function () {
+            console.log("keyup");
+            var discount = $j(this).val();
+            var price = $j(this).parent().parent().parent().attr('data-price');
+            var field = $j(this).parent().children('.price_preview');
+            var counted = price-((discount/100)*price);
+            field.text("Expected Price: " + counted);
+        });
+
         // when clicking select all products checkbox, set checked on all product's checkboxes
         $j(document).on('click', '#select-all', function(e) {
             if ($j(this).is(':checked')) {

@@ -226,6 +226,10 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             if($fyndiq) {
                 $prodData["fyndiq_price"] = $fyndiq_data["exported_price_percentage"];
             }
+
+            //Count expected price to Fyndiq
+            $prodData["expected_price"] = $prodData["price"]-(($prodData["fyndiq_price"]/100)*$prodData["price"]);
+
             array_push($data, $prodData);
         }
         $object = new stdClass();
