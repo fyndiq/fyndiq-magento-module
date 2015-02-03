@@ -103,7 +103,13 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
                     $products = Mage::getResourceModel('catalog/product_collection')
                         ->addCategoryFilter($cat)
-                        ->addAttributeToFilter('image', array('neq' => 'no_selection'));
+                        ->addAttributeToFilter(
+                            array(
+                                array('attribute'=> 'type_id','eq' => 'configurable'),
+                                array('attribute'=> 'type_id','eq' => 'simple'),
+                                #array('attribute'=> 'image', 'neq' => 'no_selection')
+                            )
+                        );
 
                     $prodcount = $products->count();
 
