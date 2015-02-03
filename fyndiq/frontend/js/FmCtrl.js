@@ -193,15 +193,18 @@ var FmCtrl = {
         $j(document).on('keyup', '.fm-product-list tr .prices .fyndiq_price .fyndiq_dicsount', function () {
             console.log("keyup");
             var discount = $j(this).val();
+
+            if(discount > 100) {
+                discount = 100;
+            }
+
             var price = $j(this).parent().parent().parent().attr('data-price');
             var field = $j(this).parent().children('.price_preview');
             var counted = price - ((discount / 100) * price);
             if(isNaN(counted)) {
                 counted = price;
             }
-            if(discount > 100) {
-                counted = price - ((100 / 100) * price);
-            }
+
             field.text("Expected Price: " + counted.toFixed(2));
         });
 
