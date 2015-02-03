@@ -199,6 +199,9 @@ var FmCtrl = {
             if(isNaN(counted)) {
                 counted = price;
             }
+            if(discount > 100) {
+                counted = price - ((100 / 100) * price);
+            }
             field.text("Expected Price: " + counted);
         });
 

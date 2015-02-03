@@ -316,12 +316,15 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $productModel = Mage::getModel('fyndiq/product');
         foreach ($args['products'] as $v) {
             $product = $v['product'];
-
+            $fyndiq_percentage = $product['fyndiq_precentage'];
+            if($fyndiq_percentage > 100) {
+                $fyndiq_percentage = 100;
+            }
             if($productModel->productExist($product["id"])) {
-                $productModel->updateProduct($product["id"], $product['fyndiq_quantity'], $product['fyndiq_precentage']);
+                $productModel->updateProduct($product["id"], $product['fyndiq_quantity'], $fyndiq_percentage);
             }
             else {
-                $productModel->addProduct($product["id"],$product['fyndiq_quantity'], $product['fyndiq_precentage']);
+                $productModel->addProduct($product["id"],$product['fyndiq_quantity'], $fyndiq_percentage);
             }
         }
 
