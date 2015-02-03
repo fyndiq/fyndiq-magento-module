@@ -182,21 +182,27 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             $tags = "";
             if(isset($parent)) {
                 $parentprod = $product_model->load($parent);
-                $productAttributeOptions = $parentprod->getTypeInstance()->getConfigurableAttributes();
-
-                $attrid = 1;
-                foreach ($productAttributeOptions as $productAttribute) {
-                    $attrValue = $parentprod->getResource()->getAttribute($productAttribute->getProductAttribute()->getAttributeCode())->getFrontend();
-                    $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
-                    $value = $attrValue->getValue($prod);
-
-                    if($attrid == 1) {
-                        $tags .= $attrCode.": ".$value[0];
+                if($parentprod) {
+                    $productAttributeOptions = array();
+                    $parentType = $parentprod->getTypeInstance();
+                    if(method_exists($parentType, "getConfigurableAttributes")) {
+                        $productAttributeOptions = $parentType->getConfigurableAttributes();
                     }
-                    else {
-                        $tags .= ", ".$attrCode.": ".$value[0];
+
+                    $attrid = 1;
+                    foreach ($productAttributeOptions as $productAttribute) {
+                        $attrValue = $parentprod->getResource()->getAttribute($productAttribute->getProductAttribute()->getAttributeCode())->getFrontend();
+                        $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
+                        $value = $attrValue->getValue($prod);
+
+                        if($attrid == 1) {
+                            $tags .= $attrCode.": ".$value[0];
+                        }
+                        else {
+                            $tags .= ", ".$attrCode.": ".$value[0];
+                        }
+                        $attrid++;
                     }
-                    $attrid++;
                 }
             }
 
