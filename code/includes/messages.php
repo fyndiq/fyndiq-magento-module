@@ -1,5 +1,4 @@
 <?php
-
 class FmMessages {
     private static $messages = array(
         'not-authenticated-warning'=>   'You have not connected to your Fyndiq merchant account yet.',

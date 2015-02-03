@@ -60,17 +60,12 @@ class FmHelpers
      * @param string $filename
      * @return array
      */
-    public static function call_api($method, $path, $data = array(), $filename = null)
+    public static function call_api($method, $path, $data = array())
     {
         $username = FmConfig::get('username');
         $api_token = FmConfig::get('apikey');
 
-        if(is_null($filename)) {
-            return FmHelpers::call_api_raw($username, $api_token, $method, $path, $data);
-        }
-        else {
-            return FmHelpers::call_api_file_raw($username, $api_token, $method, $path, $data, $filename);
-        }
+        return FmHelpers::call_api_raw($username, $api_token, $method, $path, $data);
     }
 
     /**
@@ -146,72 +141,6 @@ class FmHelpers
 
         if (!in_array($response['status'], $success_http_statuses)) {
             throw new FyndiqAPIUnsupportedStatus('Unsupported HTTP status: ' . $response['status']);
-        }
-
-        return $response;
-    }
-
-    public static function call_api_file_raw($username, $api_token, $method, $path, $data = array(), $filename)
-    {
-        $module = "FyndiqMechantMagento" . FmConfig::getVersion();
-
-        $response = FyndiqAPI::call($module, $username, $api_token, $method, $path, $data);
-
-        if ($response['status'] == 404) {
-            throw new FyndiqAPIPageNotFound('Not Found: ' . $path);
-        }
-
-        if ($response['status'] == 401) {
-            throw new FyndiqAPIAuthorizationFailed('Unauthorized');
-        }
-
-        if ($response['status'] == 429) {
-            throw new FyndiqAPITooManyRequests('Too Many Requests');
-        }
-
-        if ($response['status'] == 500) {
-            throw new FyndiqAPIServerError('Server Error');
-        }
-
-        // 400 may contain error messages intended for the user
-        if ($response['status'] == 400) {
-            // if there are any error messages, save them to class static member
-            if (!is_null($response["data"]) && property_exists($response["data"], 'error_messages')) {
-                $error_messages = $response["data"]->error_messages;
-
-                // if it contains several messages as an array
-                if (is_array($error_messages)) {
-
-                    foreach ($response["data"]->error_messages as $error_message) {
-                        self::$error_messages[] = $error_message;
-                    }
-
-                    // if it contains just one message as a string
-                } else {
-                    self::$error_messages[] = $error_messages;
-                }
-            }
-            throw new FyndiqAPIBadRequest('Bad Request');
-        }
-
-        $success_http_statuses = array('200', '201');
-
-        if (!in_array($response['status'], $success_http_statuses)) {
-            throw new FyndiqAPIUnsupportedStatus('Unsupported HTTP status: ' . $response['status']);
-        }
-
-        if($response['status'] == 200) {
-
-            if (file_exists($filename)) {
-                unlink($filename);
-            }
-            // Open the file to save the pdf
-            $fp = fopen ($filename, 'w+');
-            // Saving data to file
-            fputs($fp, $response['data']);
-            # closing the file
-            fclose($fp);
-            unset($response['data']);
         }
 
         return $response;

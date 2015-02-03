@@ -190,6 +190,15 @@ var FmCtrl = {
             });
         });
 
+        $j(document).on('keyup','.fm-product-list tr .prices .fyndiq_price .fyndiq_dicsount', function () {
+            console.log("keyup");
+            var discount = $j(this).val();
+            var price = $j(this).parent().parent().parent().attr('data-price');
+            var field = $j(this).parent().children('.price_preview');
+            var counted = price-((discount/100)*price);
+            field.text("Expected Price: " + counted);
+        });
+
         // when clicking select all products checkbox, set checked on all product's checkboxes
         $j(document).on('click', '#select-all', function(e) {
             if ($j(this).is(':checked')) {
@@ -337,7 +346,6 @@ var FmCtrl = {
                 // check if product is selected
                 var active = $j(this).find('.select input').prop('checked');
                 if (active) {
-                    console.log($j(this));
                     orders.push($j(this).data('fyndiqid'));
                 }
             });
@@ -346,7 +354,11 @@ var FmCtrl = {
                FmCtrl.get_delivery_notes(orders, function(status) {
                    FmGui.hide_load_screen();
                    if(status == 'success') {
-                        window.location.replace(urlpath0 + "fyndiq/files/deliverynote.pdf");
+                       var wins = window.open(urlpath0 + "fyndiq/files/deliverynote.pdf", '_blank');
+                       if(wins){
+                           //Browser has allowed it to be opened
+                           wins.focus();
+                       }
                    }
                });
             });

@@ -61,6 +61,8 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             $order = $order->getData();
             $magorder = Mage::getModel('sales/order')->load($order["order_id"]);
             $magarray = $magorder->getData();
+            $magarray["total_qty_ordered"] = intval($magarray["total_qty_ordered"]);
+            $magarray["base_grand_total"] = number_format((float)$magarray["base_grand_total"], 2, '.', '');
             $magarray["fyndiq_order"] = $order["fyndiq_orderid"];
             $return_array[] = $magarray;
         }

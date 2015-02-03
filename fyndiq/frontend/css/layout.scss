@@ -127,7 +127,6 @@
 }
 
 .label {
-  display:block;
   padding:4px;
   text-align: center;
   @include border-radius(3px);
@@ -164,7 +163,7 @@
 .fm-product-list-controls {
     overflow: hidden;
     margin: 10px 0;
-    width:250px;
+    width:270px;
     float:right;
 
     .select {

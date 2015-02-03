@@ -33,4 +33,4 @@ class FmConfig {
     public static function getFeedPath() {
         return "fyndiq/files/feed.csv";
     }
-} 
+}
