@@ -155,12 +155,12 @@
             <td><strong>{{name}}</strong> ({{reference}})<br/>{{properties}}</td>
             <td class="prices">
                 <div class="price">
-                    Price: {{price}}
+                    Price: {{price}} <?php echo $this->getCurrency(); ?>
                 </div>
                 <div class="fyndiq_price">
                     <label>Fyndiq Discount:</label>
                     <input type="text" value="{{fyndiq_price}}" class="fyndiq_dicsount">%<br />
-                    <span class="price_preview">Expected Price: {{expected_price}}</span>  <?php echo $this->getCurrency(); ?>
+                    <span class="price_preview">Expected Price: {{expected_price}}</span> <?php echo $this->getCurrency(); ?>
                 </div>
             </td>
             <td class="quantities">
