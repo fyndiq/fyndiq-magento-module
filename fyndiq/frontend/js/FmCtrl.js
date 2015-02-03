@@ -202,7 +202,7 @@ var FmCtrl = {
             if(discount > 100) {
                 counted = price - ((100 / 100) * price);
             }
-            field.text("Expected Price: " + counted);
+            field.text("Expected Price: " + counted.toFixed(2));
         });
 
         // when clicking select all products checkbox, set checked on all product's checkboxes

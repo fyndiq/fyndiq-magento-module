@@ -240,7 +240,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             }
 
             //Count expected price to Fyndiq
-            $prodData["expected_price"] = $prodData["price"]-(($prodData["fyndiq_price"]/100)*$prodData["price"]);
+            $prodData["expected_price"] = number_format((float)($prodData["price"]-(($prodData["fyndiq_price"]/100)*$prodData["price"])), 2, '.', '');
 
             array_push($data, $prodData);
         }
