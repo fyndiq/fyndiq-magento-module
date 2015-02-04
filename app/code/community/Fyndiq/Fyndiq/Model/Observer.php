@@ -1,5 +1,6 @@
 <?php
 require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
+require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
 
 /**
  * Taking care of cron jobs for product feed.
@@ -23,6 +24,32 @@ class Fyndiq_Fyndiq_Model_Observer
             print "Fyndiq :: Done saving feed file\n";
         }
 
+    }
+
+    public function importOrders()
+    {
+        try {
+            $url = "orders/";
+            $settingexists = Mage::getModel('fyndiq/setting')->settingExist("order_lastdate");
+            if($settingexists) {
+                $date = Mage::getModel('fyndiq/setting')->getSetting("order_lastdate");
+                $url .= "?min_date=".urlencode($date["value"]);
+            }
+            $ret = FmHelpers::call_api('GET', $url);
+            $newdate = date("Y-m-d H:i:s");
+            if($settingexists) {
+                Mage::getModel('fyndiq/setting')->updateSetting("order_lastdate",$newdate);
+            } else {
+                Mage::getModel('fyndiq/setting')->saveSetting("order_lastdate",$newdate);
+            }
+            foreach ($ret["data"] as $order) {
+                if(!Mage::getModel('fyndiq/order')->orderExists($order->id)) {
+                    Mage::getModel('fyndiq/order')->create($order);
+                }
+            }
+        } catch (Exception $e) {
+
+        }
     }
 
     /**

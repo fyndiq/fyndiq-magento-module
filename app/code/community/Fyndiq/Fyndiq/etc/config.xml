@@ -23,6 +23,9 @@
                     <order>
                         <table>fyndiq_orders</table>
                     </order>
+                    <setting>
+                        <table>fyndiq_settings</table>
+                    </setting>
                 </entities>
             </fyndiq_resource>
         </models>
@@ -126,6 +129,14 @@
                     <model>fyndiq/observer::exportProducts</model>
                 </run>
             </feed_products>
+            <order_import>
+                <schedule>
+                    <cron_expr>0 06,15 * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>fyndiq/observer::importOrders</model>
+                </run>
+            </order_import>
         </jobs>
     </crontab>
 </config>

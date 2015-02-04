@@ -105,6 +105,13 @@
             <fieldset>
                 <p>By clicking this button, you can import all orders from Fyndiq into the local webshop.</p>
                 <button class="fm-button fyndiq" id="fm-import-orders">Import Orders</button>
+                <?php
+                $date = $this->getLastUpdatedDate();
+                if($date != false)
+                {
+                    ?><br />Last Updated: <? echo $date;
+                }
+                ?>
             </fieldset>
         </form>
     </div>

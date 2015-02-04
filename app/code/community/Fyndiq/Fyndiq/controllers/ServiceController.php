@@ -373,8 +373,24 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     public function import_orders($args) {
         try {
-            $ret = FmHelpers::call_api('GET', 'orders/');
+            $url = "orders/";
+            //Get the last updated date
+            $settingexists = Mage::getModel('fyndiq/setting')->settingExist("order_lastdate");
+            if($settingexists) {
+                $date = Mage::getModel('fyndiq/setting')->getSetting("order_lastdate");
+                $url .= "?min_date=".urlencode($date["value"]);
+            }
 
+            //Get the orders
+            $ret = FmHelpers::call_api('GET', $url);
+
+            //Updating or adding the date setting
+            $newdate = date("Y-m-d H:i:s");
+            if($settingexists) {
+                Mage::getModel('fyndiq/setting')->updateSetting("order_lastdate",$newdate);
+            } else {
+                Mage::getModel('fyndiq/setting')->saveSetting("order_lastdate",$newdate);
+            }
             foreach ($ret["data"] as $order) {
                 if(!Mage::getModel('fyndiq/order')->orderExists($order->id)) {
                     Mage::getModel('fyndiq/order')->create($order);
