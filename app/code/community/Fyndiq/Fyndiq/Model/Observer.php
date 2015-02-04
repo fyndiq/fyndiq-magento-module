@@ -125,8 +125,8 @@ class Fyndiq_Fyndiq_Model_Observer
                 $real_array["product-price"] = number_format((float)$real_array["product-price"], 2, '.', '');
                 $real_array["product-vat-percent"] = "25";
                 $real_array["product-oldprice"] = number_format((float)$magarray["price"], 2, '.', '');
-                $real_array["product-market"] = addslashes(FmConfig::get('country'));
-                $real_array["product-currency"] = FmConfig::get('currency');
+                $real_array["product-market"] = addslashes(Mage::getStoreConfig('general/country/default'));
+                $real_array["product-currency"] = Mage::app()->getStore()->getCurrentCurrencyCode();
                 // TODO: plan how to fix this brand issue
                 $real_array["product-brand"] = "test";
 

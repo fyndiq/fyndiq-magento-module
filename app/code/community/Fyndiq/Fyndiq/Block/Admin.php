@@ -32,12 +32,12 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
 
     public function getLanguage()
     {
-        return FmConfig::get('country');
+        return Mage::getStoreConfig('general/country/default');
     }
 
     public function getCurrency()
     {
-        return FmConfig::get('currency');
+        return Mage::app()->getStore()->getCurrentCurrencyCode();
     }
 
     public function getPercentage()
