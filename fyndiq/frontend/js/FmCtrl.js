@@ -138,21 +138,23 @@ var FmCtrl = {
         });
     },
 
+    update_product: function (product, percentage, qty, callback) {
+        FmCtrl.call_service('update_product', {'product': product, 'percentage': percentage, 'quantity': qty}, function (status) {
+            if (callback) {
+                callback(status);
+            }
+        });
+    },
+
     products_delete: function (products, callback) {
 
         FmCtrl.call_service('delete_exported_products', {'products': products}, function (status, data) {
             if (status == 'success') {
                 FmGui.show_message('success', messages['products-deleted-title'],
                     messages['products-deleted-message']);
-
-                // reload category to ensure that everything is reset properly
-                if (callback) {
-                    callback();
-                }
-            } else {
-                if (callback) {
-                    callback();
-                }
+            }
+            if (callback) {
+                callback();
             }
         });
     },
@@ -189,23 +191,41 @@ var FmCtrl = {
                 });
             });
         });
-
+        var savetimeout;
         $j(document).on('keyup', '.fm-product-list tr .prices .fyndiq_price .fyndiq_dicsount', function () {
             console.log("keyup");
             var discount = $j(this).val();
+            var product = $j(this).parent().parent().parent().attr('data-id');
+            var fyndiq_quantity = $j.trim($j(this).parent().parent().parent().children('.quantities').html());
 
-            if(discount > 100) {
+            if (discount > 100) {
                 discount = 100;
             }
 
             var price = $j(this).parent().parent().parent().attr('data-price');
             var field = $j(this).parent().children('.price_preview');
             var counted = price - ((discount / 100) * price);
-            if(isNaN(counted)) {
+            if (isNaN(counted)) {
                 counted = price;
             }
 
             field.text("Expected Price: " + counted.toFixed(2));
+
+            clearTimeout(savetimeout);
+            var ajaxdiv = $j(this).parent().find('#ajaxFired');
+            ajaxdiv.html('Typing...').show();
+            savetimeout = setTimeout(function () {
+                console.log("info: " + product + " - " + fyndiq_quantity + " - " + discount);
+                FmCtrl.update_product(product, discount, fyndiq_quantity, function (status) {
+                    if (status == "success") {
+                        console.log("saved");
+                        ajaxdiv.html('Saved').delay(1000).fadeOut();
+                    }
+                    else {
+                        ajaxdiv.html('Error').delay(1000).fadeOut();
+                    }
+                });
+            }, 1000);
         });
 
         // when clicking select all products checkbox, set checked on all product's checkboxes

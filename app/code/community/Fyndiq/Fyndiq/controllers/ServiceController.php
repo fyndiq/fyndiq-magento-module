@@ -255,6 +255,12 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     }
 
 
+    public function update_product($args) {
+        $productModel = Mage::getModel('fyndiq/product');
+        $status = $productModel->updateProduct($args['product'], $args['quantity'], $args['percentage']);
+        $this->response($status);
+    }
+
     /**
      * Get exported products
      *

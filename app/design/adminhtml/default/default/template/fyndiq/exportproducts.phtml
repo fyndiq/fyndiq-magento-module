@@ -159,12 +159,12 @@
                 </div>
                 <div class="fyndiq_price">
                     <label>Fyndiq Discount:</label>
-                    <input type="text" value="{{fyndiq_price}}" class="fyndiq_dicsount">%<br />
+                    <input type="text" value="{{fyndiq_price}}" class="fyndiq_dicsount">% <span id="ajaxFired"></span><br />
                     <span class="price_preview">Expected Price: {{expected_price}}</span> <?php echo $this->getCurrency(); ?>
                 </div>
             </td>
             <td class="quantities">
-                <div id="quantity">{{quantity}}</div>
+                {{quantity}}
             </td>
             <td class="status">
                 {{#if fyndiq_exported}}
@@ -187,6 +187,7 @@
 </script>
 
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/jquery.textchange.js"></script>
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/handlebars-v1.1.2.js"></script>
 
 <script type="text/javascript">
