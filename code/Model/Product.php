@@ -27,18 +27,18 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
         }
     }
 
-    function addProduct($product_id, $export_qty, $exported_price_percentage)
+    function addProduct($product_id, $exported_price_percentage)
     {
-        $data = array('product_id' => $product_id, 'exported_qty' => $export_qty, 'exported_price_percentage' => $exported_price_percentage);
+        $data = array('product_id' => $product_id, 'exported_price_percentage' => $exported_price_percentage);
         $model = $this->setData($data);
 
         return $model->save()->getId();
     }
 
-    function updateProduct($product_id, $export_qty, $exported_price_percentage)
+    function updateProduct($product_id, $exported_price_percentage)
     {
         $collection = $this->getCollection()->addFieldToFilter('product_id', $product_id)->getFirstItem();
-        $data = array('exported_qty' => $export_qty, 'exported_price_percentage' => $exported_price_percentage);
+        $data = array('exported_price_percentage' => $exported_price_percentage);
         $model = $this->load($collection->getId())->addData($data);
         try {
             $model->setId($collection->getId())->save();

@@ -38,7 +38,7 @@
             <td class="select"><input type="checkbox" id="select_order_{{entity_id}}"></td>
             <td>{{entity_id}}</td>
             <td>{{fyndiq_order}}</td>
-            <td>{{base_grand_total}}</td>
+            <td>{{base_grand_total}} <?php echo $this->getCurrency(); ?></td>
             <td>{{total_qty_ordered}}</td>
             <td>{{created_at}}</td>
         </tr>
@@ -105,6 +105,13 @@
             <fieldset>
                 <p>By clicking this button, you can import all orders from Fyndiq into the local webshop.</p>
                 <button class="fm-button fyndiq" id="fm-import-orders">Import Orders</button>
+                <?php
+                $date = $this->getLastUpdatedDate();
+                if($date != false)
+                {
+                    ?><br />Last Updated: <? echo $date;
+                }
+                ?>
             </fieldset>
         </form>
     </div>

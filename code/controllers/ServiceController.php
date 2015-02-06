@@ -103,7 +103,13 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
                     $products = Mage::getResourceModel('catalog/product_collection')
                         ->addCategoryFilter($cat)
-                        ->addAttributeToFilter('image', array('neq' => 'no_selection'));
+                        ->addAttributeToFilter(
+                            array(
+                                array('attribute'=> 'type_id','eq' => 'configurable'),
+                                array('attribute'=> 'type_id','eq' => 'simple'),
+                                #array('attribute'=> 'image', 'neq' => 'no_selection')
+                            )
+                        );
 
                     $prodcount = $products->count();
 
@@ -182,21 +188,27 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             $tags = "";
             if(isset($parent)) {
                 $parentprod = $product_model->load($parent);
-                $productAttributeOptions = $parentprod->getTypeInstance()->getConfigurableAttributes();
-
-                $attrid = 1;
-                foreach ($productAttributeOptions as $productAttribute) {
-                    $attrValue = $parentprod->getResource()->getAttribute($productAttribute->getProductAttribute()->getAttributeCode())->getFrontend();
-                    $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
-                    $value = $attrValue->getValue($prod);
-
-                    if($attrid == 1) {
-                        $tags .= $attrCode.": ".$value[0];
+                if($parentprod) {
+                    $productAttributeOptions = array();
+                    $parentType = $parentprod->getTypeInstance();
+                    if(method_exists($parentType, "getConfigurableAttributes")) {
+                        $productAttributeOptions = $parentType->getConfigurableAttributes();
                     }
-                    else {
-                        $tags .= ", ".$attrCode.": ".$value[0];
+
+                    $attrid = 1;
+                    foreach ($productAttributeOptions as $productAttribute) {
+                        $attrValue = $parentprod->getResource()->getAttribute($productAttribute->getProductAttribute()->getAttributeCode())->getFrontend();
+                        $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
+                        $value = $attrValue->getValue($prod);
+
+                        if($attrid == 1) {
+                            $tags .= $attrCode.": ".$value[0];
+                        }
+                        else {
+                            $tags .= ", ".$attrCode.": ".$value[0];
+                        }
+                        $attrid++;
                     }
-                    $attrid++;
                 }
             }
 
@@ -228,7 +240,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             }
 
             //Count expected price to Fyndiq
-            $prodData["expected_price"] = $prodData["price"]-(($prodData["fyndiq_price"]/100)*$prodData["price"]);
+            $prodData["expected_price"] = number_format((float)($prodData["price"]-(($prodData["fyndiq_price"]/100)*$prodData["price"])), 2, '.', '');
 
             array_push($data, $prodData);
         }
@@ -242,6 +254,12 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $this->response($object);
     }
 
+
+    public function update_product($args) {
+        $productModel = Mage::getModel('fyndiq/product');
+        $status = $productModel->updateProduct($args['product'], $args['percentage']);
+        $this->response($status);
+    }
 
     /**
      * Get exported products
@@ -304,12 +322,15 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $productModel = Mage::getModel('fyndiq/product');
         foreach ($args['products'] as $v) {
             $product = $v['product'];
-
+            $fyndiq_percentage = $product['fyndiq_precentage'];
+            if($fyndiq_percentage > 100) {
+                $fyndiq_percentage = 100;
+            }
             if($productModel->productExist($product["id"])) {
-                $productModel->updateProduct($product["id"], $product['fyndiq_quantity'], $product['fyndiq_precentage']);
+                $productModel->updateProduct($product["id"], $fyndiq_percentage);
             }
             else {
-                $productModel->addProduct($product["id"],$product['fyndiq_quantity'], $product['fyndiq_precentage']);
+                $productModel->addProduct($product["id"], $fyndiq_percentage);
             }
         }
 
@@ -358,8 +379,24 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     public function import_orders($args) {
         try {
-            $ret = FmHelpers::call_api('GET', 'orders/');
+            $url = "orders/";
+            //Get the last updated date
+            $settingexists = Mage::getModel('fyndiq/setting')->settingExist("order_lastdate");
+            if($settingexists) {
+                $date = Mage::getModel('fyndiq/setting')->getSetting("order_lastdate");
+                $url .= "?min_date=".urlencode($date["value"]);
+            }
 
+            //Get the orders
+            $ret = FmHelpers::call_api('GET', $url);
+
+            //Updating or adding the date setting
+            $newdate = date("Y-m-d H:i:s");
+            if($settingexists) {
+                Mage::getModel('fyndiq/setting')->updateSetting("order_lastdate",$newdate);
+            } else {
+                Mage::getModel('fyndiq/setting')->saveSetting("order_lastdate",$newdate);
+            }
             foreach ($ret["data"] as $order) {
                 if(!Mage::getModel('fyndiq/order')->orderExists($order->id)) {
                     Mage::getModel('fyndiq/order')->create($order);

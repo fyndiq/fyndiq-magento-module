@@ -32,12 +32,12 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
 
     public function getLanguage()
     {
-        return FmConfig::get('country');
+        return Mage::getStoreConfig('general/country/default');
     }
 
     public function getCurrency()
     {
-        return FmConfig::get('currency');
+        return Mage::app()->getStore()->getCurrentCurrencyCode();
     }
 
     public function getPercentage()
@@ -73,5 +73,14 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
     public function getVersion()
     {
         return FmConfig::getVersion();
+    }
+
+    public function getLastUpdatedDate()
+    {
+        $date = Mage::getModel('fyndiq/setting')->getSetting("order_lastdate");
+        if($date != false) {
+            return $date["value"];
+        }
+        return false;
     }
 }

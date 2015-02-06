@@ -18,6 +18,8 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
     {
         $this->loadLayout(array('default'));
 
+        $currency = Mage::app()->getStore()->getCurrentCurrencyCode();
+
         try {
             FmHelpers::call_api('GET', 'orders/');
             $api_available = true;
@@ -27,6 +29,8 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
         }
         if ($this->getAPIToken() == "" OR $this->getUsername() == "") {
             $this->setupTemplate('fyndiq/needapiinfo.phtml');
+        } elseif ($currency != "SEK" AND $currency != "EUR") {
+            $this->setupTemplate('fyndiq/currencyerror.phtml');
         } else {
             if (isset($page_args['message']) AND $page_args['message'] == "Unauthorized") {
                 $this->setupTemplate('fyndiq/apierror.phtml', $page_args);
@@ -44,6 +48,8 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
     {
         $this->loadLayout(array('default'));
 
+        $currency = Mage::app()->getStore()->getCurrentCurrencyCode();
+
         try {
             FmHelpers::call_api('GET', 'orders/');
             $api_available = true;
@@ -51,8 +57,12 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
             $api_available = false;
             $page_args['message'] = $e->getMessage();
         }
-        if ($this->getAPIToken() == "" OR $this->getUsername() == "" OR isset($page_args['message']) AND $page_args['message'] == "Unauthorized") {
+        if ($this->getAPIToken() == "" OR $this->getUsername(
+            ) == "" OR isset($page_args['message']) AND $page_args['message'] == "Unauthorized"
+        ) {
             $this->setupTemplate('fyndiq/needapiinfo.phtml');
+        } elseif ($currency != "SEK" AND $currency != "EUR") {
+            $this->setupTemplate('fyndiq/currencyerror.phtml');
         } else {
             if (!$api_available) {
                 $this->setupTemplate('fyndiq/apierror.phtml', $page_args);
@@ -60,6 +70,13 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
                 $this->setupTemplate('fyndiq/orderlist.phtml');
             }
         }
+    }
+
+    function disconnectAction() {
+        $config = new Mage_Core_Model_Config();
+        $config ->saveConfig('fyndiq/fyndiq_group/apikey', "", 'default', "");
+        $config ->saveConfig('fyndiq/fyndiq_group/username', "", 'default', "");
+        $this->_redirect("fyndiq/admin/index");
     }
 
     /**

@@ -155,17 +155,16 @@
             <td><strong>{{name}}</strong> ({{reference}})<br/>{{properties}}</td>
             <td class="prices">
                 <div class="price">
-                    Price: {{price}}
+                    Price: {{price}} <?php echo $this->getCurrency(); ?>
                 </div>
                 <div class="fyndiq_price">
                     <label>Fyndiq Discount:</label>
-                    <input type="text" value="{{fyndiq_price}}" class="fyndiq_dicsount">%<br />
-                    <span class="price_preview">Expected Price: {{expected_price}}</span>  <?php echo $this->getCurrency(); ?>
+                    <input type="text" value="{{fyndiq_price}}" class="fyndiq_dicsount">% <span id="ajaxFired"></span><br />
+                    <span class="price_preview">Expected Price: {{expected_price}}</span> <?php echo $this->getCurrency(); ?>
                 </div>
             </td>
             <td class="quantities">
-                <div id="quantity">Qty: {{quantity}}</div>
-                <div class="fyndiq">Fyndiq Qty: <span class="fyndiq-quantity">{{fyndiq_quantity}}</span></div>
+                {{quantity}}
             </td>
             <td class="status">
                 {{#if fyndiq_exported}}
@@ -188,6 +187,7 @@
 </script>
 
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/jquery.textchange.js"></script>
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/handlebars-v1.1.2.js"></script>
 
 <script type="text/javascript">
