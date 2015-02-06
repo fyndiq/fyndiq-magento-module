@@ -72,6 +72,13 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
         }
     }
 
+    function disconnectAction() {
+        $config = new Mage_Core_Model_Config();
+        $config ->saveConfig('fyndiq/fyndiq_group/apikey', "", 'default', "");
+        $config ->saveConfig('fyndiq/fyndiq_group/username', "", 'default', "");
+        $this->_redirect("fyndiq/admin/index");
+    }
+
     /**
      * Setting up the template with correct block and everything.
      *
