@@ -138,8 +138,8 @@ var FmCtrl = {
         });
     },
 
-    update_product: function (product, percentage, qty, callback) {
-        FmCtrl.call_service('update_product', {'product': product, 'percentage': percentage, 'quantity': qty}, function (status) {
+    update_product: function (product, percentage, callback) {
+        FmCtrl.call_service('update_product', {'product': product, 'percentage': percentage}, function (status) {
             if (callback) {
                 callback(status);
             }
@@ -196,7 +196,6 @@ var FmCtrl = {
             console.log("keyup");
             var discount = $j(this).val();
             var product = $j(this).parent().parent().parent().attr('data-id');
-            var fyndiq_quantity = $j.trim($j(this).parent().parent().parent().children('.quantities').html());
 
             if (discount > 100) {
                 discount = 100;
@@ -215,8 +214,7 @@ var FmCtrl = {
             var ajaxdiv = $j(this).parent().find('#ajaxFired');
             ajaxdiv.html('Typing...').show();
             savetimeout = setTimeout(function () {
-                console.log("info: " + product + " - " + fyndiq_quantity + " - " + discount);
-                FmCtrl.update_product(product, discount, fyndiq_quantity, function (status) {
+                FmCtrl.update_product(product, discount, function (status) {
                     if (status == "success") {
                         console.log("saved");
                         ajaxdiv.html('Saved').delay(1000).fadeOut();
@@ -258,17 +256,10 @@ var FmCtrl = {
                     // store product id and combinations
                     var price = $j(this).find("td.prices > div.price > input").val();
                     var fyndiq_precentage = $j(this).find("td.prices > div.fyndiq_price > input").val();
-                    var fyndiq_quantity = $j(this).find("td.quantities > div.fyndiq > span").text();
                     products.push({
                         'product': {
                             'id': $j(this).data('id'),
-                            'name': $j(this).data('name'),
-                            'image': $j(this).data('image'),
-                            'description': $j(this).data('description'),
-                            'price': $j(this).data('price'),
-                            'fyndiq_precentage': fyndiq_precentage,
-                            'fyndiq_quantity': fyndiq_quantity,
-                            'quantity': $j(this).data('quantity')
+                            'fyndiq_precentage': fyndiq_precentage
                         }
                     });
                 }

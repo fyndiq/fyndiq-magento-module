@@ -14,9 +14,6 @@ $productstable = $installer->getConnection()
     ->addColumn('product_id', Varien_Db_Ddl_Table::TYPE_INTEGER, null, array(
             'nullable'  => false,
         ), 'Magento Product')
-    ->addColumn('exported_qty', Varien_Db_Ddl_Table::TYPE_INTEGER, null, array(
-            'nullable'  => false,
-        ), 'Exported qty')
     ->addColumn('exported_price_percentage', Varien_Db_Ddl_Table::TYPE_INTEGER, null, array(
             'nullable'  => false,
         ), 'Exported price percentage');

@@ -257,7 +257,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
     public function update_product($args) {
         $productModel = Mage::getModel('fyndiq/product');
-        $status = $productModel->updateProduct($args['product'], $args['quantity'], $args['percentage']);
+        $status = $productModel->updateProduct($args['product'], $args['percentage']);
         $this->response($status);
     }
 
@@ -327,10 +327,10 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 $fyndiq_percentage = 100;
             }
             if($productModel->productExist($product["id"])) {
-                $productModel->updateProduct($product["id"], $product['fyndiq_quantity'], $fyndiq_percentage);
+                $productModel->updateProduct($product["id"], $fyndiq_percentage);
             }
             else {
-                $productModel->addProduct($product["id"],$product['fyndiq_quantity'], $fyndiq_percentage);
+                $productModel->addProduct($product["id"], $fyndiq_percentage);
             }
         }
 
