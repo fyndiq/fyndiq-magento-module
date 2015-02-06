@@ -193,7 +193,6 @@ var FmCtrl = {
         });
         var savetimeout;
         $j(document).on('keyup', '.fm-product-list tr .prices .fyndiq_price .fyndiq_dicsount', function () {
-            console.log("keyup");
             var discount = $j(this).val();
             var product = $j(this).parent().parent().parent().attr('data-id');
 
@@ -216,7 +215,6 @@ var FmCtrl = {
             savetimeout = setTimeout(function () {
                 FmCtrl.update_product(product, discount, function (status) {
                     if (status == "success") {
-                        console.log("saved");
                         ajaxdiv.html('Saved').delay(1000).fadeOut();
                     }
                     else {
