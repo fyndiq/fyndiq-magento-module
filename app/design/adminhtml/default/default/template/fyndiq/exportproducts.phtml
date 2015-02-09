@@ -11,8 +11,11 @@
 
 <script type="text/x-handlebars-template" class="handlebars-template" id="fm-message-overlay">
     <div class="fm-message-overlay fm-{{type}}">
-        <img class="close" src="<?php echo $this->getFrontendPath(); ?>frontend/images/icons/close-icon.png" alt="Close" title="Close message">
+        <img class="close" src="<?php echo $this->getFrontendPath(); ?>frontend/images/icons/close-icon.png" alt="Close"
+             title="Close message">
+
         <h3>{{title}}</h3>
+
         <p>{{message}}</p>
     </div>
 </script>
@@ -41,8 +44,10 @@
 <script type="text/x-handlebars-template" class="handlebars-template" id="fm-accept-product-export">
     <div class="fm-accept-product-export">
         <h3>Warning!</h3>
+
         <p>
-            Check once again that the percentage and data about the product is correct. Here is the product you have selected for export. Already exported product will get its stock and price overwritten.
+            Check once again that the percentage and data about the product is correct. Here is the product you have
+            selected for export. Already exported product will get its stock and price overwritten.
         </p>
 
         {{> fm-product-price-warning-controls}}
@@ -62,7 +67,7 @@
                     <div class="title">
                         {{#with product}}{{#with product}}
                         <input type="text" value="{{name}}">
-                            {{/with}}{{/with}}
+                        {{/with}}{{/with}}
                     </div>
 
                     <div class="price-info">
@@ -127,60 +132,61 @@
 <script type="text/x-handlebars-template" class="handlebars-template" id="fm-product-list">
     {{> fm-product-list-controls}}
     <div class="fm-products-list-container">
-    {{#if products}}
-    <table>
-        <thead>
-        <tr>
-            <th><input id="select-all" type="checkbox"></th>
-            <th colspan="2">Product</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Status</th>
-        </tr>
-        </thead>
-        <tbody class="fm-product-list">
-        {{#each products}}
-        {{#with this}}
-        <tr
-            data-id="{{id}}"
-            data-name="{{name}}"
-            data-reference="{{reference}}"
-            data-description="{{description}}"
-            data-price="{{price}}"
-            data-quantity="{{quantity}}"
-            data-image="{{image}}"
-            class="product">
-            <td class="select"><input type="checkbox" id="select_product_{{id}}"></td>
-            <td><img src="{{image}}" alt="Product image"></td>
-            <td><strong>{{name}}</strong> ({{reference}})<br/>{{properties}}</td>
-            <td class="prices">
-                <div class="price">
-                    Price: {{price}} <?php echo $this->getCurrency(); ?>
-                </div>
-                <div class="fyndiq_price">
-                    <label>Fyndiq Discount:</label>
-                    <input type="text" value="{{fyndiq_price}}" class="fyndiq_dicsount">% <span id="ajaxFired"></span><br />
-                    <span class="price_preview">Expected Price: {{expected_price}}</span> <?php echo $this->getCurrency(); ?>
-                </div>
-            </td>
-            <td class="quantities">
-                {{quantity}}
-            </td>
-            <td class="status">
-                {{#if fyndiq_exported}}
-                <div class="label green">On Fyndiq</div>
-                {{else}}
-                <div class="label yellow">Not on Fyndiq</div>
-                {{/if}}
-            </td>
+        {{#if products}}
+        <table>
+            <thead>
+            <tr>
+                <th><input id="select-all" type="checkbox"></th>
+                <th colspan="2">Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Status</th>
             </tr>
-        {{/with}}
-        {{/each}}
-    </tbody>
-    </table>
-    {{else}}
-    Category is empty.
-    {{/if}}
+            </thead>
+            <tbody class="fm-product-list">
+            {{#each products}}
+            {{#with this}}
+            <tr
+                data-id="{{id}}"
+                data-name="{{name}}"
+                data-reference="{{reference}}"
+                data-description="{{description}}"
+                data-price="{{price}}"
+                data-quantity="{{quantity}}"
+                data-image="{{image}}"
+                class="product">
+                <td class="select"><input type="checkbox" id="select_product_{{id}}"></td>
+                <td><img src="{{image}}" alt="Product image"></td>
+                <td><strong>{{name}}</strong> ({{reference}})<br/>{{properties}}</td>
+                <td class="prices">
+                    <div class="price">
+                        Price: {{price}} <?php echo $this->getCurrency(); ?>
+                </div>
+                    <div class="fyndiq_price">
+                        <label>Fyndiq Discount:</label>
+                        <input type="text" value="{{fyndiq_price}}" class="fyndiq_dicsount">% <span
+                        id="ajaxFired"></span><br/>
+                        <span class="price_preview">Expected Price: {{expected_price}}</span> <?php echo $this->getCurrency(); ?>
+                </div>
+                </td>
+                <td class="quantities">
+                    {{quantity}}
+                </td>
+                <td class="status">
+                    {{#if fyndiq_exported}}
+                    <div class="label green">On Fyndiq</div>
+                    {{else}}
+                    <div class="label yellow">Not on Fyndiq</div>
+                    {{/if}}
+                </td>
+            </tr>
+            {{/with}}
+            {{/each}}
+            </tbody>
+        </table>
+        {{else}}
+        Category is empty.
+        {{/if}}
     </div>
     {{> fm-product-list-controls}}
     {{> fm-product-pagination}}
@@ -191,9 +197,12 @@
 
 <script type="text/javascript">
     var messages = {};
-    <?php foreach($this->getMessages() as $k => $v) {?>
+    <?php foreach($this->getMessages() as $k => $v) {
+    ?>
     messages['<?php echo $k; ?>'] = '<?php echo $v; ?>';
-    <? } ?>
+    <?php
+    }
+    ?>
 </script>
 
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/FmGui.js"></script>
@@ -207,9 +216,11 @@
 
     <div class="fm-menu">
         <ul>
-            <li><a href="<?php echo $this->getAdminPath("fyndiq/admin/index"); ?>" class="active">Export Products</a></li>
+            <li><a href="<?php echo $this->getAdminPath("fyndiq/admin/index"); ?>" class="active">Export Products</a>
+            </li>
             <li><a href="<?php echo $this->getAdminPath("fyndiq/admin/orderlist"); ?>">Imported Orders</a></li>
-            <li><a href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>">Settings</a></li>
+            <li><a href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>">Settings</a>
+            </li>
         </ul>
         <ul class="right">
             <li><a href="#" onclick="confirmRemoval();">Disconnect Account</a></li>
@@ -218,12 +229,14 @@
 
     <div class="fm-left-sidebar">
         <h2>Categories</h2>
+
         <div class="fm-category-tree-container"></div>
     </div>
 
     <div class="fm-main-panel">
 
         <h2>Products</h2>
+
         <form action="" method="post" class="fm-form products">
             <fieldset>
                 <legend>Products</legend>
