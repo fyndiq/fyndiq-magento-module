@@ -64,9 +64,12 @@
 
 <script type="text/javascript">
     var messages = {};
-    <?php foreach($this->getMessages() as $k => $v) {?>
+    <?php foreach($this->getMessages() as $k => $v) {
+    ?>
     messages['<?php echo $k; ?>'] = '<?php echo $v; ?>';
-    <? } ?>
+    <?php
+    }
+    ?>
 </script>
 
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/FmGui.js"></script>
@@ -109,7 +112,7 @@
                 $date = $this->getLastUpdatedDate();
                 if($date != false)
                 {
-                    ?><br />Last Updated: <? echo $date;
+                    ?><br />Last Updated: <?php echo $date;
                 }
                 ?>
             </fieldset>
