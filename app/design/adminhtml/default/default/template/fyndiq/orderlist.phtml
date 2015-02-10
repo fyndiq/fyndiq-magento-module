@@ -12,8 +12,11 @@
 
 <script type="text/x-handlebars-template" class="handlebars-template" id="fm-message-overlay">
     <div class="fm-message-overlay fm-{{type}}">
-        <img class="close" src="<?php echo $this->getFrontendPath(); ?>frontend/images/icons/close-icon.png" alt="Close" title="Close message">
+        <img class="close" src="<?php echo $this->getFrontendPath(); ?>frontend/images/icons/close-icon.png" alt="Close"
+             title="Close message">
+
         <h3>{{title}}</h3>
+
         <p>{{{message}}}</p>
     </div>
 </script>
@@ -84,8 +87,10 @@
     <div class="fm-menu">
         <ul>
             <li><a href="<?php echo $this->getAdminPath("fyndiq/admin/index"); ?>">Export Products</a></li>
-            <li><a href="<?php echo $this->getAdminPath("fyndiq/admin/orderlist"); ?>" class="active">Imported Orders</a></li>
-            <li><a href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>">Settings</a></li>
+            <li><a href="<?php echo $this->getAdminPath("fyndiq/admin/orderlist"); ?>" class="active">Imported
+                    Orders</a></li>
+            <li><a href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>">Settings</a>
+            </li>
         </ul>
         <ul class="right">
             <li><a href="#" onclick="confirmRemoval();">Disconnect Account</a></li>
@@ -95,24 +100,25 @@
     <div class="fm-orderlist-panel">
 
         <h2>Imported Orders</h2>
+
         <form action="" method="post" class="fm-form orders-form">
 
-                <div class="fm-order-list-container"></div>
+            <div class="fm-order-list-container"></div>
         </form>
     </div>
 
     <div class="fm-sidebar">
 
         <h3>Import Order</h3>
+
         <form action="" method="post" class="fm-form orders">
             <fieldset>
                 <p>By clicking this button, you can import all orders from Fyndiq into the local webshop.</p>
                 <button class="fm-button fyndiq" id="fm-import-orders">Import Orders</button>
                 <?php
                 $date = $this->getLastUpdatedDate();
-                if($date != false)
-                {
-                    ?><br />Last Updated: <?php echo $date;
+                if ($date != false) {
+                    ?><br/>Last Updated: <?php echo $date;
                 }
                 ?>
             </fieldset>
