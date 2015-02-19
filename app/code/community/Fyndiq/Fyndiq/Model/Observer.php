@@ -76,6 +76,7 @@ class Fyndiq_Fyndiq_Model_Observer
         $stock_model = Mage::getModel('cataloginventory/stock_item');
         $grouped_model = Mage::getModel('catalog/product_type_grouped');
         $configurable_model = Mage::getModel('catalog/product_type_configurable');
+        $image_helper = Mage::helper('catalog/image');
 
         $products_to_export = $product_model->getCollection()->addAttributeToSelect('*')->addAttributeToFilter(
             'entity_id',
@@ -88,13 +89,7 @@ class Fyndiq_Fyndiq_Model_Observer
             $magarray = $magproduct->getData();
             $real_array = array();
 
-            // Get image
-            try {
-                $imgSrc = (string)Mage::helper('catalog/image')->init($magproduct, 'image');
-            } catch (Exception $e) {
-                $imgSrc = "";
-            }
-
+            $images = $product_model->load($magproduct->getId())->getMediaGalleryImages();
 
             //Check if product has a parent
             if ($magproduct->getTypeId() == "simple") {
@@ -117,8 +112,16 @@ class Fyndiq_Fyndiq_Model_Observer
                 } else {
                     $real_array["product-id"] = $productinfo[$magarray["entity_id"]]["product_id"];
                 }
-                $real_array["product-image-1-url"] = addslashes(strval($imgSrc));
-                $real_array["product-image-1-identifier"] = addslashes(substr(md5(strval($imgSrc)),0,10));
+
+                if($images){
+                    $imageid = 1;
+                    foreach($images as $_image){
+                        $url = $image_helper->init($magproduct, 'image', $_image->getFile());
+                        $real_array["product-image-".$imageid."-url"] = addslashes(strval($url));
+                        $real_array["product-image-".$imageid."-identifier"] = addslashes(substr(md5(strval($url)),0,10));
+                        $imageid++;
+                    }
+                }
                 $real_array["product-title"] = addslashes($magarray["name"]);
                 $real_array["product-description"] = addslashes($magproduct->getDescription());
                 $real_array["product-price"] = $magarray["price"] - ($magarray["price"] * ($productinfo[$magarray["entity_id"]]["exported_price_percentage"] / 100));
