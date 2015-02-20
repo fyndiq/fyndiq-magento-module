@@ -443,9 +443,9 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 unset($ret['data']);
             }
 
-            $this->response($ret);
+            $this->response(true);
         } catch (Exception $e) {
-            self::response_error(
+            $this->response_error(
                 FmMessages::get('unhandled-error-title'),
                 FmMessages::get('unhandled-error-message') . ' (' . $e->getMessage() . ')'
             );

@@ -105,7 +105,7 @@ var FmCtrl = {
         FmCtrl.call_service('get_delivery_notes', {"orders": orders}, function (status) {
             if (status == 'success') {
                 FmGui.show_message('success', messages['delivery-note-imported-title'],
-                    'You can get the notes <a href="' + module_path + '/fyndiq/files/deliverynote.pdf">here</a>');
+                    'You can get the notes <a href="' + urlpath0 + 'fyndiq/files/deliverynote.pdf" target="_blank">here</a>');
             }
             if (callback) {
                 callback(status);
@@ -357,9 +357,9 @@ var FmCtrl = {
                 });
             }
         });
-        $j(document).on('click', '#getdeliverynote', function () {
+        $j(document).on('click', '#getdeliverynote', function (e) {
             var orders = [];
-
+            e.preventDefault();
             $j('.fm-orders-list > tr').each(function (k, v) {
                 // check if product is selected
                 var active = $j(this).find('.select input').prop('checked');
