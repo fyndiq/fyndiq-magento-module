@@ -87,7 +87,7 @@ class Fyndiq_Fyndiq_Model_Observer
 
             // Get the data
             $magarray = $magproduct->getData();
-            $real_array = array();
+            $feed_product = array();
 
             $images = $product_model->load($magproduct->getId())->getMediaGalleryImages();
 
@@ -108,30 +108,30 @@ class Fyndiq_Fyndiq_Model_Observer
             // Setting the data
             if (isset($magarray["price"])) {
                 if (isset($parent)) {
-                    $real_array["product-id"] = $parent;
+                    $feed_product["product-id"] = $parent;
                 } else {
-                    $real_array["product-id"] = $productinfo[$magarray["entity_id"]]["product_id"];
+                    $feed_product["product-id"] = $productinfo[$magarray["entity_id"]]["product_id"];
                 }
 
                 if($images){
                     $imageid = 1;
                     foreach($images as $_image){
                         $url = $image_helper->init($magproduct, 'image', $_image->getFile());
-                        $real_array["product-image-".$imageid."-url"] = addslashes(strval($url));
-                        $real_array["product-image-".$imageid."-identifier"] = addslashes(substr(md5(strval($url)),0,10));
+                        $feed_product["product-image-".$imageid."-url"] = addslashes(strval($url));
+                        $feed_product["product-image-".$imageid."-identifier"] = addslashes(substr(md5(strval($url)),0,10));
                         $imageid++;
                     }
                 }
-                $real_array["product-title"] = addslashes($magarray["name"]);
-                $real_array["product-description"] = addslashes($magproduct->getDescription());
-                $real_array["product-price"] = $magarray["price"] - ($magarray["price"] * ($productinfo[$magarray["entity_id"]]["exported_price_percentage"] / 100));
-                $real_array["product-price"] = number_format((float)$real_array["product-price"], 2, '.', '');
-                $real_array["product-vat-percent"] = "25";
-                $real_array["product-oldprice"] = number_format((float)$magarray["price"], 2, '.', '');
-                $real_array["product-market"] = addslashes(Mage::getStoreConfig('general/country/default'));
-                $real_array["product-currency"] = Mage::app()->getStore()->getCurrentCurrencyCode();
+                $feed_product["product-title"] = addslashes($magarray["name"]);
+                $feed_product["product-description"] = addslashes($magproduct->getDescription());
+                $feed_product["product-price"] = $magarray["price"] - ($magarray["price"] * ($productinfo[$magarray["entity_id"]]["exported_price_percentage"] / 100));
+                $feed_product["product-price"] = number_format((float)$feed_product["product-price"], 2, '.', '');
+                $feed_product["product-vat-percent"] = "25";
+                $feed_product["product-oldprice"] = number_format((float)$magarray["price"], 2, '.', '');
+                $feed_product["product-market"] = addslashes(Mage::getStoreConfig('general/country/default'));
+                $feed_product["product-currency"] = Mage::app()->getStore()->getCurrentCurrencyCode();
                 // TODO: plan how to fix this brand issue
-                $real_array["product-brand"] = "test";
+                $feed_product["product-brand"] = "test";
 
                 //Category
                 $categoryIds = $magproduct->getCategoryIds();
@@ -140,18 +140,18 @@ class Fyndiq_Fyndiq_Model_Observer
                     $firstCategoryId = $categoryIds[0];
                     $_category = $category_model->load($firstCategoryId);
 
-                    $real_array["product-category-name"] = addslashes($_category->getName());
-                    $real_array["product-category-id"] = $firstCategoryId;
+                    $feed_product["product-category-name"] = addslashes($_category->getName());
+                    $feed_product["product-category-id"] = $firstCategoryId;
                 }
 
                 //Articles
 
                 $qtyStock = $stock_model->loadByProduct($magproduct->getId())->getQty();
-                $real_array["article-quantity"] = intval($qtyStock);
+                $feed_product["article-quantity"] = intval($qtyStock);
 
                 // TODO: fix location to something except test
-                $real_array["article-location"] = "test";
-                $real_array["article-sku"] = $magproduct->getSKU();
+                $feed_product["article-location"] = "test";
+                $feed_product["article-sku"] = $magproduct->getSKU();
 
 
                 // GEt attributes for article
@@ -166,8 +166,8 @@ class Fyndiq_Fyndiq_Model_Observer
                         $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
                         $value = $attrValue->getValue($magproduct);
 
-                        $real_array["article-property-name-".$attrid] = $attrCode;
-                        $real_array["article-property-value-".$attrid] = $value[0];
+                        $feed_product["article-property-name-".$attrid] = $attrCode;
+                        $feed_product["article-property-value-".$attrid] = $value[0];
                         if($attrid == 1) {
                             $tags .= $attrCode.": ".$value[0];
                         }
@@ -176,13 +176,13 @@ class Fyndiq_Fyndiq_Model_Observer
                         }
                         $attrid++;
                     }
-                    $real_array["article-name"] = substr(addslashes($tags),0,30);
+                    $feed_product["article-name"] = substr(addslashes($tags),0,30);
                 }
                 else {
-                    $real_array["article-name"] = substr(addslashes($magarray["name"]),0,30);
+                    $feed_product["article-name"] = substr(addslashes($magarray["name"]),0,30);
                 }
 
-                $return_array[] = $real_array;
+                $return_array[] = $feed_product;
             }
         }
         $first_array = array_values($return_array)[0];
