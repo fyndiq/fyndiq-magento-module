@@ -78,6 +78,9 @@ class Fyndiq_Fyndiq_Model_Observer
         $configurable_model = Mage::getModel('catalog/product_type_configurable');
         $image_helper = Mage::helper('catalog/image');
 
+        $store = Mage::app()->getStore();
+        $taxCalculation = Mage::getModel('tax/calculation');
+
         $products_to_export = $product_model->getCollection()->addAttributeToSelect('*')->addAttributeToFilter(
             'entity_id',
             array('in' => $ids_to_export)
@@ -90,6 +93,15 @@ class Fyndiq_Fyndiq_Model_Observer
             $feed_product = array();
 
             $images = $product_model->load($magproduct->getId())->getMediaGalleryImages();
+
+            // Get taxrate
+
+
+            $request = $taxCalculation->getRateRequest(null, null, null, $store);
+            $taxClassId = $magproduct->getTaxClassId();
+            $taxpercent = $taxCalculation->getRate($request->setProductClassId($taxClassId));
+
+
 
             // Setting the data
             if (isset($magarray["price"])) {
@@ -108,12 +120,12 @@ class Fyndiq_Fyndiq_Model_Observer
                 $feed_product["product-description"] = addslashes($magproduct->getDescription());
                 $feed_product["product-price"] = $magarray["price"] - ($magarray["price"] * ($productinfo[$magarray["entity_id"]]["exported_price_percentage"] / 100));
                 $feed_product["product-price"] = number_format((float)$feed_product["product-price"], 2, '.', '');
-                $feed_product["product-vat-percent"] = "25";
+                $feed_product["product-vat-percent"] = $taxpercent;
                 $feed_product["product-oldprice"] = number_format((float)$magarray["price"], 2, '.', '');
                 $feed_product["product-market"] = addslashes(Mage::getStoreConfig('general/country/default'));
                 $feed_product["product-currency"] = Mage::app()->getStore()->getCurrentCurrencyCode();
                 // TODO: plan how to fix this brand issue
-                $feed_product["product-brand"] = "test";
+                $feed_product["product-brand"] = addslashes($magproduct->getAttributeText('manufacturer'));
 
                 //Category
                 $categoryIds = $magproduct->getCategoryIds();
