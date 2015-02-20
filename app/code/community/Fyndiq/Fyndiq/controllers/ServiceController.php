@@ -106,12 +106,21 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                         ->addAttributeToFilter(
                             array(
                                 array('attribute'=> 'type_id','eq' => 'configurable'),
-                                #array('attribute'=> 'type_id','eq' => 'simple'),
-                                #array('attribute'=> 'image', 'neq' => 'no_selection')
+                                array('attribute'=> 'type_id','eq' => 'simple'),
                             )
                         );
 
-                    $prodcount = $products->count();
+                    $proditems = $products->getItems();
+                    foreach($proditems as $key => $prod) {
+                        if($prod->getTypeId() == 'simple' ) {
+                            $childs = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild($prod->getId());
+                            if (isset($childs) && count($childs) > 0)
+                            {
+                                unset($proditems[$key]);
+                            }
+                        }
+                    }
+                    $prodcount = count($proditems);
 
                     /*if ($item->getProductCount() < 1) {
                         $collection->removeItemByKey($key);
@@ -151,6 +160,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             ->addAttributeToFilter(
                 array(
                     array('attribute'=> 'type_id','eq' => 'configurable'),
+                    array('attribute'=> 'type_id','eq' => 'simple'),
                 )
             )
             ->addCategoryFilter($category)
@@ -161,19 +171,31 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             $products->setPageSize(10);
         }
         $products->load();
-
+        $products = $products->getItems();
         $data = array();
 
         // get all the products
         foreach ($products as $prod) {
+            if($prod->getTypeId() == 'simple' ) {
+                $childs = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild($prod->getId());
+                if (isset($childs) && count($childs) > 0)
+                {
+                    continue;
+                }
+            }
             // setting up price and quantity for fyndiq.
             $qtystock = 0;
-            foreach ($prod->getTypeInstance(true)->getUsedProducts ( null, $prod) as $simple) {
-                $stock = Mage::getModel('cataloginventory/stock_item')->loadByProduct($simple)->getQty();
-                $qtystock +=$stock;
+            if($prod->getTypeId() != 'simple' ) {
+                foreach ($prod->getTypeInstance(true)->getUsedProducts ( null, $prod) as $simple) {
+                    $stock = Mage::getModel('cataloginventory/stock_item')->loadByProduct($simple)->getQty();
+                    $qtystock +=$stock;
+                }
+                if(!isset($qtystock)) {
+                    $qtystock = 0;
+                }
             }
-            if(!isset($qtystock)) {
-                $qtystock = 0;
+            else {
+                $qtystock = Mage::getModel('cataloginventory/stock_item')->loadByProduct($prod)->getQty();
             }
             $fyndiq = Mage::getModel('fyndiq/product')->productExist($prod->getId());
             $fyndiq_data = Mage::getModel('fyndiq/product')->getProductExportData($prod->getId());
@@ -477,19 +499,35 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     {
         $html = false;
         $collection = Mage::getModel('catalog/product')
-            ->getCollection()->addAttributeToFilter(
+            ->getCollection()
+            ->addAttributeToFilter(
                 array(
                     array('attribute'=> 'type_id','eq' => 'configurable'),
+                    array('attribute'=> 'type_id','eq' => 'simple'),
                 )
             )
             ->addCategoryFilter($category)
             ->addAttributeToSelect('*');
         if($collection == 'null') return;
-        if($collection->count() > 10)
+
+        $collection = $collection->getItems();
+
+
+        foreach($collection as $key => $prod) {
+            if($prod->getTypeId() == 'simple' ) {
+                $childs = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild($prod->getId());
+                if (isset($childs) && count($childs) > 0)
+                {
+                    unset($collection[$key]);
+                }
+            }
+        }
+
+        if(count($collection) > 10)
         {
             $curPage = $currentpage;
-            $pager = (int)($collection->count() / $this->_itemPerPage);
-            $count = ($collection->count() % $this->_itemPerPage == 0) ? $pager : $pager + 1 ;
+            $pager = (int)(count($collection) / $this->_itemPerPage);
+            $count = (count($collection) % $this->_itemPerPage == 0) ? $pager : $pager + 1 ;
             $start = 1;
             $end = $this->_pageFrame;
 
