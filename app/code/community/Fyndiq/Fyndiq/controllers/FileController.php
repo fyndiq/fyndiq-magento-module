@@ -9,7 +9,7 @@ class Fyndiq_Fyndiq_FileController extends Mage_Core_Controller_Front_Action
     function indexAction()
     {
         //Setting content type to csv.
-        $this->getResponse()->setHeader('Content-type', 'text/csv');
+        //$this->getResponse()->setHeader('Content-type', 'text/csv');
 
         if ($this->getUsername() != "" && $this->getAPIToken() != "") {
 

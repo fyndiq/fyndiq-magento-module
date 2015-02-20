@@ -106,7 +106,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                         ->addAttributeToFilter(
                             array(
                                 array('attribute'=> 'type_id','eq' => 'configurable'),
-                                array('attribute'=> 'type_id','eq' => 'simple'),
+                                #array('attribute'=> 'type_id','eq' => 'simple'),
                                 #array('attribute'=> 'image', 'neq' => 'no_selection')
                             )
                         );
@@ -151,7 +151,6 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             ->addAttributeToFilter(
                 array(
                     array('attribute'=> 'type_id','eq' => 'configurable'),
-                    array('attribute'=> 'type_id','eq' => 'simple'),
                 )
             )
             ->addCategoryFilter($category)
@@ -471,7 +470,11 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     {
         $html = false;
         $collection = Mage::getModel('catalog/product')
-            ->getCollection()
+            ->getCollection()->addAttributeToFilter(
+                array(
+                    array('attribute'=> 'type_id','eq' => 'configurable'),
+                )
+            )
             ->addCategoryFilter($category)
             ->addAttributeToSelect('*');
         if($collection == 'null') return;

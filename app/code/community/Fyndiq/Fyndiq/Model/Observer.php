@@ -91,27 +91,9 @@ class Fyndiq_Fyndiq_Model_Observer
 
             $images = $product_model->load($magproduct->getId())->getMediaGalleryImages();
 
-            //Check if product has a parent
-            if ($magproduct->getTypeId() == "simple") {
-                //Get parent
-                $parentIds = $grouped_model->getParentIdsByChild($magproduct->getId());
-                if (!$parentIds) //Couldn't get parent, try configurable model instead
-                {
-                    $parentIds = $configurable_model->getParentIdsByChild($magproduct->getId());
-                }
-                // set parent id if exist
-                if (isset($parentIds[0])) {
-                    $parent = $parentIds[0];
-                }
-            }
-
             // Setting the data
             if (isset($magarray["price"])) {
-                if (isset($parent)) {
-                    $feed_product["product-id"] = $parent;
-                } else {
-                    $feed_product["product-id"] = $productinfo[$magarray["entity_id"]]["product_id"];
-                }
+                $feed_product["product-id"] = $productinfo[$magarray["entity_id"]]["product_id"];
 
                 if($images){
                     $imageid = 1;
@@ -144,30 +126,67 @@ class Fyndiq_Fyndiq_Model_Observer
                     $feed_product["product-category-id"] = $firstCategoryId;
                 }
 
-                //Articles
-
                 $qtyStock = $stock_model->loadByProduct($magproduct->getId())->getQty();
-                $feed_product["article-quantity"] = intval($qtyStock);
+                if(intval($qtyStock)<0) {
+                    $feed_product["article-quantity"] = intval(0);
+                }
+                else {
+                    $feed_product["article-quantity"] = intval($qtyStock);
+                }
 
                 // TODO: fix location to something except test
                 $feed_product["article-location"] = "test";
                 $feed_product["article-sku"] = $magproduct->getSKU();
+                $productAttributeOptions = $magproduct->getTypeInstance()->getConfigurableAttributes();
+                $attrid = 1;
+                foreach ($productAttributeOptions as $productAttribute) {
+                    $attrValue = $magproduct->getResource()->getAttribute($productAttribute->getProductAttribute()->getAttributeCode())->getFrontend();
+                    $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
+                    $value = $attrValue->getValue($magproduct);
 
+                    $feed_product["article-property-name-".$attrid] = $attrCode;
+                    $feed_product["article-property-value-".$attrid] = $value[0];
+                    $attrid++;
+                }
+                $feed_product["article-name"] = addslashes($magarray["name"]);
+                $return_array[] = $feed_product;
 
-                // GEt attributes for article
-                if(isset($parent)) {
-                    $parentprod = $product_model->load($parent);
-                    $productAttributeOptions = $parentprod->getTypeInstance()->getConfigurableAttributes();
-                    
+                //Articles
+                $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magproduct);
+                $simple_collection = $conf->getUsedProductCollection()->addAttributeToSelect('*')->addFilterByRequiredOptions();
+                foreach($simple_collection as $simple_product){
+                    $feed_article = $feed_product;
+                    $qtyStock = $stock_model->loadByProduct($simple_product->getId())->getQty();
+                    if(intval($qtyStock)<0) {
+                        $feed_article["article-quantity"] = intval(0);
+                    }
+                    else {
+                        $feed_article["article-quantity"] = intval($qtyStock);
+                    }
+
+                    // TODO: fix location to something except test
+                    $feed_article["article-location"] = "test";
+                    $feed_article["article-sku"] = $simple_product->getSKU();
+
+                    $images = $product_model->load($simple_product->getId())->getMediaGalleryImages();
+                    if($images){
+                        $imageid = 1;
+                        foreach($images as $_image){
+                            $url = $image_helper->init($simple_product, 'image', $_image->getFile());
+                            $feed_article["product-image-".$imageid."-url"] = addslashes(strval($url));
+                            $feed_article["product-image-".$imageid."-identifier"] = addslashes(substr(md5(strval($url)),0,10));
+                            $imageid++;
+                        }
+                    }
                     $attrid = 1;
                     $tags = "";
                     foreach ($productAttributeOptions as $productAttribute) {
-                        $attrValue = $parentprod->getResource()->getAttribute($productAttribute->getProductAttribute()->getAttributeCode())->getFrontend();
+                        $attrValue = $magproduct->getResource()->getAttribute($productAttribute->getProductAttribute()->getAttributeCode())->getFrontend();
                         $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
-                        $value = $attrValue->getValue($magproduct);
+                        $value = $attrValue->getValue($simple_product);
 
-                        $feed_product["article-property-name-".$attrid] = $attrCode;
-                        $feed_product["article-property-value-".$attrid] = $value[0];
+                        $feed_article["article-property-name-".$attrid] = $attrCode;
+                        $feed_article["article-property-value-".$attrid] = $value[0];
                         if($attrid == 1) {
                             $tags .= $attrCode.": ".$value[0];
                         }
@@ -177,18 +196,20 @@ class Fyndiq_Fyndiq_Model_Observer
                         $attrid++;
                     }
                     $feed_product["article-name"] = substr(addslashes($tags),0,30);
-                }
-                else {
-                    $feed_product["article-name"] = substr(addslashes($magarray["name"]),0,30);
+                    $return_array[] = $feed_article;
                 }
 
-                $return_array[] = $feed_product;
+
             }
         }
-        $first_array = array_values($return_array)[0];
+        if(isset($feed_article)) {
+            $first_array = $feed_article;
+        }
+        else {
+            $first_array = array_values($return_array)[0];
+        }
         $key_values = array_keys($first_array);
         array_unshift($return_array, $key_values);
-
         return $return_array;
     }
 
