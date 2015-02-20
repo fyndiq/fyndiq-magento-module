@@ -257,14 +257,24 @@ class Fyndiq_Fyndiq_Model_Observer
                 }
             }
         }
-        if(isset($feed_article)) {
-            $first_array = $feed_article;
+
+        $tempKeys = array();
+        foreach($return_array as $array) {
+            if(count($tempKeys) < count(array_keys($array))) {
+                $tempKeys = array_keys($array);
+            }
         }
-        else {
-            $first_array = array_values($return_array)[0];
+        foreach($return_array as $key => $array) {
+            foreach($tempKeys as $keys) {
+                if(!array_key_exists($keys, $array)) {
+                    $array[$keys] = "";
+                }
+            }
+            $return_array[$key] = $array;
         }
-        $key_values = array_keys($first_array);
-        array_unshift($return_array, $key_values);
+
+
+        array_unshift($return_array, $tempKeys);
         return $return_array;
     }
 
@@ -276,10 +286,23 @@ class Fyndiq_Fyndiq_Model_Observer
     function writeOverFile($products)
     {
         $this->openFile(true);
+        $keys = array_shift($products);
+        $this->writeheader($keys);
         foreach ($products as $product) {
-            $this->writeToFile($product);
+            $this->writeToFile($product, $keys);
         }
         $this->closeFile();
+    }
+
+
+    /**
+     * Write the header to file
+     *
+     * @param $keys
+     */
+    function writeHeader($keys)
+    {
+        fputcsv($this->fileresource, $keys);
     }
 
     /**
@@ -288,9 +311,13 @@ class Fyndiq_Fyndiq_Model_Observer
      * @param $fields
      * @return int|boolean
      */
-    private function writeToFile($fields)
+    private function writeToFile($fields, $keys)
     {
-        return fputcsv($this->fileresource, $fields);
+        $printarray = array();
+        foreach($keys as $key) {
+            $printarray[] = $fields[$key];
+        }
+        return fputcsv($this->fileresource, $printarray);
     }
 
     /**
