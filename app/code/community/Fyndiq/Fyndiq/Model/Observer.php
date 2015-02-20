@@ -31,19 +31,19 @@ class Fyndiq_Fyndiq_Model_Observer
         try {
             $url = "orders/";
             $settingexists = Mage::getModel('fyndiq/setting')->settingExist("order_lastdate");
-            if($settingexists) {
+            if ($settingexists) {
                 $date = Mage::getModel('fyndiq/setting')->getSetting("order_lastdate");
-                $url .= "?min_date=".urlencode($date["value"]);
+                $url .= "?min_date=" . urlencode($date["value"]);
             }
             $ret = FmHelpers::call_api('GET', $url);
             $newdate = date("Y-m-d H:i:s");
-            if($settingexists) {
-                Mage::getModel('fyndiq/setting')->updateSetting("order_lastdate",$newdate);
+            if ($settingexists) {
+                Mage::getModel('fyndiq/setting')->updateSetting("order_lastdate", $newdate);
             } else {
-                Mage::getModel('fyndiq/setting')->saveSetting("order_lastdate",$newdate);
+                Mage::getModel('fyndiq/setting')->saveSetting("order_lastdate", $newdate);
             }
             foreach ($ret["data"] as $order) {
-                if(!Mage::getModel('fyndiq/order')->orderExists($order->id)) {
+                if (!Mage::getModel('fyndiq/order')->orderExists($order->id)) {
                     Mage::getModel('fyndiq/order')->create($order);
                 }
             }
@@ -100,17 +100,18 @@ class Fyndiq_Fyndiq_Model_Observer
             $taxpercent = $taxCalculation->getRate($request->setProductClassId($taxClassId));
 
 
-
             // Setting the data
             if (isset($magarray["price"])) {
                 $feed_product["product-id"] = $productinfo[$magarray["entity_id"]]["product_id"];
 
-                if($images){
+                if ($images) {
                     $imageid = 1;
-                    foreach($images as $_image){
+                    foreach ($images as $_image) {
                         $url = $image_helper->init($magproduct, 'image', $_image->getFile());
-                        $feed_product["product-image-".$imageid."-url"] = addslashes(strval($url));
-                        $feed_product["product-image-".$imageid."-identifier"] = addslashes(substr(md5(strval($url)),0,10));
+                        $feed_product["product-image-" . $imageid . "-url"] = addslashes(strval($url));
+                        $feed_product["product-image-" . $imageid . "-identifier"] = addslashes(
+                            substr(md5(strval($url)), 0, 10)
+                        );
                         $imageid++;
                     }
                 }
@@ -137,12 +138,11 @@ class Fyndiq_Fyndiq_Model_Observer
                 }
 
 
-                if($magproduct->getTypeId() == 'simple' ) {
+                if ($magproduct->getTypeId() == 'simple') {
                     $qtyStock = $stock_model->loadByProduct($magproduct->getId())->getQty();
-                    if(intval($qtyStock)<0) {
+                    if (intval($qtyStock) < 0) {
                         $feed_product["article-quantity"] = intval(0);
-                    }
-                    else {
+                    } else {
                         $feed_product["article-quantity"] = intval($qtyStock);
                     }
 
@@ -169,18 +169,18 @@ class Fyndiq_Fyndiq_Model_Observer
                     }*/
                     $feed_product["article-name"] = addslashes($magarray["name"]);
                     $return_array[] = $feed_product;
-                }
-                else {
+                } else {
                     //Get child articles
                     $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magproduct);
-                    $simple_collection = $conf->getUsedProductCollection()->addAttributeToSelect('*')->addFilterByRequiredOptions()->getItems();
+                    $simple_collection = $conf->getUsedProductCollection()->addAttributeToSelect(
+                        '*'
+                    )->addFilterByRequiredOptions()->getItems();
                     //Get first article to the product.
                     $first_product = array_shift($simple_collection);
                     $qtyStock = $stock_model->loadByProduct($first_product->getId())->getQty();
-                    if(intval($qtyStock)<0) {
+                    if (intval($qtyStock) < 0) {
                         $feed_product["article-quantity"] = intval(0);
-                    }
-                    else {
+                    } else {
                         $feed_product["article-quantity"] = intval($qtyStock);
                     }
 
@@ -191,31 +191,31 @@ class Fyndiq_Fyndiq_Model_Observer
                     $attrid = 1;
                     $tags = "";
                     foreach ($productAttributeOptions as $productAttribute) {
-                        $attrValue = $magproduct->getResource()->getAttribute($productAttribute->getProductAttribute()->getAttributeCode())->getFrontend();
+                        $attrValue = $magproduct->getResource()->getAttribute(
+                            $productAttribute->getProductAttribute()->getAttributeCode()
+                        )->getFrontend();
                         $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
                         $value = $attrValue->getValue($first_product);
 
-                        $feed_article["article-property-name-".$attrid] = $attrCode;
-                        $feed_article["article-property-value-".$attrid] = $value[0];
-                        if($attrid == 1) {
-                            $tags .= $attrCode.": ".$value[0];
-                        }
-                        else {
-                            $tags .= ", ".$attrCode.": ".$value[0];
+                        $feed_article["article-property-name-" . $attrid] = $attrCode;
+                        $feed_article["article-property-value-" . $attrid] = $value[0];
+                        if ($attrid == 1) {
+                            $tags .= $attrCode . ": " . $value[0];
+                        } else {
+                            $tags .= ", " . $attrCode . ": " . $value[0];
                         }
                         $attrid++;
                     }
-                    $feed_product["article-name"] = substr(addslashes($tags),0,30);
+                    $feed_product["article-name"] = substr(addslashes($tags), 0, 30);
                     $return_array[] = $feed_product;
 
                     //Articles
-                    foreach($simple_collection as $simple_product){
+                    foreach ($simple_collection as $simple_product) {
                         $feed_article = $feed_product;
                         $qtyStock = $stock_model->loadByProduct($simple_product->getId())->getQty();
-                        if(intval($qtyStock)<0) {
+                        if (intval($qtyStock) < 0) {
                             $feed_article["article-quantity"] = intval(0);
-                        }
-                        else {
+                        } else {
                             $feed_article["article-quantity"] = intval($qtyStock);
                         }
 
@@ -224,33 +224,36 @@ class Fyndiq_Fyndiq_Model_Observer
                         $feed_article["article-sku"] = $simple_product->getSKU();
 
                         $images = $product_model->load($simple_product->getId())->getMediaGalleryImages();
-                        if($images){
+                        if ($images) {
                             $imageid = 1;
-                            foreach($images as $_image){
+                            foreach ($images as $_image) {
                                 $url = $image_helper->init($simple_product, 'image', $_image->getFile());
-                                $feed_article["product-image-".$imageid."-url"] = addslashes(strval($url));
-                                $feed_article["product-image-".$imageid."-identifier"] = addslashes(substr(md5(strval($url)),0,10));
+                                $feed_article["product-image-" . $imageid . "-url"] = addslashes(strval($url));
+                                $feed_article["product-image-" . $imageid . "-identifier"] = addslashes(
+                                    substr(md5(strval($url)), 0, 10)
+                                );
                                 $imageid++;
                             }
                         }
                         $attrid = 1;
                         $tags = "";
                         foreach ($productAttributeOptions as $productAttribute) {
-                            $attrValue = $magproduct->getResource()->getAttribute($productAttribute->getProductAttribute()->getAttributeCode())->getFrontend();
+                            $attrValue = $magproduct->getResource()->getAttribute(
+                                $productAttribute->getProductAttribute()->getAttributeCode()
+                            )->getFrontend();
                             $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
                             $value = $attrValue->getValue($simple_product);
 
-                            $feed_article["article-property-name-".$attrid] = $attrCode;
-                            $feed_article["article-property-value-".$attrid] = $value[0];
-                            if($attrid == 1) {
-                                $tags .= $attrCode.": ".$value[0];
-                            }
-                            else {
-                                $tags .= ", ".$attrCode.": ".$value[0];
+                            $feed_article["article-property-name-" . $attrid] = $attrCode;
+                            $feed_article["article-property-value-" . $attrid] = $value[0];
+                            if ($attrid == 1) {
+                                $tags .= $attrCode . ": " . $value[0];
+                            } else {
+                                $tags .= ", " . $attrCode . ": " . $value[0];
                             }
                             $attrid++;
                         }
-                        $feed_product["article-name"] = substr(addslashes($tags),0,30);
+                        $feed_product["article-name"] = substr(addslashes($tags), 0, 30);
                         $return_array[] = $feed_article;
                     }
 
@@ -259,14 +262,14 @@ class Fyndiq_Fyndiq_Model_Observer
         }
 
         $tempKeys = array();
-        foreach($return_array as $array) {
-            if(count($tempKeys) < count(array_keys($array))) {
+        foreach ($return_array as $array) {
+            if (count($tempKeys) < count(array_keys($array))) {
                 $tempKeys = array_keys($array);
             }
         }
-        foreach($return_array as $key => $array) {
-            foreach($tempKeys as $keys) {
-                if(!array_key_exists($keys, $array)) {
+        foreach ($return_array as $key => $array) {
+            foreach ($tempKeys as $keys) {
+                if (!array_key_exists($keys, $array)) {
                     $array[$keys] = "";
                 }
             }
@@ -275,6 +278,7 @@ class Fyndiq_Fyndiq_Model_Observer
 
 
         array_unshift($return_array, $tempKeys);
+
         return $return_array;
     }
 
@@ -314,9 +318,10 @@ class Fyndiq_Fyndiq_Model_Observer
     private function writeToFile($fields, $keys)
     {
         $printarray = array();
-        foreach($keys as $key) {
+        foreach ($keys as $key) {
             $printarray[] = $fields[$key];
         }
+
         return fputcsv($this->fileresource, $printarray);
     }
 
