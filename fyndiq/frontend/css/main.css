@@ -527,6 +527,7 @@ table {
     border-spacing: 0; }
     table thead th {
       font-size: 12px;
+      font-weight: 400;
       border: 0px;
       color: black;
       text-align: center;
@@ -546,6 +547,7 @@ table {
       table tbody tr td {
         padding: 10px;
         font-size: 11px;
+        font-weight: 400;
         border: 0px;
         color: #333;
         border-spacing: 0;
