@@ -124,9 +124,11 @@
     font-weight: normal; }
 
 .fm-button {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 400;
   display: inline-block;
   padding: 1px 12px;
-  font-size: 13px;
+  font-size: 11px;
   height: 32px;
   line-height: 32px;
   border: none;
@@ -252,13 +254,15 @@
         height: 64px;
         line-height: 64px; }
         .fm-header-background .fm-header-container .fm-header .right a {
+          font-family: 'Montserrat', sans-serif;
           display: inline-block;
           padding: 3px 8px;
           vertical-align: middle;
           color: black;
           height: 30px;
           line-height: 30px;
-          font-size: 16pt;
+          font-size: 16px;
+          font-weight: 400;
           background-color: white;
           text-decoration: none;
           -webkit-border-radius: 5px;
@@ -308,8 +312,10 @@
 
 .fm-subheader {
   background-color: #799ec4;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 400;
   height: 30px;
-  font-size: 16pt;
+  font-size: 18px;
   line-height: 30px;
   color: white;
   padding-left: 10px;
@@ -318,7 +324,7 @@
   .fm-subheader .right {
     float: right;
     padding-right: 15px;
-    font-size: 12pt; }
+    font-size: 11px; }
 
 .icon {
   display: inline-block;
@@ -349,6 +355,8 @@
     border-bottom: 1px solid lightgray;
     font-weight: bold; }
     .fm-category-tree li a {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
       text-decoration: none;
       color: #333; }
       .fm-category-tree li a:hover {
@@ -505,6 +513,7 @@ table tr:last-child td:first-child {
   border-bottom-left-radius: 4px; }
 
 table {
+  font-family: 'Montserrat', sans-serif;
   width: 100%;
   border-spacing: 0;
   border-collapse: collapse;
@@ -512,11 +521,12 @@ table {
   -moz-border-radius: 3px;
   border-radius: 3px; }
   table thead {
-    font-size: 10pt;
+    font-size: 12px;
     background-color: #f5f8fb;
     border: 0px;
     border-spacing: 0; }
     table thead th {
+      font-size: 12px;
       border: 0px;
       color: black;
       text-align: center;
@@ -535,12 +545,16 @@ table {
       border-bottom: 1px solid #e5e8ea; }
       table tbody tr td {
         padding: 10px;
+        font-size: 11px;
         border: 0px;
+        color: #333;
         border-spacing: 0;
         border-collapse: collapse; }
         table tbody tr td img {
           max-height: 80px;
           border: 1px solid #e5e8ea; }
+        table tbody tr td .shadow {
+          color: #999; }
         table tbody tr td.center {
           text-align: center; }
 

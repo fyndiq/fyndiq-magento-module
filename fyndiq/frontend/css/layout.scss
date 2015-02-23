@@ -129,13 +129,15 @@
         height:64px;
         line-height: 64px;
         a {
+          font-family: 'Montserrat', sans-serif;
           display:inline-block;
           padding: 3px 8px;
           vertical-align: middle;
           color:black;
           height:30px;
           line-height: 30px;
-          font-size:16pt;
+          font-size:16px;
+          font-weight: 400;
           background-color:white;
           text-decoration: none;
           @include border-radius(5px);
@@ -198,8 +200,10 @@
 
 .fm-subheader {
   background-color: #799ec4;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 400;
   height: 30px;
-  font-size: 16pt;
+  font-size: 18px;
   line-height: 30px;
   color: white;
   padding-left: 10px;
@@ -208,7 +212,7 @@
   .right {
     float: right;
     padding-right: 15px;
-    font-size: 12pt;
+    font-size: 11px;
   }
 }
 
@@ -245,6 +249,8 @@
     border-bottom: 1px solid lightgray;
     font-weight: bold;
     a {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
       text-decoration: none;
       color: #333;
       &:hover {
@@ -490,6 +496,7 @@ table tr:last-child td:first-child {
 }
 
 table {
+  font-family: 'Montserrat', sans-serif;
   width: 100%;
   border-spacing: 0;
   border-collapse: collapse;
@@ -497,12 +504,13 @@ table {
   @include border-radius(3px);
 
   thead {
-    font-size: 10pt;
+    font-size: 12px;
     background-color: #f5f8fb;
     border: 0px;
     border-spacing: 0;
 
     th {
+      font-size: 12px;
       border: 0px;
       color: black;
       text-align: center;
@@ -526,12 +534,17 @@ table {
 
       td {
         padding: 10px;
+        font-size: 11px;
         border: 0px;
+        color:#333;
         border-spacing: 0;
         border-collapse: collapse;
         img {
           max-height: 80px;
           border: 1px solid rgb(229,232,234);
+        }
+        .shadow {
+          color:#999;
         }
         &.center {
           text-align: center;
