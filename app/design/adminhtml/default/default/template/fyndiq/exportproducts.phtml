@@ -123,8 +123,8 @@
 <script type="text/x-handlebars-template" class="handlebars-partial" id="fm-product-list-controls">
     <div class="fm-product-list-controls">
         <div class="export">
-            <button class="fm-button" name="delete-products">Remove from Fyndiq</button>
-            <button class="fm-button fyndiq" name="export-products">Send to Fyndiq</button>
+            <a class="fm-button disabled" id="delete-products">Remove from Fyndiq</a>
+            <a class="fm-button green" id="export-products">Send to Fyndiq</a>
         </div>
     </div>
 </script>
@@ -155,7 +155,7 @@
                 data-quantity="{{quantity}}"
                 data-image="{{image}}"
                 class="product">
-                <td class="select"><input type="checkbox" id="select_product_{{id}}"></td>
+                <td class="select center"><input type="checkbox" id="select_product_{{id}}"></td>
                 <td><img src="{{image}}" alt="Product image"></td>
                 <td><strong>{{name}}</strong> ({{reference}})<br/>{{properties}}</td>
                 <td class="prices">
@@ -169,14 +169,14 @@
                         <span class="price_preview">Expected Price: {{expected_price}}</span> <?php echo $this->getCurrency(); ?>
                 </div>
                 </td>
-                <td class="quantities">
+                <td class="quantities center">
                     {{quantity}}
                 </td>
-                <td class="status">
+                <td class="status center">
                     {{#if fyndiq_exported}}
-                    <div class="label green">On Fyndiq</div>
+                    <i class="icon on big"></i>
                     {{else}}
-                    <div class="label yellow">Not on Fyndiq</div>
+                    <i class="icon noton big"></i>
                     {{/if}}
                 </td>
             </tr>
@@ -209,42 +209,35 @@
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/FmCtrl.js"></script>
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/main.js"></script>
 
-
+<div class="fm-header-background">
+    <div class="fm-header-container">
+        <div class="fm-header">
+            <img class="fyndiqlogo" src="<?php echo $this->getFrontendPath(); ?>frontend/images/logo.png" alt="Fyndiq logotype">
+            <div class="right">
+                <a href="<?php echo $this->getAdminPath("fyndiq/admin/index"); ?>" class="active">Export Products</a>
+                <a href="<?php echo $this->getAdminPath("fyndiq/admin/orderlist"); ?>">Imported Orders</a>
+                <a href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>">Settings</a>
+                </div>
+        </div>
+    </div>
+</div>
 <div class="fm-container">
 
-    <img class="fyndiqlogo" src="<?php echo $this->getFrontendPath(); ?>frontend/images/logo.png" alt="Fyndiq logotype">
-
-    <div class="fm-menu">
-        <ul>
-            <li><a href="<?php echo $this->getAdminPath("fyndiq/admin/index"); ?>" class="active">Export Products</a>
-            </li>
-            <li><a href="<?php echo $this->getAdminPath("fyndiq/admin/orderlist"); ?>">Imported Orders</a></li>
-            <li><a href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>">Settings</a>
-            </li>
-        </ul>
-        <ul class="right">
-            <li><a href="#" onclick="confirmRemoval();">Disconnect Account</a></li>
-        </ul>
-    </div>
-
     <div class="fm-left-sidebar">
-        <h2>Categories</h2>
-
+        <div class="fm-subheader">Categories</div>
         <div class="fm-category-tree-container"></div>
     </div>
 
     <div class="fm-main-panel">
-
-        <h2>Products</h2>
-
+        <div class="fm-subheader" style="margin-bottom: 5px;">
+            Products: Men
+            <div class="right"><i class="icon on"></i> On Fyndiq  <i class="icon pending"></i> Pending <i class="icon noton"></i> Not On Fyndiq </div>
+        </div>
         <form action="" method="post" class="fm-form products">
-            <fieldset>
-                <legend>Products</legend>
-                <p>By using this form, you can export products from the local webshop into Fyndiq.</p>
+                <p class="info">By using this form, you can export products from the local webshop into Fyndiq.</p>
 
 
                 <div class="fm-product-list-container"></div>
-            </fieldset>
         </form>
     </div>
 </div>

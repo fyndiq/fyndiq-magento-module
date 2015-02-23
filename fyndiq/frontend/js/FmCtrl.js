@@ -239,7 +239,7 @@ var FmCtrl = {
         });
 
         // when clicking the export products submit buttons, export products
-        $j(document).on('click', '.fm-product-list-controls button[name=export-products]', function (e) {
+        $j(document).on('click', '.fm-product-list-controls #export-products', function (e) {
             e.preventDefault();
 
             var products = [];
@@ -284,7 +284,7 @@ var FmCtrl = {
         });
 
         //Deleting selected products from export table
-        $j(document).on('click', '.fm-product-list-controls button[name=delete-products]', function (e) {
+        $j(document).on('click', '.fm-product-list-controls #delete-products', function (e) {
             e.preventDefault();
 
             FmGui.show_load_screen(function () {
