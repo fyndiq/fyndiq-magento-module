@@ -250,7 +250,8 @@
     font-weight: bold;
     a {
       font-family: 'Montserrat', sans-serif;
-      font-size: 11px;
+      font-weight: 400;
+      font-size: 12px;
       text-decoration: none;
       color: #333;
       &:hover {
@@ -394,87 +395,6 @@
         display: block;
         float: left;
         width: 30px;
-      }
-    }
-
-    .quantities {
-
-    }
-
-    .expand {
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      width: 28px;
-      height: 28px;
-
-      img {
-        display: block;
-        width: 28px;
-        height: 28px;
-      }
-
-      &.inactive {
-        opacity: 0.2;
-        filter: alpha(opacity=20);
-        a {
-          cursor: default;
-        }
-      }
-    }
-  }
-
-  .combinations {
-    padding-left: 8px;
-    margin-top: 3px;
-
-    > li {
-      overflow: hidden;
-      padding: 3px 0;
-      border-bottom: 1px solid $color-item-light;
-
-      &:last-child {
-        border: none;
-      }
-
-      .select {
-        float: left;
-        margin: 8px 5px 0;
-      }
-
-      .image {
-        float: left;
-        width: 30px;
-        height: 30px;
-
-        img {
-          display: block;
-          margin: 0 auto;
-          max-width: 30px;
-          max-height: 30px;
-        }
-      }
-
-      .data {
-        float: left;
-        margin-left: 5px;
-        width: 550px;
-
-        .attributes {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-          overflow: hidden;
-
-          li {
-            float: left;
-            &:last-child {
-              .separator {
-                display: none;
-              }
-            }
-          }
-        }
       }
     }
   }

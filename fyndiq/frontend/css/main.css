@@ -356,7 +356,8 @@
     font-weight: bold; }
     .fm-category-tree li a {
       font-family: 'Montserrat', sans-serif;
-      font-size: 11px;
+      font-weight: 400;
+      font-size: 12px;
       text-decoration: none;
       color: #333; }
       .fm-category-tree li a:hover {
@@ -450,55 +451,6 @@
     display: block;
     float: left;
     width: 30px; }
-  .fm-product-list .product .expand {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 28px;
-    height: 28px; }
-    .fm-product-list .product .expand img {
-      display: block;
-      width: 28px;
-      height: 28px; }
-    .fm-product-list .product .expand.inactive {
-      opacity: 0.2;
-      filter: alpha(opacity=20); }
-      .fm-product-list .product .expand.inactive a {
-        cursor: default; }
-  .fm-product-list .combinations {
-    padding-left: 8px;
-    margin-top: 3px; }
-    .fm-product-list .combinations > li {
-      overflow: hidden;
-      padding: 3px 0;
-      border-bottom: 1px solid #ccc; }
-      .fm-product-list .combinations > li:last-child {
-        border: none; }
-      .fm-product-list .combinations > li .select {
-        float: left;
-        margin: 8px 5px 0; }
-      .fm-product-list .combinations > li .image {
-        float: left;
-        width: 30px;
-        height: 30px; }
-        .fm-product-list .combinations > li .image img {
-          display: block;
-          margin: 0 auto;
-          max-width: 30px;
-          max-height: 30px; }
-      .fm-product-list .combinations > li .data {
-        float: left;
-        margin-left: 5px;
-        width: 550px; }
-        .fm-product-list .combinations > li .data .attributes {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-          overflow: hidden; }
-          .fm-product-list .combinations > li .data .attributes li {
-            float: left; }
-            .fm-product-list .combinations > li .data .attributes li:last-child .separator {
-              display: none; }
 
 table tr:first-child th:first-child,
 table.Info tr:first-child td:first-child {
