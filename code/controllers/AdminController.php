@@ -18,8 +18,23 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
     {
         $this->loadLayout(array('default'));
 
-        $currency = Mage::app()->getStore()->getCurrentCurrencyCode();
+        $this->setTemplate('fyndiq/exportproducts.phtml');
+    }
 
+
+    /**
+     * Show order list
+     */
+    public function orderlistAction()
+    {
+        $this->loadLayout(array('default'));
+
+        $this->setTemplate('fyndiq/orderlist.phtml');
+    }
+
+    function setTemplate($template)
+    {
+        $currency = Mage::app()->getStore()->getCurrentCurrencyCode();
         try {
             FmHelpers::call_api('GET', 'orders/');
             $api_available = true;
@@ -35,47 +50,16 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
             if (isset($page_args['message']) AND $page_args['message'] == "Unauthorized") {
                 $this->setupTemplate('fyndiq/apierror.phtml', $page_args);
             } else {
-                $this->setupTemplate('fyndiq/exportproducts.phtml');
+                $this->setupTemplate($template);
             }
         }
     }
 
-
-    /**
-     * Show order list
-     */
-    public function orderlistAction()
+    function disconnectAction()
     {
-        $this->loadLayout(array('default'));
-
-        $currency = Mage::app()->getStore()->getCurrentCurrencyCode();
-
-        try {
-            FmHelpers::call_api('GET', 'orders/');
-            $api_available = true;
-        } catch (Exception $e) {
-            $api_available = false;
-            $page_args['message'] = $e->getMessage();
-        }
-        if ($this->getAPIToken() == "" OR $this->getUsername(
-            ) == "" OR isset($page_args['message']) AND $page_args['message'] == "Unauthorized"
-        ) {
-            $this->setupTemplate('fyndiq/needapiinfo.phtml');
-        } elseif ($currency != "SEK" AND $currency != "EUR") {
-            $this->setupTemplate('fyndiq/currencyerror.phtml');
-        } else {
-            if (!$api_available) {
-                $this->setupTemplate('fyndiq/apierror.phtml', $page_args);
-            } else {
-                $this->setupTemplate('fyndiq/orderlist.phtml');
-            }
-        }
-    }
-
-    function disconnectAction() {
         $config = new Mage_Core_Model_Config();
-        $config ->saveConfig('fyndiq/fyndiq_group/apikey', "", 'default', "");
-        $config ->saveConfig('fyndiq/fyndiq_group/username', "", 'default', "");
+        $config->saveConfig('fyndiq/fyndiq_group/apikey', "", 'default', "");
+        $config->saveConfig('fyndiq/fyndiq_group/username', "", 'default', "");
         $this->_redirect("fyndiq/admin/index");
     }
 

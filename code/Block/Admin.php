@@ -45,16 +45,6 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
         return FmConfig::get('percentage');
     }
 
-    public function getAutoOrderImport()
-    {
-        return FmConfig::getBool('automaticOrderImport');
-    }
-
-    public function getAutoQuantityExport()
-    {
-        return FmConfig::getBool('automaticquantityexport');
-    }
-
     public function getUsername()
     {
         return FmConfig::get('username');

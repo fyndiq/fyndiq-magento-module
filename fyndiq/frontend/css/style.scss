@@ -1,104 +1,109 @@
 
 .fm-container {
-    p {
-        margin: 8px 0;
-        padding: 0;
-    }
+  p {
+    margin: 8px 0;
+    padding: 0;
+  }
 
-    h1, h2, h3, h4, h5, h6 {
-        margin: 0;
-        padding: 0;
-    }
-    h1 {
-        margin-top: 12px;
-        font-size: 22px;
-    }
-    h2 {
-        margin-top: 10px;
-        font-size: 20px;
-    }
-    h3 {
-        margin-top: 8px;
-        font-size: 18px;
-    }
-    h4 {
-        margin-top: 6px;
-        font-size: 16px;
-    }
-    h5 {
-        margin-top: 4px;
-        font-size: 14px;
-    }
-    h6 {
-        margin-top: 2px;
-        font-size: 12px;
-    }
+  h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    padding: 0;
+  }
+  h1 {
+    margin-top: 12px;
+    font-size: 22px;
+  }
+  h2 {
+    margin-top: 10px;
+    font-size: 20px;
+  }
+  h3 {
+    margin-top: 8px;
+    font-size: 18px;
+  }
+  h4 {
+    margin-top: 6px;
+    font-size: 16px;
+  }
+  h5 {
+    margin-top: 4px;
+    font-size: 14px;
+  }
+  h6 {
+    margin-top: 2px;
+    font-size: 12px;
+  }
 
-    ul {
-        padding: 0;
-        margin: 0;
-        list-style: none;
-    }
+  ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
 }
 
 .fm-form {
-    margin: 20px 0;
+  margin: 20px 0;
+  padding: 0;
+
+  fieldset {
+    padding: 0 10px 10px 10px;
+  }
+
+  label {
+    margin: 0;
     padding: 0;
-
-    fieldset {
-        padding: 0 10px 10px 10px;
-    }
-
-    label {
-        margin: 0;
-        padding: 0;
-        width: auto;
-        text-align: left;
-        float: none;
-        font-weight: normal;
-    }
+    width: auto;
+    text-align: left;
+    float: none;
+    font-weight: normal;
+  }
 }
 
-.fm-button::-moz-focus-inner {
-    border: 0;
-}
 .fm-button {
-    border: 1px solid $color-button-darker;
-    padding: 3px 12px;
-    font-size: 12px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 400;
+  display: inline-block;
+  padding: 1px 12px;
+  font-size: 11px;
+  height: 32px;
+  line-height: 32px;
 
-    color: black;
-    cursor: pointer;
-    outline: none;
+  border: none;
+  color: black;
+  cursor: pointer;
+  outline: none;
+  text-decoration: none;
+
+  @include border-radius(5px);
+
+  &:active {
+
+  }
+  &:hover {
+    background-color: #e85353;
+    color: white;
     text-decoration: none;
-    line-height: 16px;
-
-    @include border-radius(3px);
-
-    @include gradient($color-button-light, $color-button-dark);
-    &:active {
-        @include gradient($color-button-dark, $color-button-light);
-    }
+  }
+  &.disabled {
+    background-color: #e3e3e3;
+    color: #b3b3b3;
+  }
+  &.green {
+    background-color: #83c070;
+    color: white;
     &:hover {
-      text-decoration: none;
-      color: black;
-      @include gradient($color-button-dark, $color-button-light);
+      font-weight: bold;
     }
-
-    &.fyndiq {
-        color: white;
-        text-shadow: 0px 0px 1px rgba(0, 0, 0, 0.8);
-        font-weight: bold;
-        border-color: $color-button-fyndiq-darker;
-
-        @include gradient($color-button-fyndiq-light, $color-button-fyndiq-dark);
-        &:active {
-            @include gradient($color-button-fyndiq-dark, $color-button-fyndiq-light);
-        }
-        &:hover {
-          text-decoration: none;
-          color: white;
-          @include gradient($color-button-fyndiq-dark, $color-button-fyndiq-light);
-        }
+  }
+  &.red {
+    background-color: #e85353;
+    color: white;
+    &:hover {
+      font-weight: bold;
     }
+  }
+  &.block {
+    width:91%;
+    text-align: center;
+  }
 }

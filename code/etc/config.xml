@@ -30,11 +30,11 @@
             </fyndiq_resource>
         </models>
         <resources>
-            <fyndiq_fyndiq_setup>
+            <fyndiqmodule_setup>
                 <setup>
                     <module>Fyndiq_Fyndiq</module>
                 </setup>
-            </fyndiq_fyndiq_setup>
+            </fyndiqmodule_setup>
         </resources>
         <blocks>
             <Fyndiq>

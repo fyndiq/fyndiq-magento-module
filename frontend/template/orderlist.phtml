@@ -1,3 +1,4 @@
+<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" type="text/css" href="<?php echo $this->getFrontendPath(); ?>frontend/css/main.css" media="all">
 <script type="text/javascript">
     module_path = "<?php echo $this->getAdminPath("fyndiq/service"); ?>";
@@ -12,8 +13,11 @@
 
 <script type="text/x-handlebars-template" class="handlebars-template" id="fm-message-overlay">
     <div class="fm-message-overlay fm-{{type}}">
-        <img class="close" src="<?php echo $this->getFrontendPath(); ?>frontend/images/icons/close-icon.png" alt="Close" title="Close message">
+        <img class="close" src="<?php echo $this->getFrontendPath(); ?>frontend/images/icons/close-icon.png" alt="Close"
+             title="Close message">
+
         <h3>{{title}}</h3>
+
         <p>{{{message}}}</p>
     </div>
 </script>
@@ -35,12 +39,12 @@
         {{#each orders}}
         {{#with this}}
         <tr data-id="{{entity_id}}" data-fyndiqid="{{fyndiq_order}}">
-            <td class="select"><input type="checkbox" id="select_order_{{entity_id}}"></td>
-            <td>{{entity_id}}</td>
-            <td>{{fyndiq_order}}</td>
-            <td>{{base_grand_total}} <?php echo $this->getCurrency(); ?></td>
-            <td>{{total_qty_ordered}}</td>
-            <td>{{created_at}}</td>
+            <td class="select center"><input type="checkbox" id="select_order_{{entity_id}}"></td>
+            <td class="center">{{entity_id}}</td>
+            <td class="center">{{fyndiq_order}}</td>
+            <td class="center">{{base_grand_total}} <?php echo $this->getCurrency(); ?></td>
+            <td class="center">{{total_qty_ordered}}</td>
+            <td class="center">{{created_at}}</td>
         </tr>
         {{/with}}
         {{/each}}
@@ -54,7 +58,7 @@
 <script type="text/x-handlebars-template" class="handlebars-partial" id="fm-order-list-controls">
     <div class="fm-order-list-controls">
         <div class="export">
-            <button class="fm-button fyndiq" id="getdeliverynote">Get Delivery Notes</button>
+            <a class="fm-button green" id="getdeliverynote">Get Delivery Notes</a>
         </div>
     </div>
 </script>
@@ -64,9 +68,12 @@
 
 <script type="text/javascript">
     var messages = {};
-    <?php foreach($this->getMessages() as $k => $v) {?>
+    <?php foreach($this->getMessages() as $k => $v) {
+    ?>
     messages['<?php echo $k; ?>'] = '<?php echo $v; ?>';
-    <? } ?>
+    <?php
+    }
+    ?>
 </script>
 
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/FmGui.js"></script>
@@ -74,45 +81,40 @@
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/orderlist.js"></script>
 
 
+<div class="fm-header-background">
+    <div class="fm-header-container">
+        <div class="fm-header">
+            <img class="fyndiqlogo" src="<?php echo $this->getFrontendPath(); ?>frontend/images/logo.png" alt="Fyndiq logotype">
+            <div class="right">
+                <a href="<?php echo $this->getAdminPath("fyndiq/admin/index"); ?>">Export Products</a>
+                <a href="<?php echo $this->getAdminPath("fyndiq/admin/orderlist"); ?>" class="active">Imported Orders</a>
+                <a href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>">Settings</a>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="fm-container">
 
-    <img class="fyndiqlogo" src="<?php echo $this->getFrontendPath(); ?>frontend/images/logo.png" alt="Fyndiq logotype">
-
-    <div class="fm-menu">
-        <ul>
-            <li><a href="<?php echo $this->getAdminPath("fyndiq/admin/index"); ?>">Export Products</a></li>
-            <li><a href="<?php echo $this->getAdminPath("fyndiq/admin/orderlist"); ?>" class="active">Imported Orders</a></li>
-            <li><a href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>">Settings</a></li>
-        </ul>
-        <ul class="right">
-            <li><a href="#" onclick="confirmRemoval();">Disconnect Account</a></li>
-        </ul>
-    </div>
-
     <div class="fm-orderlist-panel">
+        <div class="fm-subheader">Import Orders</div>
 
-        <h2>Imported Orders</h2>
         <form action="" method="post" class="fm-form orders-form">
 
-                <div class="fm-order-list-container"></div>
+            <div class="fm-order-list-container"></div>
         </form>
     </div>
 
     <div class="fm-sidebar">
-
-        <h3>Import Order</h3>
-        <form action="" method="post" class="fm-form orders">
-            <fieldset>
+        <div class="fm-subheader">Manual Order Import</div>
+        <div class="content">
                 <p>By clicking this button, you can import all orders from Fyndiq into the local webshop.</p>
-                <button class="fm-button fyndiq" id="fm-import-orders">Import Orders</button>
                 <?php
                 $date = $this->getLastUpdatedDate();
-                if($date != false)
-                {
-                    ?><br />Last Updated: <? echo $date;
+                if ($date != false) {
+                    ?><br/>Last Updated: <?php echo $date;
                 }
                 ?>
-            </fieldset>
-        </form>
+                <a class="fm-button green block" id="fm-import-orders">Import Orders</a>
+        </div>
     </div>
 </div>

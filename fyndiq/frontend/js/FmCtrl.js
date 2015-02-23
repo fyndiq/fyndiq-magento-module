@@ -105,7 +105,7 @@ var FmCtrl = {
         FmCtrl.call_service('get_delivery_notes', {"orders": orders}, function (status) {
             if (status == 'success') {
                 FmGui.show_message('success', messages['delivery-note-imported-title'],
-                    'You can get the notes <a href="' + module_path + '/fyndiq/files/deliverynote.pdf">here</a>');
+                    'You can get the notes <a href="' + urlpath0 + 'fyndiq/files/deliverynote.pdf" target="_blank">here</a>');
             }
             if (callback) {
                 callback(status);
@@ -193,7 +193,6 @@ var FmCtrl = {
         });
         var savetimeout;
         $j(document).on('keyup', '.fm-product-list tr .prices .fyndiq_price .fyndiq_dicsount', function () {
-            console.log("keyup");
             var discount = $j(this).val();
             var product = $j(this).parent().parent().parent().attr('data-id');
 
@@ -216,7 +215,6 @@ var FmCtrl = {
             savetimeout = setTimeout(function () {
                 FmCtrl.update_product(product, discount, function (status) {
                     if (status == "success") {
-                        console.log("saved");
                         ajaxdiv.html('Saved').delay(1000).fadeOut();
                     }
                     else {
@@ -241,7 +239,7 @@ var FmCtrl = {
         });
 
         // when clicking the export products submit buttons, export products
-        $j(document).on('click', '.fm-product-list-controls button[name=export-products]', function (e) {
+        $j(document).on('click', '.fm-product-list-controls #export-products', function (e) {
             e.preventDefault();
 
             var products = [];
@@ -286,7 +284,7 @@ var FmCtrl = {
         });
 
         //Deleting selected products from export table
-        $j(document).on('click', '.fm-product-list-controls button[name=delete-products]', function (e) {
+        $j(document).on('click', '.fm-product-list-controls #delete-products', function (e) {
             e.preventDefault();
 
             FmGui.show_load_screen(function () {
@@ -359,9 +357,9 @@ var FmCtrl = {
                 });
             }
         });
-        $j(document).on('click', '#getdeliverynote', function () {
+        $j(document).on('click', '#getdeliverynote', function (e) {
             var orders = [];
-
+            e.preventDefault();
             $j('.fm-orders-list > tr').each(function (k, v) {
                 // check if product is selected
                 var active = $j(this).find('.select input').prop('checked');

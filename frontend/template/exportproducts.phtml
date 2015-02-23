@@ -1,3 +1,4 @@
+<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" type="text/css" href="<?php echo $this->getFrontendPath(); ?>frontend/css/main.css" media="all">
 <script type="text/javascript">
     module_path = "<?php echo $this->getAdminPath("fyndiq/service"); ?>";
@@ -11,8 +12,11 @@
 
 <script type="text/x-handlebars-template" class="handlebars-template" id="fm-message-overlay">
     <div class="fm-message-overlay fm-{{type}}">
-        <img class="close" src="<?php echo $this->getFrontendPath(); ?>frontend/images/icons/close-icon.png" alt="Close" title="Close message">
+        <img class="close" src="<?php echo $this->getFrontendPath(); ?>frontend/images/icons/close-icon.png" alt="Close"
+             title="Close message">
+
         <h3>{{title}}</h3>
+
         <p>{{message}}</p>
     </div>
 </script>
@@ -41,8 +45,10 @@
 <script type="text/x-handlebars-template" class="handlebars-template" id="fm-accept-product-export">
     <div class="fm-accept-product-export">
         <h3>Warning!</h3>
+
         <p>
-            Check once again that the percentage and data about the product is correct. Here is the product you have selected for export. Already exported product will get its stock and price overwritten.
+            Check once again that the percentage and data about the product is correct. Here is the product you have
+            selected for export. Already exported product will get its stock and price overwritten.
         </p>
 
         {{> fm-product-price-warning-controls}}
@@ -62,7 +68,7 @@
                     <div class="title">
                         {{#with product}}{{#with product}}
                         <input type="text" value="{{name}}">
-                            {{/with}}{{/with}}
+                        {{/with}}{{/with}}
                     </div>
 
                     <div class="price-info">
@@ -118,8 +124,8 @@
 <script type="text/x-handlebars-template" class="handlebars-partial" id="fm-product-list-controls">
     <div class="fm-product-list-controls">
         <div class="export">
-            <button class="fm-button" name="delete-products">Remove from Fyndiq</button>
-            <button class="fm-button fyndiq" name="export-products">Send to Fyndiq</button>
+            <a class="fm-button disabled" id="delete-products">Remove from Fyndiq</a>
+            <a class="fm-button green" id="export-products">Send to Fyndiq</a>
         </div>
     </div>
 </script>
@@ -127,112 +133,112 @@
 <script type="text/x-handlebars-template" class="handlebars-template" id="fm-product-list">
     {{> fm-product-list-controls}}
     <div class="fm-products-list-container">
-    {{#if products}}
-    <table>
-        <thead>
-        <tr>
-            <th><input id="select-all" type="checkbox"></th>
-            <th colspan="2">Product</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Status</th>
-        </tr>
-        </thead>
-        <tbody class="fm-product-list">
-        {{#each products}}
-        {{#with this}}
-        <tr
-            data-id="{{id}}"
-            data-name="{{name}}"
-            data-reference="{{reference}}"
-            data-description="{{description}}"
-            data-price="{{price}}"
-            data-quantity="{{quantity}}"
-            data-image="{{image}}"
-            class="product">
-            <td class="select"><input type="checkbox" id="select_product_{{id}}"></td>
-            <td><img src="{{image}}" alt="Product image"></td>
-            <td><strong>{{name}}</strong> ({{reference}})<br/>{{properties}}</td>
-            <td class="prices">
-                <div class="price">
-                    Price: {{price}} <?php echo $this->getCurrency(); ?>
-                </div>
-                <div class="fyndiq_price">
-                    <label>Fyndiq Discount:</label>
-                    <input type="text" value="{{fyndiq_price}}" class="fyndiq_dicsount">% <span id="ajaxFired"></span><br />
-                    <span class="price_preview">Expected Price: {{expected_price}}</span> <?php echo $this->getCurrency(); ?>
-                </div>
-            </td>
-            <td class="quantities">
-                {{quantity}}
-            </td>
-            <td class="status">
-                {{#if fyndiq_exported}}
-                <div class="label green">On Fyndiq</div>
-                {{else}}
-                <div class="label yellow">Not on Fyndiq</div>
-                {{/if}}
-            </td>
+        {{#if products}}
+        <table>
+            <thead>
+            <tr>
+                <th><input id="select-all" type="checkbox"></th>
+                <th colspan="2">Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Status</th>
             </tr>
-        {{/with}}
-        {{/each}}
-    </tbody>
-    </table>
-    {{else}}
-    Category is empty.
-    {{/if}}
+            </thead>
+            <tbody class="fm-product-list">
+            {{#each products}}
+            {{#with this}}
+            <tr
+                data-id="{{id}}"
+                data-name="{{name}}"
+                data-reference="{{reference}}"
+                data-description="{{description}}"
+                data-price="{{price}}"
+                data-quantity="{{quantity}}"
+                data-image="{{image}}"
+                class="product">
+                <td class="select center"><input type="checkbox" id="select_product_{{id}}"></td>
+                <td><img src="{{image}}" alt="Product image"></td>
+                <td><strong>{{name}}</strong> <span class="shadow">({{reference}})</span><br/>{{properties}}</td>
+                <td class="prices">
+                    <div class="price">
+                        Price: {{price}} <?php echo $this->getCurrency(); ?>
+                </div>
+                    <div class="fyndiq_price">
+                        <label>Fyndiq Discount:</label>
+                        <input type="text" value="{{fyndiq_price}}" class="fyndiq_dicsount">% <span
+                        id="ajaxFired"></span><br/>
+                        <span class="price_preview">Expected Price: {{expected_price}}</span> <?php echo $this->getCurrency(); ?>
+                </div>
+                </td>
+                <td class="quantities center">
+                    {{quantity}}
+                </td>
+                <td class="status center">
+                    {{#if fyndiq_exported}}
+                    <i class="icon on big"></i>
+                    {{else}}
+                    <i class="icon noton big"></i>
+                    {{/if}}
+                </td>
+            </tr>
+            {{/with}}
+            {{/each}}
+            </tbody>
+        </table>
+        {{else}}
+        Category is empty.
+        {{/if}}
     </div>
     {{> fm-product-list-controls}}
     {{> fm-product-pagination}}
 </script>
 
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/jquery-1.11.1.min.js"></script>
-<script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/jquery.textchange.js"></script>
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/handlebars-v1.1.2.js"></script>
 
 <script type="text/javascript">
     var messages = {};
-    <?php foreach($this->getMessages() as $k => $v) {?>
+    <?php foreach($this->getMessages() as $k => $v) {
+    ?>
     messages['<?php echo $k; ?>'] = '<?php echo $v; ?>';
-    <? } ?>
+    <?php
+    }
+    ?>
 </script>
 
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/FmGui.js"></script>
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/FmCtrl.js"></script>
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/main.js"></script>
 
-
+<div class="fm-header-background">
+    <div class="fm-header-container">
+        <div class="fm-header">
+            <img class="fyndiqlogo" src="<?php echo $this->getFrontendPath(); ?>frontend/images/logo.png" alt="Fyndiq logotype">
+            <div class="right">
+                <a href="<?php echo $this->getAdminPath("fyndiq/admin/index"); ?>" class="active">Export Products</a>
+                <a href="<?php echo $this->getAdminPath("fyndiq/admin/orderlist"); ?>">Imported Orders</a>
+                <a href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>">Settings</a>
+                </div>
+        </div>
+    </div>
+</div>
 <div class="fm-container">
 
-    <img class="fyndiqlogo" src="<?php echo $this->getFrontendPath(); ?>frontend/images/logo.png" alt="Fyndiq logotype">
-
-    <div class="fm-menu">
-        <ul>
-            <li><a href="<?php echo $this->getAdminPath("fyndiq/admin/index"); ?>" class="active">Export Products</a></li>
-            <li><a href="<?php echo $this->getAdminPath("fyndiq/admin/orderlist"); ?>">Imported Orders</a></li>
-            <li><a href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>">Settings</a></li>
-        </ul>
-        <ul class="right">
-            <li><a href="#" onclick="confirmRemoval();">Disconnect Account</a></li>
-        </ul>
-    </div>
-
     <div class="fm-left-sidebar">
-        <h2>Categories</h2>
+        <div class="fm-subheader">Categories</div>
         <div class="fm-category-tree-container"></div>
     </div>
 
     <div class="fm-main-panel">
-
-        <h2>Products</h2>
+        <div class="fm-subheader" style="margin-bottom: 5px;">
+            Products: Men
+            <div class="right"><i class="icon on"></i> On Fyndiq  <i class="icon pending"></i> Pending <i class="icon noton"></i> Not On Fyndiq </div>
+        </div>
         <form action="" method="post" class="fm-form products">
-            <fieldset>
-                <legend>Products</legend>
-                <p>By using this form, you can export products from the local webshop into Fyndiq.</p>
+                <p class="info">By using this form, you can export products from the local webshop into Fyndiq.</p>
 
 
                 <div class="fm-product-list-container"></div>
-            </fieldset>
         </form>
     </div>
 </div>
