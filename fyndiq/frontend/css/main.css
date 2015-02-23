@@ -268,7 +268,7 @@
           -webkit-border-radius: 5px;
           -moz-border-radius: 5px;
           border-radius: 5px;
-          border: 2px solid lightgray; }
+          border: 2px solid #F0F1F2; }
         .fm-header-background .fm-header-container .fm-header .right a:hover {
           color: white;
           background-color: #e85353;
@@ -352,7 +352,7 @@
     padding-left: 10px;
     padding-top: 5px;
     padding-bottom: 5px;
-    border-bottom: 1px solid lightgray;
+    border-bottom: 1px solid #F0F1F2;
     font-weight: bold; }
     .fm-category-tree li a {
       font-family: 'Montserrat', sans-serif;
@@ -476,6 +476,8 @@ table {
     font-size: 12px;
     background-color: #f5f8fb;
     border: 0px;
+    border-bottom: 1px solid #F0F1F2;
+    border-top: 1px solid #F0F1F2;
     border-spacing: 0; }
     table thead th {
       font-size: 12px;
@@ -495,7 +497,7 @@ table {
       border: 0px;
       border-collapse: collapse;
       border-spacing: 0;
-      border-bottom: 1px solid #e5e8ea; }
+      border-bottom: 1px solid #F0F1F2; }
       table tbody tr td {
         padding: 10px;
         font-size: 11px;

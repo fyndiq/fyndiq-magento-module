@@ -141,7 +141,7 @@
           background-color:white;
           text-decoration: none;
           @include border-radius(5px);
-          border: 2px solid lightgray;
+          border: 2px solid #F0F1F2;;
         }
         a:hover {
           color:white;
@@ -246,7 +246,7 @@
     padding-left: 10px;
     padding-top: 5px;
     padding-bottom: 5px;
-    border-bottom: 1px solid lightgray;
+    border-bottom: 1px solid #F0F1F2;
     font-weight: bold;
     a {
       font-family: 'Montserrat', sans-serif;
@@ -427,6 +427,8 @@ table {
     font-size: 12px;
     background-color: #f5f8fb;
     border: 0px;
+    border-bottom: 1px solid #F0F1F2;
+    border-top: 1px solid #F0F1F2;
     border-spacing: 0;
 
     th {
@@ -451,7 +453,7 @@ table {
       border: 0px;
       border-collapse: collapse;
       border-spacing: 0;
-      border-bottom: 1px solid rgb(229,232,234);
+      border-bottom: 1px solid #F0F1F2;
 
       td {
         padding: 10px;
