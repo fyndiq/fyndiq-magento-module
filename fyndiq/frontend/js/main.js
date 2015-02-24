@@ -24,7 +24,7 @@ $j(document).ready(function() {
         FmCtrl.load_categories(function() {
 
             // load products from second category
-            var category_id = $j('.fm-category-tree a').eq(1).parent().attr('data-category_id');
+            var category_id = $j('.fm-category-tree a').eq(0).parent().attr('data-category_id');
             FmCtrl.load_products(category_id, 1, function() {
                 FmGui.hide_load_screen();
             });
