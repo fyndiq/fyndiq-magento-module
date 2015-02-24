@@ -85,6 +85,7 @@
     text-decoration: none;
   }
   &.disabled {
+    cursor: default;
     background-color: #e3e3e3;
     color: #b3b3b3;
   }

@@ -124,7 +124,6 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $categories = $category->getCollection()
             ->addAttributeToSelect('*')
             ->addAttributeToFilter('is_active', '1')
-            ->addAttributeToFilter('include_in_menu', '1')
             ->addAttributeToFilter('parent_id', array('eq' => $args['category']))
             ->addAttributeToSort('position', 'asc')->getItems();
 

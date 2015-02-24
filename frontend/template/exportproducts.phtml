@@ -189,10 +189,19 @@
                 data-description="{{description}}"
                 data-price="{{price}}"
                 data-quantity="{{quantity}}"
+                {{#if image}}
                 data-image="{{image}}"
+                {{else}}
+                data-image="false"
+                {{/if}}
                 class="product">
+                {{#if image}}
                 <td class="select center"><input type="checkbox" id="select_product_{{id}}"></td>
                 <td><img src="{{image}}" alt="Product image"></td>
+                {{else}}
+                <td class="select center"><input type="checkbox" hidden id="select_product_{{id}}"></td>
+                <td>No Image</td>
+                {{/if}}
                 <td><strong>{{name}}</strong> <span class="shadow">({{reference}})</span><br/>{{properties}}</td>
                 <td class="prices">
                     <div class="price">
