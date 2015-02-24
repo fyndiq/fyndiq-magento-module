@@ -135,6 +135,19 @@
         {{/each}}
     </ul>
 </script>
+<script type="text/x-handlebars-template" class="handlebars-template" id="fm-category-child-tree">
+    <ul class="fm-category-tree childtree" style="padding-left:10px;">
+        {{#each categories}}
+        {{#with this}}
+        <li data-category_id="{{id}}">
+            {{level}}
+
+            <a href="#" title="Open category">{{name}}</a>
+        </li>
+        {{/with}}
+        {{/each}}
+    </ul>
+</script>
 
 <script type="text/x-handlebars-template" class="handlebars-partial" id="fm-product-pagination">
     {{#if pagination}}

@@ -90,9 +90,10 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $treeModel = $category->getTreeModel();
         $treeModel->load();
 
-        $ids = $treeModel->getCollection()->getAllIds();
-
         $data = array();
+
+        /**
+        $ids = $treeModel->getCollection()->getAllIds();
 
         if (!empty($ids)) {
             foreach ($ids as $id) {
@@ -125,7 +126,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
                     /*if ($item->getProductCount() < 1) {
                         $collection->removeItemByKey($key);
-                    }*/
+                    }
 
                     if ($prodcount >= 1) {
                         $categoryData = array(
@@ -140,7 +141,48 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 }
             }
         }
+         */
+        $categories = $category->getCollection()
+            ->addAttributeToSelect('*')
+            ->addAttributeToFilter('is_active','1')
+            ->addAttributeToFilter('include_in_menu','1')
+            ->addAttributeToFilter('level', '1')
+            ->addAttributeToSort('position', 'asc')->getItems();
 
+        foreach($categories as $cat) {
+                $categoryData = array(
+                    'id' => $cat->getId(),
+                    'url' => $cat->getUrl(),
+                    'name' => $cat->getName(),
+                    'image' => $cat->getImageUrl(),
+                    'isActive' => $cat->getIsActive()
+                );
+                array_push($data, $categoryData);
+        }
+
+        $this->response($data);
+    }
+
+    public function get_childcategory($args) {
+        $data = array();
+        $category = Mage::getModel('catalog/category');
+        $categories = $category->getCollection()
+            ->addAttributeToSelect('*')
+            ->addAttributeToFilter('is_active','1')
+            ->addAttributeToFilter('include_in_menu','1')
+            ->addAttributeToFilter('parent_id',array('eq' => $args['category']))
+            ->addAttributeToSort('position', 'asc')->getItems();
+
+        foreach($categories as $cat) {
+            $categoryData = array(
+                'id' => $cat->getId(),
+                'url' => $cat->getUrl(),
+                'name' => $cat->getName(),
+                'image' => $cat->getImageUrl(),
+                'isActive' => $cat->getIsActive()
+            );
+            array_push($data, $categoryData);
+        }
         $this->response($data);
     }
 

@@ -138,6 +138,26 @@ var FmCtrl = {
         });
     },
 
+    get_childcategories: function(category, callback) {
+        FmCtrl.call_service('get_childcategory', {'category': category}, function (status, categories) {
+            if (status == 'success') {
+                var category = $j('.fm-category-tree li.active');
+                $j('.fm-category-tree.childtree').each(function() {
+                    if(! $j(this).find('li.active').length) {
+                        $j(this).remove();
+                    }
+                })
+
+                category.after(tpl['category-child-tree']({
+                    'categories': categories
+                }));
+            }
+            if (callback) {
+                callback(status);
+            }
+        });
+    },
+
     update_product: function (product, percentage, callback) {
         FmCtrl.call_service('update_product', {'product': product, 'percentage': percentage}, function (status) {
             if (callback) {
@@ -175,7 +195,9 @@ var FmCtrl = {
             var category_id = $j(this).parent().attr('data-category_id');
             FmGui.show_load_screen(function () {
                 FmCtrl.load_products(category_id, 1, function () {
-                    FmGui.hide_load_screen();
+                    FmCtrl.get_childcategories(category_id, function() {
+                        FmGui.hide_load_screen();
+                    });
                 });
             });
         });
