@@ -252,12 +252,34 @@ var FmCtrl = {
                 $j(".fm-product-list tr .select input").each(function () {
                     $j(this).prop("checked", true);
                 });
+                $j('.fm-product-list-controls #delete-products').removeClass('disabled');
+                $j('.fm-product-list-controls #delete-products').addClass('red');
 
             } else {
                 $j(".fm-product-list tr .select input").each(function () {
                     $j(this).prop("checked", false);
                 });
+                $j('.fm-product-list-controls #delete-products').removeClass('red');
+                $j('.fm-product-list-controls #delete-products').addClass('disabled');
             }
+        });
+
+        $j(document).on('click','.fm-product-list > tr', function() {
+             var red = false;
+             $j('.fm-product-list > tr').each(function (k, v) {
+                 var active = $j(this).find('.select input').prop('checked');
+                 if (active) {
+                     red = true;
+                 }
+             });
+             if(red) {
+                 $j('.fm-product-list-controls #delete-products').removeClass('disabled');
+                 $j('.fm-product-list-controls #delete-products').addClass('red');
+             }
+             else {
+                 $j('.fm-product-list-controls #delete-products').removeClass('red');
+                 $j('.fm-product-list-controls #delete-products').addClass('disabled');
+             }
         });
 
         // when clicking the export products submit buttons, export products
@@ -308,7 +330,9 @@ var FmCtrl = {
         //Deleting selected products from export table
         $j(document).on('click', '.fm-product-list-controls #delete-products', function (e) {
             e.preventDefault();
-
+            if($j(this).hasClass( "disabled" )) {
+                return;
+            }
             FmGui.show_load_screen(function () {
                 var products = [];
 
