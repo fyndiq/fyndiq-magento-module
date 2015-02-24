@@ -143,6 +143,14 @@
           @include border-radius(5px);
           border: 2px solid #F0F1F2;;
         }
+        a i.menu-icon {
+          display: inline-block;
+          vertical-align: middle;
+          margin-bottom: 3px;
+          height:30px;
+          width:30px;
+
+        }
         a:hover {
           color:white;
           background-color: #e85353;

@@ -2,7 +2,29 @@
 <link rel="stylesheet" type="text/css" href="<?php echo $this->getFrontendPath(); ?>frontend/css/main.css" media="all">
 <script type="text/javascript">
     module_path = "<?php echo $this->getAdminPath("fyndiq/service"); ?>";
+    frontend_path = "<?php echo $this->getFrontendPath(); ?>frontend/";
 </script>
+<style type="text/css">
+    a i.menu-icon.comp {
+        background-image: url('<?php echo $this->getFrontendPath(); ?>frontend/images/icons/comp_red.png');
+    }
+    a.active i.menu-icon.comp,a:hover i.menu-icon.comp {
+        background-image: url('<?php echo $this->getFrontendPath(); ?>frontend/images/icons/comp_white.png');
+    }
+    a i.menu-icon.boxes {
+        background-image: url('<?php echo $this->getFrontendPath(); ?>frontend/images/icons/box_red.png');
+    }
+    a.active i.menu-icon.boxes,a:hover i.menu-icon.boxes {
+        background-image: url('<?php echo $this->getFrontendPath(); ?>frontend/images/icons/box_white.png');
+    }
+    a i.menu-icon.cog {
+        background-image: url('<?php echo $this->getFrontendPath(); ?>frontend/images/icons/cog_red.png');
+    }
+    a.active i.menu-icon.cog,a:hover i.menu-icon.cog {
+        background-position: 0px -1px;
+        background-image: url('<?php echo $this->getFrontendPath(); ?>frontend/images/icons/cog_white.png');
+    }
+</style>
 
 <script type="text/x-handlebars-template" class="handlebars-template" id="fm-loading-overlay">
     <div class="fm-loading-overlay">
@@ -215,9 +237,9 @@
         <div class="fm-header">
             <img class="fyndiqlogo" src="<?php echo $this->getFrontendPath(); ?>frontend/images/logo.png" alt="Fyndiq logotype">
             <div class="right">
-                <a href="<?php echo $this->getAdminPath("fyndiq/admin/index"); ?>" class="active">Export Products</a>
-                <a href="<?php echo $this->getAdminPath("fyndiq/admin/orderlist"); ?>">Imported Orders</a>
-                <a href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>">Settings</a>
+                <a href="<?php echo $this->getAdminPath("fyndiq/admin/index"); ?>" class="active"><i class="menu-icon comp"></i> Export Products</a>
+                <a href="<?php echo $this->getAdminPath("fyndiq/admin/orderlist"); ?>"><i class="menu-icon boxes"></i> Imported Orders</a>
+                <a href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>"><i class="menu-icon cog"></i> Settings</a>
                 </div>
         </div>
     </div>
