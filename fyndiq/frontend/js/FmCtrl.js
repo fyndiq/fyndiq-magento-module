@@ -414,19 +414,20 @@ var FmCtrl = {
                     orders.push($j(this).data('fyndiqid'));
                 }
             });
-
-            FmGui.show_load_screen(function () {
-                FmCtrl.get_delivery_notes(orders, function (status) {
-                    FmGui.hide_load_screen();
-                    if (status == 'success') {
-                        var wins = window.open(urlpath0 + "fyndiq/files/deliverynote.pdf", '_blank');
-                        if (wins) {
-                            //Browser has allowed it to be opened
-                            wins.focus();
+            if(orders.length > 0) {
+                FmGui.show_load_screen(function () {
+                    FmCtrl.get_delivery_notes(orders, function (status) {
+                        FmGui.hide_load_screen();
+                        if (status == 'success') {
+                            var wins = window.open(urlpath0 + "fyndiq/files/deliverynote.pdf", '_blank');
+                            if (wins) {
+                                //Browser has allowed it to be opened
+                                wins.focus();
+                            }
                         }
-                    }
+                    });
                 });
-            });
+            }
         });
     }
 };
