@@ -116,6 +116,9 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
                 $quote->addProduct($_product, new Varien_Object($product_info));
             }
         }
+        if(count($quote->getAllItems()) == 0) {
+            throw new Exception("Couldn't find product for order #" . $fyndiq_order->id);
+        }
 
 
         //Shipping / Billing information gather
