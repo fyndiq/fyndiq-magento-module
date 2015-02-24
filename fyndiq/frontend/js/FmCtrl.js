@@ -196,6 +196,7 @@ var FmCtrl = {
             FmGui.show_load_screen(function () {
                 FmCtrl.load_products(category_id, 1, function () {
                     FmCtrl.get_childcategories(category_id, function() {
+                        $j('#categoryname').text($j('.fm-category-tree li.active a').text());
                         FmGui.hide_load_screen();
                     });
                 });
