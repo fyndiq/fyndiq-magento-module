@@ -454,6 +454,9 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         try {
             $orders = new stdClass();
             $orders->orders = array();
+            if(!isset($args["orders"])) {
+                throw new Exception("Pick at least one order");
+            }
             foreach ($args["orders"] as $order) {
                 $object = new stdClass();
                 $object->order = intval($order);
