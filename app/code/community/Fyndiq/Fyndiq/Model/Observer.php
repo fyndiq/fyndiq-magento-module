@@ -223,7 +223,7 @@ class Fyndiq_Fyndiq_Model_Observer
                 }
 
                 // TODO: fix location to something except test
-                $feed_product["article-locationx"] = "test";
+                $feed_product["article-location"] = "test";
                 $feed_product["article-sku"] = $magproduct->getSKU();
                 if($parent != false) {
                     $parentmodel = $product_model->load($parent);
