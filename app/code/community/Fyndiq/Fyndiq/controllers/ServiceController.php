@@ -94,16 +94,25 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             ->addAttributeToSelect('*')
             ->addAttributeToFilter('is_active', '1')
             ->addAttributeToFilter('include_in_menu', '1')
-            ->addAttributeToSort('position', 'asc')->getFirstItem();
+            ->addAttributeToSort('position', 'asc')->getItems();
 
-        $categoryData = array(
-            'id' => $categories->getId(),
-            'url' => $categories->getUrl(),
-            'name' => $categories->getName(),
-            'image' => $categories->getImageUrl(),
-            'isActive' => $categories->getIsActive()
-        );
-        array_push($data, $categoryData);
+        $parentlvl = false;
+        foreach($categories as $cat) {
+            if($parentlvl == false) {
+                $parentlvl = $cat->getLevel();
+            }
+            if($parentlvl != false && $cat->getLevel() != $parentlvl) {
+                continue;
+            }
+            $categoryData = array(
+                'id' => $cat->getId(),
+                'url' => $cat->getUrl(),
+                'name' => $cat->getName(),
+                'image' => $cat->getImageUrl(),
+                'isActive' => $cat->getIsActive()
+            );
+            array_push($data, $categoryData);
+        }
 
         $this->response($data);
     }
