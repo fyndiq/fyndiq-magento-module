@@ -385,6 +385,8 @@
       }
     }
 
+
+
     .prices {
 
       .price {
@@ -395,17 +397,39 @@
         clear: both;
       }
 
+      span.pricetag {
+        float: right;
+      }
+
+      .inputdiv {
+        float: right;
+        height: 15px;
+        background-color: #F4F4F4;
+        padding: 0px;
+        line-height: 15px;
+        padding-right: 4px;
+        border: 1px solid #DADADA;
+        margin: 0px;
+        input {
+          border: 0px;
+          height: 10px;
+          width: 20px;
+          margin: 0px;
+          line-height: 14px;
+          padding: 2px;
+          border-right: 1px solid #DADADA;
+          margin-right: 3px;
+        }
+      }
+
       label {
         display: block;
         text-align: right;
         float: left;
         padding-right: 4px;
       }
-
-      input {
-        display: block;
-        float: left;
-        width: 30px;
+      .price_preview {
+        float:right;
       }
     }
   }

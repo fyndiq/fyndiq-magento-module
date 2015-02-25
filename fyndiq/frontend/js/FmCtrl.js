@@ -137,7 +137,7 @@ var FmCtrl = {
             }
         });
     },
-
+    // get child category of a category
     get_childcategories: function(category, callback) {
         FmCtrl.call_service('get_childcategory', {'category': category}, function (status, categories) {
             if (status == 'success') {
@@ -214,26 +214,29 @@ var FmCtrl = {
                 });
             });
         });
+        //Taking care of the price changes when changing percentage
         var savetimeout;
-        $j(document).on('keyup', '.fm-product-list tr .prices .fyndiq_price .fyndiq_dicsount', function () {
+        $j(document).on('keyup', '.fm-product-list tr .prices .fyndiq_price .inputdiv .fyndiq_dicsount', function () {
             var discount = $j(this).val();
-            var product = $j(this).parent().parent().parent().attr('data-id');
+            var product = $j(this).parent().parent().parent().parent().attr('data-id');
 
             if (discount > 100) {
                 discount = 100;
             }
 
-            var price = $j(this).parent().parent().parent().attr('data-price');
-            var field = $j(this).parent().children('.price_preview');
+            //Count and show new price based on new percentage
+            var price = $j(this).parent().parent().parent().parent().attr('data-price');
+            var field = $j(this).parent().parent().find('.price_preview_price');
+
             var counted = price - ((discount / 100) * price);
             if (isNaN(counted)) {
                 counted = price;
             }
+            field.text(counted.toFixed(2));
 
-            field.text("Expected Price: " + counted.toFixed(2));
-
+            //Showing state and call ajax to save new percentage after 1 second.
             clearTimeout(savetimeout);
-            var ajaxdiv = $j(this).parent().find('#ajaxFired');
+            var ajaxdiv = $j(this).parent().parent().find('#ajaxFired');
             ajaxdiv.html('Typing...').show();
             savetimeout = setTimeout(function () {
                 FmCtrl.update_product(product, discount, function (status) {
@@ -298,7 +301,7 @@ var FmCtrl = {
 
                     // store product id and combinations
                     var price = $j(this).find("td.prices > div.price > input").val();
-                    var fyndiq_precentage = $j(this).find("td.prices > div.fyndiq_price > input").val();
+                    var fyndiq_precentage = $j(this).find(".fyndiq_price .inputdiv .fyndiq_dicsount").val();
                     products.push({
                         'product': {
                             'id': $j(this).data('id'),

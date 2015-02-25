@@ -450,15 +450,33 @@
     margin-bottom: 2px; }
   .fm-product-list .product .prices .fyndiq_price {
     clear: both; }
+  .fm-product-list .product .prices span.pricetag {
+    float: right; }
+  .fm-product-list .product .prices .inputdiv {
+    float: right;
+    height: 15px;
+    background-color: #F4F4F4;
+    padding: 0px;
+    line-height: 15px;
+    padding-right: 4px;
+    border: 1px solid #DADADA;
+    margin: 0px; }
+    .fm-product-list .product .prices .inputdiv input {
+      border: 0px;
+      height: 10px;
+      width: 20px;
+      margin: 0px;
+      line-height: 14px;
+      padding: 2px;
+      border-right: 1px solid #DADADA;
+      margin-right: 3px; }
   .fm-product-list .product .prices label {
     display: block;
     text-align: right;
     float: left;
     padding-right: 4px; }
-  .fm-product-list .product .prices input {
-    display: block;
-    float: left;
-    width: 30px; }
+  .fm-product-list .product .prices .price_preview {
+    float: right; }
 
 table tr:first-child th:first-child,
 table.Info tr:first-child td:first-child {
