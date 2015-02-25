@@ -332,6 +332,9 @@
     float: right;
     padding-right: 15px;
     font-size: 11px; }
+    .fm-subheader .right .icon {
+      margin-bottom: 2px;
+      margin-left: 8px; }
 
 .icon {
   display: inline-block;
@@ -429,8 +432,6 @@
     .fm-product-list .product .title h4 .reference {
       font-size: 13px;
       font-weight: normal; }
-  .fm-product-list .product .select {
-    float: left; }
   .fm-product-list .product .image {
     float: left;
     width: 50px;
@@ -587,5 +588,25 @@ table {
           background: -ms-linear-gradient(top, #e5e5e5 0%, #ffffff 100%);
           background: linear-gradient(to bottom, #e5e5e5 0%, #ffffff 100%);
           filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e5e5e5', endColorstr='#ffffff',GradientType=0 ); }
+
+.lastupdated {
+  padding: 10px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  height: 41px;
+  line-height: 21px;
+  background-color: #f5f8fb;
+  font-size: 12px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400; }
+  .lastupdated img {
+    float: left;
+    margin-right: 10px; }
+  .lastupdated .last-header {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    margin-bottom: -5px;
+    margin-top: 3px;
+    display: block; }
 
 /*# sourceMappingURL=main.css.map */

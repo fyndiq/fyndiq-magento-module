@@ -221,6 +221,10 @@
     float: right;
     padding-right: 15px;
     font-size: 11px;
+    .icon {
+      margin-bottom: 2px;
+      margin-left: 8px;
+    }
   }
 }
 
@@ -359,7 +363,6 @@
     }
 
     .select {
-      float: left;
     }
 
     .image {
@@ -530,5 +533,27 @@ table {
         }
       }
     }
+  }
+}
+.lastupdated {
+  padding:10px;
+  margin-bottom:10px;
+  margin-top:10px;
+  height:41px;
+  line-height: 21px;
+  background-color: #f5f8fb;
+  font-size: 12px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+  img {
+    float:left;
+    margin-right:10px;
+  }
+  .last-header{
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    margin-bottom: -5px;
+    margin-top: 3px;
+    display:block;
   }
 }
