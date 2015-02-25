@@ -205,13 +205,13 @@
                 <td><strong>{{name}}</strong> <span class="shadow">({{reference}})</span><br/>{{properties}}</td>
                 <td class="prices">
                     <div class="price">
-                        Price: {{price}} <?php echo $this->getCurrency(); ?>
+                        Price: <span class="pricetag">{{price}} <?php echo $this->getCurrency(); ?></span>
                 </div>
                     <div class="fyndiq_price">
                         <label>Fyndiq Discount:</label>
-                        <input type="text" value="{{fyndiq_price}}" class="fyndiq_dicsount">% <span
-                        id="ajaxFired"></span><br/>
-                        <span class="price_preview">Expected Price: {{expected_price}}</span> <?php echo $this->getCurrency(); ?>
+                        <div class="inputdiv"><input type="text" value="{{fyndiq_price}}" class="fyndiq_dicsount">%</div><span
+                        id="ajaxFired"></span><br />
+                        <span>Expected Price: </span><span class="price_preview"><span class="price_preview_price">{{expected_price}}</span> <?php echo $this->getCurrency(); ?></span>
                 </div>
                 </td>
                 <td class="quantities center">
@@ -273,7 +273,7 @@
         <div class="fm-category-tree-container"></div>
     </div>
 
-    <div class="fm-main-panel">
+    <div class="fm-product-panel">
         <div class="fm-subheader" style="margin-bottom: 5px;">
             Products: <span id="categoryname"></span>
             <div class="right"><i class="icon on"></i> On Fyndiq  <i class="icon pending"></i> Pending <i class="icon noton"></i> Not On Fyndiq </div>

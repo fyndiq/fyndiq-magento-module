@@ -247,6 +247,10 @@
         float: left;
         width: 141px;
         height: 61px; }
+        .fm-header-background .fm-header-container .fm-header .fyndiqlogo.center {
+          margin: 0 auto;
+          display: block;
+          float: none; }
       .fm-header-background .fm-header-container .fm-header .right {
         float: right;
         padding-right: 10px;
@@ -295,8 +299,27 @@
     float: left;
     color: #333;
     background-color: white;
-    width: 920px; }
+    width: 100%; }
     .fm-container .fm-main-panel .info {
+      color: #333;
+      font-size: 10pt;
+      padding-left: 10px;
+      padding-bottom: 15px;
+      float: left; }
+    .fm-container .fm-main-panel .content {
+      width: 100%;
+      height: 100%;
+      padding: 10px;
+      text-align: center;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 400;
+      font-size: 13px; }
+  .fm-container .fm-product-panel {
+    float: left;
+    color: #333;
+    background-color: white;
+    width: 920px; }
+    .fm-container .fm-product-panel .info {
       color: #333;
       font-size: 10pt;
       padding-left: 10px;
@@ -332,6 +355,9 @@
     float: right;
     padding-right: 15px;
     font-size: 11px; }
+    .fm-subheader .right .icon {
+      margin-bottom: 2px;
+      margin-left: 8px; }
 
 .icon {
   display: inline-block;
@@ -392,6 +418,9 @@
     float: right;
     margin: 0; }
 
+.center {
+  text-align: center; }
+
 .content {
   width: 240px;
   height: 100%;
@@ -429,8 +458,6 @@
     .fm-product-list .product .title h4 .reference {
       font-size: 13px;
       font-weight: normal; }
-  .fm-product-list .product .select {
-    float: left; }
   .fm-product-list .product .image {
     float: left;
     width: 50px;
@@ -449,15 +476,33 @@
     margin-bottom: 2px; }
   .fm-product-list .product .prices .fyndiq_price {
     clear: both; }
+  .fm-product-list .product .prices span.pricetag {
+    float: right; }
+  .fm-product-list .product .prices .inputdiv {
+    float: right;
+    height: 15px;
+    background-color: #F4F4F4;
+    padding: 0px;
+    line-height: 15px;
+    padding-right: 4px;
+    border: 1px solid #DADADA;
+    margin: 0px; }
+    .fm-product-list .product .prices .inputdiv input {
+      border: 0px;
+      height: 10px;
+      width: 20px;
+      margin: 0px;
+      line-height: 14px;
+      padding: 2px;
+      border-right: 1px solid #DADADA;
+      margin-right: 3px; }
   .fm-product-list .product .prices label {
     display: block;
     text-align: right;
     float: left;
     padding-right: 4px; }
-  .fm-product-list .product .prices input {
-    display: block;
-    float: left;
-    width: 30px; }
+  .fm-product-list .product .prices .price_preview {
+    float: right; }
 
 table tr:first-child th:first-child,
 table.Info tr:first-child td:first-child {
@@ -587,5 +632,25 @@ table {
           background: -ms-linear-gradient(top, #e5e5e5 0%, #ffffff 100%);
           background: linear-gradient(to bottom, #e5e5e5 0%, #ffffff 100%);
           filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e5e5e5', endColorstr='#ffffff',GradientType=0 ); }
+
+.lastupdated {
+  padding: 10px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  height: 41px;
+  line-height: 21px;
+  background-color: #f5f8fb;
+  font-size: 12px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400; }
+  .lastupdated img {
+    float: left;
+    margin-right: 10px; }
+  .lastupdated .last-header {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    margin-bottom: -5px;
+    margin-top: 3px;
+    display: block; }
 
 /*# sourceMappingURL=main.css.map */
