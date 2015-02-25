@@ -1,21 +1,23 @@
+<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" type="text/css" href="<?php echo $this->getFrontendPath(); ?>frontend/css/main.css" media="all">
 
-<div class="fm-container">
-
-    <img class="fyndiqlogo" src="<?php echo $this->getFrontendPath(); ?>frontend/images/logo.png" alt="Fyndiq logotype">
-
-    <div class="fm-main-panel">
-        <form action="" method="post" class="fm-form orders">
-            <fieldset>
-                <h2>Unfortunately, Fyndiq API is currently not available.</h2>
-                <p>
-                    If this problem persists, please contact integration support, and attach the error message shown below.
-                </p>
-                <p>
-                    Error message: <?php echo $this->data["message"]; ?>
-                </p>
-            </fieldset>
-        </form>
+<div class="fm-header-background">
+    <div class="fm-header-container">
+        <div class="fm-header">
+            <img class="fyndiqlogo center" src="<?php echo $this->getFrontendPath(); ?>frontend/images/logo.png" alt="Fyndiq logotype">
+        </div>
     </div>
-
+</div>
+<div class="fm-container">
+    <div class="fm-main-panel">
+        <div class="fm-subheader center">Unfortunately, Fyndiq API is currently not available</div>
+        <div class="content">
+            <p>
+                If this problem persists, please contact integration support, and attach the error message shown below.
+            </p>
+            <p>
+                Error message: <?php echo $this->data["message"]; ?>
+            </p>
+        </div>
+    </div>
 </div>
