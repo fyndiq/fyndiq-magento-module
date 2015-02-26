@@ -279,7 +279,8 @@
     float: left;
     color: #333;
     background-color: white;
-    width: 100%; }
+    width: 100%;
+    border-radius: 2px; }
     .fm-container .fm-main-panel .info {
       color: #333;
       font-size: 10pt;
@@ -298,17 +299,24 @@
     float: left;
     color: #333;
     background-color: white;
-    width: 920px; }
+    width: 920px;
+    border-radius: 2px; }
     .fm-container .fm-product-panel .info {
       color: #333;
       font-size: 10pt;
       padding-left: 10px;
       padding-bottom: 15px;
       float: left; }
+    .fm-container .fm-product-panel .notext {
+      margin-left: 10px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 400;
+      font-size: 11px; }
   .fm-container .fm-orderlist-panel {
     float: left;
     color: #333;
     background-color: white;
+    border-radius: 2px;
     width: 920px; }
   .fm-container .fm-sidebar {
     float: left;
@@ -330,7 +338,9 @@
   color: white;
   padding-left: 10px;
   padding-bottom: 8px;
-  padding-top: 8px; }
+  padding-top: 8px;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px; }
   .fm-subheader .right {
     float: right;
     padding-right: 15px;
