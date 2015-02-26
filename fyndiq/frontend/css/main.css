@@ -27,17 +27,17 @@
   _position: absolute;
   border: none !important; }
   .fm-message-overlay.fm-info {
-    background-color: #4ea5cd;
-    border-color: #3b8eb5; }
+    background-color: #799ec4;
+    border-color: #87acd3; }
   .fm-message-overlay.fm-error {
-    background-color: #de4343;
-    border-color: #c43d3d; }
+    background-color: #e85353;
+    border-color: #f55454; }
   .fm-message-overlay.fm-warning {
-    background-color: #eaaf51;
-    border-color: #d99a36; }
+    background-color: #f08c48;
+    border-color: #fa9549; }
   .fm-message-overlay.fm-success {
-    background-color: #61b832;
-    border-color: #55a12c; }
+    background-color: #83c070;
+    border-color: #9bde87; }
   .fm-message-overlay .close {
     display: block;
     position: absolute;
