@@ -63,6 +63,10 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             $magarray = $magorder->getData();
             $magarray["total_qty_ordered"] = intval($magarray["total_qty_ordered"]);
             $magarray["base_grand_total"] = number_format((float)$magarray["base_grand_total"], 2, '.', '');
+
+            $date = $magarray["created_at"];
+            $magarray["created_at"] = date ("Y-m-d", strtotime($date));
+            $magarray["created_at_time"] = date ("G:i:s", strtotime($date));
             $magarray["fyndiq_order"] = $order["fyndiq_orderid"];
             $return_array[] = $magarray;
         }
