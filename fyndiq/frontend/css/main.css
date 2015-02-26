@@ -562,67 +562,42 @@ table {
   width: 550px;
   float: left; }
   .pages ol {
-    float: left; }
+    float: left;
+    margin-left: 15px; }
     .pages ol li {
       float: left;
       margin-right: 5px; }
       .pages ol li.current {
-        border: 1px solid #a5a5a5;
-        padding: 6px 6px;
-        font-size: 12px;
+        font-family: 'Montserrat', sans-serif;
+        padding: 8px 12px;
+        font-size: 11pt;
         color: white;
         outline: none;
         text-decoration: none;
         line-height: 16px;
-        text-shadow: 1px 1px 1px #ba7a01;
         -webkit-border-radius: 3px;
         -moz-border-radius: 3px;
         border-radius: 3px;
-        background: #de981f;
-        background: -moz-linear-gradient(top, #de981f 0%, #f39e0a 100%);
-        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #de981f), color-stop(100%, #f39e0a));
-        background: -webkit-linear-gradient(top, #de981f 0%, #f39e0a 100%);
-        background: -o-linear-gradient(top, #de981f 0%, #f39e0a 100%);
-        background: -ms-linear-gradient(top, #de981f 0%, #f39e0a 100%);
-        background: linear-gradient(to bottom, #de981f 0%, #f39e0a 100%);
-        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#de981f', endColorstr='#f39e0a',GradientType=0 );
-        -moz-box-shadow: inset 0 0 6px #ba7a01;
-        -webkit-box-shadow: inset 0 0 6px #ba7a01;
-        box-shadow: inset 0 0 6px #ba7a01;
+        background-color: #f08c48;
         display: inline-block; }
       .pages ol li a {
-        border: 1px solid #a5a5a5;
-        padding: 6px 6px;
-        font-size: 12px;
+        font-family: 'Montserrat', sans-serif;
+        padding: 8px 12px;
+        font-size: 11pt;
         color: black;
         cursor: pointer;
         outline: none;
         text-decoration: none;
         line-height: 16px;
         display: inline-block;
+        background-color: #e3e3e3;
         -webkit-border-radius: 3px;
         -moz-border-radius: 3px;
         border-radius: 3px; }
-        .pages ol li a:active {
-          background: #e5e5e5;
-          background: -moz-linear-gradient(top, #e5e5e5 0%, #ffffff 100%);
-          background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #e5e5e5), color-stop(100%, #ffffff));
-          background: -webkit-linear-gradient(top, #e5e5e5 0%, #ffffff 100%);
-          background: -o-linear-gradient(top, #e5e5e5 0%, #ffffff 100%);
-          background: -ms-linear-gradient(top, #e5e5e5 0%, #ffffff 100%);
-          background: linear-gradient(to bottom, #e5e5e5 0%, #ffffff 100%);
-          filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e5e5e5', endColorstr='#ffffff',GradientType=0 ); }
         .pages ol li a:hover {
           text-decoration: none;
-          color: black;
-          background: #e5e5e5;
-          background: -moz-linear-gradient(top, #e5e5e5 0%, #ffffff 100%);
-          background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #e5e5e5), color-stop(100%, #ffffff));
-          background: -webkit-linear-gradient(top, #e5e5e5 0%, #ffffff 100%);
-          background: -o-linear-gradient(top, #e5e5e5 0%, #ffffff 100%);
-          background: -ms-linear-gradient(top, #e5e5e5 0%, #ffffff 100%);
-          background: linear-gradient(to bottom, #e5e5e5 0%, #ffffff 100%);
-          filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e5e5e5', endColorstr='#ffffff',GradientType=0 ); }
+          color: white;
+          background-color: #f08c48; }
 
 .lastupdated {
   padding: 10px;

@@ -556,7 +556,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             }
 
             if ($curPage > $count - 1) {
-                $html .= '<li><a href="#" data-page="' . ($curPage - 1) . '"><< Previous</a></li>';
+                $html .= '<li><a href="#" data-page="' . ($curPage - 1) . '"><</a></li>';
             }
 
             for ($i = $start; $i <= $count; $i++) {
@@ -571,7 +571,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             }
 
             if ($curPage < $count) {
-                $html .= '<li><a href="#" data-page="' . ($curPage + 1) . '">Next >></a></li>';
+                $html .= '<li><a href="#" data-page="' . ($curPage + 1) . '">></a></li>';
             }
 
             $html .= '</ol>';
@@ -614,6 +614,10 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 $count = $end - 1;
             }
 
+            if ($curPage > $count - 1) {
+                $html .= '<li><a href="#" data-page="' . ($curPage - 1) . '"><</a></li>';
+            }
+
             for ($i = $start; $i <= $count; $i++) {
                 if ($i >= 1) {
                     if ($curPage) {
@@ -623,6 +627,10 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                     }
                 }
 
+            }
+
+            if ($curPage < $count) {
+                $html .= '<li><a href="#" data-page="' . ($curPage + 1) . '">></a></li>';
             }
 
             $html .= '</ol>';
