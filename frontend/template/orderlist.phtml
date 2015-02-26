@@ -65,7 +65,7 @@
             <td class="center">{{fyndiq_order}}</td>
             <td class="center">{{base_grand_total}} <?php echo $this->getCurrency(); ?></td>
             <td class="center">{{total_qty_ordered}}</td>
-            <td class="center">{{created_at}}</td>
+            <td class="center">{{created_at}} <span class="shadow">({{created_at_time}})</span></td>
         </tr>
         {{/with}}
         {{/each}}
@@ -130,12 +130,25 @@
         <div class="content">
                 <p>By clicking this button, you can import all orders from Fyndiq into the local webshop.</p>
                 <?php
-                $date = $this->getLastUpdatedDate();
-                if ($date != false) {
+                $currentdate = $this->getLastUpdatedDate();
+                if ($currentdate != false) {
                     ?><div class="lastupdated">
                         <img src="<?php echo $this->getFrontendPath(); ?>frontend/images/icons/refresh.png" />
                         <span class="last-header">Latest Import</span>
-                        <?php echo $date; ?>
+                    <?php
+                    $current = strtotime(date("Y-m-d"));
+                    $date    = strtotime(date("Y-m-d",strtotime($currentdate)));
+
+                    $datediff = $date - $current;
+                    $differance = floor($datediff/(60*60*24));
+                    if($differance==0)
+                    {
+                        echo 'Today <span class="shadow">('.date ("G:i:s", strtotime($currentdate)) . ')</span>';
+                    }
+                    else {
+                        echo date ("Y-m-d G:i:s", strtotime($currentdate));
+                    }
+                    ?>
                     </div><?php
                 }
 
