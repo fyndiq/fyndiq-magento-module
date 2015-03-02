@@ -60,6 +60,7 @@
             <th>Fyndiq Order</th>
             <th>Price</th>
             <th>Qty</th>
+            <th>Status</th>
             <th>Created</th>
         </tr>
         </thead>
@@ -72,6 +73,7 @@
             <td class="center">{{fyndiq_order}}</td>
             <td class="center">{{base_grand_total}} <?php echo $this->getCurrency(); ?></td>
             <td class="center">{{total_qty_ordered}}</td>
+            <td class="center">{{status}}</td>
             <td class="center">{{created_at}} <span class="shadow">({{created_at_time}})</span></td>
         </tr>
         {{/with}}
