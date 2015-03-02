@@ -121,22 +121,22 @@
     </default>
     <crontab>
         <jobs>
-            <feed_products>
+            <fyndiq_feed_products>
                 <schedule>
                     <cron_expr>*/30 * * * *</cron_expr>
                 </schedule>
                 <run>
                     <model>fyndiq/observer::exportProducts</model>
                 </run>
-            </feed_products>
-            <order_import>
+            </fyndiq_feed_products>
+            <fyndiq_order_import>
                 <schedule>
                     <cron_expr>0 06,15 * * *</cron_expr>
                 </schedule>
                 <run>
                     <model>fyndiq/observer::importOrders</model>
                 </run>
-            </order_import>
+            </fyndiq_order_import>
         </jobs>
     </crontab>
 </config>
