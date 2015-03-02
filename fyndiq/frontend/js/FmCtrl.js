@@ -394,6 +394,17 @@ var FmCtrl = {
             });
         });
 
+        $j(document).on('click', 'div.pages > ol > li > a', function (e) {
+            e.preventDefault();
+
+            FmGui.show_load_screen(function () {
+                var page = $j(e.target).attr('data-page');
+                FmCtrl.load_orders(page, function () {
+                    FmGui.hide_load_screen();
+                });
+            });
+        });
+
         // when clicking select all orders checkbox, set checked on all order's checkboxes
         $j(document).on('click', '#select-all', function (e) {
             if ($j(this).is(':checked')) {
