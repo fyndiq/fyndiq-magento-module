@@ -167,6 +167,10 @@ class Fyndiq_Fyndiq_Model_Observer
                 }
             }
 
+            if($parent != false) {
+                $feed_product["product-id"] = $parent;
+            }
+
 
             //images
             $images = $product_model->load($magarray["entity_id"])->getMediaGalleryImages();
