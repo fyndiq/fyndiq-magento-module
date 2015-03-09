@@ -301,11 +301,11 @@ var FmCtrl = {
 
                     // store product id and combinations
                     var price = $j(this).find("td.prices > div.price > input").val();
-                    var fyndiq_precentage = $j(this).find(".fyndiq_price .inputdiv .fyndiq_dicsount").val();
+                    var fyndiq_percentage = $j(this).find(".fyndiq_price .inputdiv .fyndiq_dicsount").val();
                     products.push({
                         'product': {
                             'id': $j(this).data('id'),
-                            'fyndiq_precentage': fyndiq_precentage
+                            'fyndiq_precentage': fyndiq_percentage
                         }
                     });
                 }
