@@ -36,7 +36,6 @@ function build() {
 function deploy() {
     IFS=$' \t\n'
     cat fileslist | while read real temppath; do
-        $real = $real;
         if [ -z "$MAGENTODIR" ]; then
             if [ ! -d "$temppath" ]; then
                 echo "Creating $temppath";
@@ -56,8 +55,13 @@ function deploy() {
         else
             url=$MAGENTODIR$temppath
         fi
-        echo "Copying $DIR$real to $url";
-        cp -r DIR$real $url;
+        FILES=($real)
+        for file in "${FILES[@]}"
+        do
+          echo "Copying "$DIR/$file" to $MAGENTODIR$temppath";
+          cp -r "$DIR/$file" $MAGENTODIR$temppath;
+        done
+        
     done
 }
 
@@ -65,8 +69,8 @@ if [ -z "$1" ]
 then
     echo "Choose what you want to do first.";
     echo "---------------------------------";
-    echo "Build - Dev for symlink to different files and folders.";
-    echo "Deploy - Copy files to correct maps for release.";
+    echo "build [magento dir] - Dev for symlink to different files and folders.";
+    echo "deploy [build dir] - Copy files to correct maps for release.";
 elif [ "$1" = "build" ];
 then
     if [ -z "$2" ]
@@ -78,11 +82,12 @@ then
     build;
 elif [ "$1" = "deploy" ];
 then
-    if [ -z "$2" ]
+    if [ ! -z "$2" ]
     then
-        MAGENTODIR="./build"
-    else
         MAGENTODIR=$2
+        deploy;
+    else
+        echo "You need to specific a dir.";
+        echo "Type fyndman deploy build/ as example";
     fi
-    deploy;
 fi
