@@ -1,4 +1,4 @@
-[submodule "app/code/community/Fyndiq/Fyndiq/includes/api"]
+[submodule "code/includes/api"]
 	path = code/includes/api
 	url = git@github.com:fyndiq/fyndiq-api-wrapper-php.git
 [submodule "code/includes/shared"]
