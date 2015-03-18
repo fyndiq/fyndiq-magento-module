@@ -2,8 +2,29 @@
 // If you're wondering why a lot of things are prefixed with 'fm-'
 // it's because PrestaShop defines style for lots of common words like 'error' and 'info'
 
-@import 'colors';
-@import 'mixins';
-@import 'overlays';
-@import 'style';
-@import 'layout';
+
+@import '../../../code/includes/shared/frontend/css/const';
+@import '../../../code/includes/shared/frontend/css/colors';
+@import '../../../code/includes/shared/frontend/css/typography';
+@import '../../../code/includes/shared/frontend/css/mixins';
+@import '../../../code/includes/shared/frontend/css/helpers';
+
+// Layouts
+@import '../../../code/includes/shared/frontend/css/header';
+
+// Components
+@import '../../../code/includes/shared/frontend/css/button';
+@import '../../../code/includes/shared/frontend/css/panel';
+@import '../../../code/includes/shared/frontend/css/form';
+@import '../../../code/includes/shared/frontend/css/table';
+@import '../../../code/includes/shared/frontend/css/overlay';
+@import "../../../code/includes/shared/frontend/css/pagination";
+
+// Pages
+@import '../../../code/includes/shared/frontend/css/products';
+@import '../../../code/includes/shared/frontend/css/orders';
+
+@import '../../../code/includes/shared/frontend/css/layout';
+
+//Prestashop
+@import 'magento';
