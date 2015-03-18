@@ -50,11 +50,6 @@ function deploy() {
                 mkdir -p $url;
             fi
         fi
-        if [[ -d $temppath ]]; then
-            url=$MAGENTODIR$(dirname "${temppath}")
-        else
-            url=$MAGENTODIR$temppath
-        fi
         FILES=($real)
         for file in "${FILES[@]}"
         do
