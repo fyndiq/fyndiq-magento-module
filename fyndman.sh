@@ -25,8 +25,12 @@ function build() {
         else
             url=$MAGENTODIR$temppath
         fi
-        echo "Linking $real to $url";
-        ln -s "$real" "$url";
+        FILES=($real)
+        for file in "${FILES[@]}"
+        do
+          echo "Linking $DIR/$file to $url";
+          ln -s "$DIR/$file" "$url";
+        done
     done
 }
 function deploy() {
