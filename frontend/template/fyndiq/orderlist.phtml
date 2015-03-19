@@ -1,66 +1,169 @@
-<?php require('common.phtml'); ?>
+<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" type="text/css" href="<?php echo $this->getFrontendPath(); ?>frontend/css/main.css" media="all">
+<script type="text/javascript">
+    module_path = "<?php echo $this->getAdminPath("fyndiq/service"); ?>";
+    var urlpath0 = "<?php echo str_replace('index.php/','',Mage::getBaseUrl()); ?>";
+</script>
+<style type="text/css">
+    a i.menu-icon.comp {
+        background-image: url('<?php echo $this->getFrontendPath(); ?>frontend/images/icons/comp_red.png');
+    }
+    a.active i.menu-icon.comp,a:hover i.menu-icon.comp {
+        background-image: url('<?php echo $this->getFrontendPath(); ?>frontend/images/icons/comp_white.png');
+    }
+    a i.menu-icon.boxes {
+        background-image: url('<?php echo $this->getFrontendPath(); ?>frontend/images/icons/box_red.png');
+    }
+    a.active i.menu-icon.boxes,a:hover i.menu-icon.boxes {
+        background-image: url('<?php echo $this->getFrontendPath(); ?>frontend/images/icons/box_white.png');
+    }
+    a i.menu-icon.cog {
+        background-image: url('<?php echo $this->getFrontendPath(); ?>frontend/images/icons/cog_red.png');
+    }
+    a.active i.menu-icon.cog,a:hover i.menu-icon.cog {
+        background-position: 0px -1px;
+        background-image: url('<?php echo $this->getFrontendPath(); ?>frontend/images/icons/cog_white.png');
+    }
+</style>
+<script type="text/x-handlebars-template" class="handlebars-template" id="fm-loading-overlay">
+    <div class="fm-loading-overlay">
+        <img src="<?php echo $this->getFrontendPath(); ?>frontend/images/ajax-loader.gif" alt="Loading animation">
+    </div>
+</script>
+
+<script type="text/x-handlebars-template" class="handlebars-template" id="fm-message-overlay">
+    <div class="fm-message-overlay fm-{{type}}">
+        <img class="close" src="<?php echo $this->getFrontendPath(); ?>frontend/images/icons/close-icon.png" alt="Close"
+             title="Close message">
+
+        <h3>{{title}}</h3>
+
+        <p>{{{message}}}</p>
+    </div>
+</script>
+<script type="text/x-handlebars-template" class="handlebars-partial" id="fm-order-pagination">
+    {{#if pagination}}
+    <div class="pages">
+        {{{pagination}}}
+    </div>
+    {{/if}}
+</script>
+<script type="text/x-handlebars-template" class="handlebars-template" id="fm-orders-list">
+    {{> fm-order-list-controls}}
+    {{#if orders}}
+    <table>
+        <thead>
+        <tr>
+            <th><input id="select-all" type="checkbox"></th>
+            <th colspan="1">Order</th>
+            <th>Fyndiq Order</th>
+            <th>Price</th>
+            <th>Qty</th>
+            <th>Status</th>
+            <th>Created</th>
+        </tr>
+        </thead>
+        <tbody class="fm-orders-list">
+        {{#each orders}}
+        {{#with this}}
+        <tr data-id="{{entity_id}}" data-fyndiqid="{{fyndiq_order}}">
+            <td class="select center"><input type="checkbox" id="select_order_{{entity_id}}"></td>
+            <td class="center">{{entity_id}}</td>
+            <td class="center">{{fyndiq_order}}</td>
+            <td class="center">{{base_grand_total}} <?php echo $this->getCurrency(); ?></td>
+            <td class="center">{{total_qty_ordered}}</td>
+            <td class="center">{{status}}</td>
+            <td class="center">{{created_at}} <span class="shadow">({{created_at_time}})</span></td>
+        </tr>
+        {{/with}}
+        {{/each}}
+        </tbody>
+    </table>
+    {{else}}
+    Orders is empty.
+    {{/if}}
+    {{> fm-order-list-controls}}
+    {{> fm-order-pagination}}
+</script>
+<script type="text/x-handlebars-template" class="handlebars-partial" id="fm-order-list-controls">
+    <div class="fm-order-list-controls">
+        <div class="export">
+            <a class="fm-button green" id="getdeliverynote">Get Delivery Notes</a>
+        </div>
+    </div>
+</script>
+
+<script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/handlebars-v1.1.2.js"></script>
+
+<script type="text/javascript">
+    var messages = {};
+    <?php foreach($this->getMessages() as $k => $v) {
+    ?>
+    messages['<?php echo $k; ?>'] = '<?php echo $v; ?>';
+    <?php
+    }
+    ?>
+</script>
+
+<script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/FmGui.js"></script>
+<script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/FmCtrl.js"></script>
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/orderlist.js"></script>
 
+
+<div class="fm-header-background">
+    <div class="fm-header-container">
+        <div class="fm-header">
+            <img class="fyndiqlogo" src="<?php echo $this->getFrontendPath(); ?>frontend/images/logo.png" alt="Fyndiq logotype">
+            <div class="right">
+                <a href="<?php echo $this->getAdminPath("fyndiq/admin/index"); ?>"><i class="menu-icon comp"></i> Export Products</a>
+                <a href="<?php echo $this->getAdminPath("fyndiq/admin/orderlist"); ?>" class="active"><i class="menu-icon boxes"></i> Imported Orders</a>
+                <a href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>"><i class="menu-icon cog"></i> Settings</a>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="fm-container">
 
-    <div class="fm-header">
-        <div class="fm-header-wrapper">
-            <img class="navbar-brand" src="<?php echo $this->getFrontendPath(); ?>frontend/images/logo.png" alt="Fyndiq logotype">
-            <div class="navbar-right">
-                <a href="<?php echo $this->getAdminPath("fyndiq/admin/index"); ?>" class="btn btn-nav"><i class="menu-icon comp"></i> Export Products</a>
-                <a href="<?php echo $this->getAdminPath("fyndiq/admin/orderlist"); ?>" class="btn btn-nav active"><i class="menu-icon boxes"></i> Imported Orders</a>
-                <a href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>" class="btn btn-nav"><i class="menu-icon cog"></i> Settings</a>
-            </div>
-        </div>
+    <div class="fm-orderlist-panel">
+        <div class="fm-subheader">Imported Orders</div>
+
+        <form action="" method="post" class="fm-form orders-form">
+
+            <div class="fm-order-list-container"></div>
+        </form>
     </div>
 
+    <div class="fm-sidebar">
+        <div class="fm-subheader">Manual Order Import</div>
+        <div class="content">
+                <p>By clicking this button, you can import all orders from Fyndiq into the local webshop.</p>
+                <?php
+                $currentdate = $this->getLastUpdatedDate();
+                if ($currentdate != false) {
+                    ?><div class="lastupdated">
+                        <img src="<?php echo $this->getFrontendPath(); ?>frontend/images/icons/refresh.png" />
+                        <span class="last-header">Latest Import</span>
+                    <?php
+                    $current = strtotime(date("Y-m-d"));
+                    $date    = strtotime(date("Y-m-d",strtotime($currentdate)));
 
-    <div class="fm-content-wrapper">
-        <div class="fm-orderlist-panel">
-            <div class="fm-panel">
-                <div class="fm-panel-header">Imported Orders</div>
-                <div class="fm-panel-body no-padding">
-                    <form action="<?php echo $this->getAdminPath("fyndiq/service"); ?>" method="post" class="fm-form orders-form">
-                        <input type="hidden" name="action" value="get_delivery_notes" />
-                        <div class="fm-order-list-container"></div>
-                    </form>
-                </div>
-            </div>
-        </div>
+                    $datediff = $date - $current;
+                    $differance = floor($datediff/(60*60*24));
+                    if($differance==0)
+                    {
+                        echo 'Today <span class="shadow">('.date ("G:i:s", strtotime($currentdate)) . ')</span>';
+                    }
+                    else {
+                        echo date ("Y-m-d G:i:s", strtotime($currentdate));
+                    }
+                    ?>
+                    </div><?php
+                }
 
-        <div class="fm-sidebar">
-            <div class="fm-panel">
-                <div class="fm-panel-header">Manual Order Import</div>
-                <div class="fm-panel-body">
-                    <p>By clicking this button, you can import all orders from Fyndiq into the local webshop.</p>
-                    <div id="fm-order-import-date">
-                        <?php
-                            $currentdate = $this->getLastUpdatedDate();
-                            if ($currentdate != false) {
-                        ?>
-                        <div class="lastupdated">
-                            <img src="<?php echo $this->getFrontendPath(); ?>frontend/images/icons/refresh.png" />
-                            <span class="last-header">Latest Import</span>
-                            <?php
-                                $current = strtotime(date("Y-m-d"));
-                                $date    = strtotime(date("Y-m-d",strtotime($currentdate)));
-
-                                $datediff = $date - $current;
-                                $differance = floor($datediff/(60*60*24));
-                                if($differance==0) {
-                                    echo 'Today <span class="shadow">('.date ("G:i:s", strtotime($currentdate)) . ')</span>';
-                                } else {
-                                    echo date ("Y-m-d G:i:s", strtotime($currentdate));
-                                }
-                            ?>
-                        </div>
-                        <?php
-                            }
-                        ?>
-                    <a class="fm-button green" id="fm-import-orders">Import Orders</a>
-                </div>
-            </div>
+                ?>
+                <a class="fm-button green block" id="fm-import-orders">Import Orders</a>
         </div>
     </div>
-    <br class="clear" />
 </div>
