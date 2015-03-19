@@ -10,7 +10,6 @@ require_once(dirname(dirname(__FILE__)) . '/includes/messages.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/api/fyndiqAPI.php');
 
-
 class FyndiqAPIDataInvalid extends Exception{}
 
 class FyndiqAPIConnectionFailed extends Exception{}

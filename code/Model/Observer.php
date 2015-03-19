@@ -1,6 +1,8 @@
 <?php
 require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
+require_once(dirname(dirname(__FILE__)) . '/includes/shared/src/FyndiqFeedWriter.php');
+require_once(dirname(dirname(__FILE__)) . '/includes/shared/src/FyndiqCSVFeedWriter.php');
 
 /**
  * Taking care of cron jobs for product feed.
@@ -19,7 +21,7 @@ class Fyndiq_Fyndiq_Model_Observer
         if ($print) {
             print "Fyndiq :: Saving feed file\n";
         }
-        $this->writeOverFile($this->printFile());
+        $this->exportingProducts();
         if ($print) {
             print "Fyndiq :: Done saving feed file\n";
         }
@@ -57,11 +59,16 @@ class Fyndiq_Fyndiq_Model_Observer
      *
      * @return string
      */
-    private function printFile()
+    private function exportingProducts()
     {
+        $fileName = FmConfig::getFeedPath();
+        $file = @fopen($fileName, 'w+');
+        if ($file === false) {
+            return false;
+        }
+        $feedWriter = new FyndiqCSVFeedWriter($file);
         $products = Mage::getModel('fyndiq/product')->getCollection()->setOrder('id', 'DESC');
         $products = $products->getItems();
-        $return_array = array();
         $ids_to_export = array();
         $productinfo = array();
         foreach ($products as $producted) {
@@ -72,14 +79,6 @@ class Fyndiq_Fyndiq_Model_Observer
 
         //Initialize models here so it saves memory.
         $product_model = Mage::getModel('catalog/product');
-        $category_model = Mage::getModel('catalog/category');
-        $stock_model = Mage::getModel('cataloginventory/stock_item');
-        $grouped_model = Mage::getModel('catalog/product_type_grouped');
-        $configurable_model = Mage::getModel('catalog/product_type_configurable');
-        $image_helper = Mage::helper('catalog/image');
-
-        $store = Mage::app()->getStore();
-        $taxCalculation = Mage::getModel('tax/calculation');
 
         $products_to_export = $product_model->getCollection()->addAttributeToSelect('*')->addAttributeToFilter(
             'entity_id',
@@ -87,47 +86,21 @@ class Fyndiq_Fyndiq_Model_Observer
         )->load();
 
         foreach ($products_to_export as $magproduct) {
-            //$magproduct = $product_model->load($magproduct->getId());
 
-            $return_array[] = $this->getProduct($magproduct, $productinfo);
+            $feedWriter->addProduct($this->getProduct($magproduct, $productinfo));
 
-            if($magproduct->getTypeId() != "simple") {
+            if ($magproduct->getTypeId() != "simple") {
                 $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magproduct);
                 $simple_collection = $conf->getUsedProductCollection()->addAttributeToSelect(
                     '*'
                 )->addFilterByRequiredOptions()->getItems();
                 foreach ($simple_collection as $simple_product) {
-                    $return_array[] = $this->getProduct($simple_product, $productinfo);
-                }
-            }
-        }
-        $tempKeys = array();
-        foreach ($return_array as $array) {
-            $keyarray = array_keys($array);
-            if (count($tempKeys) == 0) {
-                $tempKeys = $keyarray;
-                continue;
-            }
-            foreach ($keyarray as $keys) {
-                if (!in_array($keys, $tempKeys)) {
-                    $tempKeys[] = $keys;
+                    $feedWriter->addProduct($this->getProduct($simple_product, $productinfo));
                 }
             }
         }
 
-        foreach ($return_array as $key => $array) {
-            foreach ($tempKeys as $keys) {
-                if (!array_key_exists($keys, $array)) {
-                    $array[$keys] = "";
-                }
-            }
-            $return_array[$key] = $array;
-        }
-
-
-        array_unshift($return_array, $tempKeys);
-
-        return $return_array;
+        return $feedWriter->write();
     }
 
 
@@ -137,8 +110,6 @@ class Fyndiq_Fyndiq_Model_Observer
         $product_model = Mage::getModel('catalog/product');
         $category_model = Mage::getModel('catalog/category');
         $stock_model = Mage::getModel('cataloginventory/stock_item');
-        $grouped_model = Mage::getModel('catalog/product_type_grouped');
-        $configurable_model = Mage::getModel('catalog/product_type_configurable');
         $image_helper = Mage::helper('catalog/image');
 
         $store = Mage::app()->getStore();
@@ -158,16 +129,21 @@ class Fyndiq_Fyndiq_Model_Observer
             //Check if product have a parent
             $parent = false;
             if ($magarray["type_id"] == "simple") {
-                $parentIds = Mage::getModel('catalog/product_type_grouped')->getParentIdsByChild($magarray["entity_id"]);
-                if(!$parentIds)
-                    $parentIds = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild($magarray["entity_id"]);
+                $parentIds = Mage::getModel('catalog/product_type_grouped')->getParentIdsByChild(
+                    $magarray["entity_id"]
+                );
+                if (!$parentIds) {
+                    $parentIds = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild(
+                        $magarray["entity_id"]
+                    );
+                }
 
-                if($parentIds) {
+                if ($parentIds) {
                     $parent = $parentIds[0];
                 }
             }
 
-            if($parent != false) {
+            if ($parent != false) {
                 $feed_product["product-id"] = $parent;
             }
 
@@ -178,10 +154,9 @@ class Fyndiq_Fyndiq_Model_Observer
                 $imageid = 1;
                 foreach ($images as $_image) {
                     $url = $image_helper->init($magproduct, 'image', $_image->getFile());
-                    $feed_product["product-image-" . $imageid . "-url"] = addslashes(strval($url));
-                    $feed_product["product-image-" . $imageid . "-identifier"] = addslashes(
-                        substr(md5(strval($url)), 0, 10)
-                    );
+                    $feed_product["product-image-" . $imageid . "-url"] = strval($url);
+                    $feed_product["product-image-" . $imageid . "-identifier"] =
+                        substr(md5(strval($url)), 0, 10);
                     $imageid++;
                 }
             }
@@ -189,22 +164,20 @@ class Fyndiq_Fyndiq_Model_Observer
             $feed_product["product-description"] = addslashes($magproduct->getDescription());
             if ($magarray["type_id"] == "simple" AND isset($productinfo[$magarray["entity_id"]])) {
                 $feed_product["product-price"] = $magarray["price"] - ($magarray["price"] * ($productinfo[$magarray["entity_id"]]["exported_price_percentage"] / 100));
-            }
-            elseif($magarray["type_id"] == "simple") {
-                if($parent != false) {
+            } elseif ($magarray["type_id"] == "simple") {
+                if ($parent != false) {
                     $feed_product["product-price"] = $magarray["price"] - ($magarray["price"] * ($productinfo[$parent]["exported_price_percentage"] / 100));
                 }
-            }
-            else {
+            } else {
                 $feed_product["product-price"] = $magarray["price"] - ($magarray["price"] * ($productinfo[$magarray["entity_id"]]["exported_price_percentage"] / 100));
             }
             $feed_product["product-price"] = number_format((float)$feed_product["product-price"], 2, '.', '');
             $feed_product["product-vat-percent"] = $taxpercent;
             $feed_product["product-oldprice"] = number_format((float)$magarray["price"], 2, '.', '');
-            $feed_product["product-market"] = addslashes(Mage::getStoreConfig('general/country/default'));
+            $feed_product["product-market"] = Mage::getStoreConfig('general/country/default');
             $feed_product["product-currency"] = Mage::app()->getStore()->getCurrentCurrencyCode();
             // TODO: plan how to fix this brand issue
-            $feed_product["product-brand"] = addslashes($magproduct->getAttributeText('manufacturer'));
+            $feed_product["product-brand"] = $magproduct->getAttributeText('manufacturer');
 
             //Category
             $categoryIds = $magproduct->getCategoryIds();
@@ -213,7 +186,7 @@ class Fyndiq_Fyndiq_Model_Observer
                 $firstCategoryId = $categoryIds[0];
                 $_category = $category_model->load($firstCategoryId);
 
-                $feed_product["product-category-name"] = addslashes($_category->getName());
+                $feed_product["product-category-name"] = $_category->getName();
                 $feed_product["product-category-id"] = $firstCategoryId;
             }
 
@@ -229,30 +202,30 @@ class Fyndiq_Fyndiq_Model_Observer
                 // TODO: fix location to something except test
                 $feed_product["article-location"] = "test";
                 $feed_product["article-sku"] = $magproduct->getSKU();
-                if($parent != false) {
+                if ($parent != false) {
                     $parentmodel = $product_model->load($parent);
                     $productAttributeOptions = $parentmodel->getTypeInstance()->getConfigurableAttributes();
                     $attrid = 1;
                     $tags = "";
                     foreach ($productAttributeOptions as $productAttribute) {
-                        $attrValue = $parentmodel->getResource()->getAttribute($productAttribute->getProductAttribute()->getAttributeCode())->getFrontend();
+                        $attrValue = $parentmodel->getResource()->getAttribute(
+                            $productAttribute->getProductAttribute()->getAttributeCode()
+                        )->getFrontend();
                         $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
                         $value = $attrValue->getValue($magproduct);
 
-                        $feed_product["article-property-name-".$attrid] = $attrCode;
-                        $feed_product["article-property-value-".$attrid] = $value[0];
-                        if($attrid == 1) {
-                            $tags .= $attrCode.": ".$value[0];
-                        }
-                        else {
-                            $tags .= ", ".$attrCode.": ".$value[0];
+                        $feed_product["article-property-name-" . $attrid] = $attrCode;
+                        $feed_product["article-property-value-" . $attrid] = $value[0];
+                        if ($attrid == 1) {
+                            $tags .= $attrCode . ": " . $value[0];
+                        } else {
+                            $tags .= ", " . $attrCode . ": " . $value[0];
                         }
                         $attrid++;
                     }
-                    $feed_product["article-name"] = substr(addslashes($tags), 0, 30);
-                }
-                else {
-                    $feed_product["article-name"] = addslashes($magarray["name"]);
+                    $feed_product["article-name"] = substr($tags, 0, 30);
+                } else {
+                    $feed_product["article-name"] = $magarray["name"];
                 }
                 $return_array[] = $feed_product;
             } else {
@@ -275,10 +248,8 @@ class Fyndiq_Fyndiq_Model_Observer
                     $imageid = 1;
                     foreach ($images as $_image) {
                         $url = $image_helper->init($first_product, 'image', $_image->getFile());
-                        $feed_article["product-image-" . $imageid . "-url"] = addslashes(strval($url));
-                        $feed_article["product-image-" . $imageid . "-identifier"] = addslashes(
-                            substr(md5(strval($url)), 0, 10)
-                        );
+                        $feed_article["product-image-" . $imageid . "-url"] = strval($url);
+                        $feed_article["product-image-" . $imageid . "-identifier"] = substr(md5(strval($url)), 0, 10);
                         $imageid++;
                     }
                 }
@@ -308,75 +279,7 @@ class Fyndiq_Fyndiq_Model_Observer
                 $feed_product["article-name"] = substr(addslashes($tags), 0, 30);
             }
         }
+
         return $feed_product;
-    }
-
-    /**
-     * Write over a existing file if it exists and write all fields.
-     *
-     * @param $products
-     */
-    function writeOverFile($products)
-    {
-        $this->openFile(true);
-        $keys = array_shift($products);
-        $this->writeheader($keys);
-        foreach ($products as $product) {
-            $this->writeToFile($product, $keys);
-        }
-        $this->closeFile();
-    }
-
-
-    /**
-     * Write the header to file
-     *
-     * @param $keys
-     */
-    function writeHeader($keys)
-    {
-        fputcsv($this->fileresource, $keys);
-    }
-
-    /**
-     * simplifying the way to write to the file.
-     *
-     * @param $fields
-     * @return int|boolean
-     */
-    private function writeToFile($fields, $keys)
-    {
-        $printarray = array();
-        foreach ($keys as $key) {
-            $printarray[] = $fields[$key];
-        }
-
-        return fputcsv($this->fileresource, $printarray);
-    }
-
-    /**
-     * opening the file resource
-     *
-     * @param bool $removeFile
-     */
-    private function openFile($removeFile = false)
-    {
-        $path = FmConfig::getFeedPath();
-        if ($removeFile && file_exists($path)) {
-            unlink($path);
-        }
-        $this->closeFile();
-        $this->fileresource = fopen($path, 'w+');
-    }
-
-    /**
-     * Closing the file if isn't already closed
-     */
-    private function closeFile()
-    {
-        if ($this->fileresource != null) {
-            fclose($this->fileresource);
-            $this->fileresource = null;
-        }
     }
 }
