@@ -1,7 +1,8 @@
 <?php
 require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
-
+require_once(dirname(dirname(__FILE__)) . '/includes/shared/src/FyndiqFeedWriter.php');
+require_once(dirname(dirname(__FILE__)) . '/includes/shared/src/FyndiqCSVFeedWriter.php');
 /**
  * Taking care of cron jobs for product feed.
  *
@@ -19,7 +20,7 @@ class Fyndiq_Fyndiq_Model_Observer
         if ($print) {
             print "Fyndiq :: Saving feed file\n";
         }
-        $this->writeOverFile($this->printFile());
+        $this->exportingProducts();
         if ($print) {
             print "Fyndiq :: Done saving feed file\n";
         }
@@ -57,8 +58,14 @@ class Fyndiq_Fyndiq_Model_Observer
      *
      * @return string
      */
-    private function printFile()
+    private function exportingProducts()
     {
+        $fileName = FmConfig::getFeedPath();
+        $file = @fopen($fileName, 'w+');
+        if ($file === false) {
+            return false;
+        }
+        $feedWriter = new FyndiqCSVFeedWriter($file);
         $products = Mage::getModel('fyndiq/product')->getCollection()->setOrder('id', 'DESC');
         $products = $products->getItems();
         $return_array = array();
@@ -72,14 +79,6 @@ class Fyndiq_Fyndiq_Model_Observer
 
         //Initialize models here so it saves memory.
         $product_model = Mage::getModel('catalog/product');
-        $category_model = Mage::getModel('catalog/category');
-        $stock_model = Mage::getModel('cataloginventory/stock_item');
-        $grouped_model = Mage::getModel('catalog/product_type_grouped');
-        $configurable_model = Mage::getModel('catalog/product_type_configurable');
-        $image_helper = Mage::helper('catalog/image');
-
-        $store = Mage::app()->getStore();
-        $taxCalculation = Mage::getModel('tax/calculation');
 
         $products_to_export = $product_model->getCollection()->addAttributeToSelect('*')->addAttributeToFilter(
             'entity_id',
@@ -87,7 +86,6 @@ class Fyndiq_Fyndiq_Model_Observer
         )->load();
 
         foreach ($products_to_export as $magproduct) {
-            //$magproduct = $product_model->load($magproduct->getId());
 
             $return_array[] = $this->getProduct($magproduct, $productinfo);
 
@@ -97,37 +95,11 @@ class Fyndiq_Fyndiq_Model_Observer
                     '*'
                 )->addFilterByRequiredOptions()->getItems();
                 foreach ($simple_collection as $simple_product) {
-                    $return_array[] = $this->getProduct($simple_product, $productinfo);
+                    $feedWriter->addProduct($this->getProduct($simple_product, $productinfo));
                 }
             }
         }
-        $tempKeys = array();
-        foreach ($return_array as $array) {
-            $keyarray = array_keys($array);
-            if (count($tempKeys) == 0) {
-                $tempKeys = $keyarray;
-                continue;
-            }
-            foreach ($keyarray as $keys) {
-                if (!in_array($keys, $tempKeys)) {
-                    $tempKeys[] = $keys;
-                }
-            }
-        }
-
-        foreach ($return_array as $key => $array) {
-            foreach ($tempKeys as $keys) {
-                if (!array_key_exists($keys, $array)) {
-                    $array[$keys] = "";
-                }
-            }
-            $return_array[$key] = $array;
-        }
-
-
-        array_unshift($return_array, $tempKeys);
-
-        return $return_array;
+        return $feedWriter->write();
     }
 
 
@@ -137,8 +109,6 @@ class Fyndiq_Fyndiq_Model_Observer
         $product_model = Mage::getModel('catalog/product');
         $category_model = Mage::getModel('catalog/category');
         $stock_model = Mage::getModel('cataloginventory/stock_item');
-        $grouped_model = Mage::getModel('catalog/product_type_grouped');
-        $configurable_model = Mage::getModel('catalog/product_type_configurable');
         $image_helper = Mage::helper('catalog/image');
 
         $store = Mage::app()->getStore();
@@ -309,74 +279,5 @@ class Fyndiq_Fyndiq_Model_Observer
             }
         }
         return $feed_product;
-    }
-
-    /**
-     * Write over a existing file if it exists and write all fields.
-     *
-     * @param $products
-     */
-    function writeOverFile($products)
-    {
-        $this->openFile(true);
-        $keys = array_shift($products);
-        $this->writeheader($keys);
-        foreach ($products as $product) {
-            $this->writeToFile($product, $keys);
-        }
-        $this->closeFile();
-    }
-
-
-    /**
-     * Write the header to file
-     *
-     * @param $keys
-     */
-    function writeHeader($keys)
-    {
-        fputcsv($this->fileresource, $keys);
-    }
-
-    /**
-     * simplifying the way to write to the file.
-     *
-     * @param $fields
-     * @return int|boolean
-     */
-    private function writeToFile($fields, $keys)
-    {
-        $printarray = array();
-        foreach ($keys as $key) {
-            $printarray[] = $fields[$key];
-        }
-
-        return fputcsv($this->fileresource, $printarray);
-    }
-
-    /**
-     * opening the file resource
-     *
-     * @param bool $removeFile
-     */
-    private function openFile($removeFile = false)
-    {
-        $path = FmConfig::getFeedPath();
-        if ($removeFile && file_exists($path)) {
-            unlink($path);
-        }
-        $this->closeFile();
-        $this->fileresource = fopen($path, 'w+');
-    }
-
-    /**
-     * Closing the file if isn't already closed
-     */
-    private function closeFile()
-    {
-        if ($this->fileresource != null) {
-            fclose($this->fileresource);
-            $this->fileresource = null;
-        }
     }
 }
