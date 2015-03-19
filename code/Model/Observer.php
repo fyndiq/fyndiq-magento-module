@@ -68,7 +68,6 @@ class Fyndiq_Fyndiq_Model_Observer
         $feedWriter = new FyndiqCSVFeedWriter($file);
         $products = Mage::getModel('fyndiq/product')->getCollection()->setOrder('id', 'DESC');
         $products = $products->getItems();
-        $return_array = array();
         $ids_to_export = array();
         $productinfo = array();
         foreach ($products as $producted) {
@@ -87,7 +86,7 @@ class Fyndiq_Fyndiq_Model_Observer
 
         foreach ($products_to_export as $magproduct) {
 
-            $return_array[] = $this->getProduct($magproduct, $productinfo);
+            $feedWriter->addProduct($this->getProduct($magproduct, $productinfo));
 
             if($magproduct->getTypeId() != "simple") {
                 $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magproduct);
