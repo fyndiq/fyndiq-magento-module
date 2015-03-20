@@ -6,6 +6,7 @@
  * Time: 17:12
  */
 require_once(dirname(dirname(__FILE__)) . '/Model/Order.php');
+require_once(dirname(dirname(__FILE__)) . '/Model/Category.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/messages.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
@@ -86,58 +87,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     public function get_categories($args)
     {
-        $category = Mage::getModel('catalog/category');
-
-        $data = array();
-
-        $categories = $category->getCollection()
-            ->addAttributeToSelect('*')
-            ->addAttributeToFilter('is_active', '1')
-            ->addAttributeToFilter('include_in_menu', '1')
-            ->addAttributeToSort('position', 'asc')->getItems();
-
-        $parentlvl = false;
-        foreach($categories as $cat) {
-            if($parentlvl == false) {
-                $parentlvl = $cat->getLevel();
-            }
-            if($parentlvl != false && $cat->getLevel() != $parentlvl) {
-                continue;
-            }
-            $categoryData = array(
-                'id' => $cat->getId(),
-                'url' => $cat->getUrl(),
-                'name' => $cat->getName(),
-                'image' => $cat->getImageUrl(),
-                'isActive' => $cat->getIsActive()
-            );
-            array_push($data, $categoryData);
-        }
-
-        $this->response($data);
-    }
-
-    public function get_childcategory($args)
-    {
-        $data = array();
-        $category = Mage::getModel('catalog/category');
-        $categories = $category->getCollection()
-            ->addAttributeToSelect('*')
-            ->addAttributeToFilter('is_active', '1')
-            ->addAttributeToFilter('parent_id', array('eq' => $args['category']))
-            ->addAttributeToSort('position', 'asc')->getItems();
-
-        foreach ($categories as $cat) {
-            $categoryData = array(
-                'id' => $cat->getId(),
-                'url' => $cat->getUrl(),
-                'name' => $cat->getName(),
-                'image' => $cat->getImageUrl(),
-                'isActive' => $cat->getIsActive()
-            );
-            array_push($data, $categoryData);
-        }
-        $this->response($data);
+        $categories = FmCategory::get_subcategories(intval($args['category_id']));
+        $this->response($categories);
     }
 
     /**
@@ -194,7 +145,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             }
             $fyndiq = Mage::getModel('fyndiq/product')->productExist($prod->getId());
             $fyndiq_data = Mage::getModel('fyndiq/product')->getProductExportData($prod->getId());
-            $fyndiq_price = FmConfig::get('price_percentage');
+            $fyndiq_percentage = FmConfig::get('price_percentage');
 
             if ($prod->getTypeId() == "simple") {
                 //Get parent
@@ -243,7 +194,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 'quantity' => intval($qtystock),
                 'fyndiq_quantity' => intval($qtystock),
                 'price' => number_format((float)$prod->getPrice(), 2, '.', ''),
-                'fyndiq_price' => $fyndiq_price,
+                'fyndiq_percentage' => $fyndiq_percentage,
                 'fyndiq_exported_stock' => intval($qtystock),
                 'fyndiq_exported' => $fyndiq,
                 'description' => $prod->getDescription(),
@@ -265,7 +216,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
             //Count expected price to Fyndiq
             $prodData["expected_price"] = number_format(
-                (float)($prodData["price"] - (($prodData["fyndiq_price"] / 100) * $prodData["price"])),
+                (float)($prodData['price'] - (($prodData['fyndiq_percentage'] / 100) * $prodData['price'])),
                 2,
                 '.',
                 ''
@@ -351,7 +302,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $productModel = Mage::getModel('fyndiq/product');
         foreach ($args['products'] as $v) {
             $product = $v['product'];
-            $fyndiq_percentage = $product['fyndiq_precentage'];
+            $fyndiq_percentage = $product['fyndiq_percentage'];
             if ($fyndiq_percentage > 100) {
                 $fyndiq_percentage = 100;
             }

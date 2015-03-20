@@ -21,12 +21,13 @@ $j(document).ready(function() {
         FmCtrl.bind_event_handlers();
 
         // load all categories
-        FmCtrl.load_categories(function() {
+        FmCtrl.load_categories(0, $j('.fm-category-tree-container'), function() {
 
-            // load products from second category
-            var category_id = $j('.fm-category-tree a').eq(0).parent().attr('data-category_id');
+            // load products from first category
+            var $firstCategory = $j('.fm-category-tree a').eq(0);
+            FmCtrl.updateCategoryName($firstCategory.text());
+            var category_id = $firstCategory.parent().attr('data-category_id');
             FmCtrl.load_products(category_id, 1, function() {
-                $j('#categoryname').text($j('.fm-category-tree a').eq(0).text());
                 FmGui.hide_load_screen();
             });
         });
