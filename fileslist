@@ -1,5 +1,5 @@
 code                   app/code/community/Fyndiq/Fyndiq
 frontend/layout/*      app/design/adminhtml/default/default/layout
-frontend/template/*    app/design/adminhtml/default/default/template/fyndiq
+frontend/template      app/design/adminhtml/default/default/template/fyndiq
 Fyndiq_Fyndiq.xml      app/etc/modules/Fyndiq_Fyndiq.xml
-fyndiq/*               fyndiq/
+fyndiq                 fyndiq

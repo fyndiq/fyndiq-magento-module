@@ -20,16 +20,18 @@ function build() {
                 mkdir -p $url;
             fi
         fi
-        if [[ -d $temppath ]]; then
-            url=$MAGENTODIR$(dirname "${temppath}")
-        else
-            url=$MAGENTODIR$temppath
-        fi
+        url=$MAGENTODIR$temppath
         FILES=($real)
+        URL=($url)
         for file in "${FILES[@]}"
         do
-          echo "Linking $DIR/$file to $url";
-          ln -s "$DIR/$file" "$url";
+            if [[ -L "$URL" ]]
+            then
+                echo "Link already exist: $URL";
+            else
+                echo "Linking $DIR/$file to $URL";
+                ln -s "$DIR/$file" "$URL";
+            fi
         done
     done
 }
