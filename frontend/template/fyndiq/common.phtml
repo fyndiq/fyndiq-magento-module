@@ -1,36 +1,40 @@
 <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" type="text/css" href="<?php echo $this->getFrontendPath(); ?>frontend/css/main.css" media="all">
 <script type="text/javascript">
-    module_path = '<?php echo $this->getAdminPath("fyndiq/service"); ?>';
-    shared_path = '<?php echo $this->getFrontendPath(); ?>';
-    var urlpath0 = '<?php echo str_replace('index.php/','',Mage::getBaseUrl()); ?>';
+    var FmPaths = {
+        module: '<?php echo $this->getAdminPath("fyndiq/service"); ?>',
+        shared: '<?php echo $this->getSharedPath(); ?>',
+        service: '<?php echo $this->getServicePath() ?>',
+        url: '<?php echo str_replace('index.php/','',Mage::getBaseUrl()); ?>'
+    };
+    var extra_data = {'form_key': window.FORM_KEY};
 </script>
 <style type="text/css">
     a i.menu-icon.comp {
-        background-image: url('<?php echo $this->getFrontendPath(); ?>frontend/images/icons/comp_red.png');
+        background-image: url('<?php echo $this->getSharedPath(); ?>frontend/images/icons/comp_red.png');
     }
     a.active i.menu-icon.comp,a:hover i.menu-icon.comp {
-        background-image: url('<?php echo $this->getFrontendPath(); ?>frontend/images/icons/comp_white.png');
+        background-image: url('<?php echo $this->getSharedPath(); ?>frontend/images/icons/comp_white.png');
     }
     a i.menu-icon.boxes {
-        background-image: url('<?php echo $this->getFrontendPath(); ?>frontend/images/icons/box_red.png');
+        background-image: url('<?php echo $this->getSharedPath(); ?>frontend/images/icons/box_red.png');
     }
     a.active i.menu-icon.boxes,a:hover i.menu-icon.boxes {
-        background-image: url('<?php echo $this->getFrontendPath(); ?>frontend/images/icons/box_white.png');
+        background-image: url('<?php echo $this->getSharedPath(); ?>frontend/images/icons/box_white.png');
     }
     a i.menu-icon.cog {
-        background-image: url('<?php echo $this->getFrontendPath(); ?>frontend/images/icons/cog_red.png');
+        background-image: url('<?php echo $this->getSharedPath(); ?>frontend/images/icons/cog_red.png');
     }
     a.active i.menu-icon.cog,a:hover i.menu-icon.cog {
         background-position: 0px -1px;
-        background-image: url('<?php echo $this->getFrontendPath(); ?>frontend/images/icons/cog_white.png');
+        background-image: url('<?php echo $this->getSharedPath(); ?>frontend/images/icons/cog_white.png');
     }
 </style>
 
-<?php require(Mage::getBaseDir('code').'/community/Fyndiq/Fyndiq/includes/shared/frontend/templates/js_templates_without_smarty.tpl'); ?>
+<?php require(MAGENTO_ROOT . '/fyndiq/shared/frontend/templates/js_templates_without_smarty.tpl'); ?>
 
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/jquery-1.11.1.min.js"></script>
-<script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/handlebars-v1.1.2.js"></script>
+<script type="text/javascript" src="<?php echo $this->getSharedPath(); ?>frontend/js/handlebars-v1.1.2.js"></script>
 
 <script type="text/javascript">
     var messages = {};
@@ -42,5 +46,5 @@
     ?>
 </script>
 
-<script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/FmGui.js"></script>
-<script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/FmCtrl.js"></script>
+<script type="text/javascript" src="<?php echo $this->getSharedPath(); ?>frontend/js/FmGui.js"></script>
+<script type="text/javascript" src="<?php echo $this->getSharedPath(); ?>frontend/js/FmCtrl.js"></script>
