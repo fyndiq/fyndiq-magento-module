@@ -19,6 +19,26 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
     }
 
     /**
+     * Get shared path
+     *
+     * @return string
+     */
+    public function getSharedPath()
+    {
+        return Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB) . 'fyndiq/shared/';
+    }
+
+    /**
+     * Get service path
+     *
+     * @return string
+     */
+    public function getServicePath()
+    {
+        return $this->getAdminPath('fyndiq/service') . '?isAjax=true';
+    }
+
+    /**
      * Get admin path
      *
      * @param $path
