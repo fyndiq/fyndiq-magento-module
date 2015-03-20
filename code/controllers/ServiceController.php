@@ -6,6 +6,7 @@
  * Time: 17:12
  */
 require_once(dirname(dirname(__FILE__)) . '/Model/Order.php');
+require_once(dirname(dirname(__FILE__)) . '/Model/Category.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/messages.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
@@ -86,58 +87,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     public function get_categories($args)
     {
-        $category = Mage::getModel('catalog/category');
-
-        $data = array();
-
-        $categories = $category->getCollection()
-            ->addAttributeToSelect('*')
-            ->addAttributeToFilter('is_active', '1')
-            ->addAttributeToFilter('include_in_menu', '1')
-            ->addAttributeToSort('position', 'asc')->getItems();
-
-        $parentlvl = false;
-        foreach($categories as $cat) {
-            if($parentlvl == false) {
-                $parentlvl = $cat->getLevel();
-            }
-            if($parentlvl != false && $cat->getLevel() != $parentlvl) {
-                continue;
-            }
-            $categoryData = array(
-                'id' => $cat->getId(),
-                'url' => $cat->getUrl(),
-                'name' => $cat->getName(),
-                'image' => $cat->getImageUrl(),
-                'isActive' => $cat->getIsActive()
-            );
-            array_push($data, $categoryData);
-        }
-
-        $this->response($data);
-    }
-
-    public function get_childcategory($args)
-    {
-        $data = array();
-        $category = Mage::getModel('catalog/category');
-        $categories = $category->getCollection()
-            ->addAttributeToSelect('*')
-            ->addAttributeToFilter('is_active', '1')
-            ->addAttributeToFilter('parent_id', array('eq' => $args['category']))
-            ->addAttributeToSort('position', 'asc')->getItems();
-
-        foreach ($categories as $cat) {
-            $categoryData = array(
-                'id' => $cat->getId(),
-                'url' => $cat->getUrl(),
-                'name' => $cat->getName(),
-                'image' => $cat->getImageUrl(),
-                'isActive' => $cat->getIsActive()
-            );
-            array_push($data, $categoryData);
-        }
-        $this->response($data);
+        $categories = FmCategory::get_subcategories(intval($args['category_id']));
+        $this->response($categories);
     }
 
     /**
