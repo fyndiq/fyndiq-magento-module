@@ -37,13 +37,7 @@
 <script type="text/javascript" src="<?php echo $this->getSharedPath(); ?>frontend/js/handlebars-v1.1.2.js"></script>
 
 <script type="text/javascript">
-    var messages = {};
-    <?php foreach($this->getMessages() as $k => $v) {
-    ?>
-    messages['<?php echo $k; ?>'] = '<?php echo $v; ?>';
-    <?php
-    }
-    ?>
+    var messages = <?php echo json_encode($this->getMessages())?>
 </script>
 
 <script type="text/javascript" src="<?php echo $this->getSharedPath(); ?>frontend/js/FmGui.js"></script>
