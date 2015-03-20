@@ -1,5 +1,5 @@
-[submodule "code/includes/shared"]
-	path = code/includes/shared
+[submodule "fyndiq/shared"]
+	path = fyndiq/shared
 	url = git@github.com:fyndiq/fyndiq-module-shared.git
 [submodule "code/includes/api"]
 	path = code/includes/api
