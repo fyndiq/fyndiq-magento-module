@@ -68,18 +68,18 @@
 .fm-button.green,
 .btn-green,
 .btn-green:visited {
-  background-color: #83c070;
+  background: #83c070;
   color: #fff; }
 
 .fm-button.red,
 .btn-red,
 .btn-red:visited {
-  background-color: #e85353;
+  background: #e85353;
   color: #fff; }
 
 .btn-nav,
 .btn-nav:visited {
-  background-color: #fff;
+  background: #fff;
   border: 1px solid #e3e8ec;
   color: #333;
   font-size: 13pt; }
@@ -87,12 +87,12 @@
 .btn-nav.active,
 .btn-nav.active:visited,
 .btn-nav:hover {
-  background-color: #ea524f;
+  background: #ea524f;
   border: 1px solid #ea524f;
   color: #fff; }
 
 .fm-button.disabled {
-  background-color: #e3e3e3;
+  background: #e3e3e3;
   border: 1px solid #e3e3e3;
   color: #b3b3b3; }
 
