@@ -145,7 +145,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             }
             $fyndiq = Mage::getModel('fyndiq/product')->productExist($prod->getId());
             $fyndiq_data = Mage::getModel('fyndiq/product')->getProductExportData($prod->getId());
-            $fyndiq_price = FmConfig::get('price_percentage');
+            $fyndiq_precentage = FmConfig::get('price_percentage');
 
             if ($prod->getTypeId() == "simple") {
                 //Get parent
@@ -194,7 +194,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 'quantity' => intval($qtystock),
                 'fyndiq_quantity' => intval($qtystock),
                 'price' => number_format((float)$prod->getPrice(), 2, '.', ''),
-                'fyndiq_price' => $fyndiq_price,
+                'fyndiq_precentage' => $fyndiq_precentage,
                 'fyndiq_exported_stock' => intval($qtystock),
                 'fyndiq_exported' => $fyndiq,
                 'description' => $prod->getDescription(),
@@ -216,7 +216,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
             //Count expected price to Fyndiq
             $prodData["expected_price"] = number_format(
-                (float)($prodData["price"] - (($prodData["fyndiq_price"] / 100) * $prodData["price"])),
+                (float)($prodData["price"] - (($prodData["fyndiq_precentage"] / 100) * $prodData["price"])),
                 2,
                 '.',
                 ''
@@ -302,7 +302,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $productModel = Mage::getModel('fyndiq/product');
         foreach ($args['products'] as $v) {
             $product = $v['product'];
-            $fyndiq_percentage = $product['fyndiq_precentage'];
+            $fyndiq_percentage = $product['fyndiq_percentage'];
             if ($fyndiq_percentage > 100) {
                 $fyndiq_percentage = 100;
             }
