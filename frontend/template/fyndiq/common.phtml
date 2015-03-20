@@ -1,8 +1,9 @@
 <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" type="text/css" href="<?php echo $this->getFrontendPath(); ?>frontend/css/main.css" media="all">
 <script type="text/javascript">
-    module_path = "<?php echo $this->getAdminPath("fyndiq/service"); ?>";
-    var urlpath0 = "<?php echo str_replace('index.php/','',Mage::getBaseUrl()); ?>";
+    module_path = '<?php echo $this->getAdminPath("fyndiq/service"); ?>';
+    var shared_path = '<?php echo $this->getAdminPath("fyndiq/service"); ?>';
+    var urlpath0 = '<?php echo str_replace('index.php/','',Mage::getBaseUrl()); ?>';
 </script>
 <style type="text/css">
     a i.menu-icon.comp {
@@ -26,7 +27,7 @@
     }
 </style>
 
-<?php require(Mage::getBaseDir('code').'/community/Fyndiq/Fyndiq/includes/shared/frontend/templates/js_templates.tpl'); ?>
+<?php require(Mage::getBaseDir('code').'/community/Fyndiq/Fyndiq/includes/shared/frontend/templates/js_templates_without_smarty.tpl'); ?>
 
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/jquery-1.11.1.min.js"></script>
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/handlebars-v1.1.2.js"></script>
