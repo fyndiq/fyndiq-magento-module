@@ -5,7 +5,6 @@ var FmGui = {
 
     show_load_screen: function(callback) {
         var overlay = tpl['loading-overlay']({
-            'module_path': module_path,
             'shared_path': shared_path
         });
         $j(overlay).hide().prependTo($j('body'));
@@ -34,7 +33,6 @@ var FmGui = {
 
     show_message: function(type, title, message) {
         var overlay = $j(tpl['message-overlay']({
-            'module_path': module_path,
             'shared_path': shared_path,
             'type': type,
             'title': title,

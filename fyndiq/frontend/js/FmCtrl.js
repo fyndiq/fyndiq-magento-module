@@ -1,4 +1,5 @@
-/* global $, FmGui, module_path, shared_path, messages, tpl, urlpath0 */
+var $j = jQuery.noConflict();
+/* global $j, FmGui, module_path, shared_path, messages, tpl, urlpath0 */
 
 var FmCtrl = {
 
