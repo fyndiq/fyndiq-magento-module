@@ -1,8 +1,9 @@
 <?php
 require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
-require_once(dirname(dirname(__FILE__)) . '/includes/shared/src/FyndiqFeedWriter.php');
-require_once(dirname(dirname(__FILE__)) . '/includes/shared/src/FyndiqCSVFeedWriter.php');
+require_once(MAGENTO_ROOT . '/fyndiq/shared/src/FyndiqFeedWriter.php');
+require_once(MAGENTO_ROOT . '/fyndiq/shared/src/FyndiqCSVFeedWriter.php');
+require_once(MAGENTO_ROOT . '/fyndiq/shared/src/FyndiqAPICall.php');
 
 /**
  * Taking care of cron jobs for product feed.
@@ -281,5 +282,13 @@ class Fyndiq_Fyndiq_Model_Observer
         }
 
         return $feed_product;
+    }
+
+    public function handle_fyndiqConfigChangedSection()
+    {
+        $data = array(
+            'product_feed_url' => Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB) . FmConfig::getFeedPath()
+        );
+        FmHelpers::call_api('PATCH', 'settings/', $data);
     }
 }
