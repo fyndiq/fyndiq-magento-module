@@ -222,7 +222,7 @@ class Fyndiq_Fyndiq_Model_Observer
                     if (method_exists($parentmodel->getTypeInstance(), 'getConfigurableAttributes')) {
                         $productAttributeOptions = $parentmodel->getTypeInstance()->getConfigurableAttributes();
                         $attrid = 1;
-                        $tags = "";
+                        $tags = array();
                         foreach ($productAttributeOptions as $productAttribute) {
                             $attrValue = $parentmodel->getResource()->getAttribute(
                                 $productAttribute->getProductAttribute()->getAttributeCode()
@@ -232,14 +232,10 @@ class Fyndiq_Fyndiq_Model_Observer
 
                             $feed_product["article-property-name-" . $attrid] = $attrCode;
                             $feed_product["article-property-value-" . $attrid] = $value[0];
-                            if ($attrid == 1) {
-                                $tags .= $attrCode . ": " . $value[0];
-                            } else {
-                                $tags .= ", " . $attrCode . ": " . $value[0];
-                            }
+                            $tags[] = $attrCode . ": " . $value[0];
                             $attrid++;
                         }
-                        $feed_product["article-name"] = substr($tags, 0, 30);
+                        $feed_product["article-name"] = implode(", ", $tags);
                     } else {
                         $feed_product["article-name"] = $magarray["name"];
                     }
@@ -277,7 +273,7 @@ class Fyndiq_Fyndiq_Model_Observer
                 $feed_product["article-sku"] = $first_product->getSKU();
                 $productAttributeOptions = $magproduct->getTypeInstance()->getConfigurableAttributes();
                 $attrid = 1;
-                $tags = "";
+                $tags = array();
                 foreach ($productAttributeOptions as $productAttribute) {
                     $attrValue = $magproduct->getResource()->getAttribute(
                         $productAttribute->getProductAttribute()->getAttributeCode()
@@ -287,14 +283,10 @@ class Fyndiq_Fyndiq_Model_Observer
 
                     $feed_product["article-property-name-" . $attrid] = $attrCode;
                     $feed_product["article-property-value-" . $attrid] = $value[0];
-                    if ($attrid == 1) {
-                        $tags .= $attrCode . ": " . $value[0];
-                    } else {
-                        $tags .= ", " . $attrCode . ": " . $value[0];
-                    }
+                    $tags[] = $attrCode . ": " . $value[0];
                     $attrid++;
                 }
-                $feed_product["article-name"] = substr(addslashes($tags), 0, 30);
+                $feed_product["article-name"] = substr(implode(", ", $tags), 0, 30);
             }
         }
 
