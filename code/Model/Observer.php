@@ -188,10 +188,9 @@ class Fyndiq_Fyndiq_Model_Observer
             $feed_product["product-market"] = Mage::getStoreConfig('general/country/default');
             $feed_product["product-currency"] = Mage::app()->getStore()->getCurrentCurrencyCode();
             // TODO: plan how to fix this brand issue
+            $feed_product["product-brand"] = "Unknown";
             if ($magproduct->getAttributeText('manufacturer') != "") {
                 $feed_product["product-brand"] = $magproduct->getAttributeText('manufacturer');
-            } else {
-                $feed_product["product-brand"] = "Unknown";
             }
 
             //Category
