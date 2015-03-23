@@ -65,6 +65,10 @@
   padding: 6px 12px;
   text-decoration: none; }
 
+a.btn:hover,
+a.fm-button:hover {
+  text-decoration: none; }
+
 .fm-button.green,
 .btn-green,
 .btn-green:visited {
@@ -114,6 +118,8 @@
     padding: 1em; }
     .fm-panel .fm-panel-body.no-padding {
       padding: 0; }
+  .fm-panel .no-padding p {
+    padding: 1em; }
 
 .form-horizontal fieldset {
   background-color: transparent;
@@ -133,8 +139,7 @@
 
 .fm-panel table {
   font-size: 11pt;
-  width: 100%;
-  border-collapse: collapse; }
+  width: 100%; }
   .fm-panel table th {
     background-color: #f5f8fb;
     font-size: 9pt; }

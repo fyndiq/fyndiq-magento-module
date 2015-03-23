@@ -11,6 +11,8 @@ require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
 class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
 {
 
+    private $allowedCurrencies = array('SEK', 'EUR');
+
     /**
      * The page where everything happens.
      */
@@ -34,25 +36,31 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
 
     function setTemplate($template)
     {
-        $currency = Mage::app()->getStore()->getCurrentCurrencyCode();
+        $isAuthorized = true;
+        $message = '';
         try {
-            FmHelpers::call_api('GET', 'orders/');
-            $api_available = true;
+            FmHelpers::call_api('GET', 'settings/');
         } catch (Exception $e) {
-            $api_available = false;
-            $page_args['message'] = $e->getMessage();
-        }
-        if ($this->getAPIToken() == "" OR $this->getUsername() == "") {
-            $this->setupTemplate('fyndiq/needapiinfo.phtml');
-        } elseif ($currency != "SEK" AND $currency != "EUR") {
-            $this->setupTemplate('fyndiq/currencyerror.phtml');
-        } else {
-            if (isset($page_args['message']) AND $page_args['message'] == "Unauthorized") {
-                $this->setupTemplate('fyndiq/apierror.phtml', $page_args);
-            } else {
-                $this->setupTemplate($template);
+            if ($e instanceof FyndiqAPIAuthorizationFailed) {
+                $isAuthorized = false;
             }
+            $message = $e->getMessage();
         }
+        if ($message && !$isAuthorized) {
+            $this->setupTemplate('fyndiq/apierror.phtml', array('message' => $message));
+            return false;
+        }
+        if ($this->getAPIToken() == '' || $this->getUsername() == '') {
+            $this->setupTemplate('fyndiq/needapiinfo.phtml');
+            return false;
+        }
+        $currency = Mage::app()->getStore()->getCurrentCurrencyCode();
+        if (!in_array($currency, $this->allowedCurrencies)) {
+            $this->setupTemplate('fyndiq/currencyerror.phtml');
+            return false;
+        }
+        return $this->setupTemplate($template);
+
     }
 
     function disconnectAction()
@@ -74,12 +82,10 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
         $block = $this->getLayout()
             ->createBlock('Fyndiq_Fyndiq_Block_Admin', 'fyndiq.admin')
             ->setTemplate($template);
-        if ($data != null) {
-            $block->setData('data', $data);
-        }
-        $this->getLayout()->getBlock('content')->append($block);
 
-        $this->renderLayout();
+        $block->setData('data', $data);
+        $this->getLayout()->getBlock('content')->append($block);
+        return $this->renderLayout();
     }
 
     /**
