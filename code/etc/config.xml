@@ -43,6 +43,17 @@
                 </rewrite>
             </Fyndiq>
         </blocks>
+        <events>
+            <admin_system_config_changed_section_fyndiq>
+                <observers>
+                    <fyndiq>
+                        <type>singleton</type>
+                        <class>fyndiq/observer</class>
+                        <method>handle_fyndiqConfigChangedSection</method>
+                    </fyndiq>
+                </observers>
+            </admin_system_config_changed_section_fyndiq>
+        </events>
     </global>
     <admin>
         <routers>
