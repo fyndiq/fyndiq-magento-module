@@ -1,5 +1,7 @@
 <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" type="text/css" href="<?php echo $this->getFrontendPath(); ?>frontend/css/main.css" media="all">
+
+<?php if (empty($skipJS)) { ?>
 <script type="text/javascript" src="<?php echo $this->getFrontendPath(); ?>frontend/js/jquery-1.11.1.min.js"></script>
 <script type="text/javascript">
     $.noConflict();
@@ -12,6 +14,7 @@
     var extra_data = {'form_key': window.FORM_KEY};
     var messages = <?php echo json_encode($this->getMessages())?>
 </script>
+<?php } ?>
 <style type="text/css">
     a i.menu-icon.comp {
         background-image: url('<?php echo $this->getSharedPath(); ?>frontend/images/icons/comp_red.png');
@@ -33,9 +36,10 @@
         background-image: url('<?php echo $this->getSharedPath(); ?>frontend/images/icons/cog_white.png');
     }
 </style>
-
+<?php if (empty($skipJS)) { ?>
 <?php require(MAGENTO_ROOT . '/fyndiq/shared/frontend/templates/js_templates_without_smarty.tpl'); ?>
 
 <script type="text/javascript" src="<?php echo $this->getSharedPath(); ?>frontend/js/handlebars-v1.1.2.js"></script>
 <script type="text/javascript" src="<?php echo $this->getSharedPath(); ?>frontend/js/FmGui.js"></script>
 <script type="text/javascript" src="<?php echo $this->getSharedPath(); ?>frontend/js/FmCtrl.js"></script>
+<?php } ?>
