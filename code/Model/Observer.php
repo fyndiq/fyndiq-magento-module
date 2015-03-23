@@ -88,7 +88,9 @@ class Fyndiq_Fyndiq_Model_Observer
 
         foreach ($products_to_export as $magproduct) {
 
-            if ($feedWriter->addProduct($this->getProduct($magproduct, $productinfo)) && $magproduct->getTypeId() != "simple") {
+            if ($feedWriter->addProduct($this->getProduct($magproduct, $productinfo)) && $magproduct->getTypeId(
+                ) != "simple"
+            ) {
                 $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magproduct);
                 $simple_collection = $conf->getUsedProductCollection()->addAttributeToSelect(
                     '*'
@@ -186,10 +188,9 @@ class Fyndiq_Fyndiq_Model_Observer
             $feed_product["product-market"] = Mage::getStoreConfig('general/country/default');
             $feed_product["product-currency"] = Mage::app()->getStore()->getCurrentCurrencyCode();
             // TODO: plan how to fix this brand issue
-            if($magproduct->getAttributeText('manufacturer') != "") {
+            if ($magproduct->getAttributeText('manufacturer') != "") {
                 $feed_product["product-brand"] = $magproduct->getAttributeText('manufacturer');
-            }
-            else {
+            } else {
                 $feed_product["product-brand"] = "Unknown";
             }
 
@@ -219,7 +220,7 @@ class Fyndiq_Fyndiq_Model_Observer
                 $feed_product["article-sku"] = $magproduct->getSKU();
                 if ($parent != false) {
                     $parentmodel = $product_model->load($parent);
-                    if(method_exists($parentmodel->getTypeInstance(), 'getConfigurableAttributes')) {
+                    if (method_exists($parentmodel->getTypeInstance(), 'getConfigurableAttributes')) {
                         $productAttributeOptions = $parentmodel->getTypeInstance()->getConfigurableAttributes();
                         $attrid = 1;
                         $tags = "";
@@ -240,8 +241,7 @@ class Fyndiq_Fyndiq_Model_Observer
                             $attrid++;
                         }
                         $feed_product["article-name"] = substr($tags, 0, 30);
-                    }
-                    else {
+                    } else {
                         $feed_product["article-name"] = $magarray["name"];
                     }
                 } else {
