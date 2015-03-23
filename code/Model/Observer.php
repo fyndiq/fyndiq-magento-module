@@ -88,9 +88,9 @@ class Fyndiq_Fyndiq_Model_Observer
 
         foreach ($products_to_export as $magproduct) {
 
-            $feedWriter->addProduct($this->getProduct($magproduct, $productinfo));
-
-            if ($magproduct->getTypeId() != "simple") {
+            if ($feedWriter->addProduct($this->getProduct($magproduct, $productinfo)) && $magproduct->getTypeId(
+                ) != "simple"
+            ) {
                 $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magproduct);
                 $simple_collection = $conf->getUsedProductCollection()->addAttributeToSelect(
                     '*'
@@ -150,9 +150,19 @@ class Fyndiq_Fyndiq_Model_Observer
 
 
             //images
+            $imageid = 1;
+            //trying to get image, if not image will be false
+            try {
+                $url = $magproduct->getImageUrl();
+                $feed_product["product-image-" . $imageid . "-url"] = strval($url);
+                $feed_product["product-image-" . $imageid . "-identifier"] =
+                    substr(md5(strval($url)), 0, 10);
+                $imageid++;
+            } catch (Exception $e) {
+
+            }
             $images = $product_model->load($magarray["entity_id"])->getMediaGalleryImages();
             if (isset($images)) {
-                $imageid = 1;
                 foreach ($images as $_image) {
                     $url = $image_helper->init($magproduct, 'image', $_image->getFile());
                     $feed_product["product-image-" . $imageid . "-url"] = strval($url);
@@ -178,7 +188,10 @@ class Fyndiq_Fyndiq_Model_Observer
             $feed_product["product-market"] = Mage::getStoreConfig('general/country/default');
             $feed_product["product-currency"] = Mage::app()->getStore()->getCurrentCurrencyCode();
             // TODO: plan how to fix this brand issue
-            $feed_product["product-brand"] = $magproduct->getAttributeText('manufacturer');
+            $feed_product["product-brand"] = "Unknown";
+            if ($magproduct->getAttributeText('manufacturer') != "") {
+                $feed_product["product-brand"] = $magproduct->getAttributeText('manufacturer');
+            }
 
             //Category
             $categoryIds = $magproduct->getCategoryIds();
@@ -193,6 +206,7 @@ class Fyndiq_Fyndiq_Model_Observer
 
 
             if ($magarray["type_id"] == "simple") {
+
                 $qtyStock = $stock_model->loadByProduct($magproduct->getId())->getQty();
                 if (intval($qtyStock) < 0) {
                     $feed_product["article-quantity"] = intval(0);
@@ -205,30 +219,29 @@ class Fyndiq_Fyndiq_Model_Observer
                 $feed_product["article-sku"] = $magproduct->getSKU();
                 if ($parent != false) {
                     $parentmodel = $product_model->load($parent);
-                    $productAttributeOptions = $parentmodel->getTypeInstance()->getConfigurableAttributes();
-                    $attrid = 1;
-                    $tags = "";
-                    foreach ($productAttributeOptions as $productAttribute) {
-                        $attrValue = $parentmodel->getResource()->getAttribute(
-                            $productAttribute->getProductAttribute()->getAttributeCode()
-                        )->getFrontend();
-                        $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
-                        $value = $attrValue->getValue($magproduct);
+                    if (method_exists($parentmodel->getTypeInstance(), 'getConfigurableAttributes')) {
+                        $productAttributeOptions = $parentmodel->getTypeInstance()->getConfigurableAttributes();
+                        $attrid = 1;
+                        $tags = array();
+                        foreach ($productAttributeOptions as $productAttribute) {
+                            $attrValue = $parentmodel->getResource()->getAttribute(
+                                $productAttribute->getProductAttribute()->getAttributeCode()
+                            )->getFrontend();
+                            $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
+                            $value = $attrValue->getValue($magproduct);
 
-                        $feed_product["article-property-name-" . $attrid] = $attrCode;
-                        $feed_product["article-property-value-" . $attrid] = $value[0];
-                        if ($attrid == 1) {
-                            $tags .= $attrCode . ": " . $value[0];
-                        } else {
-                            $tags .= ", " . $attrCode . ": " . $value[0];
+                            $feed_product["article-property-name-" . $attrid] = $attrCode;
+                            $feed_product["article-property-value-" . $attrid] = $value[0];
+                            $tags[] = $attrCode . ": " . $value[0];
+                            $attrid++;
                         }
-                        $attrid++;
+                        $feed_product["article-name"] = implode(", ", $tags);
+                    } else {
+                        $feed_product["article-name"] = $magarray["name"];
                     }
-                    $feed_product["article-name"] = substr($tags, 0, 30);
                 } else {
                     $feed_product["article-name"] = $magarray["name"];
                 }
-                $return_array[] = $feed_product;
             } else {
                 //Get child articles
                 $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magproduct);
@@ -260,7 +273,7 @@ class Fyndiq_Fyndiq_Model_Observer
                 $feed_product["article-sku"] = $first_product->getSKU();
                 $productAttributeOptions = $magproduct->getTypeInstance()->getConfigurableAttributes();
                 $attrid = 1;
-                $tags = "";
+                $tags = array();
                 foreach ($productAttributeOptions as $productAttribute) {
                     $attrValue = $magproduct->getResource()->getAttribute(
                         $productAttribute->getProductAttribute()->getAttributeCode()
@@ -270,14 +283,10 @@ class Fyndiq_Fyndiq_Model_Observer
 
                     $feed_product["article-property-name-" . $attrid] = $attrCode;
                     $feed_product["article-property-value-" . $attrid] = $value[0];
-                    if ($attrid == 1) {
-                        $tags .= $attrCode . ": " . $value[0];
-                    } else {
-                        $tags .= ", " . $attrCode . ": " . $value[0];
-                    }
+                    $tags[] = $attrCode . ": " . $value[0];
                     $attrid++;
                 }
-                $feed_product["article-name"] = substr(addslashes($tags), 0, 30);
+                $feed_product["article-name"] = substr(implode(", ", $tags), 0, 30);
             }
         }
 
