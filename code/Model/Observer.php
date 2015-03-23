@@ -286,9 +286,11 @@ class Fyndiq_Fyndiq_Model_Observer
 
     public function handle_fyndiqConfigChangedSection()
     {
-        $data = array(
-            'product_feed_url' => Mage::getUrl('fyndiq/file/index')
-        );
-        FmHelpers::call_api('PATCH', 'settings/', $data);
+        if (FmConfig::get('username') !== '' && FmConfig::get('apikey') !== '') {
+            $data = array(
+                'product_feed_url' => Mage::getUrl('fyndiq/file/index')
+            );
+            FmHelpers::call_api('PATCH', 'settings/', $data);
+        }
     }
 }
