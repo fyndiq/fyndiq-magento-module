@@ -243,7 +243,6 @@ class Fyndiq_Fyndiq_Model_Observer
                     }
                     else {
                         $feed_product["article-name"] = $magarray["name"];
-                        var_dump($feed_product);
                     }
                 } else {
                     $feed_product["article-name"] = $magarray["name"];
