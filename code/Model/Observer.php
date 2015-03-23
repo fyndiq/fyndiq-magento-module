@@ -287,7 +287,7 @@ class Fyndiq_Fyndiq_Model_Observer
     public function handle_fyndiqConfigChangedSection()
     {
         $data = array(
-            'product_feed_url' => Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB) . FmConfig::getFeedPath()
+            'product_feed_url' => Mage::getUrl('fyndiq/file/index')
         );
         FmHelpers::call_api('PATCH', 'settings/', $data);
     }
