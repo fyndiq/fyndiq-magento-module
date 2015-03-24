@@ -11,6 +11,8 @@ Magento 1.8-
 You can just drag the app directory to your magento directory to make the files get added to right place.
 
 ### manual production installation
+For this you need to have a terminal and git installed.
+
 1. run `git clone git://git@github.com:fyndiq/fyndiq-magento-module.git`
 2. Cd to your module directory (`cd /path/to/your/module/repo/`)
 3. run `git submodule update --init --recursive`
