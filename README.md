@@ -16,14 +16,12 @@ read more about modgit here: http://www.bubblecode.net/en/2012/02/06/install-mag
 #### manual installation
 For this you need to have a terminal and git installed.
 
-1. Cd to your magento directory (`cd /path/to/your/magento/`)
-2. run `git init`
-3. run `git remote add origin git@github.com:fyndiq/fyndiq-magento-module.git`
-4. run `git fetch`
-5. run `git checkout -t origin/master`
+2. run `git clone git://git@github.com:fyndiq/fyndiq-magento-module.git`
+1. Cd to your module directory (`cd /path/to/your/module/repo/`)
 6. run `git submodule update --init --recursive`
-7. login to magento admin
-8. go to `System > Configurations > Advanced: Developers > Set Symlink Allowed to True`
+7. run in repo directory `./fyndman.sh build /path/to/your/magento/`
+8. login to magento admin
+9. go to `System > Configurations > Advanced: Developers > Set Symlink Allowed to True`
 9. Now empty cache (System > cache mangement > flush all.)
 10. Now go to Fyndiq Page in admin (`System > Fyndiq import/export`)
 11. click on settings. (The settings page can get blank the first time, try to logout and login then)
