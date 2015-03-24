@@ -54,27 +54,30 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
      */
     public function getImportedOrders($page = -1)
     {
-        $return_array = array();
+        $result = array();
         $orders = $this->getCollection()->setOrder('id', 'DESC');
         if($page != -1) {
             $orders->setCurPage($page);
+            // TODO: this should be parameter
             $orders->setPageSize(10);
         }
         $orders = $orders->load()->getItems();
         foreach($orders as $order){
+            $orderArray = array();
             $order = $order->getData();
-            $magorder = Mage::getModel('sales/order')->load($order["order_id"]);
-            $magarray = $magorder->getData();
-            $magarray["total_qty_ordered"] = intval($magarray["total_qty_ordered"]);
-            $magarray["base_grand_total"] = number_format((float)$magarray["base_grand_total"], 2, '.', '');
-
-            $date = $magarray["created_at"];
-            $magarray["created_at"] = date ("Y-m-d", strtotime($date));
-            $magarray["created_at_time"] = date ("G:i:s", strtotime($date));
-            $magarray["fyndiq_order"] = $order["fyndiq_orderid"];
-            $return_array[] = $magarray;
+            $magOrder = Mage::getModel('sales/order')->load($order['order_id']);
+            $magArray = $magOrder->getData();
+            $orderArray['order_id'] = $magArray['entity_id'];
+            $orderArray['fyndiq_orderid'] = $order['fyndiq_orderid'];
+            $orderArray['entity_id'] = $magArray['entity_id'];
+            $orderArray['price'] = number_format((float)$magArray['base_grand_total'], 2, '.', '');
+            $orderArray['total_products'] = intval($magArray['total_qty_ordered']);
+            $orderArray['state'] = $magArray['state'];
+            $orderArray['created_at'] = date('Y-m-d', strtotime($magArray['created_at']));
+            $orderArray['created_at_time'] = date("G:i:s", strtotime($magArray['created_at']));
+            $result[] = $orderArray;
         }
-        return $return_array;
+        return $result;
     }
 
     private function getDeliveryCountry($countryName) {
@@ -88,6 +91,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
      * Create a order in magento based on Fyndiq Order
      *
      * @param $fyndiq_order
+     * @throws Exception
      */
     public function create($fyndiq_order)
     {
