@@ -13,15 +13,15 @@ You can just drag the app directory to your magento directory to make the files 
 ### manual production installation
 For this you need to have a terminal and git installed.
 
-1. run `git clone git://git@github.com:fyndiq/fyndiq-magento-module.git`
+1. Run `git clone git://git@github.com:fyndiq/fyndiq-magento-module.git`
 2. Cd to your module directory (`cd /path/to/your/module/repo/`)
-3. run `git submodule update --init --recursive`
-4. run in repo directory `./fyndman.sh deploy /path/to/your/magento/`
-5. login to magento admin
+3. Run `git submodule update --init --recursive`
+4. Run in repo directory `./fyndman.sh deploy /path/to/your/magento/`
+5. Login to magento admin
 6. Now empty cache (System > cache mangement > flush all.)
 7. Now go to Fyndiq Page in admin (`System > Fyndiq import/export`)
-8. click on settings. (The settings page can get blank the first time, try to logout and login then)
-9. type in api-key and username and all the other information you wanna setup.
+8. Click on settings. (The settings page can get blank the first time, try to logout and login then)
+9. Type in api-key and username and all the other information you wanna setup.
 10. Make the fyndiq directory in magento root readable and writable. it is here the feed files will be.
 11. Go back to fyndiq page.
 12. It will now work!
@@ -29,16 +29,16 @@ For this you need to have a terminal and git installed.
 #### Development installation
 For this you need to have a terminal and git installed.
 
-1. run `git clone git://git@github.com:fyndiq/fyndiq-magento-module.git`
+1. Run `git clone git://git@github.com:fyndiq/fyndiq-magento-module.git`
 2. Cd to your module directory (`cd /path/to/your/module/repo/`)
-3. run `git submodule update --init --recursive`
-4. run in repo directory `./fyndman.sh build /path/to/your/magento/`
-5. login to magento admin
-6. go to `System > Configurations > Advanced: Developers > Set Symlink Allowed to True`
+3. Run `git submodule update --init --recursive`
+4. Run in repo directory `./fyndman.sh build /path/to/your/magento/`
+5. Login to magento admin
+6. Go to `System > Configurations > Advanced: Developers > Set Symlink Allowed to True`
 7. Now empty cache (System > cache mangement > flush all.)
 8. Now go to Fyndiq Page in admin (`System > Fyndiq import/export`)
-9. click on settings. (The settings page can get blank the first time, try to logout and login then)
-10. type in api-key and username and all the other information you wanna setup.
+9. Click on settings. (The settings page can get blank the first time, try to logout and login then)
+10. Type in api-key and username and all the other information you wanna setup.
 11. Make the fyndiq directory in magento root readable and writable. it is here the feed files will be.
 12. Go back to fyndiq page.
 13. It will now work!
