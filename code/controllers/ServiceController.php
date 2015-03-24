@@ -209,7 +209,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
             //Count expected price to Fyndiq
             $prodData['expected_price'] = number_format(
-                (float)($prodData['price'] - (($prodData['fyndiq_percentage'] / 100) * $prodData['price'])),
+                FyndiqUtils::getFyndiqPrice($prodData['price'], $prodData['fyndiq_percentage']),
                 2,
                 '.',
                 ''
@@ -272,7 +272,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
         $object = new stdClass();
         $object->products = $this->getAllProducts($category, $page);
-        $object->pagination = $this->getPaginationHTML($total, $page);
+        $object->pagination = FyndiqUtils::getPaginationHTML($total, $page);
         $this->response($object);
     }
 
@@ -390,7 +390,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         }
         $object = new stdClass();
         $object->orders = Mage::getModel('fyndiq/order')->getImportedOrders($page);
-        $object->pagination = $this->getPaginationHTML($total, $page);
+        $object->pagination = FyndiqUtils::getPaginationHTML($total, $page);
         $this->response($object);
     }
 
@@ -486,57 +486,5 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $config->saveConfig('fyndiq/fyndiq_group/apikey', "", 'default', "");
         $config->saveConfig('fyndiq/fyndiq_group/username', "", 'default', "");
         $this->response(true);
-    }
-
-    /**
-     * Generates pagination HTML
-     *
-     * @param $total - total number of items
-     * @param $currentPage - current page
-     * @return string - html string for pagination
-     */
-    private function getPaginationHTML($total, $currentPage)
-    {
-        $html = '';
-        if ($total > self::itemPerPage) {
-            $pages = (int)($total / self::itemPerPage);
-            $count = ($total % self::itemPerPage == 0) ? $pages : $pages + 1;
-            $start = 1;
-
-            $html .= '<ol class="pageslist">';
-
-            $end = $start + self::pageFrame;
-            if ($currentPage != 1) {
-                $start = $currentPage - 1;
-                $end = $start + self::pageFrame;
-            }
-            if ($end > $count) {
-                $start = $count - (self::pageFrame - 1);
-            } else {
-                $count = $end - 1;
-            }
-
-            if ($currentPage > $count - 1) {
-                $html .= '<li><a href="#" data-page="' . ($currentPage - 1) . '">&lt;</a></li>';
-            }
-
-            for ($i = $start; $i <= $count; $i++) {
-                if ($i >= 1) {
-                    if ($currentPage) {
-                        $html .= ($currentPage == $i) ? '<li class="current">' . $i . '</li>' : '<li><a href="#" data-page="' . $i . '">' . $i . '</a></li>';
-                    } else {
-                        $html .= ($i == 1) ? '<li class="current">' . $i . '</li>' : '<li><a href="#" data-page="' . $i . '">' . $i . '</a></li>';
-                    }
-                }
-            }
-
-            if ($currentPage < $count) {
-                $html .= '<li><a href="#" data-page="' . ($currentPage + 1) . '">&gt;</a></li>';
-            }
-
-            $html .= '</ol>';
-        }
-
-        return $html;
     }
 }

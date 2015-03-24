@@ -1,9 +1,7 @@
 <?php
 require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
-require_once(MAGENTO_ROOT . '/fyndiq/shared/src/FyndiqFeedWriter.php');
-require_once(MAGENTO_ROOT . '/fyndiq/shared/src/FyndiqCSVFeedWriter.php');
-require_once(MAGENTO_ROOT . '/fyndiq/shared/src/FyndiqAPICall.php');
+require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
 
 /**
  * Taking care of cron jobs for product feed.
@@ -71,11 +69,11 @@ class Fyndiq_Fyndiq_Model_Observer
         $products = Mage::getModel('fyndiq/product')->getCollection()->setOrder('id', 'DESC');
         $products = $products->getItems();
         $ids_to_export = array();
-        $productinfo = array();
+        $productInfo = array();
         foreach ($products as $producted) {
             $product = $producted->getData();
             $ids_to_export[] = intval($product["product_id"]);
-            $productinfo[$product["product_id"]] = $producted;
+            $productInfo[$product["product_id"]] = $producted;
         }
 
         //Initialize models here so it saves memory.
@@ -88,7 +86,7 @@ class Fyndiq_Fyndiq_Model_Observer
 
         foreach ($products_to_export as $magproduct) {
 
-            if ($feedWriter->addProduct($this->getProduct($magproduct, $productinfo)) && $magproduct->getTypeId(
+            if ($feedWriter->addProduct($this->getProduct($magproduct, $productInfo)) && $magproduct->getTypeId(
                 ) != "simple"
             ) {
                 $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magproduct);
@@ -96,7 +94,7 @@ class Fyndiq_Fyndiq_Model_Observer
                     '*'
                 )->addFilterByRequiredOptions()->getItems();
                 foreach ($simple_collection as $simple_product) {
-                    $feedWriter->addProduct($this->getProduct($simple_product, $productinfo));
+                    $feedWriter->addProduct($this->getProduct($simple_product, $productInfo));
                 }
             }
         }
@@ -105,7 +103,7 @@ class Fyndiq_Fyndiq_Model_Observer
     }
 
 
-    private function getProduct($magproduct, $productinfo)
+    private function getProduct($magproduct, $productInfo)
     {
         //Initialize models here so it saves memory.
         $product_model = Mage::getModel('catalog/product');
@@ -173,16 +171,19 @@ class Fyndiq_Fyndiq_Model_Observer
             }
             $feed_product["product-title"] = addslashes($magarray["name"]);
             $feed_product["product-description"] = addslashes($magproduct->getDescription());
-            if ($magarray["type_id"] == "simple" AND isset($productinfo[$magarray["entity_id"]])) {
-                $feed_product["product-price"] = $magarray["price"] - ($magarray["price"] * ($productinfo[$magarray["entity_id"]]["exported_price_percentage"] / 100));
-            } elseif ($magarray["type_id"] == "simple") {
+
+
+            if ($magarray["type_id"] == "simple" AND isset($productInfo[$magarray["entity_id"]])) {
+                $discount = $productInfo[$magarray['entity_id']]['exported_price_percentage'];
+            } elseif ($magarray["type_id"] == 'simple') {
                 if ($parent != false) {
-                    $feed_product["product-price"] = $magarray["price"] - ($magarray["price"] * ($productinfo[$parent]["exported_price_percentage"] / 100));
+                    $discount = $productInfo[$parent]['exported_price_percentage'];
                 }
             } else {
-                $feed_product["product-price"] = $magarray["price"] - ($magarray["price"] * ($productinfo[$magarray["entity_id"]]["exported_price_percentage"] / 100));
+                $discount = $productInfo[$magarray['entity_id']]['exported_price_percentage'];
             }
-            $feed_product["product-price"] = number_format((float)$feed_product["product-price"], 2, '.', '');
+            $price = FyndiqUtils::getFyndiqPrice($magarray['price'], $discount);
+            $feed_product["product-price"] = number_format((float)$price, 2, '.', '');
             $feed_product["product-vat-percent"] = $taxpercent;
             $feed_product["product-oldprice"] = number_format((float)$magarray["price"], 2, '.', '');
             $feed_product["product-market"] = Mage::getStoreConfig('general/country/default');
