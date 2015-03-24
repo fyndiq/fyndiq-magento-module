@@ -92,17 +92,19 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     }
 
     /**
-     * Get the products.
+     * Get products in category for page
      *
-     * @param $args
+     * @param Category $category
+     * @param int $page
+     * @return array
      */
-    public function get_products($args)
-    {
+    private function getAllProducts($category, $page) {
+        $data = array();
+
         $grouped_model = Mage::getModel('catalog/product_type_grouped');
         $configurable_model = Mage::getModel('catalog/product_type_configurable');
         $product_model = Mage::getModel('catalog/product');
 
-        $category = Mage::getModel('catalog/category')->load($args['category']);
         $products = $product_model
             ->getCollection()
             ->addAttributeToFilter(
@@ -114,40 +116,37 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             ->addCategoryFilter($category)
             ->addAttributeToSelect('*');
 
-        if (isset($args["page"]) AND $args["page"] != -1) {
-            $products->setCurPage($args["page"]);
-            $products->setPageSize(10);
-        }
+        $products->setCurPage($page);
+        $products->setPageSize(10);
         $products->load();
         $products = $products->getItems();
-        $data = array();
 
         // get all the products
         foreach ($products as $prod) {
             if ($prod->getTypeId() == 'simple') {
-                $childs = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild($prod->getId());
-                if (isset($childs) && count($childs) > 0) {
+                $children = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild($prod->getId());
+                if (isset($children) && count($children) > 0) {
                     continue;
                 }
             }
             // setting up price and quantity for fyndiq.
-            $qtystock = 0;
+            $qtyStock = 0;
             if ($prod->getTypeId() != 'simple') {
                 foreach ($prod->getTypeInstance(true)->getUsedProducts(null, $prod) as $simple) {
                     $stock = Mage::getModel('cataloginventory/stock_item')->loadByProduct($simple)->getQty();
-                    $qtystock += $stock;
+                    $qtyStock += $stock;
                 }
-                if (!isset($qtystock)) {
-                    $qtystock = 0;
+                if (!isset($qtyStock)) {
+                    $qtyStock = 0;
                 }
             } else {
-                $qtystock = Mage::getModel('cataloginventory/stock_item')->loadByProduct($prod)->getQty();
+                $qtyStock = Mage::getModel('cataloginventory/stock_item')->loadByProduct($prod)->getQty();
             }
             $fyndiq = Mage::getModel('fyndiq/product')->productExist($prod->getId());
             $fyndiq_data = Mage::getModel('fyndiq/product')->getProductExportData($prod->getId());
             $fyndiq_percentage = FmConfig::get('price_percentage');
 
-            if ($prod->getTypeId() == "simple") {
+            if ($prod->getTypeId() == 'simple') {
                 //Get parent
                 $parentIds = $grouped_model->getParentIdsByChild($prod->getId());
                 if (!$parentIds) //Couldn't get parent, try configurable model instead
@@ -159,30 +158,24 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                     $parent = $parentIds[0];
                 }
             }
-            $tags = "";
+            $tags = array();
             if (isset($parent)) {
-                $parentprod = $product_model->load($parent);
-                if ($parentprod) {
+                $parentProd = $product_model->load($parent);
+                if ($parentProd) {
                     $productAttributeOptions = array();
-                    $parentType = $parentprod->getTypeInstance();
+                    $parentType = $parentProd->getTypeInstance();
                     if (method_exists($parentType, "getConfigurableAttributes")) {
                         $productAttributeOptions = $parentType->getConfigurableAttributes();
                     }
 
-                    $attrid = 1;
                     foreach ($productAttributeOptions as $productAttribute) {
-                        $attrValue = $parentprod->getResource()->getAttribute(
+                        $attrValue = $parentProd->getResource()->getAttribute(
                             $productAttribute->getProductAttribute()->getAttributeCode()
                         )->getFrontend();
                         $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
                         $value = $attrValue->getValue($prod);
 
-                        if ($attrid == 1) {
-                            $tags .= $attrCode . ": " . $value[0];
-                        } else {
-                            $tags .= ", " . $attrCode . ": " . $value[0];
-                        }
-                        $attrid++;
+                        $tags[] = $attrCode . ": " . $value[0];
                     }
                 }
             }
@@ -191,31 +184,31 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 'id' => $prod->getId(),
                 'url' => $prod->getUrl(),
                 'name' => $prod->getName(),
-                'quantity' => intval($qtystock),
-                'fyndiq_quantity' => intval($qtystock),
+                'quantity' => intval($qtyStock),
+                'fyndiq_quantity' => intval($qtyStock),
                 'price' => number_format((float)$prod->getPrice(), 2, '.', ''),
                 'fyndiq_percentage' => $fyndiq_percentage,
-                'fyndiq_exported_stock' => intval($qtystock),
+                'fyndiq_exported_stock' => intval($qtyStock),
                 'fyndiq_exported' => $fyndiq,
                 'description' => $prod->getDescription(),
                 'reference' => $prod->getSKU(),
-                'properties' => $tags,
+                'properties' => implode(', ', $tags),
                 'isActive' => $prod->getIsActive()
             );
 
             //trying to get image, if not image will be false
             try {
-                $prodData["image"] = $prod->getImageUrl();
+                $prodData['image'] = $prod->getImageUrl();
             } catch (Exception $e) {
-                $prodData["image"] = false;
+                $prodData['image'] = false;
             }
 
             if ($fyndiq) {
-                $prodData["fyndiq_price"] = $fyndiq_data["exported_price_percentage"];
+                $prodData['fyndiq_price'] = $fyndiq_data['exported_price_percentage'];
             }
 
             //Count expected price to Fyndiq
-            $prodData["expected_price"] = number_format(
+            $prodData['expected_price'] = number_format(
                 (float)($prodData['price'] - (($prodData['fyndiq_percentage'] / 100) * $prodData['price'])),
                 2,
                 '.',
@@ -224,13 +217,62 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
             array_push($data, $prodData);
         }
-        $object = new stdClass();
-        $object->products = $data;
-        if (!isset($args["page"])) {
-            $object->pagination = $this->getPagerProductsHtml($category, 1);
-        } else {
-            $object->pagination = $this->getPagerProductsHtml($category, $args["page"]);
+        return $data;
+    }
+
+    /**
+     * Get total products in category
+     *
+     * @param Category $category
+     * @return int
+     */
+    private function getTotalProducts($category) {
+        $collection = Mage::getModel('catalog/product')
+            ->getCollection()
+            ->addAttributeToFilter(
+                array(
+                    array('attribute' => 'type_id', 'eq' => 'configurable'),
+                    array('attribute' => 'type_id', 'eq' => 'simple'),
+                )
+            )
+            ->addCategoryFilter($category)
+            ->addAttributeToSelect('*');
+        if ($collection == 'null') {
+            return 0;
         }
+
+        $collection = $collection->getItems();
+
+        foreach ($collection as $key => $prod) {
+            if ($prod->getTypeId() == 'simple') {
+                $children = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild($prod->getId());
+                if (isset($children) && count($children) > 0) {
+                    unset($collection[$key]);
+                }
+            }
+        }
+
+        return count($collection);
+    }
+
+
+    /**
+     * Get the products.
+     *
+     * @param $args
+     */
+    public function get_products($args)
+    {
+        $page = 1;
+        if (isset($args['page']) && is_numeric($args['page']) && $args['page'] != -1) {
+            $page = intval($args['page']);
+        }
+        $category = Mage::getModel('catalog/category')->load($args['category']);
+        $total = $this->getTotalProducts($category);
+
+        $object = new stdClass();
+        $object->products = $this->getAllProducts($category, $page);
+        $object->pagination = $this->getPaginationHTML($total, $page);
         $this->response($object);
     }
 
@@ -444,90 +486,6 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $config->saveConfig('fyndiq/fyndiq_group/apikey', "", 'default', "");
         $config->saveConfig('fyndiq/fyndiq_group/username', "", 'default', "");
         $this->response(true);
-    }
-
-
-    /**
-     * Get pagination
-     *
-     * @param $category
-     * @param $currentpage
-     * @return bool|string
-     * @todo switch to getPaginationHTML
-     */
-    private function getPagerProductsHtml($category, $currentpage)
-    {
-        $html = false;
-        $collection = Mage::getModel('catalog/product')
-            ->getCollection()
-            ->addAttributeToFilter(
-                array(
-                    array('attribute' => 'type_id', 'eq' => 'configurable'),
-                    array('attribute' => 'type_id', 'eq' => 'simple'),
-                )
-            )
-            ->addCategoryFilter($category)
-            ->addAttributeToSelect('*');
-        if ($collection == 'null') {
-            return;
-        }
-
-        $collection = $collection->getItems();
-
-
-        foreach ($collection as $key => $prod) {
-            if ($prod->getTypeId() == 'simple') {
-                $childs = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild($prod->getId());
-                if (isset($childs) && count($childs) > 0) {
-                    unset($collection[$key]);
-                }
-            }
-        }
-
-        if (count($collection) > 10) {
-            $curPage = $currentpage;
-            $pager = (int)(count($collection) / $this->_itemPerPage);
-            $count = (count($collection) % $this->_itemPerPage == 0) ? $pager : $pager + 1;
-            $start = 1;
-            $end = $this->_pageFrame;
-
-
-            $html .= '<ol class="pageslist">';
-            if (isset($curPage) && $curPage != 1) {
-                $start = $curPage - 1;
-                $end = $start + $this->_pageFrame;
-            } else {
-                $end = $start + $this->_pageFrame;
-            }
-            if ($end > $count) {
-                $start = $count - ($this->_pageFrame - 1);
-            } else {
-                $count = $end - 1;
-            }
-
-            if ($curPage > $count - 1) {
-                $html .= '<li><a href="#" data-page="' . ($curPage - 1) . '"><</a></li>';
-            }
-
-            for ($i = $start; $i <= $count; $i++) {
-                if ($i >= 1) {
-                    if ($curPage) {
-                        $html .= ($curPage == $i) ? '<li class="current">' . $i . '</li>' : '<li><a href="#" data-page="' . $i . '">' . $i . '</a></li>';
-                    } else {
-                        $html .= ($i == 1) ? '<li class="current">' . $i . '</li>' : '<li><a href="#" data-page="' . $i . '">' . $i . '</a></li>';
-                    }
-                }
-
-            }
-
-            if ($curPage < $count) {
-                $html .= '<li><a href="#" data-page="' . ($curPage + 1) . '">></a></li>';
-            }
-
-            $html .= '</ol>';
-        }
-
-        return $html;
     }
 
     /**
