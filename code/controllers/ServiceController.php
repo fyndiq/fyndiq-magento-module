@@ -10,6 +10,7 @@ require_once(dirname(dirname(__FILE__)) . '/Model/Category.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/messages.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
+require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
 
 class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 {
