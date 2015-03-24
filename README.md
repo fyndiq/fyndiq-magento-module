@@ -13,7 +13,7 @@ You can just drag the app directory to your magento directory to make the files 
 ### manual production installation
 For this you need to have a terminal and git installed.
 
-1. Run `git clone git://git@github.com:fyndiq/fyndiq-magento-module.git`
+1. Run `git clone https://github.com/fyndiq/fyndiq-magento-module.git`
 2. Cd to your module directory (`cd /path/to/your/module/repo/`)
 3. Run `git submodule update --init --recursive`
 4. Run in repo directory `./fyndman.sh deploy /path/to/your/magento/`
@@ -29,7 +29,7 @@ For this you need to have a terminal and git installed.
 #### Development installation
 For this you need to have a terminal and git installed.
 
-1. Run `git clone git://git@github.com:fyndiq/fyndiq-magento-module.git`
+1. Run `git clone https://github.com/fyndiq/fyndiq-magento-module.git`
 2. Cd to your module directory (`cd /path/to/your/module/repo/`)
 3. Run `git submodule update --init --recursive`
 4. Run in repo directory `./fyndman.sh build /path/to/your/magento/`
