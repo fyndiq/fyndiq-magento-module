@@ -3,6 +3,10 @@
 class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
 {
 
+    const FYNDIQ_ORDERS_EMAIL = 'info@fyndiq.se';
+    const FYNDIQ_ORDERS_NAME_FIRST = 'Fyndiq';
+    const FYNDIQ_ORDERS_NAME_LAST = 'Orders';
+
     public function _construct()
     {
         parent::_construct();
@@ -50,56 +54,65 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
      */
     public function getImportedOrders($page = -1)
     {
-        $return_array = array();
+        $result = array();
         $orders = $this->getCollection()->setOrder('id', 'DESC');
         if($page != -1) {
             $orders->setCurPage($page);
+            // TODO: this should be parameter
             $orders->setPageSize(10);
         }
         $orders = $orders->load()->getItems();
         foreach($orders as $order){
+            $orderArray = array();
             $order = $order->getData();
-            $magorder = Mage::getModel('sales/order')->load($order["order_id"]);
-            $magarray = $magorder->getData();
-            $magarray["total_qty_ordered"] = intval($magarray["total_qty_ordered"]);
-            $magarray["base_grand_total"] = number_format((float)$magarray["base_grand_total"], 2, '.', '');
-
-            $date = $magarray["created_at"];
-            $magarray["created_at"] = date ("Y-m-d", strtotime($date));
-            $magarray["created_at_time"] = date ("G:i:s", strtotime($date));
-            $magarray["fyndiq_order"] = $order["fyndiq_orderid"];
-            $return_array[] = $magarray;
+            $magOrder = Mage::getModel('sales/order')->load($order['order_id']);
+            $magArray = $magOrder->getData();
+            $orderArray['order_id'] = $magArray['entity_id'];
+            $orderArray['fyndiq_orderid'] = $order['fyndiq_orderid'];
+            $orderArray['entity_id'] = $magArray['entity_id'];
+            $orderArray['price'] = number_format((float)$magArray['base_grand_total'], 2, '.', '');
+            $orderArray['total_products'] = intval($magArray['total_qty_ordered']);
+            $orderArray['state'] = $magArray['state'];
+            $orderArray['created_at'] = date('Y-m-d', strtotime($magArray['created_at']));
+            $orderArray['created_at_time'] = date("G:i:s", strtotime($magArray['created_at']));
+            $result[] = $orderArray;
         }
-        return $return_array;
+        return $result;
+    }
+
+    private function getDeliveryCountry($countryName) {
+        switch ($countryName) {
+            case 'Germany': return 'DE';
+            default: return 'SE';
+        }
     }
 
     /**
      * Create a order in magento based on Fyndiq Order
      *
      * @param $fyndiq_order
+     * @throws Exception
      */
     public function create($fyndiq_order)
     {
 
         //get customer by mail
-        $customer = Mage::getModel("customer/customer");
+        $customer = Mage::getModel('customer/customer');
         $customer->setWebsiteId(Mage::app()->getWebsite()->getId());
-        $customer->loadByEmail("info@fyndiq.se");
+        $customer->loadByEmail(self::FYNDIQ_ORDERS_EMAIL);
         if (!$customer->getId()) {
-            $customer->setEmail("info@fyndiq.se");
-            $customer->setFirstname("Fyndiq");
-            $customer->setLastname("Orders");
+            $customer->setEmail(self::FYNDIQ_ORDERS_EMAIL);
+            $customer->setFirstname(self::FYNDIQ_ORDERS_NAME_FIRST);
+            $customer->setLastname(self::FYNDIQ_ORDERS_NAME_LAST);
             $customer->setPassword(md5(uniqid(rand(), true)));
             try {
                 $customer->save();
                 $customer->setConfirmation(null);
                 $customer->save();
-            } catch (Exception $ex) {
-                Zend_Debug::dump($ex->getMessage());
-                echo "ERROR1";
+            } catch (Exception $e) {
+                throw new Exception('Error, creating Fyndiq customer: ' . $e->getMessage());
             }
         }
-
 
         //Start a new order quote and assign current customer to it.
         $quote = Mage::getModel('sales/quote')->setStoreId(Mage::app('default')->getStore('default')->getId());
@@ -120,10 +133,9 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
                 $quote->addProduct($_product, new Varien_Object($product_info));
             }
         }
-        if(count($quote->getAllItems()) == 0) {
-            throw new Exception("Couldn't find product for order #" . $fyndiq_order->id);
+        if(count($quote->getAllItems()) === 0) {
+            throw new Exception('Couldn\'t find product for order #' . $fyndiq_order->id);
         }
-
 
         //Shipping / Billing information gather
 
@@ -136,7 +148,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
                 'region_id' => '',
                 'region' => '',
                 'postcode' => $fyndiq_order->delivery_postalcode,
-                'country_id' => 'SE', /* SWEDEN */
+                'country_id' => $this->getDeliveryCountry($fyndiq_order->delivery_country),
                 'telephone' => $fyndiq_order->delivery_phone,
         );
 
@@ -149,7 +161,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
                 'region_id' => '',
                 'region' => '',
                 'postcode' => $fyndiq_order->delivery_postalcode,
-                'country_id' => 'SE', /* SWEDEN */
+                'country_id' => $this->getDeliveryCountry($fyndiq_order->delivery_country),
                 'telephone' => $fyndiq_order->delivery_phone,
         );
 
