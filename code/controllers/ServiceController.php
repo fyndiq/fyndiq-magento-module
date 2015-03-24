@@ -456,19 +456,21 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
             $ret = FmHelpers::call_api('POST', 'delivery_notes/', $orders, true);
 
-
             if ($ret['status'] == 200) {
+                $fileName = 'delivery_notes-' . implode('-', $args['orders']) . '.pdf';
 
-                if (file_exists("fyndiq/files/deliverynote.pdf")) {
-                    unlink("fyndiq/files/deliverynote.pdf");
-                }
-                // Open the file to save the pdf
-                $fp = fopen("fyndiq/files/deliverynote.pdf", 'w+');
+                header('Content-Type: application/pdf');
+                header('Content-Disposition: attachment; filename="' . $fileName . '"');
+                header('Content-Transfer-Encoding: binary');
+                header('Content-Length: ' . strlen($ret['data']));
+                header('Expires: 0');
+                $fp = fopen('php://temp', 'wb+');
                 // Saving data to file
                 fputs($fp, $ret['data']);
-                # closing the file
+                rewind($fp);
+                fpassthru($fp);
                 fclose($fp);
-                unset($ret['data']);
+                die();
             }
 
             $this->response(true);
