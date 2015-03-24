@@ -3,6 +3,10 @@
 class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
 {
 
+    const FYNDIQ_ORDERS_EMAIL = 'info@fyndiq.se';
+    const FYNDIQ_ORDERS_NAME_FIRST = 'Fyndiq';
+    const FYNDIQ_ORDERS_NAME_LAST = 'Orders';
+
     public function _construct()
     {
         parent::_construct();
@@ -73,6 +77,13 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         return $return_array;
     }
 
+    private function getDeliveryCountry($countryName) {
+        switch ($countryName) {
+            case 'Germany': return 'DE';
+            default: return 'SE';
+        }
+    }
+
     /**
      * Create a order in magento based on Fyndiq Order
      *
@@ -82,24 +93,22 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
     {
 
         //get customer by mail
-        $customer = Mage::getModel("customer/customer");
+        $customer = Mage::getModel('customer/customer');
         $customer->setWebsiteId(Mage::app()->getWebsite()->getId());
-        $customer->loadByEmail("info@fyndiq.se");
+        $customer->loadByEmail(self::FYNDIQ_ORDERS_EMAIL);
         if (!$customer->getId()) {
-            $customer->setEmail("info@fyndiq.se");
-            $customer->setFirstname("Fyndiq");
-            $customer->setLastname("Orders");
+            $customer->setEmail(self::FYNDIQ_ORDERS_EMAIL);
+            $customer->setFirstname(self::FYNDIQ_ORDERS_NAME_FIRST);
+            $customer->setLastname(self::FYNDIQ_ORDERS_NAME_LAST);
             $customer->setPassword(md5(uniqid(rand(), true)));
             try {
                 $customer->save();
                 $customer->setConfirmation(null);
                 $customer->save();
-            } catch (Exception $ex) {
-                Zend_Debug::dump($ex->getMessage());
-                echo "ERROR1";
+            } catch (Exception $e) {
+                throw new Exception('Error, creating Fyndiq customer: ' . $e->getMessage());
             }
         }
-
 
         //Start a new order quote and assign current customer to it.
         $quote = Mage::getModel('sales/quote')->setStoreId(Mage::app('default')->getStore('default')->getId());
@@ -120,10 +129,9 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
                 $quote->addProduct($_product, new Varien_Object($product_info));
             }
         }
-        if(count($quote->getAllItems()) == 0) {
-            throw new Exception("Couldn't find product for order #" . $fyndiq_order->id);
+        if(count($quote->getAllItems()) === 0) {
+            throw new Exception('Couldn\'t find product for order #' . $fyndiq_order->id);
         }
-
 
         //Shipping / Billing information gather
 
@@ -136,7 +144,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
                 'region_id' => '',
                 'region' => '',
                 'postcode' => $fyndiq_order->delivery_postalcode,
-                'country_id' => 'SE', /* SWEDEN */
+                'country_id' => $this->getDeliveryCountry($fyndiq_order->delivery_country),
                 'telephone' => $fyndiq_order->delivery_phone,
         );
 
@@ -149,7 +157,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
                 'region_id' => '',
                 'region' => '',
                 'postcode' => $fyndiq_order->delivery_postalcode,
-                'country_id' => 'SE', /* SWEDEN */
+                'country_id' => $this->getDeliveryCountry($fyndiq_order->delivery_country),
                 'telephone' => $fyndiq_order->delivery_phone,
         );
 

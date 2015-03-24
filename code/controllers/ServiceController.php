@@ -14,8 +14,8 @@ require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
 class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 {
 
-    private $_itemPerPage = 10;
-    private $_pageFrame = 4;
+    const itemPerPage = 10;
+    const pageFrame = 4;
 
     /**
      * Structure the response back to the client
@@ -333,25 +333,22 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     /**
      * Loading imported orders
      *
-     * @param $args
+     * @param array $args
      */
     public function load_orders($args)
     {
-
-
-        if (isset($args["page"]) AND $args["page"] != -1) {
-            $orders = Mage::getModel('fyndiq/order')->getImportedOrders($args["page"]);
-        } else {
-            $orders = Mage::getModel('fyndiq/order')->getImportedOrders(1);
+        $total = 0;
+        $collection = Mage::getModel('fyndiq/order')->getCollection();
+        if ($collection != 'null') {
+            $total = $collection->count();
         }
-
+        $page = 1;
+        if (isset($args['page']) && is_numeric($args['page']) && $args['page'] != -1) {
+            $page = intval($args['page']);
+        }
         $object = new stdClass();
-        $object->orders = $orders;
-        if (!isset($args["page"])) {
-            $object->pagination = $this->getPagerOrdersHtml(1);
-        } else {
-            $object->pagination = $this->getPagerOrdersHtml($args["page"]);
-        }
+        $object->orders = Mage::getModel('fyndiq/order')->getImportedOrders($page);
+        $object->pagination = $this->getPaginationHTML($total, $page);
         $this->response($object);
     }
 
@@ -363,30 +360,31 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     public function import_orders($args)
     {
         try {
-            $url = "orders/";
+            $url = 'orders/';
             //Get the last updated date
-            $settingexists = Mage::getModel('fyndiq/setting')->settingExist("order_lastdate");
-            if ($settingexists) {
-                $date = Mage::getModel('fyndiq/setting')->getSetting("order_lastdate");
-                $url .= "?min_date=" . urlencode($date["value"]);
+            $settingExists = Mage::getModel('fyndiq/setting')->settingExist('order_lastdate');
+            if ($settingExists) {
+                $date = Mage::getModel('fyndiq/setting')->getSetting('order_lastdate');
+                $url .= '?min_date=' . urlencode($date['value']);
             }
 
             //Get the orders
             $ret = FmHelpers::call_api('GET', $url);
 
             //Updating or adding the date setting
-            $newdate = date("Y-m-d H:i:s");
-            foreach ($ret["data"] as $order) {
+            $newDate = date('Y-m-d H:i:s');
+            foreach ($ret['data'] as $order) {
                 if (!Mage::getModel('fyndiq/order')->orderExists($order->id)) {
                     Mage::getModel('fyndiq/order')->create($order);
                 }
             }
-            if ($settingexists) {
-                Mage::getModel('fyndiq/setting')->updateSetting("order_lastdate", $newdate);
+            if ($settingExists) {
+                Mage::getModel('fyndiq/setting')->updateSetting('order_lastdate', $newDate);
             } else {
-                Mage::getModel('fyndiq/setting')->saveSetting("order_lastdate", $newdate);
+                Mage::getModel('fyndiq/setting')->saveSetting('order_lastdate', $newDate);
             }
-            self::response($ret);
+            $time = date('G:i:s', strtotime($newDate));
+            self::response($time);
         } catch (Exception $e) {
             self::response_error(
                 FmMessages::get('unhandled-error-title'),
@@ -455,6 +453,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      * @param $category
      * @param $currentpage
      * @return bool|string
+     * @todo switch to getPaginationHTML
      */
     private function getPagerProductsHtml($category, $currentpage)
     {
@@ -532,56 +531,49 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     }
 
     /**
-     * Get pagination for orders
+     * Generates pagination HTML
      *
-     * @param integer $currentpage
-     * @return bool|string
+     * @param $total - total number of items
+     * @param $currentPage - current page
+     * @return string - html string for pagination
      */
-    private function getPagerOrdersHtml($currentpage)
+    private function getPaginationHTML($total, $currentPage)
     {
-        $html = false;
-        $collection = Mage::getModel('fyndiq/order')
-            ->getCollection();
-        if ($collection == 'null') {
-            return;
-        }
-        if ($collection->count() > 10) {
-            $curPage = $currentpage;
-            $pager = (int)($collection->count() / $this->_itemPerPage);
-            $count = ($collection->count() % $this->_itemPerPage == 0) ? $pager : $pager + 1;
+        $html = '';
+        if ($total > self::itemPerPage) {
+            $pages = (int)($total / self::itemPerPage);
+            $count = ($total % self::itemPerPage == 0) ? $pages : $pages + 1;
             $start = 1;
-            $end = $this->_pageFrame;
 
             $html .= '<ol class="pageslist">';
-            if (isset($curPage) && $curPage != 1) {
-                $start = $curPage - 1;
-                $end = $start + $this->_pageFrame;
-            } else {
-                $end = $start + $this->_pageFrame;
+
+            $end = $start + self::pageFrame;
+            if ($currentPage != 1) {
+                $start = $currentPage - 1;
+                $end = $start + self::pageFrame;
             }
             if ($end > $count) {
-                $start = $count - ($this->_pageFrame - 1);
+                $start = $count - (self::pageFrame - 1);
             } else {
                 $count = $end - 1;
             }
 
-            if ($curPage > $count - 1) {
-                $html .= '<li><a href="#" data-page="' . ($curPage - 1) . '"><</a></li>';
+            if ($currentPage > $count - 1) {
+                $html .= '<li><a href="#" data-page="' . ($currentPage - 1) . '">&lt;</a></li>';
             }
 
             for ($i = $start; $i <= $count; $i++) {
                 if ($i >= 1) {
-                    if ($curPage) {
-                        $html .= ($curPage == $i) ? '<li class="current">' . $i . '</li>' : '<li><a href="#" data-page="' . $i . '">' . $i . '</a></li>';
+                    if ($currentPage) {
+                        $html .= ($currentPage == $i) ? '<li class="current">' . $i . '</li>' : '<li><a href="#" data-page="' . $i . '">' . $i . '</a></li>';
                     } else {
                         $html .= ($i == 1) ? '<li class="current">' . $i . '</li>' : '<li><a href="#" data-page="' . $i . '">' . $i . '</a></li>';
                     }
                 }
-
             }
 
-            if ($curPage < $count) {
-                $html .= '<li><a href="#" data-page="' . ($curPage + 1) . '">></a></li>';
+            if ($currentPage < $count) {
+                $html .= '<li><a href="#" data-page="' . ($currentPage + 1) . '">&gt;</a></li>';
             }
 
             $html .= '</ol>';
