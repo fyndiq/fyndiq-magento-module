@@ -495,16 +495,16 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     {
         if (isset($args['orders']) && is_array($args['orders'])) {
             $success = true;
-            $newStateId = FmConfig::get('done_state');
+            $newStatusId = FmConfig::get('done_state');
             $orderModel = Mage::getModel('fyndiq/order');
             foreach($args['orders'] as $orderId) {
                 if (is_numeric($orderId)) {
-                    $success &= $orderModel->updateOrderStatuses($orderId, $newStateId);
+                    $success &= $orderModel->updateOrderStatuses($orderId, $newStatusId);
                 }
             }
             if ($success) {
-                $state = $orderModel->getStateName($newStateId);
-                return $this->response($state);
+                $status = $orderModel->getStatusName($newStatusId);
+                return $this->response($status);
             }
         }
         self::response_error(

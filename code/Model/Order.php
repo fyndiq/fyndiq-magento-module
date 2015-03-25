@@ -72,7 +72,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             $orderArray['entity_id'] = $magArray['entity_id'];
             $orderArray['price'] = number_format((float)$magArray['base_grand_total'], 2, '.', '');
             $orderArray['total_products'] = intval($magArray['total_qty_ordered']);
-            $orderArray['state'] = $magArray['state'];
+            $orderArray['state'] = $magArray['status'];
             $orderArray['created_at'] = date('Y-m-d', strtotime($magArray['created_at']));
             $orderArray['created_at_time'] = date("G:i:s", strtotime($magArray['created_at']));
             $result[] = $orderArray;
@@ -200,8 +200,8 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $order = $service->getOrder();
 
         //Now set newly entered order's status to complete so customers can enjoy their goods.
-        $importState = FmConfig::get('import_state');
-        $order->setStatus($importState);
+        $importStatus = FmConfig::get('import_state');
+        $order->setStatus($importStatus);
 
         //Add delivery note as comment
         $comment = "Fyndiq delivery note: http://fyndiq.se" . $fyndiq_order->delivery_note . " \n just copy url and paste in the browser to download the delivery note.";
@@ -218,14 +218,15 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
      * Try to update the order state
      *
      * @param int $orderId
-     * @param string $stateId
+     * @param string $statusId
      * @return bool
      */
-    public function updateOrderStatuses($orderId, $stateId)
+    public function updateOrderStatuses($orderId, $statusId)
     {
-        $order = Mage::getModel('sales/order')->load($orderId);
+        $order = Mage::getModel('sales/order')->load(intval($orderId));
         if ($order) {
-            $order->setStatus($stateId);
+            //$order->setState(Mage_Sales_Model_Order::STATE_PROCESSING, true);
+            $order->setStatus($statusId, true);
             return $order->save();
         }
         return false;
@@ -233,13 +234,12 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
 
     /**
      * Get Order state name
-     * @param $stateId
+     * @param $statusId
      * @return mixed
      */
-    public function getStateName($stateId)
+    public function getStatusName($statusId)
     {
-
-        $status = Mage::getModel('sales/order_status')->loadDefaultByState($stateId);
+        $status = Mage::getModel('sales/order_status')->loadDefaultByState($statusId);
         return $status->getStoreLabel();
     }
 }
