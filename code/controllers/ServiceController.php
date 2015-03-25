@@ -486,8 +486,30 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     public function disconnect_account($args)
     {
         $config = new Mage_Core_Model_Config();
-        $config->saveConfig('fyndiq/fyndiq_group/apikey', "", 'default', "");
-        $config->saveConfig('fyndiq/fyndiq_group/username', "", 'default', "");
+        $config->saveConfig('fyndiq/fyndiq_group/apikey', '', 'default', '');
+        $config->saveConfig('fyndiq/fyndiq_group/username', '', 'default', '');
         $this->response(true);
+    }
+
+    public function update_order_status($args)
+    {
+        if (isset($args['orders']) && is_array($args['orders'])) {
+            $success = true;
+            $newStateId = FmConfig::get('done_state');
+            $orderModel = Mage::getModel('fyndiq/order');
+            foreach($args['orders'] as $orderId) {
+                if (is_numeric($orderId)) {
+                    $success &= $orderModel->updateOrderStatuses($orderId, $newStateId);
+                }
+            }
+            if ($success) {
+                $state = $orderModel->getStateName($newStateId);
+                return $this->response($state);
+            }
+        }
+        self::response_error(
+            FmMessages::get('unhandled-error-title'),
+            FmMessages::get('unhandled-error-message')
+        );
     }
 }

@@ -199,11 +199,9 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         //Setup order object and gather newly entered order
         $order = $service->getOrder();
 
-
         //Now set newly entered order's status to complete so customers can enjoy their goods.
-        //(optional of course, but most would like their orders created this way to be set to complete automagicly)
-        $order->setStatus(Mage_Sales_Model_Order::STATE_COMPLETE);
-
+        $importState = FmConfig::get('import_state');
+        $order->setStatus($importState);
 
         //Add delivery note as comment
         $comment = "Fyndiq delivery note: http://fyndiq.se" . $fyndiq_order->delivery_note . " \n just copy url and paste in the browser to download the delivery note.";
@@ -214,5 +212,34 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
 
         //add it to the table for check
         $this->addCheckData($fyndiq_order->id, $order->getId());
+    }
+
+    /**
+     * Try to update the order state
+     *
+     * @param int $orderId
+     * @param string $stateId
+     * @return bool
+     */
+    public function updateOrderStatuses($orderId, $stateId)
+    {
+        $order = Mage::getModel('sales/order')->load($orderId);
+        if ($order) {
+            $order->setStatus($stateId);
+            return $order->save();
+        }
+        return false;
+    }
+
+    /**
+     * Get Order state name
+     * @param $stateId
+     * @return mixed
+     */
+    public function getStateName($stateId)
+    {
+
+        $status = Mage::getModel('sales/order_status')->loadDefaultByState($stateId);
+        return $status->getStoreLabel();
     }
 }
