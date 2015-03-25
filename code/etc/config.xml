@@ -102,6 +102,8 @@
             <fyndiq_group>
                 <price_percentage>10</price_percentage>
                 <quantity_percentage>10</quantity_percentage>
+                <import_state>processing</import_state>
+                <done_state>complete</done_state>
                 <country>SE</country>
                 <currency>SEK</currency>
             </fyndiq_group>
