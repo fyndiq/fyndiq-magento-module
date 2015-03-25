@@ -32,6 +32,30 @@
                             <show_in_store>1</show_in_store>
                         </disconnect>
                         <!-- New fields go here -->
+                        <import_state translate="label">
+                            <label>Import order status</label>
+                            <comment>
+                                <![CDATA[Orders, imported from Fyndiq will be created with this orders status]]>
+                            </comment>
+                            <source_model>Mage_Adminhtml_Model_System_Config_Source_Order_Status</source_model>
+                            <frontend_type>select</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </import_state>
+                        <done_state translate="label">
+                            <label>Done order status</label>
+                            <comment>
+                                <![CDATA[When orders are marked as done, they will be switched to this status]]>
+                            </comment>
+                            <source_model>Mage_Adminhtml_Model_System_Config_Source_Order_Status</source_model>
+                            <frontend_type>select</frontend_type>
+                            <sort_order>11</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </done_state>
                         <price_percentage translate="label">
                             <label>Global percentage of price</label>
                             <comment>
