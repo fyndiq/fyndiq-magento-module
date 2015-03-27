@@ -45,7 +45,7 @@
 <?php } ?>
 
 
-<div>
+<div class="switcher">
     <label for="store_switcher"><?php echo $this->__('Current Configuration Scope:') ?></label>
     <select id="store_switcher" class="system-config-store-switcher" onchange="location.href=this.options[this.selectedIndex].getAttribute('url')">
         <?php foreach ($this->getStoreSelectOptions() as $_value => $_option): ?>
@@ -63,9 +63,3 @@
             <?php endforeach ?>
     </select>
 </div>
-<?php
-    echo $storeId = $this->getRequest()->getParam('store');
-    echo $storeId = $this->getRequest()->getParam('store');
-    echo '|' . Mage::getStoreConfig('fyndiq/fyndiq_group/apikey', $storeId) . '|';
-    echo '<br>2' . $this->getRequest()->getParams();
-?>
