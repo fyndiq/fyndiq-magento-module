@@ -93,4 +93,12 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
         }
         return false;
     }
+
+    public function getStoreSelectOptions()
+    {
+        $switcher = new Mage_Adminhtml_Block_System_Config_Switcher();
+        return $switcher->getStoreSelectOptions();
+    }
+
+
 }
