@@ -35,17 +35,7 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
      */
     public function getServicePath()
     {
-        $request = $this->getRequest();
-        $path = array(
-            'fyndiq',
-            'service',
-            'index',
-            'website',
-            $request->getParam('website'),
-            'store',
-            $request->getParam('website'),
-        );
-        return $this->getAdminPath(implode('/', $path)) . '?isAjax=true';
+        return $this->getAdminPath('fyndiq/service/index') . '?isAjax=true';
     }
 
     /**
@@ -57,7 +47,16 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
      */
     function getAdminPath($path, $section = null)
     {
-        return Mage::helper("adminhtml")->getUrl($path, $section);
+        // Add scope
+        $request = $this->getRequest();
+        $segments = array(
+            $path,
+            'website',
+            $request->getParam('website'),
+            'store',
+            $request->getParam('store'),
+        );
+        return Mage::helper('adminhtml')->getUrl(implode('/', $segments), $section);
     }
 
     public function getLanguage()
