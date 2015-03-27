@@ -27,6 +27,9 @@
 .muted {
   color: #999; }
 
+.hidden {
+  display: none; }
+
 .fm-header {
   background-color: #fff; }
 
@@ -65,8 +68,8 @@
   padding: 6px 12px;
   text-decoration: none; }
 
-a.btn:hover,
-a.fm-button:hover {
+.btn:hover,
+.fm-button:hover {
   text-decoration: none; }
 
 .fm-button.green,
@@ -119,7 +122,7 @@ a.fm-button:hover {
     .fm-panel .fm-panel-body.no-padding {
       padding: 0; }
   .fm-panel .no-padding p {
-    padding: 1em; }
+    margin: 1em; }
 
 .form-horizontal fieldset {
   background-color: transparent;
@@ -138,6 +141,7 @@ a.fm-button:hover {
   height: 2em; }
 
 .fm-panel table {
+  border-collapse: collapse;
   font-size: 11pt;
   width: 100%; }
   .fm-panel table th {
