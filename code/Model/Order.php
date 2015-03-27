@@ -67,6 +67,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             $order = $order->getData();
             $magOrder = Mage::getModel('sales/order')->load($order['order_id']);
             $magArray = $magOrder->getData();
+            $url = Mage::helper('adminhtml')->getUrl("adminhtml/sales_order/view", array('order_id'=>$order['order_id']));
             $orderArray['order_id'] = $magArray['entity_id'];
             $orderArray['fyndiq_orderid'] = $order['fyndiq_orderid'];
             $orderArray['entity_id'] = $magArray['entity_id'];
@@ -75,6 +76,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             $orderArray['state'] = $magArray['status'];
             $orderArray['created_at'] = date('Y-m-d', strtotime($magArray['created_at']));
             $orderArray['created_at_time'] = date("G:i:s", strtotime($magArray['created_at']));
+            $orderArray['link'] = $url;
             $result[] = $orderArray;
         }
         return $result;
