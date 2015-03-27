@@ -36,7 +36,8 @@ class Fyndiq_Fyndiq_Model_Observer
                 $date = Mage::getModel('fyndiq/setting')->getSetting("order_lastdate");
                 $url .= "?min_date=" . urlencode($date["value"]);
             }
-            $ret = FmHelpers::call_api('GET', $url);
+            $storeId = $this->getRequest()->getParam('store');
+            $ret = FmHelpers::call_api($storeId, 'GET', $url);
             $newdate = date("Y-m-d H:i:s");
             if ($settingexists) {
                 Mage::getModel('fyndiq/setting')->updateSetting("order_lastdate", $newdate);
@@ -296,11 +297,13 @@ class Fyndiq_Fyndiq_Model_Observer
 
     public function handle_fyndiqConfigChangedSection()
     {
-        if (FmConfig::get('username') !== '' && FmConfig::get('apikey') !== '') {
+        $storeId = $this->getRequest()->getParam('store');
+        if (FmConfig::get('username',$storeId) !== ''
+            && FmConfig::get('apikey', $storeId) !== '') {
             $data = array(
                 'product_feed_url' => Mage::getUrl('fyndiq/file/index')
             );
-            FmHelpers::call_api('PATCH', 'settings/', $data);
+            FmHelpers::call_api($storeId, 'PATCH', 'settings/', $data);
         }
     }
 }

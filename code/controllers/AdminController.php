@@ -39,7 +39,8 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
         $isAuthorized = true;
         $message = '';
         try {
-            FmHelpers::call_api('GET', 'settings/');
+            $storeId = $this->getRequest()->getParam('store');
+            FmHelpers::call_api($storeId, 'GET', 'settings/');
         } catch (Exception $e) {
             if ($e instanceof FyndiqAPIAuthorizationFailed) {
                 $isAuthorized = false;
@@ -95,7 +96,7 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
      */
     public function getUsername()
     {
-        return Mage::getStoreConfig('fyndiq/fyndiq_group/username');
+        return FmConfig::get('username', $this->getRequest()->getParam('store'));
     }
 
     /**
@@ -105,6 +106,6 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
      */
     public function getAPIToken()
     {
-        return Mage::getStoreConfig('fyndiq/fyndiq_group/apikey');
+        return FmConfig::get('apikey', $this->getRequest()->getParam('store'));
     }
 }

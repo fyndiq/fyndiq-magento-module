@@ -35,7 +35,17 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
      */
     public function getServicePath()
     {
-        return $this->getAdminPath('fyndiq/service') . '?isAjax=true';
+        $request = $this->getRequest();
+        $path = array(
+            'fyndiq',
+            'service',
+            'index',
+            'website',
+            $request->getParam('website'),
+            'store',
+            $request->getParam('website'),
+        );
+        return $this->getAdminPath(implode('/', $path)) . '?isAjax=true';
     }
 
     /**
@@ -60,9 +70,14 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
         return Mage::app()->getStore()->getCurrentCurrencyCode();
     }
 
+    public function getStoreId()
+    {
+        return $this->getRequest()->getParam('store');
+    }
+
     public function getPercentage()
     {
-        return FmConfig::get('percentage');
+        return FmConfig::get('percentage', $this->getStoreId());
     }
 
     public function getUsername()

@@ -39,10 +39,10 @@ class FmHelpers
      * @param array $data
      * @return mixed
      */
-    public static function call_api($method, $path, $data = array())
+    public static function call_api($storeId, $method, $path, $data = array())
     {
-        $username = FmConfig::get('username');
-        $apiToken = FmConfig::get('apikey');
+        $username = FmConfig::get('username', $storeId);
+        $apiToken = FmConfig::get('apikey', $storeId);
         $userAgent = "FyndiqMechantMagento" . FmConfig::getVersion();
 
         return FyndiqAPICall::callApiRaw($userAgent, $username, $apiToken, $method, $path, $data,

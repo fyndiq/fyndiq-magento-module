@@ -14,8 +14,8 @@ class FmConfig {
         return Mage::getConfig()->deleteConfig(self::$config_name.'/'.$name);
     }
 
-    public static function get($name) {
-        return Mage::getStoreConfig(self::$config_name.'/'.$name);
+    public static function get($name, $storeId) {
+        return Mage::getStoreConfig(self::$config_name.'/'.$name, $storeId);
     }
 
     public static function getBool($name) {

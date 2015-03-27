@@ -63,3 +63,10 @@
             <?php endforeach ?>
     </select>
 </div>
+<?php
+    echo $storeId = $this->getRequest()->getParam('store');
+    echo $storeId = $this->getRequest()->getParam('store');
+    echo '|' . Mage::getStoreConfig('fyndiq/fyndiq_group/apikey', $storeId) . '|';
+    echo '<br>2' . $this->getRequest()->getParams();
+    var_dump($this->getRequest());
+?>
