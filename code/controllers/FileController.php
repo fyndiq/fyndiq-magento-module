@@ -47,7 +47,7 @@ class Fyndiq_Fyndiq_FileController extends Mage_Core_Controller_Front_Action
      */
     private function getUsername()
     {
-        return Mage::getStoreConfig('fyndiq/fyndiq_group/username');
+        return FmConfig::get('username');
     }
 
     /**
@@ -57,6 +57,6 @@ class Fyndiq_Fyndiq_FileController extends Mage_Core_Controller_Front_Action
      */
     private function getAPIToken()
     {
-        return Mage::getStoreConfig('fyndiq/fyndiq_group/apikey');
+        return FmConfig::get('username');
     }
 }

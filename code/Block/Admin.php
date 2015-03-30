@@ -35,7 +35,7 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
      */
     public function getServicePath()
     {
-        return $this->getAdminPath('fyndiq/service') . '?isAjax=true';
+        return $this->getAdminPath('fyndiq/service/index') . '?isAjax=true';
     }
 
     /**
@@ -47,7 +47,16 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
      */
     function getAdminPath($path, $section = null)
     {
-        return Mage::helper("adminhtml")->getUrl($path, $section);
+        // Add scope
+        $request = $this->getRequest();
+        $segments = array(
+            $path,
+            'website',
+            $request->getParam('website'),
+            'store',
+            $request->getParam('store'),
+        );
+        return Mage::helper('adminhtml')->getUrl(implode('/', $segments), $section);
     }
 
     public function getLanguage()
@@ -60,9 +69,14 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
         return Mage::app()->getStore()->getCurrentCurrencyCode();
     }
 
+    public function getStoreId()
+    {
+        return $this->getRequest()->getParam('store');
+    }
+
     public function getPercentage()
     {
-        return FmConfig::get('percentage');
+        return FmConfig::get('percentage', $this->getStoreId());
     }
 
     public function getUsername()
@@ -93,4 +107,12 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
         }
         return false;
     }
+
+    public function getStoreSelectOptions()
+    {
+        $switcher = new Mage_Adminhtml_Block_System_Config_Switcher();
+        return $switcher->getStoreSelectOptions();
+    }
+
+
 }

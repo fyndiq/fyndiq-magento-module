@@ -145,7 +145,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             }
             $fyndiq = Mage::getModel('fyndiq/product')->productExist($prod->getId());
             $fyndiq_data = Mage::getModel('fyndiq/product')->getProductExportData($prod->getId());
-            $fyndiq_percentage = FmConfig::get('price_percentage');
+            $fyndiq_percentage = FmConfig::get('price_percentage', $this->getRequest()->getParam('store'));
 
             if ($prod->getTypeId() == 'simple') {
                 //Get parent
@@ -313,7 +313,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 0,
                 PHP_ROUND_HALF_UP
             );
-            $fyndiq_precentage = FmConfig::get('price_percentage');
+            $fyndiq_precentage = FmConfig::get('price_percentage', $this->getRequest()->getParam('store'));
 
             $prodData = array(
                 'id' => $prod->getId(),
@@ -412,7 +412,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             }
 
             //Get the orders
-            $ret = FmHelpers::call_api('GET', $url);
+            $storeId = $this->getRequest()->getParam('store');
+            $ret = FmHelpers::call_api($storeId, 'GET', $url);
 
             //Updating or adding the date setting
             $newDate = date('Y-m-d H:i:s');
@@ -454,8 +455,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 $object->order = intval($order);
                 $orders->orders[] = $object;
             }
-
-            $ret = FmHelpers::call_api('POST', 'delivery_notes/', $orders, true);
+            $storeId = $this->getRequest()->getParam('store');
+            $ret = FmHelpers::call_api($storeId, 'POST', 'delivery_notes/', $orders, true);
 
             if ($ret['status'] == 200) {
                 $fileName = 'delivery_notes-' . implode('-', $args['orders']) . '.pdf';
@@ -495,7 +496,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     {
         if (isset($args['orders']) && is_array($args['orders'])) {
             $success = true;
-            $newStatusId = FmConfig::get('done_state');
+            $newStatusId = FmConfig::get('done_state', $this->getRequest()->getParam('store'));
             $orderModel = Mage::getModel('fyndiq/order');
             foreach($args['orders'] as $orderId) {
                 if (is_numeric($orderId)) {
