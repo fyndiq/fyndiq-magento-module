@@ -297,11 +297,13 @@ class Fyndiq_Fyndiq_Model_Observer
 
     public function handle_fyndiqConfigChangedSection()
     {
-        $storeId = $this->getRequest()->getParam('store');
+        $storeId = Mage::app()->getRequest()->getParam('store');
         if (FmConfig::get('username',$storeId) !== ''
             && FmConfig::get('apikey', $storeId) !== '') {
             $data = array(
-                'product_feed_url' => Mage::getUrl('fyndiq/file/index')
+                'product_feed_url' => Mage::getUrl('fyndiq/file/index', array(
+                    '_store' => $storeId,
+                ))
             );
             FmHelpers::call_api($storeId, 'PATCH', 'settings/', $data);
         }
