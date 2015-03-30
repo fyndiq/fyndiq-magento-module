@@ -7,33 +7,20 @@ class Fyndiq_Fyndiq_FileController extends Mage_Core_Controller_Front_Action
 
     function indexAction()
     {
+        $result = '';
         //Setting content type to csv.
-        //$this->getResponse()->setHeader('Content-type', 'text/csv');
-
-        if ($this->getUsername() != "" && $this->getAPIToken() != "") {
-
+        $this->getResponse()->setHeader('Content-type', 'text/csv');
+        $storeId = Mage::app()->getStore()->getStoreId();
+        if ($this->getUsername($storeId) != '' && $this->getAPIToken($storeId) != '') {
             //Check if feed file exist and if it is too old
-            try {
-                $fileexists = file_get_contents(FmConfig::getFeedPath());
-            } catch (Exception $e) {
-                $fileexists = false;
-            }
-
-            if ($fileexists) {
-                // If feed last modified date is older than 1 hour, create a new one
-                // just if the cronjob didn't run.
-                if (filemtime(FmConfig::getFeedPath()) < strtotime('-1 hour', time())) {
-                    $FyndiqCron = new Fyndiq_Fyndiq_Model_Observer();
-                    $FyndiqCron->exportProducts(false);
-                }
-            } else {
-                //The file hasn't been created yet, create it.
+            $filePath = FmConfig::getFeedPath($storeId);
+            $fileExists = file_exists($filePath);
+            $isOld = filemtime(FmConfig::getFeedPath($storeId)) < strtotime('-1 hour', time());
+            if (!$fileExists || $isOld) {
                 $FyndiqCron = new Fyndiq_Fyndiq_Model_Observer();
-                $FyndiqCron->exportProducts(false);
+                $FyndiqCron->exportProducts($storeId, false);
             }
-            $result = file_get_contents(FmConfig::getFeedPath());
-        } else {
-            $result = "";
+            $result = file_get_contents($filePath);
         }
         //printing out the content from feed file to the visitor.
         $this->getResponse()->setBody($result);
@@ -43,20 +30,22 @@ class Fyndiq_Fyndiq_FileController extends Mage_Core_Controller_Front_Action
     /**
      * Get the username from config
      *
+     * @param $storeId
      * @return mixed
      */
-    private function getUsername()
+    private function getUsername($storeId)
     {
-        return FmConfig::get('username');
+        return FmConfig::get('username', $storeId);
     }
 
     /**
      * Get APItoken from config
      *
+     * @param $storeId
      * @return mixed
      */
-    private function getAPIToken()
+    private function getAPIToken($storeId)
     {
-        return FmConfig::get('username');
+        return FmConfig::get('username', $storeId);
     }
 }

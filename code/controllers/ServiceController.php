@@ -99,7 +99,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      * @param int $page
      * @return array
      */
-    private function getAllProducts($category, $page) {
+    private function getAllProducts($storeId, $category, $page) {
         $data = array();
 
         $grouped_model = Mage::getModel('catalog/product_type_grouped');
@@ -108,6 +108,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
         $products = $product_model
             ->getCollection()
+            ->addStoreFilter($storeId)
             ->addAttributeToFilter(
                 array(
                     array('attribute' => 'type_id', 'eq' => 'configurable'),
@@ -270,9 +271,10 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         }
         $category = Mage::getModel('catalog/category')->load($args['category']);
         $total = $this->getTotalProducts($category);
+        $storeId = $this->getRequest()->getParam('store');
 
         $object = new stdClass();
-        $object->products = $this->getAllProducts($category, $page);
+        $object->products = $this->getAllProducts($storeId, $category, $page);
         $object->pagination = FyndiqUtils::getPaginationHTML($total, $page);
         $this->response($object);
     }
@@ -343,21 +345,20 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     {
         // Getting all data
         $productModel = Mage::getModel('fyndiq/product');
+        $result = false;
         foreach ($args['products'] as $v) {
             $product = $v['product'];
-            $fyndiq_percentage = $product['fyndiq_percentage'];
-            if ($fyndiq_percentage > 100) {
-                $fyndiq_percentage = 100;
-            }
-            if ($productModel->productExist($product["id"])) {
-                $productModel->updateProduct($product["id"], $fyndiq_percentage);
+            $fyndiqPercentage = $product['fyndiq_percentage'];
+            $fyndiqPercentage = $fyndiqPercentage > 100 ? 100 : $fyndiqPercentage;
+            $fyndiqPercentage = $fyndiqPercentage < 0 ? 0 : $fyndiqPercentage;
+
+            if ($productModel->productExist($product['id'])) {
+                $result = $productModel->updateProduct($product['id'], $fyndiqPercentage);
             } else {
-                $productModel->addProduct($product["id"], $fyndiq_percentage);
+                $result = $productModel->addProduct($product['id'], $fyndiqPercentage);
             }
         }
-
-        $this->response();
-
+        $this->response($result);
     }
 
     public function delete_exported_products($args)
