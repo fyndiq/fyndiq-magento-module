@@ -37,7 +37,7 @@
                     <p>By clicking this button, you can import all orders from Fyndiq into the local webshop.</p>
                     <div id="fm-order-import-date">
                         <?php
-                            $currentdate = $this->getLastUpdatedDate();
+                            $currentdate = $this->getLastUpdatedDate($this->getRequest()->getParam('store'));
                             if ($currentdate != false) {
                         ?>
                         <div class="lastupdated">

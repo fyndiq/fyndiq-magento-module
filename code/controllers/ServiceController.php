@@ -167,7 +167,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 if ($parentProd) {
                     $productAttributeOptions = array();
                     $parentType = $parentProd->getTypeInstance();
-                    if (method_exists($parentType, "getConfigurableAttributes")) {
+                    if (method_exists($parentType, 'getConfigurableAttributes')) {
                         $productAttributeOptions = $parentType->getConfigurableAttributes();
                     }
 
@@ -178,7 +178,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                         $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
                         $value = $attrValue->getValue($prod);
 
-                        $tags[] = $attrCode . ": " . $value[0];
+                        $tags[] = $attrCode . ': ' . $value[0];
                     }
                 }
             }
@@ -299,13 +299,13 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
         $return_array = array();
         foreach ($productModel->getCollection() as $product) {
-            $prod = Mage::getModel('catalog/product')->load($product->getData()["product_id"]);
+            $prod = Mage::getModel('catalog/product')->load($product->getData()['product_id']);
 
             $qtyStock = Mage::getModel('cataloginventory/stock_item')->loadByProduct($prod->getId())->getQty();
             $fyndiq_exported_data = Mage::getModel('fyndiq/product')->getProductExportData($prod->getId());
             if ($fyndiq_exported_data != false) {
-                $fyndiq_exported_stock = $fyndiq_exported_data["exported_qty"];
-                $fyndiq_exported_precentage = $fyndiq_exported_data["exported_price_percentage"];
+                $fyndiq_exported_stock = $fyndiq_exported_data['exported_qty'];
+                $fyndiq_exported_precentage = $fyndiq_exported_data['exported_price_percentage'];
             } else {
                 $fyndiq_exported_stock = false;
                 $fyndiq_exported_precentage = false;
@@ -365,10 +365,10 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     public function delete_exported_products($args)
     {
         foreach ($args['products'] as $v) {
-            $product = $v["product"];
+            $product = $v['product'];
             $productModel = Mage::getModel('fyndiq/product')->getCollection()->addFieldToFilter(
                 'product_id',
-                $product["id"]
+                $product['id']
             )->getFirstItem();
             $productModel->delete();
         }
@@ -404,32 +404,12 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     public function import_orders($args)
     {
+        $observer = Mage::getModel('fyndiq/observer');
+        $storeId = $this->getRequest()->getParam('store');
         try {
-            $url = 'orders/';
-            //Get the last updated date
-            $settingExists = Mage::getModel('fyndiq/setting')->settingExist('order_lastdate');
-            if ($settingExists) {
-                $date = Mage::getModel('fyndiq/setting')->getSetting('order_lastdate');
-                $url .= '?min_date=' . urlencode($date['value']);
-            }
-
-            //Get the orders
-            $storeId = $this->getRequest()->getParam('store');
-            $ret = FmHelpers::call_api($storeId, 'GET', $url);
-
-            //Updating or adding the date setting
-            $newDate = date('Y-m-d H:i:s');
-            foreach ($ret['data'] as $order) {
-                if (!Mage::getModel('fyndiq/order')->orderExists($order->id)) {
-                    Mage::getModel('fyndiq/order')->create($order);
-                }
-            }
-            if ($settingExists) {
-                Mage::getModel('fyndiq/setting')->updateSetting('order_lastdate', $newDate);
-            } else {
-                Mage::getModel('fyndiq/setting')->saveSetting('order_lastdate', $newDate);
-            }
-            $time = date('G:i:s', strtotime($newDate));
+            $newTime = time();
+            $observer->importOrdersForStore($storeId, $newTime);
+            $time = date('G:i:s', $newTime);
             self::response($time);
         } catch (Exception $e) {
             self::response_error(
@@ -449,10 +429,10 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         try {
             $orders = new stdClass();
             $orders->orders = array();
-            if(!isset($args["orders"])) {
-                throw new Exception("Pick at least one order");
+            if(!isset($args['orders'])) {
+                throw new Exception('Pick at least one order');
             }
-            foreach ($args["orders"] as $order) {
+            foreach ($args['orders'] as $order) {
                 $object = new stdClass();
                 $object->order = intval($order);
                 $orders->orders[] = $object;

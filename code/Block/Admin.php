@@ -99,11 +99,11 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
         return FmConfig::getVersion();
     }
 
-    public function getLastUpdatedDate()
+    public function getLastUpdatedDate($storeId)
     {
-        $date = Mage::getModel('fyndiq/setting')->getSetting("order_lastdate");
+        $date = Mage::getModel('fyndiq/setting')->getSetting($storeId, 'order_lastdate');
         if($date != false) {
-            return $date["value"];
+            return $date['value'];
         }
         return false;
     }

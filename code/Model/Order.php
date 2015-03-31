@@ -16,7 +16,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
     /**
      * Check if order already exists
      *
-     * @param $fyndiq_order
+     * @param array $fyndiq_order
      * @return bool
      */
     public function orderExists($fyndiq_order)
@@ -92,12 +92,12 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
     /**
      * Create a order in magento based on Fyndiq Order
      *
-     * @param $fyndiq_order
+     * @param int $storeId
+     * @param array $fyndiq_order
      * @throws Exception
      */
-    public function create($fyndiq_order)
+    public function create($storeId, $fyndiq_order)
     {
-
         //get customer by mail
         $customer = Mage::getModel('customer/customer');
         $customer->setWebsiteId(Mage::app()->getWebsite()->getId());
@@ -119,6 +119,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         //Start a new order quote and assign current customer to it.
         $quote = Mage::getModel('sales/quote')->setStoreId(Mage::app('default')->getStore('default')->getId());
         $quote->assignCustomer($customer);
+        $quote->setStore(Mage::getModel('core/store')->load($storeId));
 
         //Adding products to order
         $articles = $fyndiq_order->order_rows;

@@ -14,29 +14,39 @@ class Fyndiq_Fyndiq_Model_Observer
     public function importOrders()
     {
         try {
-            $url = 'orders/';
-            $settingExists = Mage::getModel('fyndiq/setting')->settingExist('order_lastdate');
-            if ($settingExists) {
-                $date = Mage::getModel('fyndiq/setting')->getSetting('order_lastdate');
-                $url .= '?min_date=' . urlencode($date['value']);
-            }
-            $storeId = $this->getRequest()->getParam('store');
-            $ret = FmHelpers::call_api($storeId, 'GET', $url);
-            $newDate = date('Y-m-d H:i:s');
-            if ($settingExists) {
-                Mage::getModel('fyndiq/setting')->updateSetting('order_lastdate', $newDate);
-            } else {
-                Mage::getModel('fyndiq/setting')->saveSetting('order_lastdate', $newDate);
-            }
-            foreach ($ret['data'] as $order) {
-                if (!Mage::getModel('fyndiq/order')->orderExists($order->id)) {
-                    Mage::getModel('fyndiq/order')->create($order);
-                }
+            $allStores = Mage::app()->getStores();
+            $time = time();
+            foreach ($allStores as $storeId => $val) {
+                $this->importOrdersForStore($storeId, $time);
             }
         } catch (Exception $e) {
-
         }
     }
+
+    public function importOrdersForStore($storeId, $newTime)
+    {
+        $newDate = date('Y-m-d H:i:s', $newTime);
+        $date = false;
+        $settingExists = Mage::getModel('fyndiq/setting')->settingExist($storeId, 'order_lastdate');
+        if ($settingExists) {
+            $date = Mage::getModel('fyndiq/setting')->getSetting($storeId, 'order_lastdate');
+        }
+        $url = 'orders/' . (empty($date) ? '': '?min_date=' . urlencode($date['value']));
+
+        $ret = FmHelpers::call_api($storeId, 'GET', $url);
+        foreach ($ret['data'] as $order) {
+            if (!Mage::getModel('fyndiq/order')->orderExists($order->id)) {
+                Mage::getModel('fyndiq/order')->create($storeId, $order);
+            }
+        }
+
+        if ($settingExists) {
+            Mage::getModel('fyndiq/setting')->updateSetting($storeId, 'order_lastdate', $newDate);
+        } else {
+            Mage::getModel('fyndiq/setting')->saveSetting($storeId, 'order_lastdate', $newDate);
+        }
+    }
+
 
     /**
      * Saving products to the file.
