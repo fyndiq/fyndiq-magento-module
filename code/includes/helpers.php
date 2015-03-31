@@ -43,7 +43,7 @@ class FmHelpers
     {
         $username = FmConfig::get('username', $storeId);
         $apiToken = FmConfig::get('apikey', $storeId);
-        $userAgent = "FyndiqMerchantMagento" . FmConfig::getVersion();
+        $userAgent = "FyndiqMerchantMagento" . FmConfig::getVersion() . "-" . Mage::getVersion();
 
         return FyndiqAPICall::callApiRaw($userAgent, $username, $apiToken, $method, $path, $data,
             array('FyndiqAPI', 'call'));
