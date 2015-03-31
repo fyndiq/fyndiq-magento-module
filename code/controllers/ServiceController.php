@@ -440,7 +440,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 throw new Exception('Pick at least one order');
             }
             foreach ($args['orders'] as $order) {
-                $orders->orders[] = array('order' => intval($order));
+                $orders['orders'][] = array('order' => intval($order));
             }
             $storeId = $this->getRequest()->getParam('store');
             $ret = FmHelpers::call_api($storeId, 'POST', 'delivery_notes/', $orders, true);
