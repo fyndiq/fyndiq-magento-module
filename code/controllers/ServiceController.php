@@ -270,14 +270,19 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         if (isset($args['page']) && is_numeric($args['page']) && $args['page'] != -1) {
             $page = intval($args['page']);
         }
-        $category = Mage::getModel('catalog/category')->load($args['category']);
-        $total = $this->getTotalProducts($category);
-        $storeId = $this->getRequest()->getParam('store');
+        $response = array(
+            'products' => array(),
+            'pagination' => ''
+        );
+        if (!empty($args['category'])) {
+            $category = Mage::getModel('catalog/category')->load($args['category']);
+            $total = $this->getTotalProducts($category);
+            $storeId = $this->getRequest()->getParam('store');
 
-        $object = new stdClass();
-        $object->products = $this->getAllProducts($storeId, $category, $page);
-        $object->pagination = FyndiqUtils::getPaginationHTML($total, $page);
-        $this->response($object);
+            $response['products'] = $this->getAllProducts($storeId, $category, $page);
+            $response['pagination'] = FyndiqUtils::getPaginationHTML($total, $page);
+        }
+        $this->response($response);
     }
 
 
