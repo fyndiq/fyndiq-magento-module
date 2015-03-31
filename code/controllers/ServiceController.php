@@ -166,7 +166,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 if ($parentProd) {
                     $productAttributeOptions = array();
                     $parentType = $parentProd->getTypeInstance();
-                    if (method_exists($parentType, "getConfigurableAttributes")) {
+                    if (method_exists($parentType, 'getConfigurableAttributes')) {
                         $productAttributeOptions = $parentType->getConfigurableAttributes();
                     }
 
@@ -177,7 +177,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                         $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
                         $value = $attrValue->getValue($prod);
 
-                        $tags[] = $attrCode . ": " . $value[0];
+                        $tags[] = $attrCode . ': ' . $value[0];
                     }
                 }
             }
@@ -297,13 +297,13 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
         $return_array = array();
         foreach ($productModel->getCollection() as $product) {
-            $prod = Mage::getModel('catalog/product')->load($product->getData()["product_id"]);
+            $prod = Mage::getModel('catalog/product')->load($product->getData()['product_id']);
 
             $qtyStock = Mage::getModel('cataloginventory/stock_item')->loadByProduct($prod->getId())->getQty();
             $fyndiq_exported_data = Mage::getModel('fyndiq/product')->getProductExportData($prod->getId());
             if ($fyndiq_exported_data != false) {
-                $fyndiq_exported_stock = $fyndiq_exported_data["exported_qty"];
-                $fyndiq_exported_precentage = $fyndiq_exported_data["exported_price_percentage"];
+                $fyndiq_exported_stock = $fyndiq_exported_data['exported_qty'];
+                $fyndiq_exported_precentage = $fyndiq_exported_data['exported_price_percentage'];
             } else {
                 $fyndiq_exported_stock = false;
                 $fyndiq_exported_precentage = false;
@@ -350,10 +350,10 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             if ($fyndiq_percentage > 100) {
                 $fyndiq_percentage = 100;
             }
-            if ($productModel->productExist($product["id"])) {
-                $productModel->updateProduct($product["id"], $fyndiq_percentage);
+            if ($productModel->productExist($product['id'])) {
+                $productModel->updateProduct($product['id'], $fyndiq_percentage);
             } else {
-                $productModel->addProduct($product["id"], $fyndiq_percentage);
+                $productModel->addProduct($product['id'], $fyndiq_percentage);
             }
         }
 
@@ -364,10 +364,10 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     public function delete_exported_products($args)
     {
         foreach ($args['products'] as $v) {
-            $product = $v["product"];
+            $product = $v['product'];
             $productModel = Mage::getModel('fyndiq/product')->getCollection()->addFieldToFilter(
                 'product_id',
-                $product["id"]
+                $product['id']
             )->getFirstItem();
             $productModel->delete();
         }
@@ -448,10 +448,10 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         try {
             $orders = new stdClass();
             $orders->orders = array();
-            if(!isset($args["orders"])) {
-                throw new Exception("Pick at least one order");
+            if(!isset($args['orders'])) {
+                throw new Exception('Pick at least one order');
             }
-            foreach ($args["orders"] as $order) {
+            foreach ($args['orders'] as $order) {
                 $object = new stdClass();
                 $object->order = intval($order);
                 $orders->orders[] = $object;
