@@ -4,14 +4,12 @@ class FmCategory {
 
     public static function get_subcategories($category_id, $storeId) {
         $category = Mage::getModel('catalog/category');
-        $rootCategoryId = Mage::app()->getStore($storeId)->getRootCategoryId();
         $data = array();
         $getRootOnly = $category_id === 0;
         if($getRootOnly) {
             $categories = $category->getCollection()
                 ->addAttributeToSelect('*')
                 ->setStoreId($storeId)
-                ->addAttributeToFilter('path', array('like' => "1/{$rootCategoryId}/%"))
                 ->addAttributeToFilter('is_active', '1')
                 ->addAttributeToFilter('include_in_menu', '1')
                 ->addAttributeToSort('position', 'asc')->getItems();
@@ -19,7 +17,6 @@ class FmCategory {
             $categories = $category->getCollection()
                 ->addAttributeToSelect('*')
                 ->setStoreId($storeId)
-                ->addAttributeToFilter('path', array('like' => "1/{$rootCategoryId}/%"))
                 ->addAttributeToFilter('is_active', '1')
                 ->addAttributeToFilter('parent_id', array('eq' => $category_id))
                 ->addAttributeToSort('position', 'asc')->getItems();
