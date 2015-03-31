@@ -11,6 +11,7 @@ class FmCategory {
                 ->addAttributeToSelect('*')
                 ->setStoreId($storeId)
                 ->addAttributeToFilter('is_active', '1')
+                ->addAttributeToFilter('level', 1)
                 ->addAttributeToFilter('include_in_menu', '1')
                 ->addAttributeToSort('position', 'asc')->getItems();
         } else {
