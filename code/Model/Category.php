@@ -13,6 +13,7 @@ class FmCategory {
                 ->setStoreId($storeId)
                 ->addAttributeToFilter('path', array('like' => "1/{$rootCategoryId}/%"))
                 ->addAttributeToFilter('is_active', '1')
+                ->addAttributeToFilter('level', 1)
                 ->addAttributeToFilter('include_in_menu', '1')
                 ->addAttributeToSort('position', 'asc')->getItems();
         } else {
