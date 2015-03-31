@@ -8,10 +8,14 @@ class Fyndiq_Fyndiq_Model_Setting extends Mage_Core_Model_Abstract
         $this->_init('fyndiq/setting');
     }
 
-    public function settingExist($key) {
+    private function getKey($storeId, $key) {
+        return $key . '-' . $storeId;
+    }
+
+    public function settingExist($storeId, $key) {
         $collection = $this->getCollection()->addFieldToFilter(array('main_table.key'),
             array(
-                array('like'=>$key)
+                array('like' => $this->getKey($storeId, $key))
             ))->load();
         if(count($collection) > 0) {
             $collection = $collection->getFirstItem();
@@ -26,10 +30,10 @@ class Fyndiq_Fyndiq_Model_Setting extends Mage_Core_Model_Abstract
         }
     }
 
-    function getSetting($key) {
+    function getSetting($storeId, $key) {
         $collection = $this->getCollection()->addFieldToFilter(array('main_table.key'),
             array(
-                array('eq'=>$key)
+                array('eq' => $this->getKey($storeId, $key))
             ));
         Mage::log((string) $collection->getSelect());
         if(count($collection) > 0) {
@@ -45,14 +49,20 @@ class Fyndiq_Fyndiq_Model_Setting extends Mage_Core_Model_Abstract
         }
     }
 
-    public function saveSetting($key, $value) {
-        $data = array('key' => $key, 'value' => $value);
+    public function saveSetting($storeId, $key, $value) {
+        $data = array(
+            'key' => $this->getKey($storeId, $key),
+            'value' => $value
+        );
         $model = $this->setData($data);
 
         return $model->save()->getId();
     }
-    public function dropSetting($key) {
-        $collection = $this->getCollection()->addFieldToFilter('main_table.key', $key)->getFirstItem();
+
+    public function dropSetting($storeId, $key) {
+        $collection = $this->getCollection()
+            ->addFieldToFilter('main_table.key', $this->getKey($storeId, $key))
+            ->getFirstItem();
         try {
             $this->setId($collection->getId())->delete();
 
@@ -62,8 +72,10 @@ class Fyndiq_Fyndiq_Model_Setting extends Mage_Core_Model_Abstract
             return false;
         }
     }
-    public function updateSetting($key, $value) {
-        $collection = $this->getCollection()->addFieldToFilter('main_table.key', $key)->getFirstItem();
+    public function updateSetting($storeId, $key, $value) {
+        $collection = $this->getCollection()
+            ->addFieldToFilter('main_table.key', $this->getKey($storeId, $key))
+            ->getFirstItem();
         $data = array('value' => $value);
         $model = $this->load($collection->getId())->addData($data);
         try {

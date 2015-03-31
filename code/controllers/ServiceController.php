@@ -403,32 +403,12 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     public function import_orders($args)
     {
+        $observer = Mage::getModel('fyndiq/observer');
+        $storeId = $this->getRequest()->getParam('store');
         try {
-            $url = 'orders/';
-            //Get the last updated date
-            $settingExists = Mage::getModel('fyndiq/setting')->settingExist('order_lastdate');
-            if ($settingExists) {
-                $date = Mage::getModel('fyndiq/setting')->getSetting('order_lastdate');
-                $url .= '?min_date=' . urlencode($date['value']);
-            }
-
-            //Get the orders
-            $storeId = $this->getRequest()->getParam('store');
-            $ret = FmHelpers::call_api($storeId, 'GET', $url);
-
-            //Updating or adding the date setting
-            $newDate = date('Y-m-d H:i:s');
-            foreach ($ret['data'] as $order) {
-                if (!Mage::getModel('fyndiq/order')->orderExists($order->id)) {
-                    Mage::getModel('fyndiq/order')->create($storeId, $order);
-                }
-            }
-            if ($settingExists) {
-                Mage::getModel('fyndiq/setting')->updateSetting('order_lastdate', $newDate);
-            } else {
-                Mage::getModel('fyndiq/setting')->saveSetting('order_lastdate', $newDate);
-            }
-            $time = date('G:i:s', strtotime($newDate));
+            $newTime = time();
+            $observer->importOrdersForStore($storeId, $newTime);
+            $time = date('G:i:s', $newTime);
             self::response($time);
         } catch (Exception $e) {
             self::response_error(
