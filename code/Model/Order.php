@@ -203,7 +203,8 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $order = $service->getOrder();
 
         //Now set newly entered order's status to complete so customers can enjoy their goods.
-        $importStatus = FmConfig::get('import_state');
+
+        $importStatus = FmConfig::get('import_state', $storeId);
         $order->setStatus($importStatus);
 
         //Add delivery note as comment
