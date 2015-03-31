@@ -303,6 +303,7 @@ class Fyndiq_Fyndiq_Model_Observer
             $data = array(
                 'product_feed_url' => Mage::getUrl('fyndiq/file/index', array(
                     '_store' => $storeId,
+                    '_nosid' => true,
                 ))
             );
             FmHelpers::call_api($storeId, 'PATCH', 'settings/', $data);
