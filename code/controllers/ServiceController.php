@@ -349,16 +349,6 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $result = false;
         foreach ($args['products'] as $v) {
             $product = $v['product'];
-<<<<<<< HEAD
-            $fyndiq_percentage = $product['fyndiq_percentage'];
-            if ($fyndiq_percentage > 100) {
-                $fyndiq_percentage = 100;
-            }
-            if ($productModel->productExist($product['id'])) {
-                $productModel->updateProduct($product['id'], $fyndiq_percentage);
-            } else {
-                $productModel->addProduct($product['id'], $fyndiq_percentage);
-=======
             $fyndiqPercentage = $product['fyndiq_percentage'];
             $fyndiqPercentage = $fyndiqPercentage > 100 ? 100 : $fyndiqPercentage;
             $fyndiqPercentage = $fyndiqPercentage < 0 ? 0 : $fyndiqPercentage;
@@ -367,7 +357,6 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 $result = $productModel->updateProduct($product['id'], $fyndiqPercentage);
             } else {
                 $result = $productModel->addProduct($product['id'], $fyndiqPercentage);
->>>>>>> master
             }
         }
         $this->response($result);
