@@ -96,6 +96,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     /**
      * Get products in category for page
      *
+     * @param int $storeId
      * @param Category $category
      * @param int $page
      * @return array
@@ -310,14 +311,14 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             $fyndiq_exported_data = Mage::getModel('fyndiq/product')->getProductExportData($prod->getId());
             if ($fyndiq_exported_data != false) {
                 $fyndiq_exported_stock = $fyndiq_exported_data['exported_qty'];
-                $fyndiq_exported_precentage = $fyndiq_exported_data['exported_price_percentage'];
+                $fyndiq_exported_percentage = $fyndiq_exported_data['exported_price_percentage'];
             } else {
                 $fyndiq_exported_stock = false;
-                $fyndiq_exported_precentage = false;
+                $fyndiq_exported_percentage = false;
             }
             $fyndiq_stock = $fyndiq_exported_stock;
             $fyndiq_exported_price = (int)round(
-                $prod->getPrice() - ($prod->getPrice() * ($fyndiq_exported_precentage / 100)),
+                $prod->getPrice() - ($prod->getPrice() * ($fyndiq_exported_percentage / 100)),
                 0,
                 PHP_ROUND_HALF_UP
             );
@@ -432,15 +433,14 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     public function get_delivery_notes($args)
     {
         try {
-            $orders = new stdClass();
-            $orders->orders = array();
+            $orders = array(
+                'orders' => array()
+            );
             if(!isset($args['orders'])) {
                 throw new Exception('Pick at least one order');
             }
             foreach ($args['orders'] as $order) {
-                $object = new stdClass();
-                $object->order = intval($order);
-                $orders->orders[] = $object;
+                $orders->orders[] = array('order' => intval($order));
             }
             $storeId = $this->getRequest()->getParam('store');
             $ret = FmHelpers::call_api($storeId, 'POST', 'delivery_notes/', $orders, true);
@@ -492,7 +492,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             }
             if ($success) {
                 $status = $orderModel->getStatusName($newStatusId);
-                return $this->response($status);
+                $this->response($status);
             }
         }
         self::response_error(
