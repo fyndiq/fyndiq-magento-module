@@ -10,22 +10,6 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
  */
 class Fyndiq_Fyndiq_Model_Observer
 {
-    private $fileresource = null;
-
-    /**
-     * Saving products to the file.
-     */
-    public function exportProducts($print = true)
-    {
-        if ($print) {
-            print "Fyndiq :: Saving feed file\n";
-        }
-        $this->exportingProducts();
-        if ($print) {
-            print "Fyndiq :: Done saving feed file\n";
-        }
-
-    }
 
     public function importOrders()
     {
@@ -65,15 +49,35 @@ class Fyndiq_Fyndiq_Model_Observer
 
 
     /**
+     * Saving products to the file.
+     *
+     * @param int $storeId
+     * @param bool $print
+     */
+    public function exportProducts($storeId = 0, $print = true)
+    {
+        if ($print) {
+            print 'Fyndiq :: Saving feed file' . PHP_EOL;
+        }
+        $this->exportingProducts($storeId);
+        if ($print) {
+            print 'Fyndiq :: Done saving feed file' . PHP_EOL;
+        }
+
+    }
+
+    /**
      * Adding products added for export to the feed file
      *
-     * @return string
+     * @param $storeId
+     * @return bool
      */
-    private function exportingProducts()
+    private function exportingProducts($storeId)
     {
-        $fileName = FmConfig::getFeedPath();
-        $file = @fopen($fileName, 'w+');
-        if ($file === false) {
+        $fileName = FmConfig::getFeedPath($storeId);
+        $file = fopen($fileName, 'w+');
+
+        if ( !$file ) {
             return false;
         }
         $feedWriter = new FyndiqCSVFeedWriter($file);
@@ -83,33 +87,35 @@ class Fyndiq_Fyndiq_Model_Observer
         $productInfo = array();
         foreach ($products as $producted) {
             $product = $producted->getData();
-            $ids_to_export[] = intval($product["product_id"]);
-            $productInfo[$product["product_id"]] = $producted;
+            $ids_to_export[] = intval($product['product_id']);
+            $productInfo[$product['product_id']] = $producted;
         }
 
         //Initialize models here so it saves memory.
         $product_model = Mage::getModel('catalog/product');
 
-        $products_to_export = $product_model->getCollection()->addAttributeToSelect('*')->addAttributeToFilter(
-            'entity_id',
-            array('in' => $ids_to_export)
-        )->load();
+        $products_to_export = $product_model->getCollection()
+            ->addAttributeToSelect('*')
+            ->addStoreFilter($storeId)
+            ->addAttributeToFilter(
+                'entity_id',
+                array('in' => $ids_to_export)
+            )->load();
 
-        foreach ($products_to_export as $magproduct) {
-
-            if ($feedWriter->addProduct($this->getProduct($magproduct, $productInfo)) && $magproduct->getTypeId(
-                ) != "simple"
+        foreach ($products_to_export as $magProduct) {
+            if ($feedWriter->addProduct($this->getProduct($magProduct, $productInfo))
+                && $magProduct->getTypeId() != 'simple'
             ) {
-                $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magproduct);
-                $simple_collection = $conf->getUsedProductCollection()->addAttributeToSelect(
-                    '*'
-                )->addFilterByRequiredOptions()->getItems();
+                $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
+                $simple_collection = $conf->getUsedProductCollection()
+                    ->addAttributeToSelect('*')
+                    ->addFilterByRequiredOptions()
+                    ->getItems();
                 foreach ($simple_collection as $simple_product) {
                     $feedWriter->addProduct($this->getProduct($simple_product, $productInfo));
                 }
             }
         }
-
         return $feedWriter->write();
     }
 
@@ -313,6 +319,7 @@ class Fyndiq_Fyndiq_Model_Observer
             $data = array(
                 'product_feed_url' => Mage::getUrl('fyndiq/file/index', array(
                     '_store' => $storeId,
+                    '_nosid' => true,
                 ))
             );
             FmHelpers::call_api($storeId, 'PATCH', 'settings/', $data);

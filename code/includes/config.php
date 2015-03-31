@@ -30,7 +30,7 @@ class FmConfig {
         return (string)Mage::getConfig()->getNode()->modules->Fyndiq_Fyndiq->version;
     }
 
-    public static function getFeedPath() {
-        return "fyndiq/files/feed.csv";
+    public static function getFeedPath($storeId) {
+        return 'fyndiq/files/feed-' . $storeId . '.csv';
     }
 }
