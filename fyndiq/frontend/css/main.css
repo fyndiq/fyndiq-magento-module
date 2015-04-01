@@ -33,6 +33,13 @@
 .fm-header {
   background-color: #fff; }
 
+.fm-switcher {
+  background-color: #fff;
+  margin-bottom: 0px;
+  border: none;
+  padding-top: 10px;
+  padding-left: 5px; }
+
 .fm-header-wrapper {
   height: 90px;
   margin: 0 auto;
