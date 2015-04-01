@@ -19,7 +19,10 @@ if (!$installer->tableExists($tableName)) {
         ), 'Magento Product')
         ->addColumn('exported_price_percentage', Varien_Db_Ddl_Table::TYPE_INTEGER, null, array(
             'nullable' => false,
-        ), 'Exported price percentage');
+        ), 'Exported price percentage')
+        ->addColumn('state', Varien_Db_Ddl_Table::TYPE_VARCHAR, null, array(
+                'nullable' => true,
+            ), 'Fyndiq State');
 
     $connection->createTable($productsTable);
 }
