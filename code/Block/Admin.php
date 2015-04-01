@@ -1,6 +1,6 @@
 <?php
-require_once(dirname(dirname(__FILE__)) . '/includes/messages.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
+
 
 /**
  * Admin block handling all the data to the view
@@ -86,12 +86,12 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
 
     public function getMessage($key)
     {
-        return FmMessages::get($key);
+        return FyndiqTranslation::get($key);
     }
 
     public function getMessages()
     {
-        return FmMessages::get_all();
+        return FyndiqTranslation::getAll();
     }
 
     public function getVersion()
