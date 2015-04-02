@@ -201,7 +201,9 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 'description' => $prod->getDescription(),
                 'reference' => $prod->getSKU(),
                 'properties' => implode(', ', $tags),
-                'isActive' => $prod->getIsActive()
+                'isActive' => $prod->getIsActive(),
+                'fyndiq_check_on' => ($fyndiq && $fyndiq_state == 'FOR_SALE'),
+                'fyndiq_check_pending' => ($fyndiq && $fyndiq_state === null)
             );
 
             //trying to get image, if not image will be false
