@@ -8,7 +8,6 @@
 require_once(dirname(dirname(__FILE__)) . '/Model/Order.php');
 require_once(dirname(dirname(__FILE__)) . '/Model/Category.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
-require_once(dirname(dirname(__FILE__)) . '/includes/messages.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
 require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
 
@@ -17,6 +16,11 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
     const itemPerPage = 10;
     const pageFrame = 4;
+
+    protected function _construct()
+    {
+        FyndiqTranslation::init(Mage::app()->getLocale()->getLocaleCode());
+    }
 
     /**
      * Structure the response back to the client
@@ -32,8 +36,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $json = json_encode($response);
         if (json_last_error() != JSON_ERROR_NONE) {
             self::response_error(
-                FmMessages::get('unhandled-error-title'),
-                FmMessages::get('unhandled-error-message')
+                FyndiqTranslation::get('unhandled-error-title'),
+                FyndiqTranslation::get('unhandled-error-message')
             );
         } else {
             $this->getResponse()->clearHeaders()->setHeader('Content-type', 'application/json', true);
@@ -374,8 +378,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             self::response($time);
         } catch (Exception $e) {
             self::response_error(
-                FmMessages::get('unhandled-error-title'),
-                FmMessages::get('unhandled-error-message') . ' (' . $e->getMessage() . ')'
+                FyndiqTranslation::get('unhandled-error-title'),
+                FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')'
             );
         }
     }
@@ -420,8 +424,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             $this->response(true);
         } catch (Exception $e) {
             $this->response_error(
-                FmMessages::get('unhandled-error-title'),
-                FmMessages::get('unhandled-error-message') . ' (' . $e->getMessage() . ')'
+                FyndiqTranslation::get('unhandled-error-title'),
+                FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')'
             );
         }
     }
@@ -451,8 +455,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             }
         }
         self::response_error(
-            FmMessages::get('unhandled-error-title'),
-            FmMessages::get('unhandled-error-message')
+            FyndiqTranslation::get('unhandled-error-title'),
+            FyndiqTranslation::get('unhandled-error-message')
         );
     }
 }
