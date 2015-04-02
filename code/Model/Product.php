@@ -49,6 +49,20 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
         }
     }
 
+    function updateProductState($product_id, $state)
+    {
+        $collection = $this->getCollection()->addFieldToFilter('product_id', $product_id)->getFirstItem();
+        $data = array('state' => $state);
+        $model = $this->load($collection->getId())->addData($data);
+        try {
+            $model->setId($collection->getId())->save();
+
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
     function deleteProduct($product_id)
     {
         $collection = $this->getCollection()->addFieldToFilter('product_id', $product_id)->getFirstItem();
