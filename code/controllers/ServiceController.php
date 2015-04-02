@@ -195,10 +195,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 'url' => $prod->getUrl(),
                 'name' => $prod->getName(),
                 'quantity' => intval($qtyStock),
-                'fyndiq_quantity' => intval($qtyStock),
                 'price' => number_format((float)$prod->getPrice(), 2, '.', ''),
                 'fyndiq_percentage' => $fyndiq_percentage,
-                'fyndiq_exported_stock' => intval($qtyStock),
                 'fyndiq_exported' => $fyndiq,
                 'fyndiq_state' => $fyndiq_state,
                 'description' => $prod->getDescription(),
@@ -299,55 +297,6 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $productModel = Mage::getModel('fyndiq/product');
         $status = $productModel->updateProduct($args['product'], $args['percentage']);
         $this->response($status);
-    }
-
-    /**
-     * Get exported products
-     *
-     * @param $args
-     */
-    public function get_exported_products($args)
-    {
-        $productModel = Mage::getModel('fyndiq/product');
-
-        $return_array = array();
-        foreach ($productModel->getCollection() as $product) {
-            $prod = Mage::getModel('catalog/product')->load($product->getData()['product_id']);
-
-            $qtyStock = Mage::getModel('cataloginventory/stock_item')->loadByProduct($prod->getId())->getQty();
-            $fyndiq_exported_data = Mage::getModel('fyndiq/product')->getProductExportData($prod->getId());
-            if ($fyndiq_exported_data != false) {
-                $fyndiq_exported_stock = $fyndiq_exported_data['exported_qty'];
-                $fyndiq_exported_percentage = $fyndiq_exported_data['exported_price_percentage'];
-            } else {
-                $fyndiq_exported_stock = false;
-                $fyndiq_exported_percentage = false;
-            }
-            $fyndiq_stock = $fyndiq_exported_stock;
-            $fyndiq_exported_price = (int)round(
-                $prod->getPrice() - ($prod->getPrice() * ($fyndiq_exported_percentage / 100)),
-                0,
-                PHP_ROUND_HALF_UP
-            );
-            $fyndiq_precentage = FmConfig::get('price_percentage', $this->getRequest()->getParam('store'));
-
-            $prodData = array(
-                'id' => $prod->getId(),
-                'url' => $prod->getUrl(),
-                'name' => $prod->getName(),
-                'fyndiq_price' => $fyndiq_exported_price,
-                'price' => $prod->getPrice(),
-                'fyndiq_precentage' => $fyndiq_precentage,
-                'description' => $prod->getDescription(),
-                'reference' => $prod->getSKU(),
-                'quantity' => $qtyStock,
-                'fyndiq_quantity' => $fyndiq_stock,
-                'image' => false,
-                'isActive' => $prod->getIsActive()
-            );
-            $return_array[] = $prodData;
-        }
-        $this->response($return_array);
     }
 
     /**
