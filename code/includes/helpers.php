@@ -6,7 +6,6 @@
  * Time: 10:33
  */
 
-require_once(dirname(dirname(__FILE__)) . '/includes/messages.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/api/fyndiqAPI.php');
 require_once(MAGENTO_ROOT . '/fyndiq/shared/src/FyndiqAPICall.php');

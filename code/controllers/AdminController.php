@@ -6,12 +6,18 @@
  * Date: 18/08/14
  * Time: 09:50
  */
+require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
 
 class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
 {
 
     private $allowedCurrencies = array('SEK', 'EUR');
+
+    protected function _construct()
+    {
+        FyndiqTranslation::init(Mage::app()->getLocale()->getLocaleCode());
+    }
 
     /**
      * The page where everything happens.
