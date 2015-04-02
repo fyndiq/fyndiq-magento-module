@@ -149,12 +149,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             $fyndiq = Mage::getModel('fyndiq/product')->productExist($prod->getId());
             $fyndiq_data = Mage::getModel('fyndiq/product')->getProductExportData($prod->getId());
             $fyndiq_percentage = FmConfig::get('price_percentage', $this->getRequest()->getParam('store'));
-            if(isset($fyndiq_data['state'])) {
-                $fyndiq_state = $fyndiq_data['state'];
-            }
-            else {
-                $fyndiq_state = null;
-            }
+            $fyndiq_state = null;
 
             if ($prod->getTypeId() == 'simple') {
                 //Get parent
@@ -212,8 +207,12 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 $prodData['image'] = false;
             }
 
+            // If added to fyndiq export table, get the settings from that table
             if ($fyndiq) {
                 $prodData['fyndiq_percentage'] = $fyndiq_data['exported_price_percentage'];
+                if(isset($fyndiq_data['state'])) {
+                    $prodData['fyndiq_state'] = $fyndiq_data['state'];
+                }
             }
 
             //Count expected price to Fyndiq
