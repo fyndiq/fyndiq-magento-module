@@ -119,11 +119,14 @@
     background-color: #799ec4;
     color: #fff;
     font-size: 15pt;
-    padding: .4em; }
+    padding: .4em;
+    line-height: 28px; }
     .fm-panel .fm-panel-header .legend {
       float: right;
       font-size: 10pt;
-      margin-top: 4px; }
+      margin-top: 4px;
+      height: 20px;
+      line-height: 19px; }
   .fm-panel .fm-panel-body {
     padding: 1em; }
     .fm-panel .fm-panel-body.no-padding {
@@ -153,7 +156,8 @@
   width: 100%; }
   .fm-panel table th {
     background-color: #f5f8fb;
-    font-size: 9pt; }
+    font-size: 9pt;
+    text-align: center; }
   .fm-panel table td,
   .fm-panel table th {
     border-bottom: 1px solid #e3e8ec;
