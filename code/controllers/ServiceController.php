@@ -149,6 +149,12 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             $fyndiq = Mage::getModel('fyndiq/product')->productExist($prod->getId());
             $fyndiq_data = Mage::getModel('fyndiq/product')->getProductExportData($prod->getId());
             $fyndiq_percentage = FmConfig::get('price_percentage', $this->getRequest()->getParam('store'));
+            if(isset($fyndiq_data['state'])) {
+                $fyndiq_state = $fyndiq_data['state'];
+            }
+            else {
+                $fyndiq_state = null;
+            }
 
             if ($prod->getTypeId() == 'simple') {
                 //Get parent
@@ -194,6 +200,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 'fyndiq_percentage' => $fyndiq_percentage,
                 'fyndiq_exported_stock' => intval($qtyStock),
                 'fyndiq_exported' => $fyndiq,
+                'fyndiq_state' => $fyndiq_state,
                 'description' => $prod->getDescription(),
                 'reference' => $prod->getSKU(),
                 'properties' => implode(', ', $tags),
