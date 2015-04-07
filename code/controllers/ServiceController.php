@@ -455,6 +455,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             if ($success) {
                 $status = $orderModel->getStatusName($newStatusId);
                 $this->response($status);
+                return;
             }
         }
         self::response_error(
