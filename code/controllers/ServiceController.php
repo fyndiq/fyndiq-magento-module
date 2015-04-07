@@ -463,4 +463,22 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             FyndiqTranslation::get('unhandled-error-message')
         );
     }
+
+    public function update_product_status() {
+        try {
+            $storeId = $this->getRequest()->getParam('store');
+            $ret = FmHelpers::call_api($storeId, 'GET', 'product_info/');
+            $result = true;
+            $productModel = Mage::getModel('fyndiq/product');
+            foreach ($ret['data'] as $statusRow) {
+                $result &= $productModel->updateProductState($statusRow->identifier, $statusRow->for_sale);
+            }
+            $this->response($result);
+        } catch (Exception $e) {
+            $this->response_error(
+                FyndiqTranslation::get('unhandled-error-title'),
+                FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')'
+            );
+        }
+    }
 }
