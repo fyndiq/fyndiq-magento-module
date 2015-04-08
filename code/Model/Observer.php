@@ -320,7 +320,11 @@ class Fyndiq_Fyndiq_Model_Observer
                 'product_feed_url' => Mage::getUrl('fyndiq/file/index', array(
                     '_store' => $storeId,
                     '_nosid' => true,
-                ))
+                )),
+                'notification_url' => Mage::getUrl('fyndiq/notification/index', array(
+                            '_store' => $storeId,
+                            '_nosid' => true,
+                        ))
             );
             FmHelpers::call_api($storeId, 'PATCH', 'settings/', $data);
         }
