@@ -31,7 +31,7 @@ class Fyndiq_Fyndiq_Model_Observer
         if ($settingExists) {
             $date = Mage::getModel('fyndiq/setting')->getSetting($storeId, 'order_lastdate');
         }
-        $url = 'orders/' . (empty($date) ? '': '?min_date=' . urlencode($date['value']));
+        $url = 'orders/' . (empty($date) ? '' : '?min_date=' . urlencode($date['value']));
 
         $ret = FmHelpers::call_api($storeId, 'GET', $url);
         foreach ($ret['data'] as $order) {
@@ -77,7 +77,7 @@ class Fyndiq_Fyndiq_Model_Observer
         $fileName = FmConfig::getFeedPath($storeId);
         $file = fopen($fileName, 'w+');
 
-        if ( !$file ) {
+        if (!$file) {
             return false;
         }
         $feedWriter = new FyndiqCSVFeedWriter($file);
@@ -116,6 +116,7 @@ class Fyndiq_Fyndiq_Model_Observer
                 }
             }
         }
+
         return $feedWriter->write();
     }
 
@@ -314,13 +315,24 @@ class Fyndiq_Fyndiq_Model_Observer
     public function handle_fyndiqConfigChangedSection()
     {
         $storeId = Mage::app()->getRequest()->getParam('store');
-        if (FmConfig::get('username',$storeId) !== ''
-            && FmConfig::get('apikey', $storeId) !== '') {
+        if (FmConfig::get('username', $storeId) !== ''
+            && FmConfig::get('apikey', $storeId) !== ''
+        ) {
             $data = array(
-                'product_feed_url' => Mage::getUrl('fyndiq/file/index', array(
-                    '_store' => $storeId,
-                    '_nosid' => true,
-                ))
+                'product_feed_url' => Mage::getUrl(
+                        'fyndiq/file/index',
+                        array(
+                            '_store' => $storeId,
+                            '_nosid' => true,
+                        )
+                    ),
+                'notification_url' => Mage::getUrl(
+                        'fyndiq/notification/index',
+                        array(
+                            '_store' => $storeId,
+                            '_nosid' => true,
+                        )
+                    )
             );
             FmHelpers::call_api($storeId, 'PATCH', 'settings/', $data);
         }
