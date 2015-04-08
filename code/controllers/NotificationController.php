@@ -7,7 +7,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 {
     function indexAction()
     {
-        $orderid = intval($_GET['order_id']);
+        (isset($_GET['order_id'])) ? $orderid = intval($_GET['order_id']): $orderid = 0;
 
         if ($orderid > 0) {
 
