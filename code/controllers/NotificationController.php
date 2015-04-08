@@ -7,7 +7,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 {
     function indexAction()
     {
-        (isset($_GET['order_id'])) ? $orderid = intval($_GET['order_id']): $orderid = 0;
+        $orderid = isset($_GET['order_id']) ? intval($_GET['order_id']) : 0;
 
         if ($orderid > 0) {
             try {
@@ -24,6 +24,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
             } catch (Exception $e) {
                 header('HTTP/1.0 500 Internal Server Error');
             }
+
             return true;
 
         }
