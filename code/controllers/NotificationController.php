@@ -1,5 +1,4 @@
 <?php
-require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
 require_once(dirname(dirname(__FILE__)) . '/Model/Order.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
