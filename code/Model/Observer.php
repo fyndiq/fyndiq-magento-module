@@ -183,8 +183,8 @@ class Fyndiq_Fyndiq_Model_Observer
 
             $images = $productModel->load($magArray['entity_id'])->getMediaGalleryImages();
             if (isset($images)) {
-                foreach ($images as $_image) {
-                    $url = $imageHelper->init($magProduct, 'image', $_image->getFile());
+                foreach ($images as $image) {
+                    $url = $imageHelper->init($magProduct, 'image', $image->getFile());
                     $feedProduct['product-image-' . $imageId . '-url'] = $url;
                     $feedProduct['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
                     $imageId++;
@@ -235,13 +235,14 @@ class Fyndiq_Fyndiq_Model_Observer
                 // TODO: fix location to something except test
                 $feedProduct['article-location'] = 'test';
                 $feedProduct['article-sku'] = $magProduct->getSKU();
+                $feedProduct['article-name'] = $magArray['name'];
                 if ($parent != false) {
                     $parentModel = $productModel->load($parent);
                     if (method_exists($parentModel->getTypeInstance(), 'getConfigurableAttributes')) {
-                        $productAttributeOptions = $parentModel->getTypeInstance()->getConfigurableAttributes();
+                        $productAttrOptions = $parentModel->getTypeInstance()->getConfigurableAttributes();
                         $attrId = 1;
                         $tags = array();
-                        foreach ($productAttributeOptions as $productAttribute) {
+                        foreach ($productAttrOptions as $productAttribute) {
                             $attrValue = $parentModel->getResource()->getAttribute(
                                 $productAttribute->getProductAttribute()->getAttributeCode()
                             )->getFrontend();
@@ -254,57 +255,54 @@ class Fyndiq_Fyndiq_Model_Observer
                             $attrId++;
                         }
                         $feedProduct['article-name'] = implode(', ', $tags);
-                    } else {
-                        $feedProduct['article-name'] = $magArray['name'];
-                    }
-                } else {
-                    $feedProduct['article-name'] = $magArray['name'];
-                }
-            } else {
-                //Get child articles
-                $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
-                $simple_collection = $conf->getUsedProductCollection()->addAttributeToSelect('*')
-                    ->addFilterByRequiredOptions()->getItems();
-
-                //Get first article to the product.
-                $first_product = array_shift($simple_collection);
-                $qtyStock = $stockModel->loadByProduct($first_product->getId())->getQty();
-
-                $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
-
-                $images = $productModel->load($first_product->getId())->getMediaGalleryImages();
-                if (!empty($images)) {
-                    $imageId = 1;
-                    foreach ($images as $_image) {
-                        $url = $imageHelper->init($first_product, 'image', $_image->getFile());
-                        $feed_article['product-image-' . $imageId. '-url'] = strval($url);
-                        $feed_article['product-image-' . $imageId . '-identifier'] = substr(md5(strval($url)), 0, 10);
-                        $imageId++;
                     }
                 }
-
-                // TODO: fix location to something except test
-                $feedProduct['article-location'] = 'test';
-                $feedProduct['article-sku'] = $first_product->getSKU();
-                $productAttributeOptions = $magProduct->getTypeInstance()->getConfigurableAttributes();
-                $attrId = 1;
-                $tags = array();
-                foreach ($productAttributeOptions as $productAttribute) {
-                    $attrValue = $magProduct->getResource()->getAttribute(
-                        $productAttribute->getProductAttribute()->getAttributeCode()
-                    )->getFrontend();
-                    $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
-                    $value = $attrValue->getValue($first_product);
-
-                    $feedProduct['article-property-name-' . $attrId] = $attrCode;
-                    $feedProduct['article-property-value-' . $attrId] = $value[0];
-                    $tags[] = $attrCode . ': ' . $value[0];
-                    $attrId++;
-                }
-                $feedProduct['article-name'] = substr(implode(', ', $tags), 0, 30);
+                // We're done
+                return $feedProduct;
             }
-        }
 
+            //Get child articles
+            $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
+            $simpleCollection = $conf->getUsedProductCollection()->addAttributeToSelect('*')
+                ->addFilterByRequiredOptions()->getItems();
+
+            //Get first article to the product.
+            $firstProduct = array_shift($simpleCollection);
+            $qtyStock = $stockModel->loadByProduct($firstProduct->getId())->getQty();
+
+            $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
+
+            $images = $productModel->load($firstProduct->getId())->getMediaGalleryImages();
+            if (!empty($images)) {
+                $imageId = 1;
+                foreach ($images as $image) {
+                    $url = $imageHelper->init($firstProduct, 'image', $image->getFile());
+                    $feedProduct['product-image-' . $imageId. '-url'] = strval($url);
+                    $feedProduct['product-image-' . $imageId . '-identifier'] = substr(md5(strval($url)), 0, 10);
+                    $imageId++;
+                }
+            }
+
+            // TODO: fix location to something except test
+            $feedProduct['article-location'] = 'test';
+            $feedProduct['article-sku'] = $firstProduct->getSKU();
+            $productAttrOptions = $magProduct->getTypeInstance()->getConfigurableAttributes();
+            $attrId = 1;
+            $tags = array();
+            foreach ($productAttrOptions as $productAttribute) {
+                $attrValue = $magProduct->getResource()->getAttribute(
+                    $productAttribute->getProductAttribute()->getAttributeCode()
+                )->getFrontend();
+                $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
+                $value = $attrValue->getValue($firstProduct);
+
+                $feedProduct['article-property-name-' . $attrId] = $attrCode;
+                $feedProduct['article-property-value-' . $attrId] = $value[0];
+                $tags[] = $attrCode . ': ' . $value[0];
+                $attrId++;
+            }
+            $feedProduct['article-name'] = substr(implode(', ', $tags), 0, 30);
+        }
         return $feedProduct;
     }
 
