@@ -14,9 +14,9 @@ class Fyndiq_Fyndiq_Model_Observer
     public function importOrders()
     {
         try {
-            $allStores = Mage::app()->getStores();
+            $allStoreIds = array_keys(Mage::app()->getStores());
             $time = time();
-            foreach ($allStores as $storeId => $val) {
+            foreach ($allStoreIds as $storeId) {
                 $this->importOrdersForStore($storeId, $time);
             }
         } catch (Exception $e) {
@@ -41,10 +41,9 @@ class Fyndiq_Fyndiq_Model_Observer
         }
 
         if ($settingExists) {
-            Mage::getModel('fyndiq/setting')->updateSetting($storeId, 'order_lastdate', $newDate);
-        } else {
-            Mage::getModel('fyndiq/setting')->saveSetting($storeId, 'order_lastdate', $newDate);
+            return Mage::getModel('fyndiq/setting')->updateSetting($storeId, 'order_lastdate', $newDate);
         }
+        return Mage::getModel('fyndiq/setting')->saveSetting($storeId, 'order_lastdate', $newDate);
     }
 
 
@@ -83,36 +82,36 @@ class Fyndiq_Fyndiq_Model_Observer
         $feedWriter = new FyndiqCSVFeedWriter($file);
         $products = Mage::getModel('fyndiq/product')->getCollection()->setOrder('id', 'DESC');
         $products = $products->getItems();
-        $ids_to_export = array();
+        $idsToExport = array();
         $productInfo = array();
         foreach ($products as $producted) {
             $product = $producted->getData();
-            $ids_to_export[] = intval($product['product_id']);
+            $idsToExport[] = intval($product['product_id']);
             $productInfo[$product['product_id']] = $producted;
         }
 
         //Initialize models here so it saves memory.
-        $product_model = Mage::getModel('catalog/product');
+        $productModel = Mage::getModel('catalog/product');
 
-        $products_to_export = $product_model->getCollection()
+        $productsToExport = $productModel->getCollection()
             ->addAttributeToSelect('*')
             ->addStoreFilter($storeId)
             ->addAttributeToFilter(
                 'entity_id',
-                array('in' => $ids_to_export)
+                array('in' => $idsToExport)
             )->load();
 
-        foreach ($products_to_export as $magProduct) {
+        foreach ($productsToExport as $magProduct) {
             if ($feedWriter->addProduct($this->getProduct($magProduct, $productInfo))
                 && $magProduct->getTypeId() != 'simple'
             ) {
                 $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
-                $simple_collection = $conf->getUsedProductCollection()
+                $simpleCollection = $conf->getUsedProductCollection()
                     ->addAttributeToSelect('*')
                     ->addFilterByRequiredOptions()
                     ->getItems();
-                foreach ($simple_collection as $simple_product) {
-                    $feedWriter->addProduct($this->getProduct($simple_product, $productInfo));
+                foreach ($simpleCollection as $simpleProduct) {
+                    $feedWriter->addProduct($this->getProduct($simpleProduct, $productInfo));
                 }
             }
         }

@@ -93,7 +93,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     public function get_categories($args)
     {
         $storeId = $this->getRequest()->getParam('store');
-        $categories = FmCategory::get_subcategories(intval($args['category_id']), $storeId);
+        $categories = FmCategory::getSubCategories(intval($args['category_id']), $storeId);
         $this->response($categories);
     }
 

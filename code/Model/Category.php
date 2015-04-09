@@ -1,45 +1,50 @@
 <?php
 
-class FmCategory {
+class FmCategory
+{
 
-    public static function get_subcategories($category_id, $storeId) {
+    private static function getCategoriesList($categoryId, $storeId, $getRootOnly)
+    {
         $category = Mage::getModel('catalog/category');
-        $data = array();
-        $getRootOnly = $category_id === 0;
-        if($getRootOnly) {
-            $categories = $category->getCollection()
+        if ($getRootOnly) {
+            return $category->getCollection()
                 ->addAttributeToSelect('*')
                 ->setStoreId($storeId)
                 ->addAttributeToFilter('is_active', '1')
                 ->addAttributeToFilter('level', 1)
                 ->addAttributeToFilter('include_in_menu', '1')
                 ->addAttributeToSort('position', 'asc')->getItems();
-        } else {
-            $categories = $category->getCollection()
-                ->addAttributeToSelect('*')
-                ->setStoreId($storeId)
-                ->addAttributeToFilter('is_active', '1')
-                ->addAttributeToFilter('parent_id', array('eq' => $category_id))
-                ->addAttributeToSort('position', 'asc')->getItems();
         }
+        return $category->getCollection()
+            ->addAttributeToSelect('*')
+            ->setStoreId($storeId)
+            ->addAttributeToFilter('is_active', '1')
+            ->addAttributeToFilter('parent_id', array('eq' => $categoryId))
+            ->addAttributeToSort('position', 'asc')->getItems();
+    }
+
+    public static function getSubCategories($categoryId, $storeId)
+    {
+        $data = array();
         $parentLvl = false;
-        foreach($categories as $cat) {
+        $getRootOnly = $categoryId === 0;
+        $categories = self::getCategoriesList($categoryId, $storeId, $getRootOnly);
+        foreach ($categories as $cat) {
             if ($getRootOnly) {
-                if($parentLvl == false) {
+                if ($parentLvl == false) {
                     $parentLvl = $cat->getLevel();
                 }
-                if($parentLvl != false && $cat->getLevel() != $parentLvl) {
+                if ($parentLvl != false && $cat->getLevel() != $parentLvl) {
                     continue;
                 }
             }
-            $categoryData = array(
+            $data[] = array(
                 'id' => $cat->getId(),
                 'url' => $cat->getUrl(),
                 'name' => $cat->getName(),
                 'image' => $cat->getImageUrl(),
                 'isActive' => $cat->getIsActive()
             );
-            array_push($data, $categoryData);
         }
         return $data;
     }
