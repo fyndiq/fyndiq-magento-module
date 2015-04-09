@@ -33,7 +33,7 @@ class Fyndiq_Fyndiq_Model_Observer
         }
         $url = 'orders/' . (empty($date) ? '' : '?min_date=' . urlencode($date['value']));
 
-        $ret = FmHelpers::call_api($storeId, 'GET', $url);
+        $ret = FmHelpers::callApi($storeId, 'GET', $url);
         foreach ($ret['data'] as $order) {
             if (!Mage::getModel('fyndiq/order')->orderExists($order->id)) {
                 Mage::getModel('fyndiq/order')->create($storeId, $order);
@@ -328,7 +328,7 @@ class Fyndiq_Fyndiq_Model_Observer
                         )
                     )
             );
-            FmHelpers::call_api($storeId, 'PATCH', 'settings/', $data);
+            FmHelpers::callApi($storeId, 'PATCH', 'settings/', $data);
         }
     }
 }

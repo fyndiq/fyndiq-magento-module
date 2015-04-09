@@ -12,7 +12,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         if ($orderId > 0) {
             try {
                 $storeId = Mage::app()->getStore()->getStoreId();
-                $ret = FmHelpers::call_api($storeId, 'GET', 'orders/' . $orderId . '/');
+                $ret = FmHelpers::callApi($storeId, 'GET', 'orders/' . $orderId . '/');
 
                 $fyndiqOrder = $ret['data'];
 

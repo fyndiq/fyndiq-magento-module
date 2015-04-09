@@ -13,20 +13,14 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/FyndiqAPICall.php');
 class FmHelpers
 {
 
-    public static function api_connection_exists()
+    public static function apiConnectionExists()
     {
-        if (FmConfig::getBool('username') && FmConfig::getBool('apikey')) {
-            return true;
-        }
-        return false;
+        return  FmConfig::getBool('username') && FmConfig::getBool('apikey');
     }
 
-    public static function all_settings_exist()
+    public static function allSettingsExist()
     {
-        if (FmConfig::getBool('language') && FmConfig::getBool('currency')) {
-            return true;
-        }
-        return false;
+        return FmConfig::getBool('language') && FmConfig::getBool('currency');
     }
 
     /**
@@ -38,7 +32,7 @@ class FmHelpers
      * @param array $data
      * @return mixed
      */
-    public static function call_api($storeId, $method, $path, $data = array())
+    public static function callApi($storeId, $method, $path, $data = array())
     {
         $username = FmConfig::get('username', $storeId);
         $apiToken = FmConfig::get('apikey', $storeId);

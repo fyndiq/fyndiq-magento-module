@@ -404,7 +404,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 $orders['orders'][] = array('order' => intval($order));
             }
             $storeId = $this->getRequest()->getParam('store');
-            $ret = FmHelpers::call_api($storeId, 'POST', 'delivery_notes/', $orders, true);
+            $ret = FmHelpers::callApi($storeId, 'POST', 'delivery_notes/', $orders, true);
 
             if ($ret['status'] == 200) {
                 $fileName = 'delivery_notes-' . implode('-', $args['orders']) . '.pdf';
@@ -467,7 +467,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     {
         try {
             $storeId = $this->getRequest()->getParam('store');
-            $ret = FmHelpers::call_api($storeId, 'GET', 'product_info/');
+            $ret = FmHelpers::callApi($storeId, 'GET', 'product_info/');
             $result = true;
             $productModel = Mage::getModel('fyndiq/product');
             foreach ($ret['data'] as $statusRow) {
