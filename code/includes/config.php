@@ -1,36 +1,48 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: confact
  * Date: 03/09/14
  * Time: 10:35
  */
+class FmConfig
+{
 
-class FmConfig {
+    const CONFIG_NAME = 'fyndiq/fyndiq_group';
 
-    private static $config_name = "fyndiq/fyndiq_group";
-
-    public static function delete($name) {
-        return Mage::getConfig()->deleteConfig(self::$config_name.'/'.$name);
+    private static function key($name)
+    {
+        return self::CONFIG_NAME . '/' . $name;
     }
 
-    public static function get($name, $storeId) {
-        return Mage::getStoreConfig(self::$config_name.'/'.$name, $storeId);
+    public static function delete($name)
+    {
+        return Mage::getConfig()->deleteConfig(self::key($name));
     }
 
-    public static function getBool($name) {
-        return (bool)Mage::getStoreConfigFlag(self::$config_name.'/'.$name);
+    public static function get($name, $storeId)
+    {
+        return Mage::getStoreConfig(self::key($name), $storeId);
     }
 
-    public static function set($name, $value) {
-        return Mage::getConfig()->saveConfig(self::$config_name.'/'.$name, serialize($value));
+    public static function getBool($name)
+    {
+        return (bool)Mage::getStoreConfigFlag(self::key($name));
     }
 
-    public static function getVersion() {
+    public static function set($name, $value)
+    {
+        return Mage::getConfig()->saveConfig(self::key($name), serialize($value));
+    }
+
+    public static function getVersion()
+    {
         return (string)Mage::getConfig()->getNode()->modules->Fyndiq_Fyndiq->version;
     }
 
-    public static function getFeedPath($storeId) {
+    public static function getFeedPath($storeId)
+    {
         return 'fyndiq/files/feed-' . $storeId . '.csv';
     }
 }
