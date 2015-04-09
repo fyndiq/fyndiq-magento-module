@@ -120,6 +120,13 @@ class Fyndiq_Fyndiq_Model_Observer
     }
 
 
+    /**
+     * Get product information
+     *
+     * @param array $magProduct
+     * @param array $productInfo
+     * @return array
+     */
     private function getProduct($magProduct, $productInfo)
     {
         //Initialize models here so it saves memory.
@@ -134,10 +141,11 @@ class Fyndiq_Fyndiq_Model_Observer
 
         $feedProduct = array();
 
-        // Get taxrate
+        // Get tax rate
         $request = $taxCalculation->getRateRequest(null, null, null, $store);
         $taxClassId = $magProduct->getTaxClassId();
         $taxPercent = $taxCalculation->getRate($request->setProductClassId($taxClassId));
+
         // Setting the data
         if (isset($magArray['price'])) {
             $feedProduct['product-id'] = $magArray['entity_id'];
@@ -153,7 +161,6 @@ class Fyndiq_Fyndiq_Model_Observer
                         $magArray['entity_id']
                     );
                 }
-
                 if ($parentIds) {
                     $parent = $parentIds[0];
                 }
@@ -163,46 +170,43 @@ class Fyndiq_Fyndiq_Model_Observer
                 $feedProduct['product-id'] = $parent;
             }
 
-
             //images
             $imageId = 1;
             //trying to get image, if not image will be false
             try {
                 $url = $magProduct->getImageUrl();
-                $feedProduct['product-image-' . $imageId . '-url'] = strval($url);
-                $feedProduct['product-image-' . $imageId . '-identifier'] =
-                    substr(md5(strval($url)), 0, 10);
+                $feedProduct['product-image-' . $imageId . '-url'] = $url;
+                $feedProduct['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
                 $imageId++;
             } catch (Exception $e) {
-
             }
+
             $images = $productModel->load($magArray['entity_id'])->getMediaGalleryImages();
             if (isset($images)) {
                 foreach ($images as $_image) {
                     $url = $imageHelper->init($magProduct, 'image', $_image->getFile());
-                    $feedProduct['product-image-' . $imageId . '-url'] = strval($url);
-                    $feedProduct['product-image-' . $imageId . '-identifier'] =
-                        substr(md5(strval($url)), 0, 10);
+                    $feedProduct['product-image-' . $imageId . '-url'] = $url;
+                    $feedProduct['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
                     $imageId++;
                 }
             }
             $feedProduct['product-title'] = $magArray['name'];
             $feedProduct['product-description'] = $magProduct->getDescription();
 
-
-            if ($magArray['type_id'] == 'simple' && isset($productInfo[$magArray['entity_id']])) {
-                $discount = $productInfo[$magArray['entity_id']]['exported_price_percentage'];
-            } elseif ($magArray['type_id'] == 'simple') {
+            $discount = $productInfo[$magArray['entity_id']]['exported_price_percentage'];
+            if ($magArray['type_id'] == 'simple') {
+                if (isset($productInfo[$magArray['entity_id']])) {
+                    $discount = $productInfo[$magArray['entity_id']]['exported_price_percentage'];
+                }
                 if ($parent != false) {
                     $discount = $productInfo[$parent]['exported_price_percentage'];
                 }
-            } else {
-                $discount = $productInfo[$magArray['entity_id']]['exported_price_percentage'];
             }
+
             $price = FyndiqUtils::getFyndiqPrice($magArray['price'], $discount);
-            $feedProduct['product-price'] = number_format((float)$price, 2, '.', '');
+            $feedProduct['product-price'] = FyndiqUtils::formatPrice($price);
             $feedProduct['product-vat-percent'] = $taxPercent;
-            $feedProduct['product-oldprice'] = number_format((float)$magArray['price'], 2, '.', '');
+            $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($magArray['price']);
             $feedProduct['product-market'] = Mage::getStoreConfig('general/country/default');
             $feedProduct['product-currency'] = Mage::app()->getStore()->getCurrentCurrencyCode();
 
@@ -261,6 +265,7 @@ class Fyndiq_Fyndiq_Model_Observer
                 $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
                 $simple_collection = $conf->getUsedProductCollection()->addAttributeToSelect('*')
                     ->addFilterByRequiredOptions()->getItems();
+
                 //Get first article to the product.
                 $first_product = array_shift($simple_collection);
                 $qtyStock = $stockModel->loadByProduct($first_product->getId())->getQty();
