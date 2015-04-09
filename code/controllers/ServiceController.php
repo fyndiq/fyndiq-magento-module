@@ -150,8 +150,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             } else {
                 $qtyStock = Mage::getModel('cataloginventory/stock_item')->loadByProduct($prod)->getQty();
             }
-            $fyndiq = Mage::getModel('fyndiq/product')->productExist($prod->getId());
             $fyndiq_data = Mage::getModel('fyndiq/product')->getProductExportData($prod->getId());
+            $fyndiq = !empty($fyndiq_data);
             $fyndiq_percentage = FmConfig::get('price_percentage', $this->getRequest()->getParam('store'));
             $fyndiq_state = null;
 
@@ -301,7 +301,9 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     public function update_product($args)
     {
         $productModel = Mage::getModel('fyndiq/product');
-        $status = $productModel->updateProduct($args['product'], $args['percentage']);
+        $status = $productModel->updateProduct($args['product'], array(
+            'exported_price_percentage' => $args['percentage']
+        ));
         $this->response($status);
     }
 
@@ -314,20 +316,23 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     {
         // Getting all data
         $productModel = Mage::getModel('fyndiq/product');
-        $result = false;
         foreach ($args['products'] as $v) {
             $product = $v['product'];
             $fyndiqPercentage = $product['fyndiq_percentage'];
             $fyndiqPercentage = $fyndiqPercentage > 100 ? 100 : $fyndiqPercentage;
             $fyndiqPercentage = $fyndiqPercentage < 0 ? 0 : $fyndiqPercentage;
+            $data = array(
+                'exported_price_percentage' => $fyndiqPercentage
+            );
 
-            if ($productModel->productExist($product['id'])) {
-                $result = $productModel->updateProduct($product['id'], $fyndiqPercentage);
-            } else {
-                $result = $productModel->addProduct($product['id'], $fyndiqPercentage);
+            if ($productModel->getProductExportData($product['id']) != false) {
+                $result = $productModel->updateProduct($product['id'], $data);
+                return $this->response($result);
             }
+            $data['product_id'] = $product['id'];
+            $result = $productModel->addProduct($data);
+            return $this->response($result);
         }
-        $this->response($result);
     }
 
     public function delete_exported_products($args)
@@ -471,7 +476,9 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             $result = true;
             $productModel = Mage::getModel('fyndiq/product');
             foreach ($ret['data'] as $statusRow) {
-                $result &= $productModel->updateProductState($statusRow->identifier, $statusRow->for_sale);
+                $result &= $productModel->updateProduct($statusRow->identifier, array(
+                    'state' => $statusRow->for_sale
+                ));
             }
             $this->response($result);
         } catch (Exception $e) {

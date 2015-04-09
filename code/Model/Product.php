@@ -1,4 +1,5 @@
 <?php
+
 class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
 {
 
@@ -8,69 +9,62 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
         $this->_init('fyndiq/product');
     }
 
-    function productExist($product_id)
+    /**
+     * Get product data
+     * @param int $productId
+     * @return bool|array
+     */
+    function getProductExportData($productId)
     {
-        $collection = $this->getCollection()->addFieldToFilter('product_id', $product_id)->getFirstItem();
-        if ($collection->getId()) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    function getProductExportData($product_id) {
-        $collection = $this->getCollection()->addFieldToFilter('product_id', $product_id)->getFirstItem();
+        $collection = $this->getCollection()->addFieldToFilter('product_id', $productId)->getFirstItem();
         if ($collection->getId()) {
             return $collection->getData();
-        } else {
-            return false;
         }
+        return false;
     }
 
-    function addProduct($product_id, $exported_price_percentage)
+    /**
+     * Add new product
+     *
+     * @param array $insertData
+     * @return mixed
+     */
+    function addProduct($insertData)
     {
-        $data = array('product_id' => $product_id, 'exported_price_percentage' => $exported_price_percentage);
-        $model = $this->setData($data);
-
+        $model = $this->setData($insertData);
         return $model->save()->getId();
     }
 
-    function updateProduct($product_id, $exported_price_percentage)
+    /**
+     * Update product
+     * @param int $productId
+     * @param array $updateData
+     * @return bool
+     */
+    function updateProduct($productId, $updateData)
     {
-        $collection = $this->getCollection()->addFieldToFilter('product_id', $product_id)->getFirstItem();
-        $data = array('exported_price_percentage' => $exported_price_percentage);
-        $model = $this->load($collection->getId())->addData($data);
+        $collection = $this->getCollection()->addFieldToFilter('product_id', $productId)->getFirstItem();
+        $model = $this->load($collection->getId())->addData($updateData);
         try {
             $model->setId($collection->getId())->save();
-
             return true;
         } catch (Exception $e) {
             return false;
         }
     }
 
-    function updateProductState($product_id, $state)
+    /**
+     * Delete Product
+     *
+     * @param int $productId
+     * @return bool
+     */
+    function deleteProduct($productId)
     {
-        $collection = $this->getCollection()->addFieldToFilter('product_id', $product_id)->getFirstItem();
-        $data = array('state' => $state);
-        $model = $this->load($collection->getId())->addData($data);
-        try {
-            $model->setId($collection->getId())->save();
-
-            return true;
-        } catch (Exception $e) {
-            return false;
-        }
-    }
-
-    function deleteProduct($product_id)
-    {
-        $collection = $this->getCollection()->addFieldToFilter('product_id', $product_id)->getFirstItem();
+        $collection = $this->getCollection()->addFieldToFilter('product_id', $productId)->getFirstItem();
         try {
             $this->setId($collection->getId())->delete();
-
             return true;
-
         } catch (Exception $e) {
             return false;
         }
