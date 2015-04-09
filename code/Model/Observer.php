@@ -120,37 +120,37 @@ class Fyndiq_Fyndiq_Model_Observer
     }
 
 
-    private function getProduct($magproduct, $productInfo)
+    private function getProduct($magProduct, $productInfo)
     {
         //Initialize models here so it saves memory.
-        $product_model = Mage::getModel('catalog/product');
-        $category_model = Mage::getModel('catalog/category');
-        $stock_model = Mage::getModel('cataloginventory/stock_item');
-        $image_helper = Mage::helper('catalog/image');
+        $productModel = Mage::getModel('catalog/product');
+        $categoryModel = Mage::getModel('catalog/category');
+        $stockModel = Mage::getModel('cataloginventory/stock_item');
+        $imageHelper = Mage::helper('catalog/image');
 
         $store = Mage::app()->getStore();
         $taxCalculation = Mage::getModel('tax/calculation');
-        $magarray = $magproduct->getData();
+        $magArray = $magProduct->getData();
 
         $feed_product = array();
 
         // Get taxrate
         $request = $taxCalculation->getRateRequest(null, null, null, $store);
-        $taxClassId = $magproduct->getTaxClassId();
+        $taxClassId = $magProduct->getTaxClassId();
         $taxpercent = $taxCalculation->getRate($request->setProductClassId($taxClassId));
         // Setting the data
-        if (isset($magarray['price'])) {
-            $feed_product['product-id'] = $magarray['entity_id'];
+        if (isset($magArray['price'])) {
+            $feed_product['product-id'] = $magArray['entity_id'];
 
             //Check if product have a parent
             $parent = false;
-            if ($magarray['type_id'] == 'simple') {
+            if ($magArray['type_id'] == 'simple') {
                 $parentIds = Mage::getModel('catalog/product_type_grouped')->getParentIdsByChild(
-                    $magarray['entity_id']
+                    $magArray['entity_id']
                 );
                 if (!$parentIds) {
                     $parentIds = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild(
-                        $magarray['entity_id']
+                        $magArray['entity_id']
                     );
                 }
 
@@ -168,7 +168,7 @@ class Fyndiq_Fyndiq_Model_Observer
             $imageid = 1;
             //trying to get image, if not image will be false
             try {
-                $url = $magproduct->getImageUrl();
+                $url = $magProduct->getImageUrl();
                 $feed_product['product-image-' . $imageid . '-url'] = strval($url);
                 $feed_product['product-image-' . $imageid . '-identifier'] =
                     substr(md5(strval($url)), 0, 10);
@@ -176,55 +176,55 @@ class Fyndiq_Fyndiq_Model_Observer
             } catch (Exception $e) {
 
             }
-            $images = $product_model->load($magarray['entity_id'])->getMediaGalleryImages();
+            $images = $productModel->load($magArray['entity_id'])->getMediaGalleryImages();
             if (isset($images)) {
                 foreach ($images as $_image) {
-                    $url = $image_helper->init($magproduct, 'image', $_image->getFile());
+                    $url = $imageHelper->init($magProduct, 'image', $_image->getFile());
                     $feed_product['product-image-' . $imageid . '-url'] = strval($url);
                     $feed_product['product-image-' . $imageid . '-identifier'] =
                         substr(md5(strval($url)), 0, 10);
                     $imageid++;
                 }
             }
-            $feed_product['product-title'] = addslashes($magarray['name']);
-            $feed_product['product-description'] = addslashes($magproduct->getDescription());
+            $feed_product['product-title'] = $magArray['name'];
+            $feed_product['product-description'] = $magProduct->getDescription();
 
 
-            if ($magarray['type_id'] == 'simple' && isset($productInfo[$magarray['entity_id']])) {
-                $discount = $productInfo[$magarray['entity_id']]['exported_price_percentage'];
-            } elseif ($magarray['type_id'] == 'simple') {
+            if ($magArray['type_id'] == 'simple' && isset($productInfo[$magArray['entity_id']])) {
+                $discount = $productInfo[$magArray['entity_id']]['exported_price_percentage'];
+            } elseif ($magArray['type_id'] == 'simple') {
                 if ($parent != false) {
                     $discount = $productInfo[$parent]['exported_price_percentage'];
                 }
             } else {
-                $discount = $productInfo[$magarray['entity_id']]['exported_price_percentage'];
+                $discount = $productInfo[$magArray['entity_id']]['exported_price_percentage'];
             }
-            $price = FyndiqUtils::getFyndiqPrice($magarray['price'], $discount);
+            $price = FyndiqUtils::getFyndiqPrice($magArray['price'], $discount);
             $feed_product['product-price'] = number_format((float)$price, 2, '.', '');
             $feed_product['product-vat-percent'] = $taxpercent;
-            $feed_product['product-oldprice'] = number_format((float)$magarray['price'], 2, '.', '');
+            $feed_product['product-oldprice'] = number_format((float)$magArray['price'], 2, '.', '');
             $feed_product['product-market'] = Mage::getStoreConfig('general/country/default');
             $feed_product['product-currency'] = Mage::app()->getStore()->getCurrentCurrencyCode();
             // TODO: plan how to fix this brand issue
             $feed_product['product-brand'] = 'Unknown';
-            if ($magproduct->getAttributeText('manufacturer') != '') {
-                $feed_product['product-brand'] = $magproduct->getAttributeText('manufacturer');
+            if ($magProduct->getAttributeText('manufacturer') != '') {
+                $feed_product['product-brand'] = $magProduct->getAttributeText('manufacturer');
             }
 
             //Category
-            $categoryIds = $magproduct->getCategoryIds();
+            $categoryIds = $magProduct->getCategoryIds();
 
             if (count($categoryIds) > 0) {
                 $firstCategoryId = $categoryIds[0];
-                $_category = $category_model->load($firstCategoryId);
+                $_category = $categoryModel->load($firstCategoryId);
 
                 $feed_product['product-category-name'] = $_category->getName();
                 $feed_product['product-category-id'] = $firstCategoryId;
             }
 
-            if ($magarray['type_id'] == 'simple') {
+            if ($magArray['type_id'] == 'simple') {
 
-                $qtyStock = $stock_model->loadByProduct($magproduct->getId())->getQty();
+                $qtyStock = $stockModel->loadByProduct($magProduct->getId())->getQty();
                 if (intval($qtyStock) < 0) {
                     $feed_product['article-quantity'] = intval(0);
                 } else {
@@ -233,9 +233,9 @@ class Fyndiq_Fyndiq_Model_Observer
 
                 // TODO: fix location to something except test
                 $feed_product['article-location'] = 'test';
-                $feed_product['article-sku'] = $magproduct->getSKU();
+                $feed_product['article-sku'] = $magProduct->getSKU();
                 if ($parent != false) {
-                    $parentmodel = $product_model->load($parent);
+                    $parentmodel = $productModel->load($parent);
                     if (method_exists($parentmodel->getTypeInstance(), 'getConfigurableAttributes')) {
                         $productAttributeOptions = $parentmodel->getTypeInstance()->getConfigurableAttributes();
                         $attrid = 1;
@@ -245,7 +245,7 @@ class Fyndiq_Fyndiq_Model_Observer
                                 $productAttribute->getProductAttribute()->getAttributeCode()
                             )->getFrontend();
                             $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
-                            $value = $attrValue->getValue($magproduct);
+                            $value = $attrValue->getValue($magProduct);
 
                             $feed_product['article-property-name-' . $attrid] = $attrCode;
                             $feed_product['article-property-value-' . $attrid] = $value[0];
@@ -254,31 +254,31 @@ class Fyndiq_Fyndiq_Model_Observer
                         }
                         $feed_product['article-name'] = implode(', ', $tags);
                     } else {
-                        $feed_product['article-name'] = $magarray['name'];
+                        $feed_product['article-name'] = $magArray['name'];
                     }
                 } else {
-                    $feed_product['article-name'] = $magarray['name'];
+                    $feed_product['article-name'] = $magArray['name'];
                 }
             } else {
                 //Get child articles
-                $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magproduct);
+                $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
                 $simple_collection = $conf->getUsedProductCollection()->addAttributeToSelect(
                     '*'
                 )->addFilterByRequiredOptions()->getItems();
                 //Get first article to the product.
                 $first_product = array_shift($simple_collection);
-                $qtyStock = $stock_model->loadByProduct($first_product->getId())->getQty();
+                $qtyStock = $stockModel->loadByProduct($first_product->getId())->getQty();
                 if (intval($qtyStock) < 0) {
                     $feed_product['article-quantity'] = intval(0);
                 } else {
                     $feed_product['article-quantity'] = intval($qtyStock);
                 }
 
-                $images = $product_model->load($first_product->getId())->getMediaGalleryImages();
+                $images = $productModel->load($first_product->getId())->getMediaGalleryImages();
                 if (isset($images)) {
                     $imageid = 1;
                     foreach ($images as $_image) {
-                        $url = $image_helper->init($first_product, 'image', $_image->getFile());
+                        $url = $imageHelper->init($first_product, 'image', $_image->getFile());
                         $feed_article['product-image-' . $imageid . '-url'] = strval($url);
                         $feed_article['product-image-' . $imageid . '-identifier'] = substr(md5(strval($url)), 0, 10);
                         $imageid++;
@@ -288,11 +288,11 @@ class Fyndiq_Fyndiq_Model_Observer
                 // TODO: fix location to something except test
                 $feed_product['article-location'] = 'test';
                 $feed_product['article-sku'] = $first_product->getSKU();
-                $productAttributeOptions = $magproduct->getTypeInstance()->getConfigurableAttributes();
+                $productAttributeOptions = $magProduct->getTypeInstance()->getConfigurableAttributes();
                 $attrid = 1;
                 $tags = array();
                 foreach ($productAttributeOptions as $productAttribute) {
-                    $attrValue = $magproduct->getResource()->getAttribute(
+                    $attrValue = $magProduct->getResource()->getAttribute(
                         $productAttribute->getProductAttribute()->getAttributeCode()
                     )->getFrontend();
                     $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
