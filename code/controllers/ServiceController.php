@@ -182,6 +182,18 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 }
             }
 
+            $fyndiqStatus = 'noton';
+
+            if ($fyndiq) {
+                switch ($fyndiqState) {
+                    case 'FOR_SALE' :
+                        $fyndiqStatus = 'on';
+                        break;
+                    default:
+                        $fyndiqStatus = 'pending';
+                };
+            }
+            
             $prodData = array(
                 'id' => $prod->getId(),
                 'url' => $prod->getUrl(),
@@ -195,6 +207,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 'reference' => $prod->getSKU(),
                 'properties' => implode(', ', $tags),
                 'isActive' => $prod->getIsActive(),
+                'fyndiq_status' => $fyndiqStatus,
                 'fyndiq_check_on' => ($fyndiq && $fyndiqState == 'FOR_SALE'),
                 'fyndiq_check_pending' => ($fyndiq && $fyndiqState === null)
             );

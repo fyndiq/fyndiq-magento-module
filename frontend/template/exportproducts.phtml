@@ -6,11 +6,11 @@
 
     <div class="fm-header">
         <div class="fm-header-wrapper">
-            <img class="navbar-brand" src="<?php echo $this->getSharedPath(); ?>frontend/images/logo.png" alt="Fyndiq logotype">
+            <img class="navbar-brand" src="<?php echo $this->getSharedPath(); ?>frontend/images/logo.png" alt="<?php echo $this->getMessage('Fyndiq logotype'); ?>">
             <div class="navbar-right">
-                <a href="<?php echo $this->getAdminPath("fyndiq/admin/index"); ?>" class="btn btn-nav active"><i class="menu-icon comp"></i> Export Products</a>
-                <a href="<?php echo $this->getAdminPath("fyndiq/admin/orderlist"); ?>" class="btn btn-nav"><i class="menu-icon boxes"></i> Imported Orders</a>
-                <a href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>" class="btn btn-nav"><i class="menu-icon cog"></i> Settings</a>
+                <a href="<?php echo $this->getAdminPath("fyndiq/admin/index"); ?>" class="btn btn-nav active"><i class="menu-icon comp"></i> <?php echo $this->getMessage('Export Products'); ?></a>
+                <a href="<?php echo $this->getAdminPath("fyndiq/admin/orderlist"); ?>" class="btn btn-nav"><i class="menu-icon boxes"></i> <?php echo $this->getMessage('Imported Orders'); ?></a>
+                <a href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>" class="btn btn-nav"><i class="menu-icon cog"></i> <?php echo $this->getMessage('Settings'); ?></a>
             </div>
         </div>
     </div>
@@ -18,7 +18,7 @@
     <div class="fm-content-wrapper">
         <div class="fm-left-sidebar">
             <div class="fm-panel">
-            <div class="fm-panel-header">Categories</div>
+            <div class="fm-panel-header"><?php echo $this->getMessage('Categories'); ?></div>
             <div class="fm-panel-body fm-category-tree-container no-padding"></div>
             </div>
         </div>
@@ -26,12 +26,16 @@
         <div class="fm-product-panel">
             <div class="fm-panel">
                 <div class="fm-panel-header">
-                    Products: <span id="categoryname"></span>
-                    <div class="legend"><i class="icon on"></i> On Fyndiq  <i class="icon pending"></i> Pending <i class="icon noton"></i> Not On Fyndiq </div>
+                    <?php echo $this->getMessage('Products'); ?>: <span id="categoryname"></span>
+                    <div class="legend">
+                        <i class="icon on"></i> <?php echo $this->getMessage('On Fyndiq'); ?>
+                        <i class="icon pending"></i> <?php echo $this->getMessage('Pending'); ?>
+                        <i class="icon noton"></i> <?php echo $this->getMessage('Not On Fyndiq'); ?>
+                    </div>
                 </div>
                 <div class="fm-panel-body no-padding">
                     <form action="" method="post" class="fm-form products">
-                            <p class="info">By using this form, you can export products from the local webshop into Fyndiq.</p>
+                            <p class="info"><?php echo $this->getMessage('By using this form, you can export products from the local webshop into Fyndiq.'); ?></p>
                             <div class="fm-product-list-container"></div>
                     </form>
                 </div>
