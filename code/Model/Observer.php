@@ -148,10 +148,9 @@ class Fyndiq_Fyndiq_Model_Observer
 
         // Setting the data
         if (isset($magArray['price'])) {
-            $feedProduct['product-id'] = $magArray['entity_id'];
+            $feedProduct['product-id'] = $productInfo[$magArray['entity_id']]['id'];
 
             //Check if product have a parent
-            $parent = false;
             if ($magArray['type_id'] == 'simple') {
                 $parentIds = Mage::getModel('catalog/product_type_grouped')->getParentIdsByChild(
                     $magArray['entity_id']
@@ -163,11 +162,10 @@ class Fyndiq_Fyndiq_Model_Observer
                 }
                 if ($parentIds) {
                     $parent = $parentIds[0];
+                    if (isset($productInfo[$parent])) {
+                        $feedProduct['product-id'] = $productInfo[$parent]['id'];
+                    }
                 }
-            }
-
-            if ($parent != false) {
-                $feedProduct['product-id'] = $parent;
             }
 
             //images
