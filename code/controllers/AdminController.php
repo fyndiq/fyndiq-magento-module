@@ -46,7 +46,7 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
         $message = '';
         try {
             $storeId = $this->getRequest()->getParam('store');
-            FmHelpers::call_api($storeId, 'GET', 'settings/');
+            FmHelpers::callApi($storeId, 'GET', 'settings/');
         } catch (Exception $e) {
             if ($e instanceof FyndiqAPIAuthorizationFailed) {
                 $isAuthorized = false;

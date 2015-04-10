@@ -7,6 +7,11 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
     const FYNDIQ_ORDERS_NAME_FIRST = 'Fyndiq';
     const FYNDIQ_ORDERS_NAME_LAST = 'Orders';
 
+    const PAYMENT_METHOD = 'fyndiq_fyndiq';
+    const SHIPPING_METHOD = 'fyndiq_fyndiq';
+
+    const ITEMS_PER_PAGE = 10;
+
     public function _construct()
     {
         parent::_construct();
@@ -16,33 +21,34 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
     /**
      * Check if order already exists
      *
-     * @param array $fyndiq_order
+     * @param array $fyndiqOrder
      * @return bool
      */
-    public function orderExists($fyndiq_order)
+    public function orderExists($fyndiqOrder)
     {
         $collection = $this->getCollection()
-            ->addFieldToFilter('fyndiq_orderid', $fyndiq_order)
+            ->addFieldToFilter('fyndiq_orderid', $fyndiqOrder)
             ->getFirstItem();
         if ($collection->getId()) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**
      * Add to check table to check if order already exists.
      *
-     * @param $fyndiq_orderid
-     * @param $orderid
+     * @param int $fyndiqOrderId
+     * @param int $orderId
      * @return mixed
      */
-    public function addCheckData($fyndiq_orderid, $orderid)
+    public function addCheckData($fyndiqOrderId, $orderId)
     {
-        $data = array('fyndiq_orderid' => $fyndiq_orderid, 'order_id' => $orderid);
+        $data = array(
+            'fyndiq_orderid' => $fyndiqOrderId,
+            'order_id' => $orderId
+        );
         $model = $this->setData($data);
-
         return $model->save()->getId();
     }
 
@@ -56,18 +62,16 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
     {
         $result = array();
         $orders = $this->getCollection()->setOrder('id', 'DESC');
-        if($page != -1) {
+        if ($page != -1) {
             $orders->setCurPage($page);
-            // TODO: this should be parameter
-            $orders->setPageSize(10);
+            $orders->setPageSize(self::ITEMS_PER_PAGE);
         }
-        $orders = $orders->load()->getItems();
-        foreach($orders as $order){
+        foreach ($orders->load()->getItems() as $order) {
             $orderArray = array();
             $order = $order->getData();
             $magOrder = Mage::getModel('sales/order')->load($order['order_id']);
             $magArray = $magOrder->getData();
-            $url = Mage::helper('adminhtml')->getUrl("adminhtml/sales_order/view", array('order_id'=>$order['order_id']));
+            $url = Mage::helper('adminhtml')->getUrl("adminhtml/sales_order/view", array('order_id' => $order['order_id']));
             $orderArray['order_id'] = $magArray['entity_id'];
             $orderArray['fyndiq_orderid'] = $order['fyndiq_orderid'];
             $orderArray['entity_id'] = $magArray['entity_id'];
@@ -82,10 +86,13 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         return $result;
     }
 
-    private function getDeliveryCountry($countryName) {
+    private function getDeliveryCountry($countryName)
+    {
         switch ($countryName) {
-            case 'Germany': return 'DE';
-            default: return 'SE';
+            case 'Germany':
+                return 'DE';
+            default:
+                return 'SE';
         }
     }
 
@@ -93,10 +100,10 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
      * Create a order in magento based on Fyndiq Order
      *
      * @param int $storeId
-     * @param array $fyndiq_order
+     * @param array $fyndiqOrder
      * @throws Exception
      */
-    public function create($storeId, $fyndiq_order)
+    public function create($storeId, $fyndiqOrder)
     {
         //get customer by mail
         $customer = Mage::getModel('customer/customer');
@@ -115,64 +122,44 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
                 throw new Exception('Error, creating Fyndiq customer: ' . $e->getMessage());
             }
         }
-
         //Start a new order quote and assign current customer to it.
         $quote = Mage::getModel('sales/quote')->setStoreId(Mage::app('default')->getStore('default')->getId());
         $quote->assignCustomer($customer);
         $quote->setStore(Mage::getModel('core/store')->load($storeId));
 
         //Adding products to order
-        $articles = $fyndiq_order->order_rows;
-        foreach ($articles as $row) {
-
+        foreach ($fyndiqOrder->order_rows as $row) {
             // get sku of the product
             $sku = $row->sku;
 
             $id = Mage::getModel('catalog/product')->getResource()->getIdBySku($sku);
-            if($id != false) {
-                $_product = Mage::getModel('catalog/product')->load($id);
+            if ($id) {
+                $product = Mage::getModel('catalog/product')->load($id);
                 //add product to the cart
-                $product_info = array('qty' => $row->quantity);
-                $quote->addProduct($_product, new Varien_Object($product_info));
+                $productInfo = array('qty' => $row->quantity);
+                $quote->addProduct($product, new Varien_Object($productInfo));
             }
         }
-        if(count($quote->getAllItems()) === 0) {
-            throw new Exception('Couldn\'t find product for order #' . $fyndiq_order->id);
+        if (count($quote->getAllItems()) === 0) {
+            throw new Exception('Couldn\'t find product for order #' . $fyndiqOrder->id);
         }
 
         //Shipping / Billing information gather
-
-        //if we have a default billing address, try gathering its values into variables we need
-        $billingAddressArray = array(
-                'firstname' => $fyndiq_order->delivery_firstname,
-                'lastname' => $fyndiq_order->delivery_lastname,
-                'street' => $fyndiq_order->delivery_address,
-                'city' => $fyndiq_order->delivery_city,
-                'region_id' => '',
-                'region' => '',
-                'postcode' => $fyndiq_order->delivery_postalcode,
-                'country_id' => $this->getDeliveryCountry($fyndiq_order->delivery_country),
-                'telephone' => $fyndiq_order->delivery_phone,
-        );
-
         //if we have a default shipping address, try gathering its values into variables we need
         $shippingAddressArray = array(
-                'firstname' => $fyndiq_order->delivery_firstname,
-                'lastname' => $fyndiq_order->delivery_lastname,
-                'street' => $fyndiq_order->delivery_address,
-                'city' => $fyndiq_order->delivery_city,
-                'region_id' => '',
-                'region' => '',
-                'postcode' => $fyndiq_order->delivery_postalcode,
-                'country_id' => $this->getDeliveryCountry($fyndiq_order->delivery_country),
-                'telephone' => $fyndiq_order->delivery_phone,
+            'firstname' => $fyndiqOrder->delivery_firstname,
+            'lastname' => $fyndiqOrder->delivery_lastname,
+            'street' => $fyndiqOrder->delivery_address,
+            'city' => $fyndiqOrder->delivery_city,
+            'region_id' => '',
+            'region' => '',
+            'postcode' => $fyndiqOrder->delivery_postalcode,
+            'country_id' => $this->getDeliveryCountry($fyndiqOrder->delivery_country),
+            'telephone' => $fyndiqOrder->delivery_phone,
         );
 
-        // Set the payment method
-        $paymentMethod = 'fyndiq_fyndiq';
-
-        // Set the shipping method
-        $shippingMethod = 'fyndiq_fyndiq';
+        //if we have a default billing address, try gathering its values into variables we need
+        $billingAddressArray = $shippingAddressArray;
 
         // Add the address data to the billing address
         $quote->getBillingAddress()->addData($billingAddressArray);
@@ -184,38 +171,36 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $shippingAddress->setCollectShippingRates(true)->collectShippingRates();
 
         // Set the shipping method /////////// Here i set my own shipping method
-        $shippingAddress->setShippingMethod($shippingMethod);
+        $shippingAddress->setShippingMethod(self::SHIPPING_METHOD);
 
         // Set the payment method
-        $shippingAddress->setPaymentMethod($paymentMethod);
+        $shippingAddress->setPaymentMethod(self::PAYMENT_METHOD);
 
         // Set the payment method
-        $quote->getPayment()->importData(array('method' => $paymentMethod));
+        $quote->getPayment()->importData(array('method' => self::PAYMENT_METHOD));
 
-
-        //Feed quote object into sales model
+        // Feed quote object into sales model
         $service = Mage::getModel('sales/service_quote', $quote);
 
-        //submit all orders to MAGE
+        // Submit all orders to MAGE
         $service->submitAll();
 
-        //Setup order object and gather newly entered order
+        // Setup order object and gather newly entered order
         $order = $service->getOrder();
 
-        //Now set newly entered order's status to complete so customers can enjoy their goods.
-
+        // Now set newly entered order's status to complete so customers can enjoy their goods.
         $importStatus = FmConfig::get('import_state', $storeId);
         $order->setStatus($importStatus);
 
-        //Add delivery note as comment
-        $comment = "Fyndiq delivery note: http://fyndiq.se" . $fyndiq_order->delivery_note . " \n just copy url and paste in the browser to download the delivery note.";
+        // Add delivery note as comment
+        $comment = sprintf("Fyndiq delivery note: http://fyndiq.se%s \n just copy url and paste in the browser to download the delivery note.", $fyndiqOrder->delivery_note);
         $order->addStatusHistoryComment($comment);
 
         //Finally we save our order after setting it's status to complete.
         $order->save();
 
         //add it to the table for check
-        $this->addCheckData($fyndiq_order->id, $order->getId());
+        $this->addCheckData($fyndiqOrder->id, $order->getId());
     }
 
     /**

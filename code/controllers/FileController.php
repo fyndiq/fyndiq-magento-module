@@ -17,8 +17,8 @@ class Fyndiq_Fyndiq_FileController extends Mage_Core_Controller_Front_Action
             $fileExists = file_exists($filePath);
             $isOld = filemtime(FmConfig::getFeedPath($storeId)) < strtotime('-1 hour', time());
             if (!$fileExists || $isOld) {
-                $FyndiqCron = new Fyndiq_Fyndiq_Model_Observer();
-                $FyndiqCron->exportProducts($storeId, false);
+                $fyndiqCron = new Fyndiq_Fyndiq_Model_Observer();
+                $fyndiqCron->exportProducts($storeId, false);
             }
             $result = file_get_contents($filePath);
         }

@@ -7,26 +7,24 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 {
     function indexAction()
     {
-        $orderid = isset($_GET['order_id']) ? intval($_GET['order_id']) : 0;
-
-        if ($orderid > 0) {
+        $orderId = $this->getRequest()->getParam('order_id');
+        $orderId = is_numeric($orderId) ? intval($orderId) : 0;
+        if ($orderId > 0) {
             try {
                 $storeId = Mage::app()->getStore()->getStoreId();
-                $ret = FmHelpers::call_api($storeId, 'GET', 'orders/' . $orderid . '/');
+                $ret = FmHelpers::callApi($storeId, 'GET', 'orders/' . $orderId . '/');
 
-                $fyndiq_order = $ret['data'];
+                $fyndiqOrder = $ret['data'];
 
-                $order_model = Mage::getModel('fyndiq/order');
+                $orderModel = Mage::getModel('fyndiq/order');
 
-                if (!$order_model->orderExists($fyndiq_order->id)) {
-                    $order_model->create($storeId, $fyndiq_order);
+                if (!$orderModel->orderExists($fyndiqOrder->id)) {
+                    $orderModel->create($storeId, $fyndiqOrder);
                 }
             } catch (Exception $e) {
                 header('HTTP/1.0 500 Internal Server Error');
             }
-
             return true;
-
         }
         header('HTTP/1.0 400 Bad Request');
     }
