@@ -81,7 +81,7 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
 
     public function getUsername()
     {
-        return FmConfig::get('username');
+        return FmConfig::get('username', $this->getStoreId());
     }
 
     public function getMessage($key)
