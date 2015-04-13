@@ -222,10 +222,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             // If added to fyndiq export table, get the settings from that table
             if ($fyndiq) {
                 $prodData['fyndiq_percentage'] = $fyndiqData['exported_price_percentage'];
-                //TODO: Remove this IF after re-install the extension
-                if (isset($fyndiqData['state'])) {
-                    $prodData['$fyndiqState'] = $fyndiqData['state'];
-                }
+                $prodData['$fyndiqState'] = $fyndiqData['state'];
             }
 
             //Count expected price to Fyndiq
