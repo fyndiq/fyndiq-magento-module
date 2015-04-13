@@ -69,28 +69,28 @@
                             <show_in_store>1</show_in_store>
                         </price_percentage>
                         <!-- New fields go here -->
-                        <username translate="label">
-                            <label>Username</label>
-                            <comment>
-                                <![CDATA[Your login username to the merchant page.]]>
-                            </comment>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>2</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </username>
                         <apikey translate="label">
                             <label>API token</label>
                             <frontend_type>text</frontend_type>
                             <comment>
                                 <![CDATA[The api-key that is long randomly generated string you got from Fyndiq.]]>
                             </comment>
-                            <sort_order>1</sort_order>
+                            <sort_order>2</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </apikey>
+                        <username translate="label">
+                            <label>Username</label>
+                            <comment>
+                                <![CDATA[Your login username to the merchant page.]]>
+                            </comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </username>
                     </fields>
                 </fyndiq_group>
             </groups>
