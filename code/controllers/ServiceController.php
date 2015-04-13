@@ -135,6 +135,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $products->setPageSize(self::ITEMS_PER_PAGE);
         $products->load();
         $products = $products->getItems();
+        $fyndiqPercentage = FmConfig::get('price_percentage', $this->getRequest()->getParam('store'));
 
         // get all the products
         foreach ($products as $prod) {
@@ -147,7 +148,6 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
             $fyndiqData = Mage::getModel('fyndiq/product')->getProductExportData($prod->getId());
             $fyndiq = !empty($fyndiqData);
-            $fyndiqPercentage = FmConfig::get('price_percentage', $this->getRequest()->getParam('store'));
             $fyndiqState = null;
 
             if ($prod->getTypeId() == 'simple') {
