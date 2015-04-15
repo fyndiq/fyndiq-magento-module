@@ -11,6 +11,11 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
 class Fyndiq_Fyndiq_Model_Observer
 {
 
+    public function __construct()
+    {
+        FyndiqTranslation::init(Mage::app()->getLocale()->getLocaleCode());
+    }
+
     public function importOrders()
     {
         try {
@@ -303,7 +308,8 @@ class Fyndiq_Fyndiq_Model_Observer
                         )
                     )
             );
-            FmHelpers::callApi($storeId, 'PATCH', 'settings/', $data);
+            return FmHelpers::callApi($storeId, 'PATCH', 'settings/', $data);
         }
+        throw new Exception(FyndiqTranslation::get('empty-username-token'));
     }
 }
