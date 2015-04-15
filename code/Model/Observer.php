@@ -146,9 +146,12 @@ class Fyndiq_Fyndiq_Model_Observer
         $taxClassId = $magProduct->getTaxClassId();
         $taxPercent = $taxCalculation->getRate($request->setProductClassId($taxClassId));
 
+        $productParent = 0;
+
         // Setting the data
         if (isset($magArray['price'])) {
-            $feedProduct['product-id'] = $magArray['entity_id'];
+            $productParent = $magArray['entity_id'];
+            $feedProduct['product-id'] = $productParent;
 
             //Check if product have a parent
             if ($magArray['type_id'] == 'simple') {
@@ -161,9 +164,9 @@ class Fyndiq_Fyndiq_Model_Observer
                     );
                 }
                 if ($parentIds) {
-                    $parent = $parentIds[0];
-                    if (isset($productInfo[$parent])) {
-                        $feedProduct['product-id'] = $productInfo[$parent]['id'];
+                    $productParent = $parentIds[0];
+                    if (isset($productInfo[$productParent])) {
+                        $feedProduct['product-id'] = $productInfo[$productParent]['id'];
                     }
                 }
             }
@@ -191,13 +194,13 @@ class Fyndiq_Fyndiq_Model_Observer
             $feedProduct['product-title'] = $magArray['name'];
             $feedProduct['product-description'] = $magProduct->getDescription();
 
-            $discount = $productInfo[$magArray['entity_id']]['exported_price_percentage'];
+            $discount = $productInfo[$productParent]['exported_price_percentage'];
             if ($magArray['type_id'] == 'simple') {
                 if (isset($productInfo[$magArray['entity_id']])) {
                     $discount = $productInfo[$magArray['entity_id']]['exported_price_percentage'];
                 }
-                if ($parent != false) {
-                    $discount = $productInfo[$parent]['exported_price_percentage'];
+                if ($productParent != false) {
+                    $discount = $productInfo[$productParent]['exported_price_percentage'];
                 }
             }
 
@@ -234,8 +237,8 @@ class Fyndiq_Fyndiq_Model_Observer
                 $feedProduct['article-location'] = 'test';
                 $feedProduct['article-sku'] = $magProduct->getSKU();
                 $feedProduct['article-name'] = $magArray['name'];
-                if ($parent != false) {
-                    $parentModel = $productModel->load($parent);
+                if ($productParent != false) {
+                    $parentModel = $productModel->load($productParent);
                     if (method_exists($parentModel->getTypeInstance(), 'getConfigurableAttributes')) {
                         $productAttrOptions = $parentModel->getTypeInstance()->getConfigurableAttributes();
                         $attrId = 1;
