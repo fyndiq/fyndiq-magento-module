@@ -320,6 +320,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     {
         // Getting all data
         $productModel = Mage::getModel('fyndiq/product');
+        $result = array();
         foreach ($args['products'] as $v) {
             $product = $v['product'];
             $fyndiqPercentage = $product['fyndiq_percentage'];
@@ -330,13 +331,13 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             );
 
             if ($productModel->getProductExportData($product['id']) != false) {
-                $result = $productModel->updateProduct($product['id'], $data);
-                return $this->response($result);
+                $result[] = $productModel->updateProduct($product['id'], $data);
             }
             $data['product_id'] = $product['id'];
-            $result = $productModel->addProduct($data);
-            return $this->response($result);
+            $result[] = $productModel->addProduct($data);
+
         }
+        return $this->response($result);
     }
 
     public function delete_exported_products($args)
