@@ -113,7 +113,7 @@ class Fyndiq_Fyndiq_Model_Observer
                     ->addFilterByRequiredOptions()
                     ->getItems();
                 foreach ($simpleCollection as $simpleProduct) {
-                    $feedWriter->addProduct($this->getProduct($simpleProduct, $productInfo[$parent_id], $parent_id));
+                    $feedWriter->addProduct($this->getProduct($simpleProduct, $productInfo[$parent_id]));
                 }
             }
         }
@@ -129,7 +129,7 @@ class Fyndiq_Fyndiq_Model_Observer
      * @param array $productInfo
      * @return array
      */
-    private function getProduct($magProduct, $productInfo, $productParent = false)
+    private function getProduct($magProduct, $productInfo)
     {
         //Initialize models here so it saves memory.
         $productModel = Mage::getModel('catalog/product');
@@ -151,6 +151,7 @@ class Fyndiq_Fyndiq_Model_Observer
         // Setting the data
         if (isset($magArray['price'])) {
             $feedProduct['product-id'] = $productInfo['id'];
+            $productParent = $productInfo['product_id'];
             //images
             $imageId = 1;
             //trying to get image, if not image will be false
@@ -208,7 +209,7 @@ class Fyndiq_Fyndiq_Model_Observer
                 $feedProduct['article-location'] = 'test';
                 $feedProduct['article-sku'] = $magProduct->getSKU();
                 $feedProduct['article-name'] = $magArray['name'];
-                if ($productParent != false) {
+                if ($productParent) {
                     $parentModel = $productModel->load($productParent);
                     if (method_exists($parentModel->getTypeInstance(), 'getConfigurableAttributes')) {
                         $productAttrOptions = $parentModel->getTypeInstance()->getConfigurableAttributes();
