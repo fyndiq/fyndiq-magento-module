@@ -48,7 +48,7 @@ if (!$installer->tableExists($tableName)) {
 }
 
 // fyndiq_setting
-$tableName = $installer->getTable('fyndiq/settings');
+$tableName = $installer->getTable('fyndiq/order');
 if (!$installer->tableExists($tableName)) {
 
     $table = $connection->newTable($tableName)
