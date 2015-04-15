@@ -201,8 +201,6 @@ class Fyndiq_Fyndiq_Model_Observer
             }
 
             if ($magArray['type_id'] == 'simple') {
-                var_dump("simple!");
-                var_dump($productParent);
                 $qtyStock = $stockModel->loadByProduct($magProduct->getId())->getQty();
                 $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
 
