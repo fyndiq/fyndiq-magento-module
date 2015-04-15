@@ -84,10 +84,10 @@ class Fyndiq_Fyndiq_Model_Observer
         $products = $products->getItems();
         $idsToExport = array();
         $productInfo = array();
-        foreach ($products as $producted) {
-            $product = $producted->getData();
-            $idsToExport[] = intval($product['product_id']);
-            $productInfo[$product['product_id']] = $producted;
+        foreach ($products as $product) {
+            $productData = $product->getData();
+            $idsToExport[] = intval($productData['product_id']);
+            $productInfo[$productData['product_id']] = $productData;
         }
 
         //Initialize models here so it saves memory.
