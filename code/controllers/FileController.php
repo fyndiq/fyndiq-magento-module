@@ -15,8 +15,8 @@ class Fyndiq_Fyndiq_FileController extends Mage_Core_Controller_Front_Action
             //Check if feed file exist and if it is too old
             $filePath = FmConfig::getFeedPath($storeId);
             $fileExists = file_exists($filePath);
-            $fileExistOrOld = (($fileExists) && (filemtime(FmConfig::getFeedPath($storeId)) > strtotime('-1 hour', time())));
-            if (!$fileExistOrOld) {
+            $fileNotExistOrOld = ($fileExists) && (filemtime(FmConfig::getFeedPath($storeId)) > strtotime('-1 hour', time()));
+            if (!$fileNotExistOrOld) {
                 $fyndiqCron = new Fyndiq_Fyndiq_Model_Observer();
                 $fyndiqCron->exportProducts($storeId, false);
             }
