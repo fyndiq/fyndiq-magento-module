@@ -148,7 +148,7 @@ class Fyndiq_Fyndiq_Model_Observer
 
         // Setting the data
         if (isset($magArray['price'])) {
-            $feedProduct['product-id'] = $productInfo[$magArray['entity_id']]['id'];
+            $feedProduct['product-id'] = $magArray['entity_id'];
 
             //Check if product have a parent
             if ($magArray['type_id'] == 'simple') {
