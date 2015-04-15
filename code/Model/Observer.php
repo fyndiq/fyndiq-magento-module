@@ -104,7 +104,7 @@ class Fyndiq_Fyndiq_Model_Observer
 
         foreach ($productsToExport as $magProduct) {
             $parent_id = $magProduct->getId();
-            if ($feedWriter->addProduct($this->getProduct($magProduct, $productInfo[$parent_id], true))
+            if ($feedWriter->addProduct($this->getProduct($magProduct, $productInfo[$parent_id]))
                 && $magProduct->getTypeId() != 'simple'
             ) {
                 $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
@@ -113,7 +113,7 @@ class Fyndiq_Fyndiq_Model_Observer
                     ->addFilterByRequiredOptions()
                     ->getItems();
                 foreach ($simpleCollection as $simpleProduct) {
-                    $feedWriter->addProduct($this->getProduct($simpleProduct, $productInfo[$parent_id], false));
+                    $feedWriter->addProduct($this->getProduct($simpleProduct, $productInfo[$parent_id], $parent_id));
                 }
             }
         }
@@ -129,7 +129,7 @@ class Fyndiq_Fyndiq_Model_Observer
      * @param array $productInfo
      * @return array
      */
-    private function getProduct($magProduct, $productInfo, $productParent = true)
+    private function getProduct($magProduct, $productInfo, $productParent = false)
     {
         //Initialize models here so it saves memory.
         $productModel = Mage::getModel('catalog/product');
@@ -201,7 +201,8 @@ class Fyndiq_Fyndiq_Model_Observer
             }
 
             if ($magArray['type_id'] == 'simple') {
-
+                var_dump("simple!");
+                var_dump($productParent);
                 $qtyStock = $stockModel->loadByProduct($magProduct->getId())->getQty();
                 $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
 
@@ -209,7 +210,7 @@ class Fyndiq_Fyndiq_Model_Observer
                 $feedProduct['article-location'] = 'test';
                 $feedProduct['article-sku'] = $magProduct->getSKU();
                 $feedProduct['article-name'] = $magArray['name'];
-                if (!$productParent) {
+                if ($productParent != false) {
                     $parentModel = $productModel->load($productParent);
                     if (method_exists($parentModel->getTypeInstance(), 'getConfigurableAttributes')) {
                         $productAttrOptions = $parentModel->getTypeInstance()->getConfigurableAttributes();
