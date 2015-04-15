@@ -332,6 +332,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
             if ($productModel->getProductExportData($product['id']) != false) {
                 $result[] = $productModel->updateProduct($product['id'], $data);
+                continue;
             }
             $data['product_id'] = $product['id'];
             $result[] = $productModel->addProduct($data);
