@@ -43,6 +43,7 @@ class Fyndiq_Fyndiq_Model_Observer
         if ($settingExists) {
             return Mage::getModel('fyndiq/setting')->updateSetting($storeId, 'order_lastdate', $newDate);
         }
+
         return Mage::getModel('fyndiq/setting')->saveSetting($storeId, 'order_lastdate', $newDate);
     }
 
@@ -151,8 +152,7 @@ class Fyndiq_Fyndiq_Model_Observer
         // Setting the data
         if (isset($magArray['price'])) {
             $productParent = $magArray['entity_id'];
-            $feedProduct['product-id'] = $productParent;
-
+            
             //Check if product have a parent
             if ($magArray['type_id'] == 'simple') {
                 $parentIds = Mage::getModel('catalog/product_type_grouped')->getParentIdsByChild(
@@ -169,6 +169,9 @@ class Fyndiq_Fyndiq_Model_Observer
                         $feedProduct['product-id'] = $productInfo[$productParent]['id'];
                     }
                 }
+            }
+            if (!isset($feedProduct['product-id'])) {
+                $feedProduct['product-id'] = $productInfo[$productParent]['id'];
             }
 
             //images
@@ -258,6 +261,7 @@ class Fyndiq_Fyndiq_Model_Observer
                         $feedProduct['article-name'] = implode(', ', $tags);
                     }
                 }
+
                 // We're done
                 return $feedProduct;
             }
@@ -278,7 +282,7 @@ class Fyndiq_Fyndiq_Model_Observer
                 $imageId = 1;
                 foreach ($images as $image) {
                     $url = $imageHelper->init($firstProduct, 'image', $image->getFile());
-                    $feedProduct['product-image-' . $imageId. '-url'] = strval($url);
+                    $feedProduct['product-image-' . $imageId . '-url'] = strval($url);
                     $feedProduct['product-image-' . $imageId . '-identifier'] = substr(md5(strval($url)), 0, 10);
                     $imageId++;
                 }
@@ -304,6 +308,7 @@ class Fyndiq_Fyndiq_Model_Observer
             }
             $feedProduct['article-name'] = substr(implode(', ', $tags), 0, 30);
         }
+
         return $feedProduct;
     }
 
