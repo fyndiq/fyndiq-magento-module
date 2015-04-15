@@ -103,7 +103,8 @@ class Fyndiq_Fyndiq_Model_Observer
             )->load();
 
         foreach ($productsToExport as $magProduct) {
-            if ($feedWriter->addProduct($this->getProduct($magProduct, $productInfo))
+            $parent_id = $magProduct->getId();
+            if ($feedWriter->addProduct($this->getProduct($magProduct, $productInfo[$parent_id], true))
                 && $magProduct->getTypeId() != 'simple'
             ) {
                 $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
@@ -112,7 +113,7 @@ class Fyndiq_Fyndiq_Model_Observer
                     ->addFilterByRequiredOptions()
                     ->getItems();
                 foreach ($simpleCollection as $simpleProduct) {
-                    $feedWriter->addProduct($this->getProduct($simpleProduct, $productInfo));
+                    $feedWriter->addProduct($this->getProduct($simpleProduct, $productInfo[$parent_id], false));
                 }
             }
         }
@@ -128,7 +129,7 @@ class Fyndiq_Fyndiq_Model_Observer
      * @param array $productInfo
      * @return array
      */
-    private function getProduct($magProduct, $productInfo)
+    private function getProduct($magProduct, $productInfo, $productParent = true)
     {
         //Initialize models here so it saves memory.
         $productModel = Mage::getModel('catalog/product');
@@ -147,33 +148,9 @@ class Fyndiq_Fyndiq_Model_Observer
         $taxClassId = $magProduct->getTaxClassId();
         $taxPercent = $taxCalculation->getRate($request->setProductClassId($taxClassId));
 
-        $productParent = 0;
-
         // Setting the data
         if (isset($magArray['price'])) {
-            $productParent = $magArray['entity_id'];
-            
-            //Check if product have a parent
-            if ($magArray['type_id'] == 'simple') {
-                $parentIds = Mage::getModel('catalog/product_type_grouped')->getParentIdsByChild(
-                    $magArray['entity_id']
-                );
-                if (!$parentIds) {
-                    $parentIds = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild(
-                        $magArray['entity_id']
-                    );
-                }
-                if ($parentIds) {
-                    $productParent = $parentIds[0];
-                    if (isset($productInfo[$productParent])) {
-                        $feedProduct['product-id'] = $productInfo[$productParent]['id'];
-                    }
-                }
-            }
-            if (!isset($feedProduct['product-id'])) {
-                $feedProduct['product-id'] = $productInfo[$productParent]['id'];
-            }
-
+            $feedProduct['product-id'] = $productInfo['id'];
             //images
             $imageId = 1;
             //trying to get image, if not image will be false
@@ -197,15 +174,7 @@ class Fyndiq_Fyndiq_Model_Observer
             $feedProduct['product-title'] = $magArray['name'];
             $feedProduct['product-description'] = $magProduct->getDescription();
 
-            $discount = $productInfo[$productParent]['exported_price_percentage'];
-            if ($magArray['type_id'] == 'simple') {
-                if (isset($productInfo[$magArray['entity_id']])) {
-                    $discount = $productInfo[$magArray['entity_id']]['exported_price_percentage'];
-                }
-                if ($productParent != false) {
-                    $discount = $productInfo[$productParent]['exported_price_percentage'];
-                }
-            }
+            $discount = $productInfo['exported_price_percentage'];
 
             $price = FyndiqUtils::getFyndiqPrice($magArray['price'], $discount);
             $feedProduct['product-price'] = FyndiqUtils::formatPrice($price);
@@ -240,7 +209,7 @@ class Fyndiq_Fyndiq_Model_Observer
                 $feedProduct['article-location'] = 'test';
                 $feedProduct['article-sku'] = $magProduct->getSKU();
                 $feedProduct['article-name'] = $magArray['name'];
-                if ($productParent != false) {
+                if (!$productParent) {
                     $parentModel = $productModel->load($productParent);
                     if (method_exists($parentModel->getTypeInstance(), 'getConfigurableAttributes')) {
                         $productAttrOptions = $parentModel->getTypeInstance()->getConfigurableAttributes();
