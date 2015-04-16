@@ -154,9 +154,9 @@ class Fyndiq_Fyndiq_Model_Observer
         } catch (Exception $e) {
         }
 
-        $images = $productModel->load($magProduct->entity_id)->getMediaGalleryImages();
-        if (is_array($images)) {
-            foreach ($images as $image) {
+        $imageList = $productModel->load($magProduct->entity_id)->getMediaGalleryImages();
+        if (is_array($imageList)) {
+            foreach ($imageList as $image) {
                 $images[] = $imageHelper->init($magProduct, 'image', $image->getFile());
             }
         }
