@@ -11,6 +11,8 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
 class Fyndiq_Fyndiq_Model_Observer
 {
 
+    const UNKNOWN = 'Unknown';
+
     public function __construct()
     {
         FyndiqTranslation::init(Mage::app()->getLocale()->getLocaleCode());
@@ -109,7 +111,8 @@ class Fyndiq_Fyndiq_Model_Observer
 
         foreach ($productsToExport as $magProduct) {
             $parent_id = $magProduct->getId();
-            if ($feedWriter->addProduct($this->getProduct($magProduct, $productInfo[$parent_id]))
+            $singleProductInfo = $productInfo[$parent_id];
+            if ($feedWriter->addProduct($this->getProduct($magProduct, $singleProductInfo))
                 && $magProduct->getTypeId() != 'simple'
             ) {
                 $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
@@ -118,12 +121,63 @@ class Fyndiq_Fyndiq_Model_Observer
                     ->addFilterByRequiredOptions()
                     ->getItems();
                 foreach ($simpleCollection as $simpleProduct) {
-                    $feedWriter->addProduct($this->getProduct($simpleProduct, $productInfo[$parent_id]));
+                    $feedWriter->addProduct($this->getProduct($simpleProduct, $singleProductInfo));
                 }
             }
         }
 
         return $feedWriter->write();
+    }
+
+    /**
+     * Get tax rate
+     *
+     * @param $product
+     * @return mixed
+     */
+    private function getTaxRate($product) {
+        //
+        $store = Mage::app()->getStore();
+        $taxCalculation = Mage::getModel('tax/calculation');
+
+        $request = $taxCalculation->getRateRequest(null, null, null, $store);
+        $taxClassId = $product->getTaxClassId();
+        return  $taxCalculation->getRate($request->setProductClassId($taxClassId));
+    }
+
+    private function getProductImages($productModel, $magProduct) {
+        $images = array();
+        $imageHelper = Mage::helper('catalog/image');
+        //trying to get image, if not image will be false
+        try {
+            $images[] = $magProduct->getImageUrl();
+        } catch (Exception $e) {
+        }
+
+        $imageList = $productModel->load($magProduct->entity_id)->getMediaGalleryImages();
+        if (is_array($imageList)) {
+            foreach ($imageList as $image) {
+                $images[] = $imageHelper->init($magProduct, 'image', $image->getFile());
+            }
+        }
+        return $images;
+    }
+
+    function getAttributes($productAttrOptions, $parentModel, $product)
+    {
+        $attributes = array();
+        foreach ($productAttrOptions as $productAttribute) {
+            $attrValue = $parentModel->getResource()->getAttribute(
+                $productAttribute->getProductAttribute()->getAttributeCode()
+            )->getFrontend();
+            $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
+            $value = $attrValue->getValue($product);
+            $attributes[] = array(
+                'name' => $attrCode,
+                'value' => array_shift($value),
+            );
+        }
+        return $attributes;
     }
 
 
@@ -142,146 +196,106 @@ class Fyndiq_Fyndiq_Model_Observer
         $stockModel = Mage::getModel('cataloginventory/stock_item');
         $imageHelper = Mage::helper('catalog/image');
 
-        $store = Mage::app()->getStore();
-        $taxCalculation = Mage::getModel('tax/calculation');
+        $feedProduct = array();
         $magArray = $magProduct->getData();
 
-        $feedProduct = array();
-
-        // Get tax rate
-        $request = $taxCalculation->getRateRequest(null, null, null, $store);
-        $taxClassId = $magProduct->getTaxClassId();
-        $taxPercent = $taxCalculation->getRate($request->setProductClassId($taxClassId));
+        if (!isset($magArray['price'])) {
+            return $feedProduct;
+        }
 
         // Setting the data
-        if (isset($magArray['price'])) {
-            $feedProduct['product-id'] = $productInfo['id'];
-            $productParent = $productInfo['product_id'];
-            //images
-            $imageId = 1;
-            //trying to get image, if not image will be false
-            try {
-                $url = $magProduct->getImageUrl();
-                $feedProduct['product-image-' . $imageId . '-url'] = $url;
-                $feedProduct['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
-                $imageId++;
-            } catch (Exception $e) {
-            }
+        $feedProduct['product-id'] = $productInfo['id'];
 
-            $images = $productModel->load($magArray['entity_id'])->getMediaGalleryImages();
-            if (isset($images)) {
-                foreach ($images as $image) {
-                    $url = $imageHelper->init($magProduct, 'image', $image->getFile());
-                    $feedProduct['product-image-' . $imageId . '-url'] = $url;
-                    $feedProduct['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
-                    $imageId++;
-                }
-            }
-            $feedProduct['product-title'] = $magArray['name'];
-            $feedProduct['product-description'] = $magProduct->getDescription();
+        //images
+        $images = $this->getProductImages($productModel, $magProduct);
+        foreach ($images as $imageId => $url) {
+            $feedProduct['product-image-' . $imageId + 1 . '-url'] = $url;
+            $feedProduct['product-image-' . $imageId + 1 . '-identifier'] = substr(md5($url), 0, 10);
+        }
 
-            $discount = $productInfo['exported_price_percentage'];
+        $feedProduct['product-title'] = $magArray['name'];
+        $feedProduct['product-description'] = $magProduct->getDescription();
 
-            $price = FyndiqUtils::getFyndiqPrice($magArray['price'], $discount);
-            $feedProduct['product-price'] = FyndiqUtils::formatPrice($price);
-            $feedProduct['product-vat-percent'] = $taxPercent;
-            $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($magArray['price']);
-            $feedProduct['product-market'] = Mage::getStoreConfig('general/country/default');
-            $feedProduct['product-currency'] = Mage::app()->getStore()->getCurrentCurrencyCode();
+        $discount = $productInfo['exported_price_percentage'];
+        $price = FyndiqUtils::getFyndiqPrice($magArray['price'], $discount);
+        $feedProduct['product-price'] = FyndiqUtils::formatPrice($price);
+        $feedProduct['product-vat-percent'] = $this->getTaxRate($magProduct);
+        $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($magArray['price']);
+        $feedProduct['product-market'] = Mage::getStoreConfig('general/country/default');
+        $feedProduct['product-currency'] = Mage::app()->getStore()->getCurrentCurrencyCode();
 
-            // TODO: plan how to fix this brand issue
-            $feedProduct['product-brand'] = 'Unknown';
-            if ($magProduct->getAttributeText('manufacturer') != '') {
-                $feedProduct['product-brand'] = $magProduct->getAttributeText('manufacturer');
-            }
+        $brand = $magProduct->getAttributeText('manufacturer');
+        $feedProduct['product-brand'] = $brand ? strval($brand): self::UNKNOWN;
 
-            //Category
-            $categoryIds = $magProduct->getCategoryIds();
+        //Category
+        $categoryIds = $magProduct->getCategoryIds();
+        if (count($categoryIds) > 0) {
+            $firstCategoryId = array_shift($categoryIds);
+            $firstCategory = $categoryModel->load($firstCategoryId);
+            $feedProduct['product-category-id'] = $firstCategoryId;
+            $feedProduct['product-category-name'] = $firstCategory->getName();
+        }
 
-            if (count($categoryIds) > 0) {
-                $firstCategoryId = $categoryIds[0];
-                $firstCategory = $categoryModel->load($firstCategoryId);
-
-                $feedProduct['product-category-name'] = $firstCategory->getName();
-                $feedProduct['product-category-id'] = $firstCategoryId;
-            }
-
-            if ($magArray['type_id'] == 'simple') {
-                $qtyStock = $stockModel->loadByProduct($magProduct->getId())->getQty();
-                $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
-
-                // TODO: fix location to something except test
-                $feedProduct['article-location'] = 'test';
-                $feedProduct['article-sku'] = $magProduct->getSKU();
-                $feedProduct['article-name'] = $magArray['name'];
-                if ($productParent) {
-                    $parentModel = $productModel->load($productParent);
-                    if (method_exists($parentModel->getTypeInstance(), 'getConfigurableAttributes')) {
-                        $productAttrOptions = $parentModel->getTypeInstance()->getConfigurableAttributes();
-                        $attrId = 1;
-                        $tags = array();
-                        foreach ($productAttrOptions as $productAttribute) {
-                            $attrValue = $parentModel->getResource()->getAttribute(
-                                $productAttribute->getProductAttribute()->getAttributeCode()
-                            )->getFrontend();
-                            $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
-                            $value = $attrValue->getValue($magProduct);
-
-                            $feedProduct['article-property-name-' . $attrId] = $attrCode;
-                            $feedProduct['article-property-value-' . $attrId] = $value[0];
-                            $tags[] = $attrCode . ': ' . $value[0];
-                            $attrId++;
-                        }
-                        $feedProduct['article-name'] = implode(', ', $tags);
-                    }
-                }
-
-                // We're done
-                return $feedProduct;
-            }
-
-            //Get child articles
-            $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
-            $simpleCollection = $conf->getUsedProductCollection()->addAttributeToSelect('*')
-                ->addFilterByRequiredOptions()->getItems();
-
-            //Get first article to the product.
-            $firstProduct = array_shift($simpleCollection);
-            $qtyStock = $stockModel->loadByProduct($firstProduct->getId())->getQty();
-
+        if ($magArray['type_id'] == 'simple') {
+            $qtyStock = $stockModel->loadByProduct($magProduct->getId())->getQty();
             $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
 
-            $images = $productModel->load($firstProduct->getId())->getMediaGalleryImages();
-            if (!empty($images)) {
-                $imageId = 1;
-                foreach ($images as $image) {
-                    $url = $imageHelper->init($firstProduct, 'image', $image->getFile());
-                    $feedProduct['product-image-' . $imageId . '-url'] = strval($url);
-                    $feedProduct['product-image-' . $imageId . '-identifier'] = substr(md5(strval($url)), 0, 10);
-                    $imageId++;
+            $location = $magProduct->getAttributeText('location');
+            $feedProduct['product-location'] = $location ? strval($location) : self::UNKNOWN;
+            $feedProduct['article-sku'] = $magProduct->getSKU();
+            $feedProduct['article-name'] = $magArray['name'];
+
+            $parentModel = $productModel->load($productInfo['product_id']);
+            if (method_exists($parentModel->getTypeInstance(), 'getConfigurableAttributes')) {
+                $productAttrOptions = $parentModel->getTypeInstance()->getConfigurableAttributes();
+                $attributes = getAttributes($productAttrOptions, $parentModel, $magProduct);
+                $tags = array();
+                foreach($attributes as $id => $row) {
+                    $feedProduct['article-property-name-' . $id + 1] = $row['name'];
+                    $feedProduct['article-property-value-' . $id + 1] = $row['value'];
+                    $tags[] = implode(': ', $row);
                 }
             }
 
-            // TODO: fix location to something except test
-            $feedProduct['article-location'] = 'test';
-            $feedProduct['article-sku'] = $firstProduct->getSKU();
-            $productAttrOptions = $magProduct->getTypeInstance()->getConfigurableAttributes();
-            $attrId = 1;
-            $tags = array();
-            foreach ($productAttrOptions as $productAttribute) {
-                $attrValue = $magProduct->getResource()->getAttribute(
-                    $productAttribute->getProductAttribute()->getAttributeCode()
-                )->getFrontend();
-                $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
-                $value = $attrValue->getValue($firstProduct);
-
-                $feedProduct['article-property-name-' . $attrId] = $attrCode;
-                $feedProduct['article-property-value-' . $attrId] = $value[0];
-                $tags[] = $attrCode . ': ' . $value[0];
-                $attrId++;
-            }
-            $feedProduct['article-name'] = substr(implode(', ', $tags), 0, 30);
+            // We're done
+            return $feedProduct;
         }
+
+        //Get child articles
+        $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
+        $simpleCollection = $conf->getUsedProductCollection()->addAttributeToSelect('*')
+            ->addFilterByRequiredOptions()->getItems();
+
+        //Get first article to the product.
+        $firstProduct = array_shift($simpleCollection);
+        $qtyStock = $stockModel->loadByProduct($firstProduct->getId())->getQty();
+
+        $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
+
+        $images = $productModel->load($firstProduct->getId())->getMediaGalleryImages();
+        if (!empty($images)) {
+            $imageId = 1;
+            foreach ($images as $image) {
+                $url = $imageHelper->init($firstProduct, 'image', $image->getFile());
+                $feedProduct['product-image-' . $imageId . '-url'] = strval($url);
+                $feedProduct['product-image-' . $imageId . '-identifier'] = substr(md5(strval($url)), 0, 10);
+                $imageId++;
+            }
+        }
+
+        $location = $magProduct->getAttributeText('location');
+        $feedProduct['product-location'] = $location ? strval($location) : self::UNKNOWN;
+        $feedProduct['article-sku'] = $firstProduct->getSKU();
+        $productAttrOptions = $magProduct->getTypeInstance()->getConfigurableAttributes();
+
+        $attributes = getAttributes($productAttrOptions, $magProduct, $firstProduct);
+        $tags = array();
+        foreach($attributes as $id => $row) {
+            $feedProduct['article-property-name-' . $id + 1] = $row['name'];
+            $feedProduct['article-property-value-' . $id + 1] = $row['value'];
+            $tags[] = implode(': ', $row);
+        }
+        $feedProduct['article-name'] = substr(implode(', ', $tags), 0, 30);
 
         return $feedProduct;
     }
