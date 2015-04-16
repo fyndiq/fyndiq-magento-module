@@ -115,11 +115,11 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     private function getAllProducts($storeId, $category, $page)
     {
         $data = array();
-
         $groupedModel = Mage::getModel('catalog/product_type_grouped');
         $configurableModel = Mage::getModel('catalog/product_type_configurable');
         $productModel = Mage::getModel('catalog/product');
 
+        $currency = Mage::app()->getStore($storeId)->getCurrentCurrencyCode();
         $products = $productModel->getCollection()
             ->addStoreFilter($storeId)
             ->addAttributeToFilter(
@@ -209,6 +209,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 'isActive' => $prod->getIsActive(),
                 'fyndiq_status' => $fyndiqStatus,
                 'fyndiq_check_on' => ($fyndiq && $fyndiqState == 'FOR_SALE'),
+                'currency' => $currency,
                 'fyndiq_check_pending' => ($fyndiq && $fyndiqState === null)
             );
 
