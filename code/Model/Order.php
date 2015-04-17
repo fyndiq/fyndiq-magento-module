@@ -10,8 +10,6 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
     const PAYMENT_METHOD = 'fyndiq_fyndiq';
     const SHIPPING_METHOD = 'fyndiq_fyndiq';
 
-    const ITEMS_PER_PAGE = 10;
-
     public function _construct()
     {
         parent::_construct();
@@ -58,13 +56,13 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
      * @param $page
      * @return array
      */
-    public function getImportedOrders($page = -1)
+    public function getImportedOrders($page, $itemsPerPage)
     {
         $result = array();
         $orders = $this->getCollection()->setOrder('id', 'DESC');
         if ($page != -1) {
             $orders->setCurPage($page);
-            $orders->setPageSize(self::ITEMS_PER_PAGE);
+            $orders->setPageSize($itemsPerPage);
         }
         foreach ($orders->load()->getItems() as $order) {
             $orderArray = array();

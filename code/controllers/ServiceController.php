@@ -14,9 +14,6 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
 class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 {
 
-    const ITEMS_PER_PAGE = 10;
-    const PAGE_FRAME = 4;
-
     protected function _construct()
     {
         FyndiqTranslation::init(Mage::app()->getLocale()->getLocaleCode());
@@ -132,7 +129,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             ->addAttributeToSelect('*');
 
         $products->setCurPage($page);
-        $products->setPageSize(self::ITEMS_PER_PAGE);
+        $products->setPageSize(FyndiqUtils::PAGINATION_ITEMS_PER_PAGE);
         $products->load();
         $products = $products->getItems();
         $fyndiqPercentage = FmConfig::get('price_percentage', $this->getRequest()->getParam('store'));
@@ -297,7 +294,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             $storeId = $this->getRequest()->getParam('store');
 
             $response['products'] = $this->getAllProducts($storeId, $category, $page);
-            $response['pagination'] = FyndiqUtils::getPaginationHTML($total, $page);
+            $response['pagination'] = FyndiqUtils::getPaginationHTML($total, $page,
+                FyndiqUtils::PAGINATION_ITEMS_PER_PAGE, FyndiqUtils::PAGINATION_PAGE_FRAME);
         }
         $this->response($response);
     }
@@ -367,13 +365,13 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         if ($collection != 'null') {
             $total = $collection->count();
         }
-        $page = 1;
-        if (isset($args['page']) && is_numeric($args['page']) && $args['page'] != -1) {
-            $page = intval($args['page']);
-        }
+        $page = (isset($args['page']) && is_numeric($args['page']) && $args['page'] != -1) ? intval($args['page']) : 1;
+
         $object = new stdClass();
-        $object->orders = Mage::getModel('fyndiq/order')->getImportedOrders($page);
-        $object->pagination = FyndiqUtils::getPaginationHTML($total, $page);
+        $object->orders = Mage::getModel('fyndiq/order')->getImportedOrders($page,
+            FyndiqUtils::PAGINATION_ITEMS_PER_PAGE);
+        $object->pagination = FyndiqUtils::getPaginationHTML($total, $page,
+            FyndiqUtils::PAGINATION_ITEMS_PER_PAGE, FyndiqUtils::PAGINATION_PAGE_FRAME);
         $this->response($object);
     }
 
