@@ -167,8 +167,32 @@ class Fyndiq_Fyndiq_Model_Observer
         }
 
         $feedProduct['product-id'] = $productInfo['id'];
+        $feedProduct['product-title'] = $magArray['name'];
+        $feedProduct['product-description'] = $magProduct->getDescription();
 
-        //images
+        $discount = $productInfo['exported_price_percentage'];
+        $price = FyndiqUtils::getFyndiqPrice($magArray['price'], $discount);
+        $feedProduct['product-price'] = FyndiqUtils::formatPrice($price);
+        $feedProduct['product-vat-percent'] = $this->getTaxRate($magProduct);
+        $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($magArray['price']);
+        $feedProduct['product-market'] = Mage::getStoreConfig('general/country/default');
+        $feedProduct['product-currency'] = Mage::app()->getStore()->getCurrentCurrencyCode();
+
+        $brand = $magProduct->getAttributeText('manufacturer');
+        $feedProduct['product-brand'] = $brand ? $brand: self::UNKNOWN;
+
+        // Category
+        $categoryIds = $magProduct->getCategoryIds();
+
+        if (count($categoryIds) > 0) {
+            $firstCategoryId = array_shift($categoryIds);
+            $firstCategory = $categoryModel->load($firstCategoryId);
+
+            $feedProduct['product-category-name'] = $firstCategory->getName();
+            $feedProduct['product-category-id'] = $firstCategoryId;
+        }
+
+        // Images
         $imageId = 1;
         //trying to get image, if not image will be false
         try {
@@ -187,31 +211,6 @@ class Fyndiq_Fyndiq_Model_Observer
                 $feedProduct['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
                 $imageId++;
             }
-        }
-        $feedProduct['product-title'] = $magArray['name'];
-        $feedProduct['product-description'] = $magProduct->getDescription();
-
-        $discount = $productInfo['exported_price_percentage'];
-
-        $price = FyndiqUtils::getFyndiqPrice($magArray['price'], $discount);
-        $feedProduct['product-price'] = FyndiqUtils::formatPrice($price);
-        $feedProduct['product-vat-percent'] = $this->getTaxRate($magProduct);
-        $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($magArray['price']);
-        $feedProduct['product-market'] = Mage::getStoreConfig('general/country/default');
-        $feedProduct['product-currency'] = Mage::app()->getStore()->getCurrentCurrencyCode();
-
-        $brand = $magProduct->getAttributeText('manufacturer');
-        $feedProduct['product-brand'] = $brand ? $brand: self::UNKNOWN;
-
-        //Category
-        $categoryIds = $magProduct->getCategoryIds();
-
-        if (count($categoryIds) > 0) {
-            $firstCategoryId = array_shift($categoryIds);
-            $firstCategory = $categoryModel->load($firstCategoryId);
-
-            $feedProduct['product-category-name'] = $firstCategory->getName();
-            $feedProduct['product-category-id'] = $firstCategoryId;
         }
 
         if ($magArray['type_id'] == 'simple') {
