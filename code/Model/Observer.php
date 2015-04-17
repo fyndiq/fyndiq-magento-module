@@ -199,16 +199,14 @@ class Fyndiq_Fyndiq_Model_Observer
         $feedProduct['product-market'] = Mage::getStoreConfig('general/country/default');
         $feedProduct['product-currency'] = Mage::app()->getStore()->getCurrentCurrencyCode();
 
-        $feedProduct['product-brand'] = self::UNKNOWN;
-        if ($magProduct->getAttributeText('manufacturer') != '') {
-            $feedProduct['product-brand'] = $magProduct->getAttributeText('manufacturer');
-        }
+        $brand = $magProduct->getAttributeText('manufacturer');
+        $feedProduct['product-brand'] = $brand ? $brand: self::UNKNOWN;
 
         //Category
         $categoryIds = $magProduct->getCategoryIds();
 
         if (count($categoryIds) > 0) {
-            $firstCategoryId = $categoryIds[0];
+            $firstCategoryId = array_shift($categoryIds);
             $firstCategory = $categoryModel->load($firstCategoryId);
 
             $feedProduct['product-category-name'] = $firstCategory->getName();
@@ -271,7 +269,7 @@ class Fyndiq_Fyndiq_Model_Observer
         }
 
         // TODO: fix location to something except test
-        $feedProduct['article-location'] = 'test';
+        $feedProduct['article-location'] = self::UNKNOWN;
         $feedProduct['article-sku'] = $firstProduct->getSKU();
         $productAttrOptions = $magProduct->getTypeInstance()->getConfigurableAttributes();
         $attrId = 1;
