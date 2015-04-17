@@ -280,10 +280,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     public function get_products($args)
     {
-        $page = 1;
-        if (isset($args['page']) && is_numeric($args['page']) && $args['page'] != -1) {
-            $page = intval($args['page']);
-        }
+        $page = (isset($args['page']) && is_numeric($args['page']) && $args['page'] != -1) ? intval($args['page']) : 1;
         $response = array(
             'products' => array(),
             'pagination' => ''
