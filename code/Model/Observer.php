@@ -165,8 +165,9 @@ class Fyndiq_Fyndiq_Model_Observer
         if (!isset($magArray['price'])) {
             return $feedProduct;
         }
+
         $feedProduct['product-id'] = $productInfo['id'];
-        $productParent = $productInfo['product_id'];
+
         //images
         $imageId = 1;
         //trying to get image, if not image will be false
@@ -220,6 +221,8 @@ class Fyndiq_Fyndiq_Model_Observer
             $feedProduct['article-location'] = self::UNKNOWN;
             $feedProduct['article-sku'] = $magProduct->getSKU();
             $feedProduct['article-name'] = $magArray['name'];
+
+            $productParent = $productInfo['product_id'];
             if ($productParent) {
                 $parentModel = $productModel->load($productParent);
                 if (method_exists($parentModel->getTypeInstance(), 'getConfigurableAttributes')) {
@@ -268,7 +271,6 @@ class Fyndiq_Fyndiq_Model_Observer
             }
         }
 
-        // TODO: fix location to something except test
         $feedProduct['article-location'] = self::UNKNOWN;
         $feedProduct['article-sku'] = $firstProduct->getSKU();
         $productAttrOptions = $magProduct->getTypeInstance()->getConfigurableAttributes();
