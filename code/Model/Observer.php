@@ -126,6 +126,20 @@ class Fyndiq_Fyndiq_Model_Observer
         return $feedWriter->write();
     }
 
+    /**
+     * Get tax rate
+     *
+     * @param $product
+     * @return mixed
+     */
+    private function getTaxRate($product) {
+        $store = Mage::app()->getStore();
+        $taxCalculation = Mage::getModel('tax/calculation');
+
+        $request = $taxCalculation->getRateRequest(null, null, null, $store);
+        $taxClassId = $product->getTaxClassId();
+        return  $taxCalculation->getRate($request->setProductClassId($taxClassId));
+    }
 
     /**
      * Get product information
@@ -142,16 +156,8 @@ class Fyndiq_Fyndiq_Model_Observer
         $stockModel = Mage::getModel('cataloginventory/stock_item');
         $imageHelper = Mage::helper('catalog/image');
 
-        $store = Mage::app()->getStore();
-        $taxCalculation = Mage::getModel('tax/calculation');
-        $magArray = $magProduct->getData();
-
         $feedProduct = array();
-
-        // Get tax rate
-        $request = $taxCalculation->getRateRequest(null, null, null, $store);
-        $taxClassId = $magProduct->getTaxClassId();
-        $taxPercent = $taxCalculation->getRate($request->setProductClassId($taxClassId));
+        $magArray = $magProduct->getData();
 
         // Setting the data
         if (isset($magArray['price'])) {
@@ -184,7 +190,7 @@ class Fyndiq_Fyndiq_Model_Observer
 
             $price = FyndiqUtils::getFyndiqPrice($magArray['price'], $discount);
             $feedProduct['product-price'] = FyndiqUtils::formatPrice($price);
-            $feedProduct['product-vat-percent'] = $taxPercent;
+            $feedProduct['product-vat-percent'] = $this->getTaxRate($magProduct);
             $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($magArray['price']);
             $feedProduct['product-market'] = Mage::getStoreConfig('general/country/default');
             $feedProduct['product-currency'] = Mage::app()->getStore()->getCurrentCurrencyCode();
