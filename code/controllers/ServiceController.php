@@ -128,19 +128,23 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             ->addCategoryFilter($category)
             ->addAttributeToSelect('*');
 
-        $products->setCurPage($page);
-        $products->setPageSize(FyndiqUtils::PAGINATION_ITEMS_PER_PAGE);
         $products->load();
         $products = $products->getItems();
         $fyndiqPercentage = FmConfig::get('price_percentage', $this->getRequest()->getParam('store'));
 
         // get all the products
+        $id = -1;
         foreach ($products as $prod) {
             if ($prod->getTypeId() == 'simple') {
                 $children = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild($prod->getId());
                 if (isset($children) && count($children) > 0) {
                     continue;
                 }
+            }
+
+            $id++;
+            if ($id < (($page-1) * FyndiqUtils::PAGINATION_ITEMS_PER_PAGE) || $id > ($page * FyndiqUtils::PAGINATION_ITEMS_PER_PAGE)){
+                continue;
             }
 
             $fyndiqData = Mage::getModel('fyndiq/product')->getProductExportData($prod->getId());
@@ -263,8 +267,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
         foreach ($collection as $key => $prod) {
             if ($prod->getTypeId() == 'simple') {
-                $children = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild($prod->getId());
-                if (isset($children) && count($children) > 0) {
+                $parent = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild($prod->getId());
+                if (isset($parent) && count($parent) > 0) {
                     unset($collection[$key]);
                 }
             }
