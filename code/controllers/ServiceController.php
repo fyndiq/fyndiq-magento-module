@@ -242,10 +242,11 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      * @param Category $category
      * @return int
      */
-    private function getTotalProducts($category)
+    private function getTotalProducts($storeId, $category)
     {
         $collection = Mage::getModel('catalog/product')
             ->getCollection()
+            ->addStoreFilter($storeId)
             ->addAttributeToFilter(
                 array(
                     array('attribute' => 'type_id', 'eq' => 'configurable'),
@@ -287,9 +288,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         );
         if (!empty($args['category'])) {
             $category = Mage::getModel('catalog/category')->load($args['category']);
-            $total = $this->getTotalProducts($category);
             $storeId = $this->getRequest()->getParam('store');
-
+            $total = $this->getTotalProducts($storeId, $category);
             $response['products'] = $this->getAllProducts($storeId, $category, $page);
             $response['pagination'] = FyndiqUtils::getPaginationHTML($total, $page,
                 FyndiqUtils::PAGINATION_ITEMS_PER_PAGE, FyndiqUtils::PAGINATION_PAGE_FRAME);
