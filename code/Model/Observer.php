@@ -321,8 +321,10 @@ class Fyndiq_Fyndiq_Model_Observer
                     array(
                         '_store' => $storeId,
                         '_nosid' => true,
-                        'event' => 'ping',
-                        'token' =>  $pingToken,
+                        '_query' => array(
+                            'event' => 'ping',
+                            'token' =>  $pingToken,
+                        ),
                     )
                 )
             );
