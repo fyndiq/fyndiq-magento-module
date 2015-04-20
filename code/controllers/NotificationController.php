@@ -55,8 +55,36 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
      *
      */
     private function ping() {
-        $token = $this->getRequest()->getParam('token');
-        die($token);
-    }
+        $storeId = Mage::app()->getStore()->getStoreId();
+        $pingToken = unserialize(FmConfig::get('ping_token', $storeId));
 
+        $token = $this->getRequest()->getParam('token');
+        if (is_null($token) || $token != $pingToken) {
+            header('HTTP/1.0 400 Bad Request');
+            return die('400 Bad Request');
+        }
+
+        // http://stackoverflow.com/questions/138374/close-a-connection-early
+        ob_end_clean();
+        header('Connection: close');
+        ignore_user_abort(true); // just to be safe
+        ob_start();
+        echo 'OK';
+        $size = ob_get_length();
+        header('Content-Length: ' . $size);
+        ob_end_flush(); // Strange behaviour, will not work
+        flush(); // Unless both are called !
+
+        $locked = false;
+        $lastPing = FmConfig::get('ping_time', $storeId);
+        $lastPing = $lastPing ? unserialize($lastPing) : false;
+        if ($lastPing && $lastPing > strtotime('15 minutes ago')) {
+            $locked = true;
+        }
+        if (!$locked) {
+            FmConfig::set('ping_time', time());
+            $fyndiqCron = new Fyndiq_Fyndiq_Model_Observer();
+            $fyndiqCron->exportProducts($storeId, false);
+        }
+    }
 }

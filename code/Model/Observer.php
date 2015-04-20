@@ -298,8 +298,9 @@ class Fyndiq_Fyndiq_Model_Observer
         if (FmConfig::get('username', $storeId) !== ''
             && FmConfig::get('apikey', $storeId) !== ''
         ) {
-            // TODO: Generate and store ping token
-            $pingToken = 123;
+            // Generate and save token
+            $pingToken = Mage::helper('core')->uniqHash();;
+            FmConfig::set('ping_token', $pingToken);
 
             $data = array(
                 FyndiqUtils::NAME_PRODUCT_FEED_URL => Mage::getUrl(
