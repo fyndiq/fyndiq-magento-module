@@ -298,21 +298,36 @@ class Fyndiq_Fyndiq_Model_Observer
         if (FmConfig::get('username', $storeId) !== ''
             && FmConfig::get('apikey', $storeId) !== ''
         ) {
+            // Generate and save token
+            $pingToken = Mage::helper('core')->uniqHash();;
+            FmConfig::set('ping_token', $pingToken);
+
             $data = array(
-                'product_feed_url' => Mage::getUrl(
+                FyndiqUtils::NAME_PRODUCT_FEED_URL => Mage::getUrl(
                         'fyndiq/file/index',
                         array(
                             '_store' => $storeId,
                             '_nosid' => true,
                         )
                     ),
-                'notification_url' => Mage::getUrl(
+                FyndiqUtils::NAME_NOTIFICATION_URL => Mage::getUrl(
                         'fyndiq/notification/index',
                         array(
                             '_store' => $storeId,
                             '_nosid' => true,
                         )
+                    ),
+                FyndiqUtils::NAME_PING_URL => Mage::getUrl(
+                    'fyndiq/notification/index',
+                    array(
+                        '_store' => $storeId,
+                        '_nosid' => true,
+                        '_query' => array(
+                            'event' => 'ping',
+                            'token' =>  $pingToken,
+                        ),
                     )
+                )
             );
             return FmHelpers::callApi($storeId, 'PATCH', 'settings/', $data);
         }

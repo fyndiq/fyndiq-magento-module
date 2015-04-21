@@ -132,24 +132,4 @@
             </fyndiq_fyndiq>
         </payment>
     </default>
-    <crontab>
-        <jobs>
-            <fyndiq_feed_products>
-                <schedule>
-                    <cron_expr>*/30 * * * *</cron_expr>
-                </schedule>
-                <run>
-                    <model>fyndiq/observer::exportProducts</model>
-                </run>
-            </fyndiq_feed_products>
-            <fyndiq_order_import>
-                <schedule>
-                    <cron_expr>0 06,15 * * *</cron_expr>
-                </schedule>
-                <run>
-                    <model>fyndiq/observer::importOrders</model>
-                </run>
-            </fyndiq_order_import>
-        </jobs>
-    </crontab>
 </config>
