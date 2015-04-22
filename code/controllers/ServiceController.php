@@ -483,7 +483,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             $result = true;
             $productModel = Mage::getModel('fyndiq/product');
             foreach ($ret['data'] as $statusRow) {
-                $result &= $productModel->updateProduct($statusRow->product_id, array(
+                $result &= $productModel->updateProductState(intval($statusRow->product_id), array(
                     'state' => $statusRow->for_sale
                 ));
             }

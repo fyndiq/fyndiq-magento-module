@@ -54,6 +54,23 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
     }
 
     /**
+     * Update product state
+     * @param int $id
+     * @param array $updateData
+     * @return bool
+     */
+    function updateProductState($id, $updateData)
+    {
+        $model = $this->load($id)->addData($updateData);
+        try {
+            $model->setId($id)->save();
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
      * Delete Product
      *
      * @param int $productId
