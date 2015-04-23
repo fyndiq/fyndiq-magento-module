@@ -1,6 +1,6 @@
 <?php
 require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
-class ProductInfo
+class FmProductInfo
 {
     const SLEEP_INTERVAL_SEC = 1;
     const NS_IN_SEC = 1000000;
@@ -9,11 +9,11 @@ class ProductInfo
      *
      * @return bool
      */
-    public function getAll()
+    public function getAll($storeid = 0)
     {
         $nextPagePath = 'product_info/';
         do {
-            $data = $this->getPageData($nextPagePath);
+            $data = $this->getPageData($nextPagePath, $storeid);
             $start = microtime(true);
             $result = false;
             if ($data) {
@@ -31,9 +31,9 @@ class ProductInfo
      * @param string $path
      * @return mixed
      */
-    public function getPageData($path)
+    public function getPageData($path, $storeId)
     {
-        $ret = FmHelpers::callApi('GET', $path);
+        $ret = FmHelpers::callApi($storeId, 'GET', $path);
         return $ret['data'];
     }
     /**
@@ -71,7 +71,9 @@ class ProductInfo
         $result = true;
         $productModel = Mage::getModel('fyndiq/product');
         foreach ($data as $statusRow) {
-            $result &= $productModel->updateProductState($statusRow->product_id, $statusRow->for_sale);
+            $result &= $productModel->updateProductState($statusRow->product_id, array(
+                'state' => $statusRow->for_sale
+            ));
         }
         return $result;
     }
