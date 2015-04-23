@@ -478,15 +478,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     public function update_product_status()
     {
         try {
-            $storeId = $this->getRequest()->getParam('store');
-            $ret = FmHelpers::callApi($storeId, 'GET', 'product_info/');
-            $result = true;
-            $productModel = Mage::getModel('fyndiq/product');
-            foreach ($ret['data'] as $statusRow) {
-                $result &= $productModel->updateProductState(intval($statusRow->product_id), array(
-                    'state' => $statusRow->for_sale
-                ));
-            }
+            $pi = new FmProductInfo();
+            $result = $pi->getAll();
             $this->response($result);
         } catch (Exception $e) {
             $this->responseError(
