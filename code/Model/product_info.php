@@ -1,73 +1,42 @@
 <?php
 require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
-class FmProductInfo
+require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
+class FmProductInfo extends FyndiqPaginatedFetch
 {
-    const SLEEP_INTERVAL_SEC = 1;
-    const NS_IN_SEC = 1000000;
-    /**
-     * Gets all products' info
-     *
-     * @return bool
-     */
-    public function getAll($storeid = 0)
-    {
-        $nextPagePath = 'product_info/';
-        do {
-            $data = $this->getPageData($nextPagePath, $storeid);
-            $start = microtime(true);
-            $result = false;
-            if ($data) {
-                $result = $this->updateProducts($data->results);
-                $nextPagePath= $this->getPath($data->next);
-            }
-            // Sleep the remaining microseconds
-            usleep($this->getUSleepInterval($start, microtime(true), self::SLEEP_INTERVAL_SEC * self::NS_IN_SEC));
-        } while ($result && $nextPagePath);
-        return $result;
-    }
+
+    private $storeId = "";
+
     /**
      * Get product single page products' info
      *
      * @param string $path
      * @return mixed
      */
-    public function getPageData($path, $storeId)
+    public function getPageData($path)
     {
-        $ret = FmHelpers::callApi($storeId, 'GET', $path);
+        $ret = FmHelpers::callApi($this->storeId, 'GET', $path);
         return $ret['data'];
     }
-    /**
-     * Gets the usleep interval
-     *
-     * @param float $start starting time
-     * @param float $stop stopping time
-     * @param int $max $maximum sleeping time in nanoseconds
-     * @return int mixed nanoseconds to sleep before next request
-     */
-    private function getUSleepInterval($start, $stop, $max)
+
+
+    function getInitialPath()
     {
-        return min($max, $max - intval(($stop - $start) * self::NS_IN_SEC));
+        return 'product_info/';
     }
-    /**
-     * Gets page path from pagination URL
-     *
-     * @param string $url
-     * @return string
-     */
-    private function getPath($url)
+
+    function getSleepIntervalSeconds()
     {
-        if (empty($url)) {
-            return '';
-        }
-        return implode('/', array_slice(explode('/', $url), 5));
+        return 1 / self::THROTTLE_PRODUCT_INFO_RPS;
     }
+
+
     /**
      * Update product status
      *
      * @param mixed $data
      * @return bool
      */
-    private function updateProducts($data) {
+    public function processData($data) {
         $result = true;
         $productModel = Mage::getModel('fyndiq/product');
         foreach ($data as $statusRow) {
