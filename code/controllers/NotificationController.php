@@ -85,11 +85,11 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
             FmConfig::set('ping_time', time());
             $fyndiqCron = new Fyndiq_Fyndiq_Model_Observer();
             $fyndiqCron->exportProducts($storeId, false);
-            $this->_update_product_info();
+            $this->_update_product_info($storeId);
         }
     }
-    private function _update_product_info() {
+    private function _update_product_info($storeId) {
             $pi = new FmProductInfo();
-            $pi->getAll();
+            $pi->getAll($storeId);
     }
 }
