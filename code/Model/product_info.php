@@ -6,6 +6,12 @@ class FmProductInfo extends FyndiqPaginatedFetch
 
     private $storeId = "";
 
+
+    function __construct($storeId)
+    {
+        $this->storeId = $storeId;
+    }
+
     /**
      * Get product single page products' info
      *

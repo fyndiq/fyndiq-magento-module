@@ -89,7 +89,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         }
     }
     private function _update_product_info($storeId) {
-            $pi = new FmProductInfo();
-            $pi->getAll($storeId);
+            $pi = new FmProductInfo($storeId);
+            $pi->getAll();
     }
 }

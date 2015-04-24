@@ -480,8 +480,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     {
         try {
             $storeId = $this->getRequest()->getParam('store');
-            $pi = new FmProductInfo();
-            $result = $pi->getAll($storeId);
+            $pi = new FmProductInfo($storeId);
+            $result = $pi->getAll();
             $this->response($result);
         } catch (Exception $e) {
             $this->responseError(
