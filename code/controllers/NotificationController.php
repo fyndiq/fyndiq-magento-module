@@ -2,6 +2,7 @@
 require_once(dirname(dirname(__FILE__)) . '/Model/Order.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
+require_once(dirname(dirname(__FILE__)) . '/Model/Product_info.php');
 
 class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Action
 {
@@ -10,7 +11,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         $event = $this->getRequest()->getParam('event');
         $eventName = $event ? $event : false;
         if ($eventName) {
-            if (method_exists($this, $eventName)) {
+            if ($eventName[0] != '_' && method_exists($this, $eventName)) {
                 return $this->$eventName();
             }
         }
@@ -43,6 +44,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
                 header('HTTP/1.0 500 Internal Server Error');
                 die('500 Internal Server Error');
             }
+
             return true;
         }
         header('HTTP/1.0 400 Bad Request');
@@ -54,13 +56,15 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
      * Generate feed
      *
      */
-    private function ping() {
+    private function ping()
+    {
         $storeId = Mage::app()->getStore()->getStoreId();
         $pingToken = unserialize(FmConfig::get('ping_token', $storeId));
 
         $token = $this->getRequest()->getParam('token');
         if (is_null($token) || $token != $pingToken) {
             header('HTTP/1.0 400 Bad Request');
+
             return die('400 Bad Request');
         }
 
@@ -85,6 +89,13 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
             FmConfig::set('ping_time', time());
             $fyndiqCron = new Fyndiq_Fyndiq_Model_Observer();
             $fyndiqCron->exportProducts($storeId, false);
+            $this->_update_product_info($storeId);
         }
+    }
+
+    private function _update_product_info($storeId)
+    {
+        $pi = new FmProductInfo($storeId);
+        $pi->getAll();
     }
 }

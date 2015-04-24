@@ -7,6 +7,7 @@
  */
 require_once(dirname(dirname(__FILE__)) . '/Model/Order.php');
 require_once(dirname(dirname(__FILE__)) . '/Model/Category.php');
+require_once(dirname(dirname(__FILE__)) . '/Model/Product_info.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
 require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
@@ -479,14 +480,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     {
         try {
             $storeId = $this->getRequest()->getParam('store');
-            $ret = FmHelpers::callApi($storeId, 'GET', 'product_info/');
-            $result = true;
-            $productModel = Mage::getModel('fyndiq/product');
-            foreach ($ret['data'] as $statusRow) {
-                $result &= $productModel->updateProductState(intval($statusRow->product_id), array(
-                    'state' => $statusRow->for_sale
-                ));
-            }
+            $pi = new FmProductInfo($storeId);
+            $result = $pi->getAll();
             $this->response($result);
         } catch (Exception $e) {
             $this->responseError(
