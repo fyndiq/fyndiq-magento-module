@@ -1,6 +1,7 @@
 <?php
 require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
 require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
+
 class FmProductInfo extends FyndiqPaginatedFetch
 {
 
@@ -21,6 +22,7 @@ class FmProductInfo extends FyndiqPaginatedFetch
     public function getPageData($path)
     {
         $ret = FmHelpers::callApi($this->storeId, 'GET', $path);
+
         return $ret['data'];
     }
 
@@ -42,14 +44,19 @@ class FmProductInfo extends FyndiqPaginatedFetch
      * @param mixed $data
      * @return bool
      */
-    public function processData($data) {
+    public function processData($data)
+    {
         $result = true;
         $productModel = Mage::getModel('fyndiq/product');
         foreach ($data as $statusRow) {
-            $result &= $productModel->updateProductState($statusRow->product_id, array(
-                'state' => $statusRow->for_sale
-            ));
+            $result &= $productModel->updateProductState(
+                $statusRow->product_id,
+                array(
+                    'state' => $statusRow->for_sale
+                )
+            );
         }
+
         return $result;
     }
 }
