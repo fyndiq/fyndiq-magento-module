@@ -5,7 +5,7 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
 class FmProductInfo extends FyndiqPaginatedFetch
 {
 
-    private $storeId = "";
+    private $storeId = '';
 
 
     function __construct($storeId)
