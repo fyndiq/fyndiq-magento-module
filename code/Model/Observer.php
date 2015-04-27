@@ -33,19 +33,10 @@ class Fyndiq_Fyndiq_Model_Observer
     public function importOrdersForStore($storeId, $newTime)
     {
         $newDate = date('Y-m-d H:i:s', $newTime);
-        $date = false;
-        $settingExists = Mage::getModel('fyndiq/setting')->settingExist($storeId, 'order_lastdate');
-        if ($settingExists) {
-            $date = Mage::getModel('fyndiq/setting')->getSetting($storeId, 'order_lastdate');
-        }
-        $url = 'orders/' . (empty($date) ? '' : '?min_date=' . urlencode($date['value']));
+        $settingExists = Mage::getModel('fyndiq/setting')->settingExist($this->storeId, 'order_lastdate');
 
-        $ret = FmHelpers::callApi($storeId, 'GET', $url);
-        foreach ($ret['data'] as $order) {
-            if (!Mage::getModel('fyndiq/order')->orderExists($order->id)) {
-                Mage::getModel('fyndiq/order')->create($storeId, $order);
-            }
-        }
+        $orderFetch = new FmOrderFetch($storeId);
+        $orderFetch->getAll();
 
         if ($settingExists) {
             return Mage::getModel('fyndiq/setting')->updateSetting($storeId, 'order_lastdate', $newDate);
