@@ -314,6 +314,7 @@
 
 .export {
   float: right;
+  height: 3em;
   margin: 1em;
   text-align: right;
   width: 350px; }
