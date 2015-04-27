@@ -6,6 +6,7 @@
  * Time: 17:12
  */
 require_once(dirname(dirname(__FILE__)) . '/Model/Order.php');
+require_once(dirname(dirname(__FILE__)) . '/Model/OrderFetch.php');
 require_once(dirname(dirname(__FILE__)) . '/Model/Category.php');
 require_once(dirname(dirname(__FILE__)) . '/Model/Product_info.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
