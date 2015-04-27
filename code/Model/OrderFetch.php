@@ -3,15 +3,15 @@ require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
 require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
 class FmOrderFetch extends FyndiqPaginatedFetch
 {
-    function __construct($storeId) {
+    function __construct($storeId, $settingExists) {
         $this->storeId = $storeId;
+        $this->settingExists = $settingExists;
     }
 
     function getInitialPath()
     {
         $date = false;
-        $settingExists = Mage::getModel('fyndiq/setting')->settingExist($this->storeId, 'order_lastdate');
-        if ($settingExists) {
+        if ($this->settingExists) {
             $date = Mage::getModel('fyndiq/setting')->getSetting($this->storeId, 'order_lastdate');
         }
         $url = 'orders/' . (empty($date) ? '' : '?min_date=' . urlencode($date['value']));
