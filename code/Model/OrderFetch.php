@@ -19,7 +19,7 @@ class FmOrderFetch extends FyndiqPaginatedFetch
     }
     function getPageData($path)
     {
-        $ret = FmHelpers::callApi('GET', $path);
+        $ret = FmHelpers::callApi($this->storeId, 'GET', $path);
         return $ret['data'];
     }
     function processData($data)
