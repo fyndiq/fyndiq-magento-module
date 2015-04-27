@@ -26,7 +26,7 @@ class FmOrderFetch extends FyndiqPaginatedFetch
     {
         foreach ($data as $order) {
             if (!Mage::getModel('fyndiq/order')->orderExists($order->id)) {
-                Mage::getModel('fyndiq/order')->create($order);
+                Mage::getModel('fyndiq/order')->create($this->storeId, $order);
             }
         }
         return true;
