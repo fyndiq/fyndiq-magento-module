@@ -151,7 +151,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
             $fyndiqData = Mage::getModel('fyndiq/product')->getProductExportData($prod->getId());
             $fyndiq = !empty($fyndiqData);
-            $fyndiqState = null;
+            $fyndiqState = $fyndiqData['state'];
 
             if ($prod->getTypeId() == 'simple') {
                 //Get parent
