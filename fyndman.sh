@@ -59,8 +59,12 @@ function deploy() {
           cp -r "$DIR/$file" $MAGENTODIR$temppath;
         done  
     done
+    echo "Removing git- and DS_Store-related files in $MAGENTODIR";
+    find ./$MAGENTODIR -name "*.git*" -print0 | xargs -0 rm -rf;
+    find ./$MAGENTODIR -name "*.DS_Store*" -print0 | xargs -0 rm -rf;
     COMMIT="$(git rev-parse --short HEAD)";
-    zip -r -X fyndiq-magento-$VERSION-$COMMIT.zip $MAGENTODIR/;
+    echo "Zipping the build";
+    zip -r -X fyndiq-magento-$VERSION-$COMMIT.zip $MAGENTODIR*;
 }
 
 if [ -z "$1" ]
