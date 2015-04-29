@@ -57,9 +57,10 @@ function deploy() {
         do
           echo "Copying "$DIR/$file" to $MAGENTODIR$temppath";
           cp -r "$DIR/$file" $MAGENTODIR$temppath;
-        done
-        
+        done  
     done
+    COMMIT="$(git rev-parse --short HEAD)";
+    zip -r -X fyndiq-magento-$VERSION-$COMMIT.zip $MAGENTODIR/;
 }
 
 if [ -z "$1" ]
@@ -67,7 +68,7 @@ then
     echo "Choose what you want to do first.";
     echo "---------------------------------";
     echo "build [magento dir] - Dev for symlink to different files and folders.";
-    echo "deploy [build dir] - Copy files to correct maps for release.";
+    echo "deploy [build dir] [versionnr] - Copy files to correct maps for release.";
 elif [ "$1" = "build" ];
 then
     if [ -z "$2" ]
@@ -82,7 +83,13 @@ then
     if [ ! -z "$2" ]
     then
         MAGENTODIR=$2
-        deploy;
+	if [ ! -z "$3" ]
+	then
+	  VERSION=$3
+	  deploy;
+	else
+	  echo "You need to specify version, type like: 1.0.0";
+	fi
     else
         echo "You need to specific a dir.";
         echo "Type fyndman deploy build/ as example";
