@@ -4,3 +4,4 @@ fyndiq/files/*.csv
 fyndiq/files/*.pdf
 build
 main.css.map
+docs
