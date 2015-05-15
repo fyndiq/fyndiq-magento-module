@@ -77,6 +77,13 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         }
     }
 
+    private function getStoreId() {
+        $storeCode = $this->getRequest()->getParam('store');
+        if ($storeCode) {
+            return Mage::getModel('core/store')->load($storeCode)->getId();
+        }
+        return 0;
+    }
 
     /**
      * Get the categories.
@@ -85,7 +92,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     public function get_categories($args)
     {
-        $storeId = $this->getRequest()->getParam('store');
+        $storeId = $this->getStoreId();
         $categories = FmCategory::getSubCategories(intval($args['category_id']), $storeId);
         $this->response($categories);
     }
@@ -294,7 +301,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         );
         if (!empty($args['category'])) {
             $category = Mage::getModel('catalog/category')->load($args['category']);
-            $storeId = $this->getRequest()->getParam('store');
+            $storeId = $this->getStoreId();
             $total = $this->getTotalProducts($storeId, $category);
             $response['products'] = $this->getAllProducts($storeId, $category, $page);
             $response['pagination'] = FyndiqUtils::getPaginationHTML($total, $page,
@@ -386,7 +393,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     public function import_orders(/*$args*/)
     {
         $observer = Mage::getModel('fyndiq/observer');
-        $storeId = $this->getRequest()->getParam('store');
+        $storeId = $this->getStoreId();
         try {
             $newTime = time();
             $observer->importOrdersForStore($storeId, $newTime);
@@ -417,7 +424,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             foreach ($args['orders'] as $order) {
                 $orders['orders'][] = array('order' => intval($order));
             }
-            $storeId = $this->getRequest()->getParam('store');
+            $storeId = $this->getStoreId();
             $ret = FmHelpers::callApi($storeId, 'POST', 'delivery_notes/', $orders, true);
 
             if ($ret['status'] == 200) {
@@ -480,7 +487,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     public function update_product_status()
     {
         try {
-            $storeId = $this->getRequest()->getParam('store');
+            $storeId = $this->getStoreId();
             $pi = new FmProductInfo($storeId);
             $result = $pi->getAll();
             $this->response($result);
