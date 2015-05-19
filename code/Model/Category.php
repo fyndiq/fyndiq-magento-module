@@ -5,11 +5,16 @@ class FmCategory
 
     private static function getCategoriesList($categoryId, $storeId, $getRootOnly)
     {
+        $rootCategoryId = Mage::app()->getStore($storeId)->getRootCategoryId();
         $category = Mage::getModel('catalog/category');
         if ($getRootOnly) {
+            if ($storeId) {
+                // Multi store setup
+                return array($category->load($rootCategoryId));
+            }
+            // Single store setup
             return $category->getCollection()
                 ->addAttributeToSelect('*')
-                ->setStoreId($storeId)
                 ->addAttributeToFilter('is_active', '1')
                 ->addAttributeToFilter('level', 1)
                 ->addAttributeToFilter('include_in_menu', '1')
@@ -17,7 +22,6 @@ class FmCategory
         }
         return $category->getCollection()
             ->addAttributeToSelect('*')
-            ->setStoreId($storeId)
             ->addAttributeToFilter('is_active', '1')
             ->addAttributeToFilter('parent_id', array('eq' => $categoryId))
             ->addAttributeToSort('position', 'asc')->getItems();
