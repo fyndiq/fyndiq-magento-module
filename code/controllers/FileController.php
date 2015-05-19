@@ -10,7 +10,10 @@ class Fyndiq_Fyndiq_FileController extends Mage_Core_Controller_Front_Action
         $result = '';
         //Setting content type to csv.
         $this->getResponse()->setHeader('Content-type', 'text/csv');
-        $storeId = Mage::app()->getStore()->getStoreId();
+        $storeId = Mage::app()
+            ->getWebsite()
+            ->getDefaultGroup()
+            ->getDefaultStoreId();
         if ($this->getUsername($storeId) != '' && $this->getAPIToken($storeId) != '') {
             //Check if feed file exist and if it is too old
             $filePath = FmConfig::getFeedPath($storeId);
