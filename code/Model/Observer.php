@@ -325,7 +325,7 @@ class Fyndiq_Fyndiq_Model_Observer
         throw new Exception(FyndiqTranslation::get('empty-username-token'));
     }
 
-    private function getStoreId() {
+    public function getStoreId() {
         $storeCode = Mage::app()->getRequest()->getParam('store');
         if ($storeCode) {
             return Mage::getModel('core/store')->load($storeCode)->getId();
