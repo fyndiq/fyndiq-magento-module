@@ -302,14 +302,14 @@ class Fyndiq_Fyndiq_Model_Observer
                         )
                     ),
                 FyndiqUtils::NAME_NOTIFICATION_URL => Mage::getUrl(
-                        'fyndiq/notification/index',
+                        'fyndiq/notification/index/store/' . $storeId,
                         array(
                             '_store' => $storeId,
                             '_nosid' => true,
                         )
                     ),
                 FyndiqUtils::NAME_PING_URL => Mage::getUrl(
-                    'fyndiq/notification/index',
+                    'fyndiq/notification/index/store/' . $storeId,
                     array(
                         '_store' => $storeId,
                         '_nosid' => true,
