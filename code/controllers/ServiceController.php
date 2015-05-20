@@ -18,6 +18,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
     protected function _construct()
     {
+        $this->observer = Mage::getModel('fyndiq/observer');
         FyndiqTranslation::init(Mage::app()->getLocale()->getLocaleCode());
     }
 
@@ -77,14 +78,6 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         }
     }
 
-    private function getStoreId() {
-        $storeCode = $this->getRequest()->getParam('store');
-        if ($storeCode) {
-            return Mage::getModel('core/store')->load($storeCode)->getId();
-        }
-        return 0;
-    }
-
     /**
      * Get the categories.
      *
@@ -92,7 +85,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     public function get_categories($args)
     {
-        $storeId = $this->getStoreId();
+        $storeId = $this->observer->getStoreId();
         $categories = FmCategory::getSubCategories(intval($args['category_id']), $storeId);
         $this->response($categories);
     }
@@ -301,7 +294,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         );
         if (!empty($args['category'])) {
             $category = Mage::getModel('catalog/category')->load($args['category']);
-            $storeId = $this->getStoreId();
+            $storeId = $this->observer->getStoreId();
             $total = $this->getTotalProducts($storeId, $category);
             $response['products'] = $this->getAllProducts($storeId, $category, $page);
             $response['pagination'] = FyndiqUtils::getPaginationHTML($total, $page,
@@ -392,11 +385,10 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     public function import_orders(/*$args*/)
     {
-        $observer = Mage::getModel('fyndiq/observer');
-        $storeId = $this->getStoreId();
+        $storeId = $this->observer->getStoreId();
         try {
             $newTime = time();
-            $observer->importOrdersForStore($storeId, $newTime);
+            $this->observer->importOrdersForStore($storeId, $newTime);
             $time = date('G:i:s', $newTime);
             self::response($time);
         } catch (Exception $e) {
@@ -424,7 +416,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             foreach ($args['orders'] as $order) {
                 $orders['orders'][] = array('order' => intval($order));
             }
-            $storeId = $this->getStoreId();
+            $storeId = $this->observer->getStoreId();
             $ret = FmHelpers::callApi($storeId, 'POST', 'delivery_notes/', $orders, true);
 
             if ($ret['status'] == 200) {
@@ -487,7 +479,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     public function update_product_status()
     {
         try {
-            $storeId = $this->getStoreId();
+            $storeId = $this->observer->getStoreId();
             $pi = new FmProductInfo($storeId);
             $result = $pi->getAll();
             $this->response($result);
