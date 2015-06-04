@@ -246,39 +246,77 @@ class Fyndiq_Fyndiq_Model_Observer
         self::debug('$simpleCollection', $simpleCollection);
         //Get first article to the product.
         $firstProduct = array_shift($simpleCollection);
-        $qtyStock = $stockModel->loadByProduct($firstProduct->getId())->getQty();
+        if($firstProduct != null) {
+            $qtyStock = $stockModel->loadByProduct($firstProduct->getId())->getQty();
 
-        $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
+            $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
 
-        $images = $productModel->load($firstProduct->getId())->getMediaGalleryImages();
-        if (!empty($images)) {
-            $imageId = 1;
-            foreach ($images as $image) {
-                $url = $imageHelper->init($firstProduct, 'image', $image->getFile());
-                $feedProduct['product-image-' . $imageId . '-url'] = strval($url);
-                $feedProduct['product-image-' . $imageId . '-identifier'] = substr(md5(strval($url)), 0, 10);
-                $imageId++;
+            $images = $productModel->load($firstProduct->getId())->getMediaGalleryImages();
+            if (!empty($images)) {
+                $imageId = 1;
+                foreach ($images as $image) {
+                    $url = $imageHelper->init($firstProduct, 'image', $image->getFile());
+                    $feedProduct['product-image-' . $imageId . '-url'] = strval($url);
+                    $feedProduct['product-image-' . $imageId . '-identifier'] = substr(md5(strval($url)), 0, 10);
+                    $imageId++;
+                }
             }
-        }
 
-        $feedProduct['article-location'] = self::UNKNOWN;
-        $feedProduct['article-sku'] = $firstProduct->getSKU();
-        $productAttrOptions = $magProduct->getTypeInstance()->getConfigurableAttributes();
-        $attrId = 1;
-        $tags = array();
-        foreach ($productAttrOptions as $productAttribute) {
-            $attrValue = $magProduct->getResource()->getAttribute(
-                $productAttribute->getProductAttribute()->getAttributeCode()
-            )->getFrontend();
-            $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
-            $value = $attrValue->getValue($firstProduct);
+            $feedProduct['article-location'] = self::UNKNOWN;
+            $feedProduct['article-sku'] = $firstProduct->getSKU();
+            $productAttrOptions = $magProduct->getTypeInstance()->getConfigurableAttributes();
+            $attrId = 1;
+            $tags = array();
+            foreach ($productAttrOptions as $productAttribute) {
+                $attrValue = $magProduct->getResource()->getAttribute(
+                    $productAttribute->getProductAttribute()->getAttributeCode()
+                )->getFrontend();
+                $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
+                $value = $attrValue->getValue($firstProduct);
 
-            $feedProduct['article-property-name-' . $attrId] = $attrCode;
-            $feedProduct['article-property-value-' . $attrId] = $value[0];
-            $tags[] = $attrCode . ': ' . $value[0];
-            $attrId++;
+                $feedProduct['article-property-name-' . $attrId] = $attrCode;
+                $feedProduct['article-property-value-' . $attrId] = $value[0];
+                $tags[] = $attrCode . ': ' . $value[0];
+                $attrId++;
+            }
+            $feedProduct['article-name'] = substr(implode(', ', $tags), 0, 30);
         }
-        $feedProduct['article-name'] = substr(implode(', ', $tags), 0, 30);
+        else {
+            //if no firstporduct exist, act like simple product and get its own images and such.
+            $qtyStock = $stockModel->loadByProduct($magProduct->getId())->getQty();
+
+            $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
+
+            $images = $productModel->load($magArray['entity_id'])->getMediaGalleryImages();
+            if (!empty($images)) {
+                $imageId = 1;
+                foreach ($images as $image) {
+                    $url = $imageHelper->init($magProduct, 'image', $image->getFile());
+                    $feedProduct['product-image-' . $imageId . '-url'] = strval($url);
+                    $feedProduct['product-image-' . $imageId . '-identifier'] = substr(md5(strval($url)), 0, 10);
+                    $imageId++;
+                }
+            }
+
+            $feedProduct['article-location'] = self::UNKNOWN;
+            $feedProduct['article-sku'] = $magProduct->getSKU();
+            $productAttrOptions = $magProduct->getTypeInstance()->getConfigurableAttributes();
+            $attrId = 1;
+            $tags = array();
+            foreach ($productAttrOptions as $productAttribute) {
+                $attrValue = $magProduct->getResource()->getAttribute(
+                    $productAttribute->getProductAttribute()->getAttributeCode()
+                )->getFrontend();
+                $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
+                $value = $attrValue->getValue($magProduct);
+
+                $feedProduct['article-property-name-' . $attrId] = $attrCode;
+                $feedProduct['article-property-value-' . $attrId] = $value[0];
+                $tags[] = $attrCode . ': ' . $value[0];
+                $attrId++;
+            }
+            $feedProduct['article-name'] = substr(implode(', ', $tags), 0, 30);
+        }
         self::debug('COMBINATION $feedProduct', $feedProduct);
         return $feedProduct;
     }
