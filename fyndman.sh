@@ -62,6 +62,8 @@ function deploy() {
     echo "Removing git- and DS_Store-related files in $MAGENTODIR";
     find ./$MAGENTODIR -name "*.git*" -print0 | xargs -0 rm -rf;
     find ./$MAGENTODIR -name "*.DS_Store*" -print0 | xargs -0 rm -rf;
+    find ./$MAGENTODIR -name "feed-*.csv" -print0 | xargs -0 rm -rf;
+    find ./$MAGENTODIR -name "deliverynote.pdf" -print0 | xargs -0 rm -rf;
     COMMIT="$(git rev-parse --short HEAD)";
     VERSION="$(perl -nle"print $& if m{(?<=<version>)[^<]+}" code/etc/config.xml)";
     zip -r -X fyndiq-magento-v$VERSION-$COMMIT.zip $MAGENTODIR*;
