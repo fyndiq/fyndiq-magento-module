@@ -171,7 +171,12 @@ class Fyndiq_Fyndiq_Model_Observer
 
         $feedProduct['product-id'] = $productInfo['id'];
         $feedProduct['product-title'] = $magArray['name'];
-        $feedProduct['product-description'] = $magProduct->getDescription();
+        $description = $magProduct->getDescription();
+        if(is_null($description)) {
+            $description = $magProduct->getShortDescription();
+        }
+
+        $feedProduct['product-description'] = $description;
 
         $discount = $productInfo['exported_price_percentage'];
         $price = FyndiqUtils::getFyndiqPrice($magArray['price'], $discount);
