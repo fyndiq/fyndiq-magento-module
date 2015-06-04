@@ -73,9 +73,11 @@ class Fyndiq_Fyndiq_Model_Observer
     private function exportingProducts($storeId)
     {
         $fileName = FmConfig::getFeedPath($storeId);
+        self::debug('$fileName', $fileName);
         $file = fopen($fileName, 'w+');
 
         if (!$file) {
+            self::debug('Cannot create file: ' . $fileName);
             return false;
         }
         $feedWriter = new FyndiqCSVFeedWriter($file);
@@ -88,6 +90,8 @@ class Fyndiq_Fyndiq_Model_Observer
             $idsToExport[] = intval($productData['product_id']);
             $productInfo[$productData['product_id']] = $productData;
         }
+        self::debug('$idsToExport', $idsToExport);
+        self::debug('$productInfo', $productInfo);
 
         //Initialize models here so it saves memory.
         $productModel = Mage::getModel('catalog/product');
@@ -102,6 +106,7 @@ class Fyndiq_Fyndiq_Model_Observer
 
         foreach ($productsToExport as $magProduct) {
             $parent_id = $magProduct->getId();
+            self::debug('$magProduct->getTypeId()', $magProduct->getTypeId());
             if ($feedWriter->addProduct($this->getProduct($magProduct, $productInfo[$parent_id]))
                 && $magProduct->getTypeId() != 'simple'
             ) {
@@ -143,6 +148,8 @@ class Fyndiq_Fyndiq_Model_Observer
      */
     private function getProduct($magProduct, $productInfo)
     {
+        self::debug('$productInfo', $productInfo);
+        self::debug('$magProduct', $magProduct->getData());
         //Initialize models here so it saves memory.
         $productModel = Mage::getModel('catalog/product');
         $categoryModel = Mage::getModel('catalog/category');
@@ -154,6 +161,7 @@ class Fyndiq_Fyndiq_Model_Observer
 
         // Setting the data
         if (!isset($magArray['price'])) {
+            self::debug('No price is set');
             return $feedProduct;
         }
 
@@ -185,19 +193,10 @@ class Fyndiq_Fyndiq_Model_Observer
 
         // Images
         $imageId = 1;
-        //trying to get image, if not image will be false
-        try {
-            $url = $magProduct->getImageUrl();
-            $feedProduct['product-image-' . $imageId . '-url'] = $url;
-            $feedProduct['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
-            $imageId++;
-        } catch (Exception $e) {
-        }
-
         $images = $productModel->load($magArray['entity_id'])->getMediaGalleryImages();
         if (isset($images)) {
             foreach ($images as $image) {
-                $url = $imageHelper->init($magProduct, 'image', $image->getFile());
+                $url = (string)$imageHelper->init($magProduct, 'image', $image->getFile());
                 $feedProduct['product-image-' . $imageId . '-url'] = $url;
                 $feedProduct['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
                 $imageId++;
@@ -236,6 +235,7 @@ class Fyndiq_Fyndiq_Model_Observer
             }
 
             // We're done
+            self::debug('PRODUCT $feedProduct', $feedProduct);
             return $feedProduct;
         }
 
@@ -243,7 +243,7 @@ class Fyndiq_Fyndiq_Model_Observer
         $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
         $simpleCollection = $conf->getUsedProductCollection()->addAttributeToSelect('*')
             ->addFilterByRequiredOptions()->getItems();
-
+        self::debug('$simpleCollection', $simpleCollection);
         //Get first article to the product.
         $firstProduct = array_shift($simpleCollection);
         $qtyStock = $stockModel->loadByProduct($firstProduct->getId())->getQty();
@@ -279,7 +279,7 @@ class Fyndiq_Fyndiq_Model_Observer
             $attrId++;
         }
         $feedProduct['article-name'] = substr(implode(', ', $tags), 0, 30);
-
+        self::debug('COMBINATION $feedProduct', $feedProduct);
         return $feedProduct;
     }
 
@@ -331,5 +331,17 @@ class Fyndiq_Fyndiq_Model_Observer
             return Mage::getModel('core/store')->load($storeCode)->getId();
         }
         return 0;
+    }
+
+    public function debug ($name, $var, $justPrint = false)
+    {
+        if (defined('FYNDIQ_DEBUG') &&  FYNDIQ_DEBUG) {
+            if ($justPrint) {
+                echo $name . '<br/ ><pre>' . $var . '</pre><hr/>';
+                return;
+            }
+            var_dump($name, $var);
+            echo '<hr/>';
+        }
     }
 }

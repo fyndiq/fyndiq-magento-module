@@ -93,6 +93,31 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         }
     }
 
+    private function debug() {
+        $pingToken = unserialize(FmConfig::get('ping_token', $storeId));
+        $token = $this->getRequest()->getParam('token');
+        if (is_null($token) || $token != $pingToken) {
+            header('HTTP/1.0 400 Bad Request');
+            return die('400 Bad Request');
+        }
+
+        define('FYNDIQ_DEBUG', true);
+        Fyndiq_Fyndiq_Model_Observer::debug('PHP_VERSION', phpversion());
+        $storeId = Mage::app()->getRequest()->getParam('store');
+        Fyndiq_Fyndiq_Model_Observer::debug('$storeId', $storeId);
+        //Check if feed file exist and if it is too old
+        $filePath = FmConfig::getFeedPath($storeId);
+        Fyndiq_Fyndiq_Model_Observer::debug('$filePath', $filePath);
+        Fyndiq_Fyndiq_Model_Observer::debug('is_writable(' . $filePath . ')', is_writable($filePath));
+
+        $fileExistsAndFresh = file_exists($filePath) && filemtime($filePath) > strtotime('-1 hour');
+        Fyndiq_Fyndiq_Model_Observer::debug('$fileExistsAndFresh', $fileExistsAndFresh);
+        $fyndiqCron = new Fyndiq_Fyndiq_Model_Observer();
+        $fyndiqCron->exportProducts($storeId, false);
+        $result = file_get_contents($filePath);
+        Fyndiq_Fyndiq_Model_Observer::debug('$result', $result, true);
+    }
+
     private function _update_product_info($storeId)
     {
         $pi = new FmProductInfo($storeId);
