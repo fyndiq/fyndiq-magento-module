@@ -94,6 +94,8 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
     }
 
     private function debug() {
+        $storeId = Mage::app()->getRequest()->getParam('store');
+
         $pingToken = unserialize(FmConfig::get('ping_token', $storeId));
         $token = $this->getRequest()->getParam('token');
         if (is_null($token) || $token != $pingToken) {
@@ -103,7 +105,6 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 
         define('FYNDIQ_DEBUG', true);
         Fyndiq_Fyndiq_Model_Observer::debug('PHP_VERSION', phpversion());
-        $storeId = Mage::app()->getRequest()->getParam('store');
         Fyndiq_Fyndiq_Model_Observer::debug('$storeId', $storeId);
         //Check if feed file exist and if it is too old
         $filePath = FmConfig::getFeedPath($storeId);
