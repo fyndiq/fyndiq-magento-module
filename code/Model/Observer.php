@@ -333,7 +333,7 @@ class Fyndiq_Fyndiq_Model_Observer
         return 0;
     }
 
-    public function debug ($name, $var, $justPrint = false)
+    public static function debug ($name, $var, $justPrint = false)
     {
         if (defined('FYNDIQ_DEBUG') &&  FYNDIQ_DEBUG) {
             if ($justPrint) {
