@@ -78,6 +78,7 @@ class Fyndiq_Fyndiq_Model_Observer
 
         if (!$file) {
             self::debug('Cannot create file: ' . $fileName);
+
             return false;
         }
         $feedWriter = new FyndiqCSVFeedWriter($file);
@@ -130,13 +131,15 @@ class Fyndiq_Fyndiq_Model_Observer
      * @param $product
      * @return mixed
      */
-    private function getTaxRate($product) {
+    private function getTaxRate($product)
+    {
         $store = Mage::app()->getStore();
         $taxCalculation = Mage::getModel('tax/calculation');
 
         $request = $taxCalculation->getRateRequest(null, null, null, $store);
         $taxClassId = $product->getTaxClassId();
-        return  $taxCalculation->getRate($request->setProductClassId($taxClassId));
+
+        return $taxCalculation->getRate($request->setProductClassId($taxClassId));
     }
 
     /**
@@ -162,6 +165,7 @@ class Fyndiq_Fyndiq_Model_Observer
         // Setting the data
         if (!isset($magArray['price'])) {
             self::debug('No price is set');
+
             return $feedProduct;
         }
 
@@ -178,7 +182,7 @@ class Fyndiq_Fyndiq_Model_Observer
         $feedProduct['product-currency'] = Mage::app()->getStore()->getCurrentCurrencyCode();
 
         $brand = $magProduct->getAttributeText('manufacturer');
-        $feedProduct['product-brand'] = $brand ? $brand: self::UNKNOWN;
+        $feedProduct['product-brand'] = $brand ? $brand : self::UNKNOWN;
 
         // Category
         $categoryIds = $magProduct->getCategoryIds();
@@ -236,6 +240,7 @@ class Fyndiq_Fyndiq_Model_Observer
 
             // We're done
             self::debug('PRODUCT $feedProduct', $feedProduct);
+
             return $feedProduct;
         }
 
@@ -246,6 +251,9 @@ class Fyndiq_Fyndiq_Model_Observer
         self::debug('$simpleCollection', $simpleCollection);
         //Get first article to the product.
         $firstProduct = array_shift($simpleCollection);
+        if ($firstProduct == null) {
+            $firstProduct = $magProduct;
+        }
         $qtyStock = $stockModel->loadByProduct($firstProduct->getId())->getQty();
 
         $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
@@ -279,7 +287,9 @@ class Fyndiq_Fyndiq_Model_Observer
             $attrId++;
         }
         $feedProduct['article-name'] = substr(implode(', ', $tags), 0, 30);
+
         self::debug('COMBINATION $feedProduct', $feedProduct);
+
         return $feedProduct;
     }
 
@@ -309,35 +319,39 @@ class Fyndiq_Fyndiq_Model_Observer
                         )
                     ),
                 FyndiqUtils::NAME_PING_URL => Mage::getUrl(
-                    'fyndiq/notification/index/store/' . $storeId,
-                    array(
-                        '_store' => $storeId,
-                        '_nosid' => true,
-                        '_query' => array(
-                            'event' => 'ping',
-                            'token' =>  $pingToken,
-                        ),
+                        'fyndiq/notification/index/store/' . $storeId,
+                        array(
+                            '_store' => $storeId,
+                            '_nosid' => true,
+                            '_query' => array(
+                                'event' => 'ping',
+                                'token' => $pingToken,
+                            ),
+                        )
                     )
-                )
             );
+
             return FmHelpers::callApi($storeId, 'PATCH', 'settings/', $data);
         }
         throw new Exception(FyndiqTranslation::get('empty-username-token'));
     }
 
-    public function getStoreId() {
+    public function getStoreId()
+    {
         $storeCode = Mage::app()->getRequest()->getParam('store');
         if ($storeCode) {
             return Mage::getModel('core/store')->load($storeCode)->getId();
         }
+
         return 0;
     }
 
-    public function debug ($name, $var, $justPrint = false)
+    public function debug($name, $var, $justPrint = false)
     {
-        if (defined('FYNDIQ_DEBUG') &&  FYNDIQ_DEBUG) {
+        if (defined('FYNDIQ_DEBUG') && FYNDIQ_DEBUG) {
             if ($justPrint) {
                 echo $name . '<br/ ><pre>' . $var . '</pre><hr/>';
+
                 return;
             }
             var_dump($name, $var);
