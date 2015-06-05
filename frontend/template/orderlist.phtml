@@ -6,11 +6,16 @@
 
     <div class="fm-header">
         <div class="fm-header-wrapper">
-            <img class="navbar-brand" src="<?php echo $this->getSharedPath(); ?>frontend/images/logo.png" alt="<?php echo $this->getMessage('Fyndiq logotype'); ?>">
+            <img class="navbar-brand" src="<?php echo $this->getSharedPath(); ?>frontend/images/logo.png"
+                 alt="<?php echo $this->getMessage('Fyndiq logotype'); ?>">
+
             <div class="navbar-right">
-                <a href="<?php echo $this->getAdminPath("fyndiq/admin/index"); ?>" class="btn btn-nav"><i class="menu-icon comp"></i> <?php echo $this->getMessage('Export Products'); ?></a>
-                <a href="<?php echo $this->getAdminPath("fyndiq/admin/orderlist"); ?>" class="btn btn-nav active"><i class="menu-icon boxes"></i> <?php echo $this->getMessage('Imported Orders'); ?></a>
-                <a href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>" class="btn btn-nav"><i class="menu-icon cog"></i> <?php echo $this->getMessage('Settings'); ?></a>
+                <a href="<?php echo $this->getAdminPath("fyndiq/admin/index"); ?>" class="btn btn-nav"><i
+                        class="menu-icon comp"></i> <?php echo $this->getMessage('Export Products'); ?></a>
+                <a href="<?php echo $this->getAdminPath("fyndiq/admin/orderlist"); ?>" class="btn btn-nav active"><i
+                        class="menu-icon boxes"></i> <?php echo $this->getMessage('Imported Orders'); ?></a>
+                <a href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>"
+                   class="btn btn-nav"><i class="menu-icon cog"></i> <?php echo $this->getMessage('Settings'); ?></a>
             </div>
         </div>
     </div>
@@ -22,8 +27,10 @@
                 <div class="fm-panel-header"><?php echo $this->getMessage('Imported Orders'); ?></div>
                 <div class="fm-panel-body no-padding">
                     <form action="<?php echo $this->getServicePath() ?>" method="post" class="fm-form orders-form">
-                        <input type="hidden" name="action" value="get_delivery_notes" />
-                        <input type="hidden" name="form_key" value="<?php echo Mage::getSingleton('core/session')->getFormKey() ?>" />
+                        <input type="hidden" name="action" value="get_delivery_notes"/>
+                        <input type="hidden" name="form_key"
+                               value="<?php echo Mage::getSingleton('core/session')->getFormKey() ?>"/>
+
                         <div class="fm-order-list-container"></div>
                     </form>
                 </div>
@@ -34,35 +41,43 @@
             <div class="fm-panel">
                 <div class="fm-panel-header"><?php echo $this->getMessage('Manual Order Import'); ?></div>
                 <div class="fm-panel-body">
-                    <p><?php echo $this->getMessage('By clicking this button, you can import all orders from Fyndiq into the local webshop.'); ?></p>
+                    <p><?php echo $this->getMessage(
+                            'By clicking this button, you can import all orders from Fyndiq into the local webshop.'
+                        ); ?></p>
+
                     <div id="fm-order-import-date">
                         <?php
-                            $currentDate = $this->getLastUpdatedDate($this->getRequest()->getParam('store'));
-                            if ($currentDate != false) {
-                        ?>
-                        <div class="lastupdated">
-                            <img src="<?php echo $this->getSharedPath(); ?>frontend/images/icons/refresh.png" />
-                            <span class="last-header"><?php echo $this->getMessage('Latest Import'); ?></span>
-                            <?php
+                        $currentDate = $this->getLastUpdatedDate($this->getRequest()->getParam('store'));
+                        if ($currentDate != false) {
+                            ?>
+                            <div class="lastupdated">
+                                <img src="<?php echo $this->getSharedPath(); ?>frontend/images/icons/refresh.png"/>
+                                <span class="last-header"><?php echo $this->getMessage('Latest Import'); ?></span>
+                                <?php
                                 $current = strtotime(date("Y-m-d"));
-                                $date    = strtotime(date("Y-m-d",strtotime($currentDate)));
+                                $date = strtotime(date("Y-m-d", strtotime($currentDate)));
 
                                 $dateDiff = $date - $current;
-                                $difference = floor($dateDiff/(60*60*24));
-                                if($difference==0) {
-                                    echo $this->getMessage('Today') . ' <span class="shadow">('.date ("G:i:s", strtotime($currentDate)) . ')</span>';
+                                $difference = floor($dateDiff / (60 * 60 * 24));
+                                if ($difference == 0) {
+                                    echo $this->getMessage('Today') . ' <span class="shadow">(' . date(
+                                            "G:i:s",
+                                            strtotime($currentDate)
+                                        ) . ')</span>';
                                 } else {
-                                    echo date ("Y-m-d G:i:s", strtotime($currentDate));
+                                    echo date("Y-m-d G:i:s", strtotime($currentDate));
                                 }
-                            ?>
-                        </div>
+                                ?>
+                            </div>
                         <?php
-                            }
+                        }
                         ?>
                     </div>
-                    <a class="fm-button green" id="fm-import-orders"><?php echo $this->getMessage('Import Orders'); ?></a>
+                    <a class="fm-button green" id="fm-import-orders"><?php echo $this->getMessage(
+                            'Import Orders'
+                        ); ?></a>
                 </div>
             </div>
         </div>
-    <br class="clear" />
-</div>
+        <br class="clear"/>
+    </div>

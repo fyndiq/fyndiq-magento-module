@@ -98,8 +98,10 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 $stock = Mage::getModel('cataloginventory/stock_item')->loadByProduct($simple)->getQty();
                 $qtyStock += $stock;
             }
+
             return $qtyStock;
         }
+
         return Mage::getModel('cataloginventory/stock_item')->loadByProduct($product)->getQty();
     }
 
@@ -145,7 +147,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             }
 
             $id++;
-            if ($id < (($page-1) * FyndiqUtils::PAGINATION_ITEMS_PER_PAGE) || $id > ($page * FyndiqUtils::PAGINATION_ITEMS_PER_PAGE)){
+            if ($id < (($page - 1) * FyndiqUtils::PAGINATION_ITEMS_PER_PAGE) || $id > ($page * FyndiqUtils::PAGINATION_ITEMS_PER_PAGE)) {
                 continue;
             }
 
@@ -196,7 +198,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                         $fyndiqStatus = 'pending';
                 };
             }
-            
+
             $prodData = array(
                 'id' => $prod->getId(),
                 'url' => $prod->getUrl(),
@@ -239,6 +241,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
             $data[] = $prodData;
         }
+
         return $data;
     }
 
@@ -297,8 +300,12 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             $storeId = $this->observer->getStoreId();
             $total = $this->getTotalProducts($storeId, $category);
             $response['products'] = $this->getAllProducts($storeId, $category, $page);
-            $response['pagination'] = FyndiqUtils::getPaginationHTML($total, $page,
-                FyndiqUtils::PAGINATION_ITEMS_PER_PAGE, FyndiqUtils::PAGINATION_PAGE_FRAME);
+            $response['pagination'] = FyndiqUtils::getPaginationHTML(
+                $total,
+                $page,
+                FyndiqUtils::PAGINATION_ITEMS_PER_PAGE,
+                FyndiqUtils::PAGINATION_PAGE_FRAME
+            );
         }
         $this->response($response);
     }
@@ -307,9 +314,12 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     public function update_product($args)
     {
         $productModel = Mage::getModel('fyndiq/product');
-        $status = $productModel->updateProduct($args['product'], array(
-            'exported_price_percentage' => $args['percentage']
-        ));
+        $status = $productModel->updateProduct(
+            $args['product'],
+            array(
+                'exported_price_percentage' => $args['percentage']
+            )
+        );
         $this->response($status);
     }
 
@@ -340,6 +350,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             $result[] = $productModel->addProduct($data);
 
         }
+
         return $this->response($result);
     }
 
@@ -371,10 +382,16 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $page = (isset($args['page']) && is_numeric($args['page']) && $args['page'] != -1) ? intval($args['page']) : 1;
 
         $object = new stdClass();
-        $object->orders = Mage::getModel('fyndiq/order')->getImportedOrders($page,
-            FyndiqUtils::PAGINATION_ITEMS_PER_PAGE);
-        $object->pagination = FyndiqUtils::getPaginationHTML($total, $page,
-            FyndiqUtils::PAGINATION_ITEMS_PER_PAGE, FyndiqUtils::PAGINATION_PAGE_FRAME);
+        $object->orders = Mage::getModel('fyndiq/order')->getImportedOrders(
+            $page,
+            FyndiqUtils::PAGINATION_ITEMS_PER_PAGE
+        );
+        $object->pagination = FyndiqUtils::getPaginationHTML(
+            $total,
+            $page,
+            FyndiqUtils::PAGINATION_ITEMS_PER_PAGE,
+            FyndiqUtils::PAGINATION_PAGE_FRAME
+        );
         $this->response($object);
     }
 
@@ -383,7 +400,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      *
      * @param $args
      */
-    public function import_orders(/*$args*/)
+    public function import_orders( /*$args*/)
     {
         $storeId = $this->observer->getStoreId();
         try {
@@ -445,7 +462,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         }
     }
 
-    public function disconnect_account(/*$args*/)
+    public function disconnect_account( /*$args*/)
     {
         $config = new Mage_Core_Model_Config();
         $config->saveConfig('fyndiq/fyndiq_group/apikey', '', 'default', '');
@@ -467,6 +484,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             if ($success) {
                 $status = $orderModel->getStatusName($newStatusId);
                 $this->response($status);
+
                 return;
             }
         }

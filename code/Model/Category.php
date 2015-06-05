@@ -12,6 +12,7 @@ class FmCategory
                 // Multi store setup
                 return array($category->load($rootCategoryId));
             }
+
             // Single store setup
             return $category->getCollection()
                 ->addAttributeToSelect('*')
@@ -20,6 +21,7 @@ class FmCategory
                 ->addAttributeToFilter('include_in_menu', '1')
                 ->addAttributeToSort('position', 'asc')->getItems();
         }
+
         return $category->getCollection()
             ->addAttributeToSelect('*')
             ->addAttributeToFilter('is_active', '1')
@@ -50,6 +52,7 @@ class FmCategory
                 'isActive' => $cat->getIsActive()
             );
         }
+
         return $data;
     }
 }

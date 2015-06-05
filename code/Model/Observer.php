@@ -172,7 +172,7 @@ class Fyndiq_Fyndiq_Model_Observer
         $feedProduct['product-id'] = $productInfo['id'];
         $feedProduct['product-title'] = $magArray['name'];
         $description = $magProduct->getDescription();
-        if(is_null($description)) {
+        if (is_null($description)) {
             $description = $magProduct->getShortDescription();
         }
 

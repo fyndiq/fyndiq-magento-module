@@ -9,7 +9,7 @@
             <!-- Which code pool to use: core, community or local -->
             <codePool>community</codePool>
             <depends>
-                <Mage_Shipping />
+                <Mage_Shipping/>
             </depends>
         </Fyndiq_Fyndiq>
     </modules>

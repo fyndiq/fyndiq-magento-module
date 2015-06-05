@@ -20,6 +20,7 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
         if ($collection->getId()) {
             return $collection->getData();
         }
+
         return false;
     }
 
@@ -32,6 +33,7 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
     function addProduct($insertData)
     {
         $model = $this->setData($insertData);
+
         return $model->save()->getId();
     }
 
@@ -47,6 +49,7 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
         $model = $this->load($collection->getId())->addData($updateData);
         try {
             $model->setId($collection->getId())->save();
+
             return true;
         } catch (Exception $e) {
             return false;
@@ -64,6 +67,7 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
         $model = $this->load($id)->addData($updateData);
         try {
             $model->setId($id)->save();
+
             return true;
         } catch (Exception $e) {
             return false;
@@ -81,6 +85,7 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
         $collection = $this->getCollection()->addFieldToFilter('product_id', $productId)->getFirstItem();
         try {
             $this->setId($collection->getId())->delete();
+
             return true;
         } catch (Exception $e) {
             return false;

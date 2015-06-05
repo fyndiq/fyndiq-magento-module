@@ -1,9 +1,11 @@
-<?php $skipJS = true; require('common.phtml'); ?>
+<?php $skipJS = true;
+require('common.phtml'); ?>
 
 <div class="fm-container">
     <div class="fm-header">
         <div class="fm-header-wrapper">
-            <img class="navbar-brand" src="<?php echo $this->getSharedPath(); ?>frontend/images/logo.png" alt="<?php echo $this->getMessage('Fyndiq logotype'); ?>">
+            <img class="navbar-brand" src="<?php echo $this->getSharedPath(); ?>frontend/images/logo.png"
+                 alt="<?php echo $this->getMessage('Fyndiq logotype'); ?>">
         </div>
     </div>
 
@@ -12,11 +14,18 @@
             <div class="fm-panel-header"><?php echo $this->getMessage('Setting up your Fyndiq Connection'); ?></div>
             <div class="fm-panel-body">
                 <p>
-                    <?php echo $this->getMessage('By authenticating you will create a permanent connection to your Fyndiq merchant account.'); ?><br/>
-                    (<?php echo $this->getMessage('You will not have to authenticate again when coming here next time.'); ?>)
+                    <?php echo $this->getMessage(
+                        'By authenticating you will create a permanent connection to your Fyndiq merchant account.'
+                    ); ?><br/>
+                    (<?php echo $this->getMessage(
+                        'You will not have to authenticate again when coming here next time.'
+                    ); ?>)
                 </p>
+
                 <p>
-                    <?php echo $this->getMessage('If you see this page again, it means you typed in wrong credentials and need to type in correct token and username.'); ?>
+                    <?php echo $this->getMessage(
+                        'If you see this page again, it means you typed in wrong credentials and need to type in correct token and username.'
+                    ); ?>
                 </p>
                 <a class="fm-button green" type="submit" name="submit_show_settings"
                    href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>">

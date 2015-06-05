@@ -93,13 +93,15 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         }
     }
 
-    private function debug() {
+    private function debug()
+    {
         $storeId = Mage::app()->getRequest()->getParam('store');
 
         $pingToken = unserialize(FmConfig::get('ping_token', $storeId));
         $token = $this->getRequest()->getParam('token');
         if (is_null($token) || $token != $pingToken) {
             header('HTTP/1.0 400 Bad Request');
+
             return die('400 Bad Request');
         }
 

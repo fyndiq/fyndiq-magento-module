@@ -59,7 +59,7 @@
                         <price_percentage translate="label">
                             <label>Global percentage of price</label>
                             <comment>
-                            <![CDATA[The percentage that will be removed from the price when sending to fyndiq.
+                                <![CDATA[The percentage that will be removed from the price when sending to fyndiq.
                             Can be 0 if the price should be the same as in your shop.]]>
                             </comment>
                             <frontend_type>text</frontend_type>

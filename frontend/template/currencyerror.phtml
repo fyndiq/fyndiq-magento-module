@@ -1,9 +1,11 @@
-<?php $skipJS = true; require('common.phtml'); ?>
+<?php $skipJS = true;
+require('common.phtml'); ?>
 
 <div class="fm-container">
     <div class="fm-header">
         <div class="fm-header-wrapper">
-            <img class="navbar-brand" src="<?php echo $this->getSharedPath(); ?>frontend/images/logo.png" alt="<?php echo $this->getMessage('Fyndiq logotype'); ?>">
+            <img class="navbar-brand" src="<?php echo $this->getSharedPath(); ?>frontend/images/logo.png"
+                 alt="<?php echo $this->getMessage('Fyndiq logotype'); ?>">
         </div>
     </div>
 
@@ -12,11 +14,19 @@
             <div class="fm-panel-header"><?php echo $this->getMessage('Wrong Currency Set'); ?></div>
             <div class="fm-panel-body">
                 <h2><?php echo $this->getMessage('Wrong Currency Set'); ?></h2>
+
                 <p>
-                    <?php echo $this->getMessage('We are using the default currency setting in Magento. You need to set correct currency to be able to use Fyndiq\'s Module.'); ?>
-                    <br /><?php echo $this->getMessage('You can change this in Configuration (System > Configuration)');?>
+                    <?php echo $this->getMessage(
+                        'We are using the default currency setting in Magento. You need to set correct currency to be able to use Fyndiq\'s Module.'
+                    ); ?>
+                    <br/><?php echo $this->getMessage(
+                        'You can change this in Configuration (System > Configuration)'
+                    ); ?>
                 </p>
-                <p><?php echo $this->getMessage('Set Currency to SEK or EUR. Also set Country to either Germany or Sweden.');?></p>
+
+                <p><?php echo $this->getMessage(
+                        'Set Currency to SEK or EUR. Also set Country to either Germany or Sweden.'
+                    ); ?></p>
             </div>
         </div>
     </div>
