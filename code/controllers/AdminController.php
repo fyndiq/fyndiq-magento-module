@@ -55,17 +55,21 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
         }
         if ($message && !$isAuthorized) {
             $this->setupTemplate('fyndiq/apierror.phtml', array('message' => $message));
+
             return false;
         }
         if ($this->getAPIToken() == '' || $this->getUsername() == '') {
             $this->setupTemplate('fyndiq/needapiinfo.phtml');
+
             return false;
         }
         $currency = Mage::app()->getStore()->getCurrentCurrencyCode();
         if (!in_array($currency, $this->allowedCurrencies)) {
             $this->setupTemplate('fyndiq/currencyerror.phtml');
+
             return false;
         }
+
         return $this->setupTemplate($template);
 
     }
@@ -92,6 +96,7 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
 
         $block->setData('data', $data);
         $this->getLayout()->getBlock('content')->append($block);
+
         return $this->renderLayout();
     }
 

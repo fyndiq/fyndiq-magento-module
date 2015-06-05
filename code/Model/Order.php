@@ -30,6 +30,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         if ($collection->getId()) {
             return true;
         }
+
         return false;
     }
 
@@ -47,6 +48,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             'order_id' => $orderId
         );
         $model = $this->setData($data);
+
         return $model->save()->getId();
     }
 
@@ -69,7 +71,10 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             $order = $order->getData();
             $magOrder = Mage::getModel('sales/order')->load($order['order_id']);
             $magArray = $magOrder->getData();
-            $url = Mage::helper('adminhtml')->getUrl("adminhtml/sales_order/view", array('order_id' => $order['order_id']));
+            $url = Mage::helper('adminhtml')->getUrl(
+                "adminhtml/sales_order/view",
+                array('order_id' => $order['order_id'])
+            );
             $orderArray['order_id'] = $magArray['entity_id'];
             $orderArray['fyndiq_orderid'] = $order['fyndiq_orderid'];
             $orderArray['entity_id'] = $magArray['entity_id'];
@@ -81,6 +86,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             $orderArray['link'] = $url;
             $result[] = $orderArray;
         }
+
         return $result;
     }
 
@@ -191,7 +197,10 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $order->setStatus($importStatus);
 
         // Add delivery note as comment
-        $comment = sprintf("Fyndiq delivery note: http://fyndiq.se%s \n just copy url and paste in the browser to download the delivery note.", $fyndiqOrder->delivery_note);
+        $comment = sprintf(
+            "Fyndiq delivery note: http://fyndiq.se%s \n just copy url and paste in the browser to download the delivery note.",
+            $fyndiqOrder->delivery_note
+        );
         $order->addStatusHistoryComment($comment);
 
         //Finally we save our order after setting it's status to complete.
@@ -214,8 +223,10 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         if ($order) {
             //$order->setState(Mage_Sales_Model_Order::STATE_PROCESSING, true);
             $order->setStatus($statusId, true);
+
             return $order->save();
         }
+
         return false;
     }
 
@@ -227,6 +238,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
     public function getStatusName($statusId)
     {
         $status = Mage::getModel('sales/order_status')->loadDefaultByState($statusId);
+
         return $status->getStoreLabel();
     }
 }

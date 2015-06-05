@@ -1,4 +1,5 @@
 <?php
+
 class Fyndiq_Fyndiq_Block_Button extends Mage_Adminhtml_Block_System_Config_Form_Field
 {
 
@@ -17,4 +18,3 @@ class Fyndiq_Fyndiq_Block_Button extends Mage_Adminhtml_Block_System_Config_Form
         return $html;
     }
 }
-?>

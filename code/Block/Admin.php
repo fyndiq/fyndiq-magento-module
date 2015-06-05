@@ -56,6 +56,7 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
             'store',
             $request->getParam('store'),
         );
+
         return Mage::helper('adminhtml')->getUrl(implode('/', $segments), $section);
     }
 
@@ -102,15 +103,17 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
     public function getLastUpdatedDate($storeId)
     {
         $date = Mage::getModel('fyndiq/setting')->getSetting($storeId, 'order_lastdate');
-        if($date != false) {
+        if ($date != false) {
             return $date['value'];
         }
+
         return false;
     }
 
     public function getStoreSelectOptions()
     {
         $switcher = new Mage_Adminhtml_Block_System_Config_Switcher();
+
         return $switcher->getStoreSelectOptions();
     }
 

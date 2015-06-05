@@ -16,25 +16,30 @@ class Fyndiq_Fyndiq_Model_Setting extends Mage_Core_Model_Abstract
 
     public function settingExist($storeId, $key)
     {
-        $collection = $this->getCollection()->addFieldToFilter(array('main_table.key'),
+        $collection = $this->getCollection()->addFieldToFilter(
+            array('main_table.key'),
             array(
                 array('like' => $this->getKey($storeId, $key))
-            ))->load();
+            )
+        )->load();
         if (count($collection) > 0) {
             $collection = $collection->getFirstItem();
             if ($collection->getId()) {
                 return true;
             }
         }
+
         return false;
     }
 
     function getSetting($storeId, $key)
     {
-        $collection = $this->getCollection()->addFieldToFilter(array('main_table.key'),
+        $collection = $this->getCollection()->addFieldToFilter(
+            array('main_table.key'),
             array(
                 array('eq' => $this->getKey($storeId, $key))
-            ));
+            )
+        );
         Mage::log((string)$collection->getSelect());
         if (count($collection) > 0) {
             $collection = $collection->getFirstItem();
@@ -42,6 +47,7 @@ class Fyndiq_Fyndiq_Model_Setting extends Mage_Core_Model_Abstract
                 return $collection->getData();
             }
         }
+
         return false;
     }
 
@@ -63,6 +69,7 @@ class Fyndiq_Fyndiq_Model_Setting extends Mage_Core_Model_Abstract
             ->getFirstItem();
         try {
             $this->setId($collection->getId())->delete();
+
             return true;
         } catch (Exception $e) {
             return false;
@@ -78,6 +85,7 @@ class Fyndiq_Fyndiq_Model_Setting extends Mage_Core_Model_Abstract
         $model = $this->load($collection->getId())->addData($data);
         try {
             $model->setId($collection->getId())->save();
+
             return true;
         } catch (Exception $e) {
             return false;

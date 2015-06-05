@@ -15,7 +15,7 @@ class FmHelpers
 
     public static function apiConnectionExists()
     {
-        return  FmConfig::getBool('username') && FmConfig::getBool('apikey');
+        return FmConfig::getBool('username') && FmConfig::getBool('apikey');
     }
 
     public static function allSettingsExist()
@@ -38,7 +38,14 @@ class FmHelpers
         $apiToken = FmConfig::get('apikey', $storeId);
         $userAgent = "FyndiqMerchantMagento" . FmConfig::getVersion() . "-" . Mage::getVersion();
 
-        return FyndiqAPICall::callApiRaw($userAgent, $username, $apiToken, $method, $path, $data,
-            array('FyndiqAPI', 'call'));
+        return FyndiqAPICall::callApiRaw(
+            $userAgent,
+            $username,
+            $apiToken,
+            $method,
+            $path,
+            $data,
+            array('FyndiqAPI', 'call')
+        );
     }
 }
