@@ -187,7 +187,7 @@ class Fyndiq_Fyndiq_Model_Observer
         $feedProduct['product-currency'] = Mage::app()->getStore()->getCurrentCurrencyCode();
 
         $brand = $magProduct->getAttributeText('manufacturer');
-        $feedProduct['product-brand'] = $brand ? $brand : self::UNKNOWN;
+        $feedProduct['product-brand-name'] = $brand ? $brand : self::UNKNOWN;
 
         // Category
         $categoryIds = $magProduct->getCategoryIds();
@@ -234,8 +234,8 @@ class Fyndiq_Fyndiq_Model_Observer
                         $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
                         $value = $attrValue->getValue($magProduct);
 
-                        $feedProduct['article-property-name-' . $attrId] = $attrCode;
-                        $feedProduct['article-property-value-' . $attrId] = $value[0];
+                        $feedProduct['article-property-'.$attrId.'-name'] = $attrCode;
+                        $feedProduct['article-property-'.$attrId.'-value'] = $value[0];
                         $tags[] = $attrCode . ': ' . $value[0];
                         $attrId++;
                     }
@@ -286,8 +286,8 @@ class Fyndiq_Fyndiq_Model_Observer
             $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
             $value = $attrValue->getValue($firstProduct);
 
-            $feedProduct['article-property-name-' . $attrId] = $attrCode;
-            $feedProduct['article-property-value-' . $attrId] = $value[0];
+            $feedProduct['article-property-'.$attrId.'-name'] = $attrCode;
+            $feedProduct['article-property-'.$attrId.'-value'] = $value[0];
             $tags[] = $attrCode . ': ' . $value[0];
             $attrId++;
         }
