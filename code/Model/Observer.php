@@ -234,8 +234,8 @@ class Fyndiq_Fyndiq_Model_Observer
                         $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
                         $value = $attrValue->getValue($magProduct);
 
-                        $feedProduct['article-property-'.$attrId.'-name'] = $attrCode;
-                        $feedProduct['article-property-'.$attrId.'-value'] = $value[0];
+                        $feedProduct['article-property-' . $attrId . '-name'] = $attrCode;
+                        $feedProduct['article-property-' . $attrId . '-value'] = $value[0];
                         $tags[] = $attrCode . ': ' . $value[0];
                         $attrId++;
                     }
@@ -286,8 +286,8 @@ class Fyndiq_Fyndiq_Model_Observer
             $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
             $value = $attrValue->getValue($firstProduct);
 
-            $feedProduct['article-property-'.$attrId.'-name'] = $attrCode;
-            $feedProduct['article-property-'.$attrId.'-value'] = $value[0];
+            $feedProduct['article-property-' . $attrId . '-name'] = $attrCode;
+            $feedProduct['article-property-' . $attrId . '-value'] = $value[0];
             $tags[] = $attrCode . ': ' . $value[0];
             $attrId++;
         }
