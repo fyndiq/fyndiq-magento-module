@@ -46,7 +46,7 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
         $message = '';
         try {
             $storeId = $this->getRequest()->getParam('store');
-            FmHelpers::callApi($storeId, 'GET', 'settings/');
+            $this->callAPI($storeId);
         } catch (Exception $e) {
             if ($e instanceof FyndiqAPIAuthorizationFailed) {
                 $isAuthorized = false;
@@ -105,6 +105,10 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
      *
      * @return mixed
      */
+    public function callAPI($storeId)
+    {
+        FmHelpers::callApi($storeId, 'GET', 'settings/');
+    }
     public function getUsername()
     {
         return FmConfig::get('username', $this->getRequest()->getParam('store'));
