@@ -6,7 +6,7 @@ docs/*
 build/*
 build
 /coverage/
-/vendor/  d
+/vendor
 composer.lock
 *.sublime-project
 *.sublime-workspace
