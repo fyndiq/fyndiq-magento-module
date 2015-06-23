@@ -22,7 +22,7 @@ dev: css
 	cp -svr --remove-destination $(SRC_DIR)/* $(MAGENTO_ROOT)/
 
 css:
-	cd $(SRC_DIR)/backoffice/frontend/css; scss -C --sourcemap=none main.scss:main.css
+	cd $(SRC_DIR)/fyndiq/frontend/css; scss -C --sourcemap=none main.scss:main.css
 
 test:
 	$(BIN_DIR)/phpunit

@@ -309,7 +309,8 @@
 .info {
   margin: 1em; }
 
-.fm-product-list-controls, .fm-order-list-controls {
+.fm-product-list-controls,
+.fm-order-list-controls {
   overflow: auto; }
 
 .export {
