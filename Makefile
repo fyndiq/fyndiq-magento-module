@@ -7,18 +7,19 @@ COVERAGE_DIR = $(BASE)/coverage
 BIN_DIR = $(BASE)/vendor/bin
 
 COMMIT = $(shell git rev-parse --short HEAD)
-MODULE_VERSION = $(shell grep -Po "VERSION = '\K[^']*" src/backoffice/FmUtils.php)
+MODULE_VERSION=$(shell perl -nle"print $$& if m{(?<=<version>)[^<]+}" src/app/code/community/Fyndiq/Fyndiq/etc/config.xml)
 
 build: clean
-	mkdir $(BUILD_DIR)
 	rsync -a --exclude='.*' $(SRC_DIR) $(BUILD_DIR)
-	mv $(BUILD_DIR)/src $(BUILD_DIR)/fyndiqmerchant
-	cp $(DOCS_DIR)/* $(BUILD_DIR)/fyndiqmerchant
-	cd $(BUILD_DIR); zip -r -X fyndiq-prestashop-module-v$(MODULE_VERSION)-$(COMMIT).zip fyndiqmerchant/
-	rm -r $(BUILD_DIR)/fyndiqmerchant
+	#cp $(DOCS)/* $(BUILD_DIR)/fyndiqmerchant
+	cd $(BUILD_DIR); zip -r -X fyndiq-magento-module-v$(MODULE_VERSION)-$(COMMIT).zip src/
+	rm -r $(BUILD_DIR)/src
 
 clean:
-	rm -r $(BUILD_DIR)
+	rm -r $(BUILD_DIR)/*
+
+dev: css
+	cp -svr --remove-destination $(SRC_DIR)/* $(MAGENTO_ROOT)/
 
 css:
 	cd $(SRC_DIR)/backoffice/frontend/css; scss -C --sourcemap=none main.scss:main.css
