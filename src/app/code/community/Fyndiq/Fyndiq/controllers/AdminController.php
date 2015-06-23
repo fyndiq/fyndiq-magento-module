@@ -6,8 +6,6 @@
  * Date: 18/08/14
  * Time: 09:50
  */
-require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
-require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
 
 class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
 {
@@ -16,6 +14,8 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
 
     protected function _construct()
     {
+        require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
+        require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
         FyndiqTranslation::init(Mage::app()->getLocale()->getLocaleCode());
     }
 
@@ -26,7 +26,7 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
     {
         $this->loadLayout(array('default'));
 
-        $this->setTemplate('fyndiq/exportproducts.phtml');
+        return $this->setTemplate('fyndiq/exportproducts.phtml');
     }
 
 
@@ -46,7 +46,7 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
         $message = '';
         try {
             $storeId = $this->getRequest()->getParam('store');
-            FmHelpers::callApi($storeId, 'GET', 'settings/');
+            $this->callAPI($storeId);
         } catch (Exception $e) {
             if ($e instanceof FyndiqAPIAuthorizationFailed) {
                 $isAuthorized = false;
@@ -105,6 +105,10 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
      *
      * @return mixed
      */
+    public function callAPI($storeId)
+    {
+        FmHelpers::callApi($storeId, 'GET', 'settings/');
+    }
     public function getUsername()
     {
         return FmConfig::get('username', $this->getRequest()->getParam('store'));
