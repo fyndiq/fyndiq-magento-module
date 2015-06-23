@@ -92,7 +92,6 @@ if (!$installer->tableExists($tableName)) {
 // fyndiq_setting
 $tableName = $installer->getTable('fyndiq/setting');
 if (!$installer->tableExists($tableName)) {
-
     $table = $connection->newTable($tableName)
         ->addColumn(
             'id',

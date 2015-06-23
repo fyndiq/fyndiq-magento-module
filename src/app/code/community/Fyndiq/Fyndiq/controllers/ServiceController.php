@@ -158,8 +158,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             if ($prod->getTypeId() == 'simple') {
                 //Get parent
                 $parentIds = $groupedModel->getParentIdsByChild($prod->getId());
-                if (!$parentIds) //Couldn't get parent, try configurable model instead
-                {
+                if (!$parentIds) { //Couldn't get parent, try configurable model instead
                     $parentIds = $configurableModel->getParentIdsByChild($prod->getId());
                 }
                 // set parent id if exist
@@ -191,7 +190,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
             if ($fyndiq) {
                 switch ($fyndiqState) {
-                    case 'FOR_SALE' :
+                    case 'FOR_SALE':
                         $fyndiqStatus = 'on';
                         break;
                     default:
@@ -400,7 +399,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      *
      * @param $args
      */
-    public function import_orders( /*$args*/)
+    public function import_orders()
     {
         $storeId = $this->observer->getStoreId();
         try {
@@ -462,7 +461,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         }
     }
 
-    public function disconnect_account( /*$args*/)
+    public function disconnect_account()
     {
         $config = new Mage_Core_Model_Config();
         $config->saveConfig('fyndiq/fyndiq_group/apikey', '', 'default', '');

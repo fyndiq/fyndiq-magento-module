@@ -91,5 +91,4 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
             return false;
         }
     }
-
 }
