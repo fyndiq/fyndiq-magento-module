@@ -1,8 +1,13 @@
 .idea
-fyndiq/frontend/css/.sass-cache
-fyndiq/files/*.csv
-fyndiq/files/*.pdf
-build
+.sass-cache
+*.csv
 main.css.map
-docs
-fyndiq-magento-v*.zip
+docs/*
+build/*
+build
+/coverage/
+/vendor/  d
+composer.lock
+*.sublime-project
+*.sublime-workspace
+.vagrant/
