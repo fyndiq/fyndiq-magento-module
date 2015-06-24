@@ -50,6 +50,7 @@ if [[ ! -f "/var/www/html/magento/index.php" ]]; then
 
     ## Setup virtual host
     ln -s /vagrant/assets/001-magento.conf /etc/apache2/sites-enabled/001-magento.conf
+    a2enmod rewrite
     service apache2 restart
 
     ## Create database

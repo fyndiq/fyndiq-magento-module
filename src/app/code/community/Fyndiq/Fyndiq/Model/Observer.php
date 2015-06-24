@@ -143,6 +143,39 @@ class Fyndiq_Fyndiq_Model_Observer
     }
 
     /**
+     * Get images columns for product
+     *
+     * @param  int $productId
+     * @param  object $magProduct
+     * @param  object $productModel
+     * @return array
+     */
+    protected function getImages($productId, $magProduct, $productModel)
+    {
+        $result = array();
+        $urls = array();
+        $imageId = 1;
+
+        $images = $productModel->load($productId)->getMediaGalleryImages();
+        if (count($images)) {
+            // Get gallery
+            foreach ($images as $image) {
+                $urls[] = (string)$imageHelper->init($magProduct, 'image', $image->getFile());
+            }
+        } else {
+            // Fallback to main image
+            $urls[] = $magProduct->getImageUrl();
+        }
+
+        foreach ($urls as $url) {
+            $result['product-image-' . $imageId . '-url'] = $url;
+            $result['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
+            $imageId++;
+        }
+        return $result;
+    }
+
+    /**
      * Get product information
      *
      * @param array $magProduct
@@ -201,16 +234,8 @@ class Fyndiq_Fyndiq_Model_Observer
         }
 
         // Images
-        $imageId = 1;
-        $images = $productModel->load($magArray['entity_id'])->getMediaGalleryImages();
-        if (isset($images)) {
-            foreach ($images as $image) {
-                $url = (string)$imageHelper->init($magProduct, 'image', $image->getFile());
-                $feedProduct['product-image-' . $imageId . '-url'] = $url;
-                $feedProduct['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
-                $imageId++;
-            }
-        }
+        $images = $this->getImages($magArray['entity_id'], $magProduct, $productModel);
+        $feedProduct = array_merge($feedProduct, $images);
 
         if ($magArray['type_id'] == 'simple') {
             $qtyStock = $stockModel->loadByProduct($magProduct->getId())->getQty();
@@ -263,16 +288,9 @@ class Fyndiq_Fyndiq_Model_Observer
 
         $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
 
-        $images = $productModel->load($firstProduct->getId())->getMediaGalleryImages();
-        if (!empty($images)) {
-            $imageId = 1;
-            foreach ($images as $image) {
-                $url = $imageHelper->init($firstProduct, 'image', $image->getFile());
-                $feedProduct['product-image-' . $imageId . '-url'] = strval($url);
-                $feedProduct['product-image-' . $imageId . '-identifier'] = substr(md5(strval($url)), 0, 10);
-                $imageId++;
-            }
-        }
+        // Images
+        $images = $this->getImages($firstProduct->getId(), $firstProduct, $productModel);
+        $feedProduct = array_merge($feedProduct, $images);
 
         $feedProduct['article-location'] = self::UNKNOWN;
         $feedProduct['article-sku'] = $firstProduct->getSKU();
