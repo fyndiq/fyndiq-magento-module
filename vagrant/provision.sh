@@ -48,6 +48,10 @@ if [[ ! -f "/var/www/html/magento/index.php" ]]; then
     tar -zxvf magento-sample-data-${DATA_VERSION}.tar.gz
     cp -R magento-sample-data-${DATA_VERSION}/* magento
 
+    ## Setup virtual host
+    ln -s /vagrant/assets/001-gambio.conf /etc/apache2/sites-enabled/001-magento.conf
+    service apache2 restart
+
     ## Create database
     mysql -uroot -p123 -e 'create database magento'
 
@@ -81,4 +85,10 @@ if [ ! -f "/var/www/html/magento/app/etc/local.xml" ]; then
     --admin_lastname Owner --admin_firstname Store --admin_email "admin@example.com" \
     --admin_username admin --admin_password password123123
     /usr/bin/php -f shell/indexer.php reindexall
+
+    ## Add hosts to file
+    echo "192.168.44.44  fyndiq.local" >> /etc/hosts
+    echo "127.0.0.1  magento.local" >> /etc/hosts
 fi
+
+echo "Done. Happy hacking!"
