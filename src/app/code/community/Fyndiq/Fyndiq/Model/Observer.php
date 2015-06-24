@@ -134,12 +134,11 @@ class Fyndiq_Fyndiq_Model_Observer
     private function getTaxRate($product)
     {
         $store = Mage::app()->getStore();
-        $taxCalculation = Mage::getModel('tax/calculation');
-
-        $request = $taxCalculation->getRateRequest(null, null, null, $store);
+        $taxCalculationModel = Mage::getModel('tax/calculation');
         $taxClassId = $product->getTaxClassId();
 
-        return $taxCalculation->getRate($request->setProductClassId($taxClassId));
+        $request = $taxCalculationModel->getRateRequest(null, null, null, $store);
+        return $taxCalculationModel->getRate($request->setProductClassId($taxClassId));
     }
 
     /**
