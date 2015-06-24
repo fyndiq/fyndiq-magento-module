@@ -155,6 +155,7 @@ class Fyndiq_Fyndiq_Model_Observer
         $result = array();
         $urls = array();
         $imageId = 1;
+        $imageHelper = Mage::helper('catalog/image');
 
         $images = $productModel->load($productId)->getMediaGalleryImages();
         if (count($images)) {
@@ -190,7 +191,6 @@ class Fyndiq_Fyndiq_Model_Observer
         $productModel = Mage::getModel('catalog/product');
         $categoryModel = Mage::getModel('catalog/category');
         $stockModel = Mage::getModel('cataloginventory/stock_item');
-        $imageHelper = Mage::helper('catalog/image');
 
         $feedProduct = array();
         $magArray = $magProduct->getData();
