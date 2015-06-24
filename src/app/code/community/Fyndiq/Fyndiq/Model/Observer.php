@@ -72,7 +72,9 @@ class Fyndiq_Fyndiq_Model_Observer
      */
     private function exportingProducts($storeId)
     {
+        $store = Mage::getModel('core/store')->load($storeId);
         $fileName = FmConfig::getFeedPath($storeId);
+
         self::debug('$fileName', $fileName);
         $file = fopen($fileName, 'w+');
 
@@ -108,7 +110,7 @@ class Fyndiq_Fyndiq_Model_Observer
         foreach ($productsToExport as $magProduct) {
             $parent_id = $magProduct->getId();
             self::debug('$magProduct->getTypeId()', $magProduct->getTypeId());
-            if ($feedWriter->addProduct($this->getProduct($magProduct, $productInfo[$parent_id]))
+            if ($feedWriter->addProduct($this->getProduct($magProduct, $productInfo[$parent_id], $store))
                 && $magProduct->getTypeId() != 'simple'
             ) {
                 $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
@@ -117,7 +119,7 @@ class Fyndiq_Fyndiq_Model_Observer
                     ->addFilterByRequiredOptions()
                     ->getItems();
                 foreach ($simpleCollection as $simpleProduct) {
-                    $feedWriter->addProduct($this->getProduct($simpleProduct, $productInfo[$parent_id]));
+                    $feedWriter->addProduct($this->getProduct($simpleProduct, $productInfo[$parent_id], $store));
                 }
             }
         }
@@ -131,9 +133,8 @@ class Fyndiq_Fyndiq_Model_Observer
      * @param $product
      * @return mixed
      */
-    private function getTaxRate($product)
+    private function getTaxRate($product, $store)
     {
-        $store = Mage::app()->getStore();
         $taxCalculationModel = Mage::getModel('tax/calculation');
         $taxClassId = $product->getTaxClassId();
 
@@ -181,7 +182,7 @@ class Fyndiq_Fyndiq_Model_Observer
      * @param array $productInfo
      * @return array
      */
-    private function getProduct($magProduct, $productInfo)
+    private function getProduct($magProduct, $productInfo, $store)
     {
         self::debug('$productInfo', $productInfo);
         self::debug('$magProduct', $magProduct->getData());
@@ -213,10 +214,10 @@ class Fyndiq_Fyndiq_Model_Observer
         $discount = $productInfo['exported_price_percentage'];
         $price = FyndiqUtils::getFyndiqPrice($magArray['price'], $discount);
         $feedProduct['product-price'] = FyndiqUtils::formatPrice($price);
-        $feedProduct['product-vat-percent'] = $this->getTaxRate($magProduct);
+        $feedProduct['product-vat-percent'] = $this->getTaxRate($magProduct, $store);
         $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($magArray['price']);
         $feedProduct['product-market'] = Mage::getStoreConfig('general/country/default');
-        $feedProduct['product-currency'] = Mage::app()->getStore()->getCurrentCurrencyCode();
+        $feedProduct['product-currency'] = $store->getCurrentCurrencyCode();
 
         $brand = $magProduct->getAttributeText('manufacturer');
         $feedProduct['product-brand-name'] = $brand ? $brand : self::UNKNOWN;

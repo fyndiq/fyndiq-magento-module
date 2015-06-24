@@ -77,14 +77,26 @@ fi
 # Run installer
 if [ ! -f "/var/www/html/magento/app/etc/local.xml" ]; then
     cd /var/www/html/magento
-    sudo /usr/bin/php -f install.php -- --license_agreement_accepted yes \
-    --locale en_US --timezone "Europe/Stockholm" --default_currency SEK \
-    --db_host localhost --db_name magento --db_user root --db_pass 123 \
-    --url "http://magento.local/" --use_rewrites yes \
-    --use_secure no --secure_base_url "http://magento.local/" --use_secure_admin no \
+    sudo /usr/bin/php -f install.php --
+    --license_agreement_accepted yes \
+    --locale en_US \
+    --timezone "Europe/Stockholm" \
+    --default_currency SEK \
+    --db_host localhost \
+    --db_name magento \
+    --db_user root \
+    --db_pass 123 \
+    --url "http://magento.local/" \
+    --use_rewrites yes \
+    --use_secure no \
+    --secure_base_url "http://magento.local/" \
+    --use_secure_admin no \
     --skip_url_validation yes \
-    --admin_lastname Owner --admin_firstname Store --admin_email "admin@example.com" \
-    --admin_username admin --admin_password password123123
+    --admin_lastname Owner \
+    --admin_firstname Store \
+    --admin_email "admin@example.com" \
+    --admin_username admin \
+    --admin_password password123123
     /usr/bin/php -f shell/indexer.php reindexall
 
     ## Add hosts to file
