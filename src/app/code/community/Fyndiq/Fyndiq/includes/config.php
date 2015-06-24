@@ -43,6 +43,6 @@ class FmConfig
 
     public static function getFeedPath($storeId)
     {
-        return 'fyndiq/files/feed-' . $storeId . '.csv';
+        return Mage::getBaseDir('cache') . '/feed-' . $storeId . '.csv';
     }
 }

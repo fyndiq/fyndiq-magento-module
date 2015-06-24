@@ -49,7 +49,7 @@ if [[ ! -f "/var/www/html/magento/index.php" ]]; then
     cp -R magento-sample-data-${DATA_VERSION}/* magento
 
     ## Setup virtual host
-    ln -s /vagrant/assets/001-gambio.conf /etc/apache2/sites-enabled/001-magento.conf
+    ln -s /vagrant/assets/001-magento.conf /etc/apache2/sites-enabled/001-magento.conf
     service apache2 restart
 
     ## Create database
