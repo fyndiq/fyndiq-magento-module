@@ -137,15 +137,19 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             $sku = $row->sku;
 
             $id = Mage::getModel('catalog/product')->getResource()->getIdBySku($sku);
-            if ($id) {
-                $product = Mage::getModel('catalog/product')->load($id);
-                //add product to the cart
-                $productInfo = array('qty' => $row->quantity);
-                $quote->addProduct($product, new Varien_Object($productInfo));
+            if (!$id) {
+                throw new Exception(
+                    sprintf(
+                        FyndiqTranslation::get('error-import-product-not-found'),
+                        $sku,
+                        $fyndiqOrder->id
+                    )
+                );
             }
-        }
-        if (count($quote->getAllItems()) === 0) {
-            throw new Exception('Couldn\'t find product for order #' . $fyndiqOrder->id);
+            $product = Mage::getModel('catalog/product')->load($id);
+            //add product to the cart
+            $productInfo = array('qty' => $row->quantity);
+            $quote->addProduct($product, new Varien_Object($productInfo));
         }
 
         //Shipping / Billing information gather
