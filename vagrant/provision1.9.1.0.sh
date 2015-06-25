@@ -74,7 +74,7 @@ fi
 # Run installer
 if [ ! -f "/var/www/html/magento/app/etc/local.xml" ]; then
     cd /var/www/html/magento
-    sudo /usr/bin/php -f install.php --
+    sudo /usr/bin/php -f install.php -- \
     --license_agreement_accepted yes \
     --locale en_US \
     --timezone "Europe/Stockholm" \
