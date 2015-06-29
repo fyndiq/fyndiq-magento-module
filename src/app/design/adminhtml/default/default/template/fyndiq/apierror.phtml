@@ -1,0 +1,31 @@
+<?php $skipJS = true;
+require('common.phtml'); ?>
+
+<div class="fm-container">
+    <div class="fm-header">
+        <div class="fm-header-wrapper">
+            <img class="navbar-brand" src="<?php echo $this->getSharedPath(); ?>frontend/images/logo.png"
+                 alt="<?php echo $this->getMessage('Fyndiq logotype'); ?>">
+        </div>
+    </div>
+
+    <div class="fm-content-wrapper">
+        <div class="fm-panel">
+            <div class="fm-panel-header"><?php echo $this->getMessage(
+                    'Unfortunately, Fyndiq API is currently not available.'
+                ) ?></div>
+            <div class="fm-panel-body">
+                <p>
+                    <?php echo $this->getMessage(
+                        'If this problem persists, please contact integration support, and attach the error message shown below.'
+                    ) ?>
+                </p>
+
+                <p>
+                    <?php echo $this->getMessage('Error message') ?>:
+                    <strong><?php echo $this->data['message']; ?></strong>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
