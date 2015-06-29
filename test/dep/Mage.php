@@ -9,7 +9,7 @@ class Mage
 
     static function getStoreConfig($test)
     {
-        return $test;
+        return serialize("blablabla");
     }
     static function getStoreConfigFlag($test)
     {
@@ -30,6 +30,23 @@ class Mage
     {
         return new getNode();
     }
+
+    function getLocale()
+    {
+        return new getLocale();
+    }
+
+    static function getModel($model)
+    {
+        switch($model) {
+            case 'fyndiq/product':
+                return new Fyndiq_Fyndiq_Model_Product();
+                break;
+            case 'catalog/product':
+                return new Catalog_Product();
+                break;
+        }
+    }
 }
 
 class getConfig
@@ -37,6 +54,11 @@ class getConfig
     function getNode()
     {
         return new getNode();
+    }
+
+    function saveConfig($key, $value)
+    {
+        return true;
     }
 }
 
@@ -50,6 +72,10 @@ class getNode
     {
         return "SEK";
     }
+
+    function getStoreId() {
+        return 1;
+    }
 }
 class getModule
 {
@@ -61,5 +87,13 @@ class FyndiqModule
 {
     function __construct() {
         $this->version = "1.0.0";
+    }
+}
+
+class getLocale
+{
+    function getLocaleCode()
+    {
+        return "SE";
     }
 }
