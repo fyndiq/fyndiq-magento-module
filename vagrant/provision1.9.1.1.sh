@@ -99,6 +99,9 @@ if [ ! -f "/var/www/html/magento/app/etc/local.xml" ]; then
     ## Add hosts to file
     echo "192.168.44.44  fyndiq.local" >> /etc/hosts
     echo "127.0.0.1  magento.local" >> /etc/hosts
+
+    ## Enable template sym-links
+    mysql -u root -p123 -e "UPDATE magento.core_config_data SET value = '1' WHERE path = 'dev/template/allow_symlink'"
 fi
 
 echo "Done. Happy hacking!"
