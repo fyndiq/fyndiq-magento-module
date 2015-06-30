@@ -42,7 +42,7 @@
     }
 </style>
 <?php if (empty($skipJS)) { ?>
-    <?php require(MAGENTO_ROOT . '/fyndiq/shared/frontend/templates/js_templates_without_smarty.tpl'); ?>
+    <?php require(MAGENTO_ROOT . '/fyndiq/shared/frontend/templates/js_templates.tpl'); ?>
 
     <script type="text/javascript" src="<?php echo $this->getSharedPath(); ?>frontend/js/handlebars-v1.1.2.js"></script>
     <script type="text/javascript" src="<?php echo $this->getSharedPath(); ?>frontend/js/FmGui.js"></script>
