@@ -13,7 +13,7 @@ MODULE_VERSION=$(shell perl -nle"print $$& if m{(?<=<version>)[^<]+}" src/app/co
 
 build: clean
 	rsync -a --exclude='.*' $(SRC_DIR) $(BUILD_DIR)
-	#cp $(DOCS)/* $(BUILD_DIR)/fyndiqmerchant
+	cp $(DOCS_DIR)/* $(BUILD_DIR)
 	cd $(BUILD_DIR); zip -r -X fyndiq-magento-module-v$(MODULE_VERSION)-$(COMMIT).zip src/
 	rm -r $(BUILD_DIR)/src
 
@@ -36,7 +36,7 @@ php-lint:
 	find $(SRC_DIR) -name "*.php" -print0 | xargs -0 -n1 -P8 php -l
 
 phpmd:
-	$(BIN_DIR)/phpmd $(SRC_DIR) --exclude /includes/ text cleancode,codesize,controversial,design,naming,unusedcode
+	$(BIN_DIR)/phpmd $(SRC_DIR) --exclude /api,/shared text cleancode,codesize,controversial,design,naming,unusedcode
 
 coverage: clear_coverage
 	$(BIN_DIR)/phpunit --coverage-html $(COVERAGE_DIR)
