@@ -75,11 +75,11 @@ class Fyndiq_Fyndiq_Model_Observer
         $store = Mage::getModel('core/store')->load($storeId);
         $fileName = FmConfig::getFeedPath($storeId);
 
-        self::debug('$fileName', $fileName);
+        FyndiqUtils::debug('$fileName', $fileName);
         $file = fopen($fileName, 'w+');
 
         if (!$file) {
-            self::debug('Cannot create file: ' . $fileName);
+            FyndiqUtils::debug('Cannot create file: ' . $fileName);
 
             return false;
         }
@@ -93,8 +93,8 @@ class Fyndiq_Fyndiq_Model_Observer
             $idsToExport[] = intval($productData['product_id']);
             $productInfo[$productData['product_id']] = $productData;
         }
-        self::debug('$idsToExport', $idsToExport);
-        self::debug('$productInfo', $productInfo);
+        FyndiqUtils::debug('$idsToExport', $idsToExport);
+        FyndiqUtils::debug('$productInfo', $productInfo);
 
         //Initialize models here so it saves memory.
         $productModel = Mage::getModel('catalog/product');
@@ -109,7 +109,7 @@ class Fyndiq_Fyndiq_Model_Observer
 
         foreach ($productsToExport as $magProduct) {
             $parent_id = $magProduct->getId();
-            self::debug('$magProduct->getTypeId()', $magProduct->getTypeId());
+            FyndiqUtils::debug('$magProduct->getTypeId()', $magProduct->getTypeId());
             if ($feedWriter->addProduct($this->getProduct($magProduct, $productInfo[$parent_id], $store))
                 && $magProduct->getTypeId() != 'simple'
             ) {
@@ -184,8 +184,8 @@ class Fyndiq_Fyndiq_Model_Observer
      */
     private function getProduct($magProduct, $productInfo, $store)
     {
-        self::debug('$productInfo', $productInfo);
-        self::debug('$magProduct', $magProduct->getData());
+        FyndiqUtils::debug('$productInfo', $productInfo);
+        FyndiqUtils::debug('$magProduct', $magProduct->getData());
         //Initialize models here so it saves memory.
         $productModel = Mage::getModel('catalog/product');
         $categoryModel = Mage::getModel('catalog/category');
@@ -196,7 +196,7 @@ class Fyndiq_Fyndiq_Model_Observer
 
         // Setting the data
         if (!isset($magArray['price'])) {
-            self::debug('No price is set');
+            FyndiqUtils::debug('No price is set');
 
             return $feedProduct;
         }
@@ -268,7 +268,7 @@ class Fyndiq_Fyndiq_Model_Observer
             }
 
             // We're done
-            self::debug('PRODUCT $feedProduct', $feedProduct);
+            FyndiqUtils::debug('PRODUCT $feedProduct', $feedProduct);
 
             return $feedProduct;
         }
@@ -277,7 +277,7 @@ class Fyndiq_Fyndiq_Model_Observer
         $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
         $simpleCollection = $conf->getUsedProductCollection()->addAttributeToSelect('*')
             ->addFilterByRequiredOptions()->getItems();
-        self::debug('$simpleCollection', $simpleCollection);
+        FyndiqUtils::debug('$simpleCollection', $simpleCollection);
         //Get first article to the product.
         $firstProduct = array_shift($simpleCollection);
         if ($firstProduct == null) {
@@ -310,7 +310,7 @@ class Fyndiq_Fyndiq_Model_Observer
         }
         $feedProduct['article-name'] = substr(implode(', ', $tags), 0, 30);
 
-        self::debug('COMBINATION $feedProduct', $feedProduct);
+        FyndiqUtils::debug('COMBINATION $feedProduct', $feedProduct);
 
         return $feedProduct;
     }
@@ -323,7 +323,6 @@ class Fyndiq_Fyndiq_Model_Observer
         ) {
             // Generate and save token
             $pingToken = Mage::helper('core')->uniqHash();
-            ;
             FmConfig::set('ping_token', $pingToken);
 
             $data = array(
@@ -339,6 +338,9 @@ class Fyndiq_Fyndiq_Model_Observer
                     array(
                             '_store' => $storeId,
                             '_nosid' => true,
+                            '_query' => array(
+                                'event' => 'order_created',
+                            )
                         )
                 ),
                 FyndiqUtils::NAME_PING_URL => Mage::getUrl(
@@ -367,18 +369,5 @@ class Fyndiq_Fyndiq_Model_Observer
         }
 
         return 0;
-    }
-
-    public static function debug($name, $var, $justPrint = false)
-    {
-        if (defined('FYNDIQ_DEBUG') && FYNDIQ_DEBUG) {
-            if ($justPrint) {
-                echo $name . '<br/ ><pre>' . $var . '</pre><hr/>';
-
-                return;
-            }
-            var_dump($name, $var);
-            echo '<hr/>';
-        }
     }
 }
