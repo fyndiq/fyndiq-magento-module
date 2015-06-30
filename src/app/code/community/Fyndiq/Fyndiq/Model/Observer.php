@@ -339,6 +339,9 @@ class Fyndiq_Fyndiq_Model_Observer
                     array(
                             '_store' => $storeId,
                             '_nosid' => true,
+                            '_query' => array(
+                                'event' => 'order_created',
+                            )
                         )
                 ),
                 FyndiqUtils::NAME_PING_URL => Mage::getUrl(
