@@ -1,3 +1,5 @@
+.PHONY: build test coverage
+
 BASE = $(realpath ./)
 SRC_DIR = $(BASE)/src
 TESTS_DIR = $(BASE)/tests
