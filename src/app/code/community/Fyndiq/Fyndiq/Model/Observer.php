@@ -323,7 +323,6 @@ class Fyndiq_Fyndiq_Model_Observer
         ) {
             // Generate and save token
             $pingToken = Mage::helper('core')->uniqHash();
-            ;
             FmConfig::set('ping_token', $pingToken);
 
             $data = array(
