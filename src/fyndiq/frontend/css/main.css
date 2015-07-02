@@ -187,11 +187,14 @@
   box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.3);
   color: #fff;
   left: 0;
-  padding: 30px 0 30px 10px;
   position: fixed;
   top: 0;
   width: 100%;
   z-index: 9999; }
+  .fm-message-overlay h3,
+  .fm-message-overlay p {
+    margin: 1em;
+    text-align: center; }
   .fm-message-overlay.fm-info {
     background-color: #799ec4;
     border-color: #87acd3; }
@@ -212,9 +215,6 @@
     right: 15px;
     top: 15px;
     width: 30px; }
-  .fm-message-overlay h3,
-  .fm-message-overlay p {
-    text-align: center; }
 
 .pages {
   float: left;
@@ -381,3 +381,5 @@
   margin: 0px !important;
   background-color: #e7eef4 !important;
   padding-bottom: 20px; }
+
+/*# sourceMappingURL=main.css.map */

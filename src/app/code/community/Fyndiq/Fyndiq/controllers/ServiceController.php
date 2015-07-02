@@ -16,6 +16,7 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
 class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 {
 
+    const ALL_PRODUCTS_CATEGORY_ID = -1;
     protected function _construct()
     {
         $this->observer = Mage::getModel('fyndiq/observer');
@@ -121,17 +122,28 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $productModel = Mage::getModel('catalog/product');
 
         $currency = Mage::app()->getStore($storeId)->getCurrentCurrencyCode();
-        $products = $productModel->getCollection()
-            ->addStoreFilter($storeId)
-            ->addAttributeToFilter(
-                array(
-                    array('attribute' => 'type_id', 'eq' => 'configurable'),
-                    array('attribute' => 'type_id', 'eq' => 'simple'),
+        if (is_null($category)) {
+            $products = $productModel->getCollection()
+                ->addStoreFilter($storeId)
+                ->addAttributeToFilter(
+                    array(
+                        array('attribute' => 'type_id', 'eq' => 'configurable'),
+                        array('attribute' => 'type_id', 'eq' => 'simple'),
+                    )
                 )
-            )
-            ->addCategoryFilter($category)
-            ->addAttributeToSelect('*');
-
+                ->addAttributeToSelect('*');
+        } else {
+            $products = $productModel->getCollection()
+                ->addStoreFilter($storeId)
+                ->addAttributeToFilter(
+                    array(
+                        array('attribute' => 'type_id', 'eq' => 'configurable'),
+                        array('attribute' => 'type_id', 'eq' => 'simple'),
+                    )
+                )
+                ->addCategoryFilter($category)
+                ->addAttributeToSelect('*');
+        }
         $products->load();
         $products = $products->getItems();
         $fyndiqPercentage = FmConfig::get('price_percentage', $this->getRequest()->getParam('store'));
@@ -252,17 +264,30 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     private function getTotalProducts($storeId, $category)
     {
-        $collection = Mage::getModel('catalog/product')
-            ->getCollection()
-            ->addStoreFilter($storeId)
-            ->addAttributeToFilter(
-                array(
-                    array('attribute' => 'type_id', 'eq' => 'configurable'),
-                    array('attribute' => 'type_id', 'eq' => 'simple'),
+        if (is_null($category)) {
+            $collection = Mage::getModel('catalog/product')
+                ->getCollection()
+                ->addStoreFilter($storeId)
+                ->addAttributeToFilter(
+                    array(
+                        array('attribute' => 'type_id', 'eq' => 'configurable'),
+                        array('attribute' => 'type_id', 'eq' => 'simple'),
+                    )
                 )
-            )
-            ->addCategoryFilter($category)
-            ->addAttributeToSelect('*');
+                ->addAttributeToSelect('*');
+        } else {
+            $collection = Mage::getModel('catalog/product')
+                ->getCollection()
+                ->addStoreFilter($storeId)
+                ->addAttributeToFilter(
+                    array(
+                        array('attribute' => 'type_id', 'eq' => 'configurable'),
+                        array('attribute' => 'type_id', 'eq' => 'simple'),
+                    )
+                )
+                ->addCategoryFilter($category)
+                ->addAttributeToSelect('*');
+        }
         if ($collection == 'null') {
             return 0;
         }
@@ -295,7 +320,10 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             'pagination' => ''
         );
         if (!empty($args['category'])) {
-            $category = Mage::getModel('catalog/category')->load($args['category']);
+            $category = null;
+            if (intval($args['category']) != self::ALL_PRODUCTS_CATEGORY_ID) {
+                $category = Mage::getModel('catalog/category')->load($args['category']);
+            }
             $storeId = $this->observer->getStoreId();
             $total = $this->getTotalProducts($storeId, $category);
             $response['products'] = $this->getAllProducts($storeId, $category, $page);

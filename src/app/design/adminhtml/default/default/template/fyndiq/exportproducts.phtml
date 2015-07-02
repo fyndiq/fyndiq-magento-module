@@ -24,7 +24,14 @@
         <div class="fm-left-sidebar">
             <div class="fm-panel">
                 <div class="fm-panel-header"><?php echo $this->getMessage('Categories'); ?></div>
-                <div class="fm-panel-body fm-category-tree-container no-padding"></div>
+                <div class="fm-panel-body no-padding">
+                    <ul class="fm-category-tree">
+                        <li data-category_id="-1">
+                            <a href="#" title="<?php echo $this->getMessage('All products'); ?>"><?php echo $this->getMessage('All products'); ?></a>
+                        </li>
+                    </ul>
+                    <div class="fm-category-tree-container"></div>
+                </div>
             </div>
         </div>
 
