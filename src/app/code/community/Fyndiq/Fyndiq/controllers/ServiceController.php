@@ -322,11 +322,9 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             'pagination' => ''
         );
         if (!empty($args['category'])) {
-            if(intval($args['category']) == self::ALL_PRODUCTS_CATEGORY_ID) {
-                $category = $args['category'];
-            }
-            else {
-                $category = Mage::getModel('catalog/category')->load($args['category']);
+            $category = $args['category'];
+            if(intval($args['category']) != self::ALL_PRODUCTS_CATEGORY_ID) {
+                $category = Mage::getModel('catalog/category')->load($category);
             }
             $storeId = $this->observer->getStoreId();
             $total = $this->getTotalProducts($storeId, $category);
