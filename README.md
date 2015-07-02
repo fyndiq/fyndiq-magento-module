@@ -3,8 +3,8 @@ Fyndiq's official Magento module
 
 
 ### Requirements
-Magento 1.7-
-PHP >5.2
+* Magento 1.7-
+* PHP >5.2
 
 
 
