@@ -122,7 +122,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $productModel = Mage::getModel('catalog/product');
 
         $currency = Mage::app()->getStore($storeId)->getCurrentCurrencyCode();
-        if(is_null($category)) {
+        if (is_null($category)) {
             $products = $productModel->getCollection()
                 ->addStoreFilter($storeId)
                 ->addAttributeToFilter(
@@ -132,8 +132,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                     )
                 )
                 ->addAttributeToSelect('*');
-        }
-        else {
+        } else {
             $products = $productModel->getCollection()
                 ->addStoreFilter($storeId)
                 ->addAttributeToFilter(
@@ -265,7 +264,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     private function getTotalProducts($storeId, $category)
     {
-        if(is_null($category)) {
+        if (is_null($category)) {
             $collection = Mage::getModel('catalog/product')
                 ->getCollection()
                 ->addStoreFilter($storeId)
@@ -276,8 +275,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                     )
                 )
                 ->addAttributeToSelect('*');
-        }
-        else {
+        } else {
             $collection = Mage::getModel('catalog/product')
                 ->getCollection()
                 ->addStoreFilter($storeId)
@@ -323,7 +321,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         );
         if (!empty($args['category'])) {
             $category = null;
-            if(intval($args['category']) != self::ALL_PRODUCTS_CATEGORY_ID) {
+            if (intval($args['category']) != self::ALL_PRODUCTS_CATEGORY_ID) {
                 $category = Mage::getModel('catalog/category')->load($args['category']);
             }
             $storeId = $this->observer->getStoreId();
