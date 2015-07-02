@@ -122,7 +122,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $productModel = Mage::getModel('catalog/product');
 
         $currency = Mage::app()->getStore($storeId)->getCurrentCurrencyCode();
-        if(is_numeric($category) && $category == self::ALL_PRODUCTS_CATEGORY_ID) {
+        if($category == null) {
             $products = $productModel->getCollection()
                 ->addStoreFilter($storeId)
                 ->addAttributeToFilter(
@@ -265,7 +265,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     private function getTotalProducts($storeId, $category)
     {
-        if(is_numeric($category) && $category == self::ALL_PRODUCTS_CATEGORY_ID) {
+        if($category == null) {
             $collection = Mage::getModel('catalog/product')
                 ->getCollection()
                 ->addStoreFilter($storeId)
@@ -322,9 +322,9 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             'pagination' => ''
         );
         if (!empty($args['category'])) {
-            $category = $args['category'];
+            $category = null;
             if(intval($args['category']) != self::ALL_PRODUCTS_CATEGORY_ID) {
-                $category = Mage::getModel('catalog/category')->load($category);
+                $category = Mage::getModel('catalog/category')->load($args['category']);
             }
             $storeId = $this->observer->getStoreId();
             $total = $this->getTotalProducts($storeId, $category);
