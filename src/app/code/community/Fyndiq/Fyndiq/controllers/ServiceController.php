@@ -122,7 +122,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $productModel = Mage::getModel('catalog/product');
 
         $currency = Mage::app()->getStore($storeId)->getCurrentCurrencyCode();
-        if($category == null) {
+        if(is_null($category)) {
             $products = $productModel->getCollection()
                 ->addStoreFilter($storeId)
                 ->addAttributeToFilter(
@@ -265,7 +265,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     private function getTotalProducts($storeId, $category)
     {
-        if($category == null) {
+        if(is_null($category)) {
             $collection = Mage::getModel('catalog/product')
                 ->getCollection()
                 ->addStoreFilter($storeId)
