@@ -212,19 +212,16 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
             //title length checks
             $name = $prod->getName();
-            $name_long = false;
             $name_short = "";
             if(strlen($name) > 64)
             {
                 $name_short = mb_substr($name, 0, 61);
-                $name_long = true;
             }
 
             $prodData = array(
                 'id' => $prod->getId(),
                 'url' => $prod->getUrl(),
                 'name' => $name,
-                'name_long' => $name_long,
                 'name_short' => $name_short,
                 'quantity' => intval($this->getProductQty($prod)),
                 'price' => number_format((float)$prod->getPrice(), 2, '.', ''),
