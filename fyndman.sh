@@ -64,8 +64,9 @@ function deploy() {
     find ./$MAGENTODIR -name "*.DS_Store*" -print0 | xargs -0 rm -rf;
     find ./$MAGENTODIR -name "feed-*.csv" -print0 | xargs -0 rm -rf;
     find ./$MAGENTODIR -name "deliverynote.pdf" -print0 | xargs -0 rm -rf;
+    find ./$MAGENTODIR -name "tests" -print0 | xargs -0 rm -rf;
     COMMIT="$(git rev-parse --short HEAD)";
-    VERSION="$(perl -nle"print $& if m{(?<=<version>)[^<]+}" code/etc/config.xml)";
+    VERSION="$(perl -nle"print $& if m{(?<=<version>)[^<]+}" src/app/code/community/Fyndiq/Fyndiq/etc/config.xml)";
     zip -r -X fyndiq-magento-v$VERSION-$COMMIT.zip $MAGENTODIR*;
     echo "Zipped the build to fyndiq-magento-$VERSION-$COMMIT.zip";
 }
