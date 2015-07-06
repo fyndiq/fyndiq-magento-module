@@ -64,6 +64,7 @@ function deploy() {
     find ./$MAGENTODIR -name "*.DS_Store*" -print0 | xargs -0 rm -rf;
     find ./$MAGENTODIR -name "feed-*.csv" -print0 | xargs -0 rm -rf;
     find ./$MAGENTODIR -name "deliverynote.pdf" -print0 | xargs -0 rm -rf;
+    find ./$MAGENTODIR -name "tests" -print0 | xargs -0 rm -rf;
 
     COMMIT="$(git rev-parse --short HEAD)";
     VERSION="$(perl -nle"print $& if m{(?<=<version>)[^<]+}" src/app/code/community/Fyndiq/Fyndiq/etc/config.xml)";
