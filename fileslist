@@ -3,4 +3,4 @@ src/app/design/adminhtml/default/default/layout/*         app/design/adminhtml/d
 src/app/design/adminhtml/default/default/template/fyndiq  app/design/adminhtml/default/default/template/fyndiq
 src/app/etc/modules/Fyndiq_Fyndiq.xml                     app/etc/modules/Fyndiq_Fyndiq.xml
 src/fyndiq                                                fyndiq
-src/docs                                                  docs
+docs                                                      docs
