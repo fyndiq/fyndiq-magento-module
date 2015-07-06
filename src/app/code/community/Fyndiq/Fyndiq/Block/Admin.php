@@ -7,6 +7,7 @@ require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
  */
 class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
 {
+    const COMMIT = 'XXXXXX';
 
     /**
      * Get frontend path
@@ -97,7 +98,7 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
 
     public function getVersion()
     {
-        return FmConfig::getVersion();
+        return FmConfig::getVersion() . " " . self::COMMIT;
     }
 
     public function getLastUpdatedDate($storeId)
