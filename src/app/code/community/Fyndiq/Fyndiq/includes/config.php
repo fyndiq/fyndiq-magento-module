@@ -9,6 +9,7 @@
 class FmConfig
 {
 
+    CONST COMMIT = 'XXXXXX';
     const CONFIG_NAME = 'fyndiq/fyndiq_group';
 
     private static function key($name)
