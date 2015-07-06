@@ -64,10 +64,28 @@ function deploy() {
     find ./$MAGENTODIR -name "*.DS_Store*" -print0 | xargs -0 rm -rf;
     find ./$MAGENTODIR -name "feed-*.csv" -print0 | xargs -0 rm -rf;
     find ./$MAGENTODIR -name "deliverynote.pdf" -print0 | xargs -0 rm -rf;
+
     COMMIT="$(git rev-parse --short HEAD)";
-    VERSION="$(perl -nle"print $& if m{(?<=<version>)[^<]+}" code/etc/config.xml)";
-    zip -r -X fyndiq-magento-v$VERSION-$COMMIT.zip $MAGENTODIR*;
-    echo "Zipped the build to fyndiq-magento-$VERSION-$COMMIT.zip";
+    VERSION="$(perl -nle"print $& if m{(?<=<version>)[^<]+}" src/app/code/community/Fyndiq/Fyndiq/etc/config.xml)";
+
+    # replace COMMIT hash
+	sed -i '' 's/XXXXXX/'$COMMIT'/g' ./$MAGENTODIR\app/code/community/Fyndiq/Fyndiq/includes/config.php;
+	if [ $? -eq 0 ]; then
+        echo "Added $COMMIT to fyndiq config file to show correct commit in module.";
+
+        if [ -z "$VERSION" ]; then
+            echo "Error: Version variable is empty.";
+        else
+            zip -r -X fyndiq-magento-v$VERSION-$COMMIT.zip $MAGENTODIR*;
+            if [ $? -eq 0 ]; then
+                echo "Zipped the build to fyndiq-magento-$VERSION-$COMMIT.zip";
+            else
+                echo "ERROR: failed saving zip.";
+            fi
+        fi
+    else
+        echo "Error: Error while adding commit to file.";
+    fi
 }
 
 if [ -z "$1" ]
