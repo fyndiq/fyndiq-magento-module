@@ -14,7 +14,7 @@ MODULE_VERSION=$(shell perl -nle"print $$& if m{(?<=<version>)[^<]+}" src/app/co
 build: clean
 	rsync -a --exclude='.*' $(SRC_DIR) $(BUILD_DIR)
 	# replace COMMIT hash
-    sed -i '' 's/XXXXXX/$(COMMIT)/g' $(BUILD_DIR)/app/code/community/Fyndiq/Fyndiq/includes/config.php;
+	sed -i'' 's/XXXXXX/$(COMMIT)/g' $(BUILD_DIR)/src/app/code/community/Fyndiq/Fyndiq/includes/config.php;
 	cp $(DOCS_DIR)/* $(BUILD_DIR)
 	cd $(BUILD_DIR); zip -r -X fyndiq-magento-module-v$(MODULE_VERSION)-$(COMMIT).zip src/
 	rm -r $(BUILD_DIR)/src
