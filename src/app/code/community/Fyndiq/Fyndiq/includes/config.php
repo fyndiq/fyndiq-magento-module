@@ -9,6 +9,7 @@
 class FmConfig
 {
 
+    const COMMIT = 'XXXXXX';
     const CONFIG_NAME = 'fyndiq/fyndiq_group';
 
     private static function key($name)
@@ -39,6 +40,11 @@ class FmConfig
     public static function getVersion()
     {
         return (string)Mage::getConfig()->getNode()->modules->Fyndiq_Fyndiq->version;
+    }
+
+    public static function getUserAgent()
+    {
+        return FyndiqUtils::getUserAgentString("Magento", Mage::getVersion(), "module", FmConfig::getVersion(), FmConfig::COMMIT);
     }
 
     public static function getFeedPath($storeId)

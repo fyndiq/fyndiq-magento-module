@@ -62,7 +62,7 @@
   width: 30px; }
 
 .text-warning {
-  color: #e85353; }
+  color: #ea524f; }
 
 .btn,
 .fm-button {
@@ -373,6 +373,9 @@
 
 .clear {
   clear: both; }
+
+.fm-footer {
+  margin: 1em 0 0; }
 
 #anchor-content {
   padding: 0px; }
