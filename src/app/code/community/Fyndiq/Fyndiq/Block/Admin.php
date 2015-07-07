@@ -97,7 +97,7 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
 
     public function getVersion()
     {
-        return FyndiqUtils::getVersionLabel(FmConfig::getVersion(),FmConfig::COMMIT);
+        return FyndiqUtils::getVersionLabel(FmConfig::getVersion(), FmConfig::COMMIT);
     }
 
     public function getLastUpdatedDate($storeId)

@@ -213,9 +213,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             //title length checks
             $name = $prod->getName();
             $name_short = "";
-            if(FyndiqFeedWriter::isColumnTooLong("product-title", $name))
-            {
-                $name_short = FyndiqFeedWriter::sanitizeColumn("product-title", $name);
+            if (FyndiqFeedWriter::isColumnTooLong("product-title", $name)) {
+            $name_short = FyndiqFeedWriter::sanitizeColumn("product-title", $name);
             }
 
             $prodData = array(
