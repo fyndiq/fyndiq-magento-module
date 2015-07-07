@@ -101,9 +101,9 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         $pingToken = unserialize(FmConfig::get('ping_token', $storeId));
         $token = $this->getRequest()->getParam('token');
 
+
         if (is_null($token) || $token != $pingToken) {
             header('HTTP/1.0 400 Bad Request');
-
             return die('400 Bad Request');
         }
 
@@ -121,6 +121,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         $fyndiqCron->exportProducts($storeId, false);
         $result = file_get_contents($filePath);
         FyndiqUtils::debug('$result', $result, true);
+        FyndiqUtils::debug('PEAK MEMORY', memory_get_peak_usage(true));
     }
 
     private function _update_product_info($storeId)
