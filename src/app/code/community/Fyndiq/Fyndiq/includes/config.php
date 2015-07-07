@@ -42,6 +42,11 @@ class FmConfig
         return (string)Mage::getConfig()->getNode()->modules->Fyndiq_Fyndiq->version;
     }
 
+    public static function getUserAgent()
+    {
+        return FyndiqUtils::getUserAgentString("Magento", Mage::getVersion(), "module", FmConfig::getVersion(), FmConfig::COMMIT);
+    }
+
     public static function getFeedPath($storeId)
     {
         return Mage::getBaseDir('cache') . '/feed-' . $storeId . '.csv';

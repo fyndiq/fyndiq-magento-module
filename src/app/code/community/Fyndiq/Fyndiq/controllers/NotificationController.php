@@ -108,8 +108,10 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         }
 
         define('FYNDIQ_DEBUG', true);
-        FyndiqUtils::debug('PHP_VERSION', phpversion());
-        FyndiqUtils::debug('MODULE_VERSION', FmConfig::getVersion() . " " . FmConfig::COMMIT);
+
+        FyndiqUtils::debug('USER AGENT', FmConfig::getUserAgent());
+        FyndiqUtils::debug('MEMORY LIMIT', ini_get('memory_limit'));
+        FyndiqUtils::debug('PHP VERSION', phpversion());
         FyndiqUtils::debug('$storeId', $storeId);
         //Check if feed file exist and if it is too old
         $filePath = FmConfig::getFeedPath($storeId);
