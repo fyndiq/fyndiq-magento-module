@@ -15,8 +15,9 @@ build: clean
 	rsync -a --exclude='.*' $(SRC_DIR) $(BUILD_DIR)
 	# replace COMMIT hash
 	sed -i'' 's/XXXXXX/$(COMMIT)/g' $(BUILD_DIR)/src/app/code/community/Fyndiq/Fyndiq/includes/config.php;
-	cp $(DOCS_DIR)/* $(BUILD_DIR)
-	cd $(BUILD_DIR); zip -r -X fyndiq-magento-module-v$(MODULE_VERSION)-$(COMMIT).zip src/
+	mkdir -p $(BUILD_DIR)/src/docs
+	cp $(DOCS_DIR)/* $(BUILD_DIR)/src/docs
+	cd $(BUILD_DIR)/src; zip -r -X ../fyndiq-magento-module-v$(MODULE_VERSION)-$(COMMIT).zip .
 	rm -r $(BUILD_DIR)/src
 
 clean:
