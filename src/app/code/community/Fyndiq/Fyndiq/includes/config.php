@@ -34,7 +34,10 @@ class FmConfig
 
     public static function set($name, $value)
     {
-        return Mage::getConfig()->saveConfig(self::key($name), serialize($value));
+        $result =  Mage::getConfig()->saveConfig(self::key($name), serialize($value));
+        Mage::getConfig()->reinit();
+        Mage::app()->reinitStores();
+        return $result;
     }
 
     public static function getVersion()
