@@ -105,7 +105,7 @@ class Fyndiq_Fyndiq_Model_Observer
         }
 
         $batches = array_chunk($idsToExport, self::BATCH_SIZE);
-        foreach($batches as $batchIds) {
+        foreach ($batches as $batchIds) {
             FyndiqUtils::debug('MEMORY', memory_get_usage(true));
             $productsToExport = $this->productModel->getCollection()
                 ->addAttributeToSelect('*')
@@ -144,7 +144,7 @@ class Fyndiq_Fyndiq_Model_Observer
      */
     private function getTaxRate($product, $store)
     {
-        if(!$this->taxCalculationModel) {
+        if (!$this->taxCalculationModel) {
             $this->taxCalculationModel = Mage::getModel('tax/calculation');
         }
         $taxClassId = $product->getTaxClassId();
@@ -207,7 +207,7 @@ class Fyndiq_Fyndiq_Model_Observer
         if (!$this->categoryModel) {
             $this->categoryModel = Mage::getModel('catalog/category');
         }
-        if (!$this->stockModel){
+        if (!$this->stockModel) {
             $this->stockModel = Mage::getModel('cataloginventory/stock_item');
         }
 
