@@ -124,7 +124,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $currency = Mage::app()->getStore($storeId)->getCurrentCurrencyCode();
 
         $fyndiqProductModel = Mage::getModel('fyndiq/product');
-        $products = $fyndiqProductModel->getMagentoProducts($storeId, $category, $page);
+        $products = $fyndiqProductModel->getMagentoProducts($storeId, true, $category, $page);
 
         $products->load();
         $products = $products->getItems();
@@ -242,15 +242,13 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     private function getTotalProducts($storeId, $category)
     {
         $fyndiqProductModel = Mage::getModel('fyndiq/product');
-        $collection = $fyndiqProductModel->getMagentoProducts($storeId, $category);
+        $collection = $fyndiqProductModel->getMagentoProducts($storeId, false, $category);
 
         if ($collection == 'null') {
             return 0;
         }
 
-        $collection = $collection->getItems();
-
-        return count($collection);
+        return $collection ? $collection->getSize() : 0;
     }
 
 

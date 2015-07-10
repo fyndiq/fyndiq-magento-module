@@ -24,7 +24,7 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
         return false;
     }
 
-    function getMagentoProducts($storeId, $category = null, $page = -1)
+    function getMagentoProducts($storeId, $group = false, $category = null, $page = 0)
     {
         $collection = Mage::getResourceModel('catalog/product_collection')
             ->joinTable(
@@ -42,7 +42,12 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
 
         $collection->getSelect()->where(
             "((`e`.`type_id` = 'configurable') OR ((`e`.`type_id` = 'simple') AND (catalog_product_super_link.parent_id is null)))"
-        )->group('e.entity_id');
+        );
+
+        if($group)
+        {
+            $collection->getSelect()->group('e.entity_id');
+        }
 
         if ($page > 0) {
             $collection->getSelect()->limit(
