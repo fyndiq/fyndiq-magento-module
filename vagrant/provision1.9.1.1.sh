@@ -102,6 +102,9 @@ if [ ! -f "/var/www/html/magento/app/etc/local.xml" ]; then
 
     ## Enable template sym-links
     mysql -u root -p123 -e "UPDATE magento.core_config_data SET value = '1' WHERE path = 'dev/template/allow_symlink'"
+
+    ## Copy sample image for data import
+    cp /var/www/html/magento/media/catalog/product/m/a/mac000.jpg /var/www/html/magento/media/import/m/s/msj000t_1.jpg
 fi
 
 echo "Done. Happy hacking!"

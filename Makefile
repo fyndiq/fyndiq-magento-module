@@ -3,6 +3,7 @@
 BASE = $(realpath ./)
 SRC_DIR = $(BASE)/src
 TESTS_DIR = $(BASE)/tests
+TOOLS_DIR = $(BASE)/tools
 BUILD_DIR = $(BASE)/build
 DOCS_DIR = $(BASE)/docs
 COVERAGE_DIR = $(BASE)/coverage
@@ -53,6 +54,7 @@ sniff:
 sniff-fix:
 	$(BIN_DIR)/phpcbf --standard=PSR2 --extensions=php --ignore=shared,templates,api $(SRC_DIR)
 	$(BIN_DIR)/phpcbf --standard=PSR2 --extensions=php $(TESTS_DIR)
+	$(BIN_DIR)/phpcbf --standard=PSR2 --extensions=php $(TOOLS_DIR)
 
 compatinfo:
 	$(BIN_DIR)/phpcompatinfo analyser:run $(SRC_DIR)
