@@ -29,10 +29,10 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
         $collection = Mage::getResourceModel('catalog/product_collection')
             ->joinTable(
                 'catalog_product_super_link',
-                "product_id=entity_id",
+                'product_id=entity_id',
                 array('parent_id' => 'parent_id'),
                 null,
-                "left"
+                'left'
             )
             ->addAttributeToSelect('*')
             ->addStoreFilter($storeId);
