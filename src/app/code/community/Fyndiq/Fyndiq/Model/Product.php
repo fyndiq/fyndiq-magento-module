@@ -40,10 +40,15 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
             $collection->addCategoryFilter($category);
         }
 
-        $collection->getSelect()->where("((`e`.`type_id` = 'configurable') OR ((`e`.`type_id` = 'simple') AND (catalog_product_super_link.parent_id is null)))")->group('e.entity_id');
+        $collection->getSelect()->where(
+            "((`e`.`type_id` = 'configurable') OR ((`e`.`type_id` = 'simple') AND (catalog_product_super_link.parent_id is null)))"
+        )->group('e.entity_id');
 
-        if($page > 0) {
-            $collection->getSelect()->limit(FyndiqUtils::PAGINATION_ITEMS_PER_PAGE,(FyndiqUtils::PAGINATION_ITEMS_PER_PAGE*($page-1)));
+        if ($page > 0) {
+            $collection->getSelect()->limit(
+                FyndiqUtils::PAGINATION_ITEMS_PER_PAGE,
+                (FyndiqUtils::PAGINATION_ITEMS_PER_PAGE * ($page - 1))
+            );
         }
 
         return $collection;
