@@ -24,6 +24,31 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
         return false;
     }
 
+    function getMagentoProducts($storeId, $category = null, $page = -1)
+    {
+        $collection = Mage::getResourceModel('catalog/product_collection')
+            ->joinTable(
+                'catalog_product_super_link',
+                "product_id=entity_id",
+                array('parent_id' => 'parent_id'),
+                null,
+                "left"
+            )
+            ->addAttributeToSelect('*')
+            ->addStoreFilter($storeId);
+        if (!is_null($category)) {
+            $collection->addCategoryFilter($category);
+        }
+
+        $collection->getSelect()->where("((`e`.`type_id` = 'configurable') OR ((`e`.`type_id` = 'simple') AND (catalog_product_super_link.parent_id is null)))")->group('e.entity_id');
+
+        if($page > 0) {
+            $collection->getSelect()->limit(FyndiqUtils::PAGINATION_ITEMS_PER_PAGE,(FyndiqUtils::PAGINATION_ITEMS_PER_PAGE*($page-1)));
+        }
+
+        return $collection;
+    }
+
     /**
      * Add new product
      *

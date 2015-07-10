@@ -122,47 +122,16 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $productModel = Mage::getModel('catalog/product');
 
         $currency = Mage::app()->getStore($storeId)->getCurrentCurrencyCode();
-        if (is_null($category)) {
-            $products = $productModel->getCollection()
-                ->addStoreFilter($storeId)
-                ->addAttributeToFilter(
-                    array(
-                        array('attribute' => 'type_id', 'eq' => 'configurable'),
-                        array('attribute' => 'type_id', 'eq' => 'simple'),
-                    )
-                )
-                ->addAttributeToSelect('*');
-        } else {
-            $products = $productModel->getCollection()
-                ->addStoreFilter($storeId)
-                ->addAttributeToFilter(
-                    array(
-                        array('attribute' => 'type_id', 'eq' => 'configurable'),
-                        array('attribute' => 'type_id', 'eq' => 'simple'),
-                    )
-                )
-                ->addCategoryFilter($category)
-                ->addAttributeToSelect('*');
-        }
+
+        $fyndiqProductModel = Mage::getModel('fyndiq/product');
+        $products = $fyndiqProductModel->getMagentoProducts($storeId, $category, $page);
+
         $products->load();
         $products = $products->getItems();
         $fyndiqPercentage = FmConfig::get('price_percentage', $this->getRequest()->getParam('store'));
 
         // get all the products
-        $id = -1;
         foreach ($products as $prod) {
-            if ($prod->getTypeId() == 'simple') {
-                $children = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild($prod->getId());
-                if (isset($children) && count($children) > 0) {
-                    continue;
-                }
-            }
-
-            $id++;
-            if ($id < (($page - 1) * FyndiqUtils::PAGINATION_ITEMS_PER_PAGE) || $id > ($page * FyndiqUtils::PAGINATION_ITEMS_PER_PAGE)) {
-                continue;
-            }
-
             $fyndiqData = Mage::getModel('fyndiq/product')->getProductExportData($prod->getId());
             $fyndiq = !empty($fyndiqData);
             $fyndiqState = $fyndiqData['state'];
@@ -272,44 +241,14 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     private function getTotalProducts($storeId, $category)
     {
-        if (is_null($category)) {
-            $collection = Mage::getModel('catalog/product')
-                ->getCollection()
-                ->addStoreFilter($storeId)
-                ->addAttributeToFilter(
-                    array(
-                        array('attribute' => 'type_id', 'eq' => 'configurable'),
-                        array('attribute' => 'type_id', 'eq' => 'simple'),
-                    )
-                )
-                ->addAttributeToSelect('*');
-        } else {
-            $collection = Mage::getModel('catalog/product')
-                ->getCollection()
-                ->addStoreFilter($storeId)
-                ->addAttributeToFilter(
-                    array(
-                        array('attribute' => 'type_id', 'eq' => 'configurable'),
-                        array('attribute' => 'type_id', 'eq' => 'simple'),
-                    )
-                )
-                ->addCategoryFilter($category)
-                ->addAttributeToSelect('*');
-        }
+        $fyndiqProductModel = Mage::getModel('fyndiq/product');
+        $collection = $fyndiqProductModel->getMagentoProducts($storeId, $category);
+
         if ($collection == 'null') {
             return 0;
         }
 
         $collection = $collection->getItems();
-
-        foreach ($collection as $key => $prod) {
-            if ($prod->getTypeId() == 'simple') {
-                $parent = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild($prod->getId());
-                if (isset($parent) && count($parent) > 0) {
-                    unset($collection[$key]);
-                }
-            }
-        }
 
         return count($collection);
     }
