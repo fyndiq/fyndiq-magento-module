@@ -171,15 +171,13 @@ class Fyndiq_Fyndiq_Model_Observer
         $result = array();
         $urls = array();
         $imageId = 1;
-        if (!$this->imageHelper) {
-            $this->imageHelper = Mage::helper('catalog/image');
-        }
+        $imageHelper = Mage::helper('catalog/image');
 
-        $images = $productModel->load($productId)->getMediaGalleryImages();
+        $images = $productModel->load($magProduct->ID)->getMediaGalleryImages();
         if (count($images)) {
             // Get gallery
             foreach ($images as $image) {
-                $urls[] = (string)$this->imageHelper->init($magProduct, 'image', $image->getFile());
+                $urls[] = (string)$imageHelper->init($magProduct, 'image', $image->getFile());
             }
         } else {
             // Fallback to main image
