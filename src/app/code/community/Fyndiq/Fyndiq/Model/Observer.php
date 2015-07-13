@@ -281,12 +281,12 @@ class Fyndiq_Fyndiq_Model_Observer
                         $attrValue = $parentModel->getResource()->getAttribute(
                             $productAttribute->getProductAttribute()->getAttributeCode()
                         )->getFrontend();
-                        $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
+                        $attrLabel = $productAttribute->getProductAttribute()->getFrontendLabel();
                         $value = $attrValue->getValue($magProduct);
 
-                        $feedProduct['article-property-' . $attrId . '-name'] = $attrCode;
+                        $feedProduct['article-property-' . $attrId . '-name'] = $attrLabel;
                         $feedProduct['article-property-' . $attrId . '-value'] = $value[0];
-                        $tags[] = $attrCode . ': ' . $value[0];
+                        $tags[] = $attrLabel . ': ' . $value[0];
                         $attrId++;
                     }
                     $feedProduct['article-name'] = implode(', ', $tags);
@@ -326,12 +326,12 @@ class Fyndiq_Fyndiq_Model_Observer
             $attrValue = $magProduct->getResource()->getAttribute(
                 $productAttribute->getProductAttribute()->getAttributeCode()
             )->getFrontend();
-            $attrCode = $productAttribute->getProductAttribute()->getAttributeCode();
+            $attrLabel = $productAttribute->getProductAttribute()->getFrontendLabel();
             $value = $attrValue->getValue($firstProduct);
 
-            $feedProduct['article-property-' . $attrId . '-name'] = $attrCode;
+            $feedProduct['article-property-' . $attrId . '-name'] = $attrLabel;
             $feedProduct['article-property-' . $attrId . '-value'] = $value[0];
-            $tags[] = $attrCode . ': ' . $value[0];
+            $tags[] = $attrLabel . ': ' . $value[0];
             $attrId++;
         }
         $feedProduct['article-name'] = substr(implode(', ', $tags), 0, 30);
