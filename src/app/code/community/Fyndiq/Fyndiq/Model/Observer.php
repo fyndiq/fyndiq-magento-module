@@ -166,20 +166,18 @@ class Fyndiq_Fyndiq_Model_Observer
      * @param  object $productModel
      * @return array
      */
-    protected function getImages($productId, $magProduct, $productModel)
+    protected function getImages($productId, $magProduct)
     {
         $result = array();
         $urls = array();
         $imageId = 1;
-        if (!$this->imageHelper) {
-            $this->imageHelper = Mage::helper('catalog/image');
-        }
+        $imageHelper = Mage::helper('catalog/image');
 
-        $images = $productModel->load($productId)->getMediaGalleryImages();
+        $images = Mage::getModel('catalog/product')->load($productId)->getMediaGalleryImages();
         if (count($images)) {
             // Get gallery
             foreach ($images as $image) {
-                $urls[] = (string)$this->imageHelper->init($magProduct, 'image', $image->getFile());
+                $urls[] = (string)$imageHelper->init($magProduct, 'image', $image->getFile());
             }
         } else {
             // Fallback to main image
@@ -259,7 +257,7 @@ class Fyndiq_Fyndiq_Model_Observer
         }
 
         // Images
-        $images = $this->getImages($magArray['entity_id'], $magProduct, $this->productModel);
+        $images = $this->getImages($magArray['entity_id'], $magProduct);
         $feedProduct = array_merge($feedProduct, $images);
 
         if ($magArray['type_id'] == 'simple') {
@@ -314,7 +312,7 @@ class Fyndiq_Fyndiq_Model_Observer
         $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
 
         // Images
-        $images = $this->getImages($firstProduct->getId(), $firstProduct, $this->productModel);
+        $images = $this->getImages($firstProduct->getId(), $firstProduct);
         $feedProduct = array_merge($feedProduct, $images);
 
         $feedProduct['article-location'] = self::UNKNOWN;
