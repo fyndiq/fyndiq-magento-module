@@ -44,7 +44,7 @@ if [[ ! -f "/var/www/html/magento/index.php" ]]; then
     echo "Downloading Magento ${MAGE_VERSION} ..."
     wget --quiet http://mirror.gunah.eu/magento/magento-${MAGE_VERSION}.tar.gz
     echo "Downloading Magento Sample files ${DATA_VERSION} ..."
-    wget --quiet http://mirror.gunah.eu/magento/sample-data/${DATA_VERSION}/magento-sample-data-${DATA_VERSION}.tar.gz
+    wget --quiet http://mirror.gunah.eu/magento/sample-data/magento-sample-data-${DATA_VERSION}.tar.gz
     tar -zxvf magento-${MAGE_VERSION}.tar.gz
     tar -zxvf magento-sample-data-${DATA_VERSION}.tar.gz
     cp -R magento-sample-data-${DATA_VERSION}/* magento
