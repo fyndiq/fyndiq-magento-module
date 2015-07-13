@@ -44,9 +44,8 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
             "((`e`.`type_id` = 'configurable') OR ((`e`.`type_id` = 'simple') AND (catalog_product_super_link.parent_id is null)))"
         );
 
-        if($group)
-        {
-            $collection->getSelect()->group('e.entity_id');
+        if ($group) {
+        $collection->getSelect()->group('e.entity_id');
         }
 
         if ($page > 0) {
