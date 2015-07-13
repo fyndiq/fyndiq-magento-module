@@ -312,7 +312,7 @@ class Fyndiq_Fyndiq_Model_Observer
         $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
 
         // Images
-        $images = $this->getImages($firstProduct->getId(), $firstProduct, $this->productModel);
+        $images = $this->getImages($firstProduct->getId(), $firstProduct);
         $feedProduct = array_merge($feedProduct, $images);
 
         $feedProduct['article-location'] = self::UNKNOWN;
