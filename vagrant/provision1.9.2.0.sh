@@ -17,6 +17,8 @@ echo "mysql-server-5.5 mysql-server/root_password_again password 123" | sudo deb
 apt-get install -y mysql-server
 apt-get install -y apache2 php5 php5-mysql php5-gd php5-mcrypt php5-curl
 
+apt-get remove -y puppet chef
+
 php5enmod mcrypt
 
 # Install scss
