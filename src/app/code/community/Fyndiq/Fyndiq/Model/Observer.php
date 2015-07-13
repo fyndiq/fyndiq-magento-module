@@ -15,6 +15,12 @@ class Fyndiq_Fyndiq_Model_Observer
 
     const UNKNOWN = 'Unknown';
 
+    private $productModel = null;
+    private $categoryModel = null;
+    private $stockModel = null;
+    private $taxCalculationModel = null;
+    private $imageHelper = null;
+
     public function __construct()
     {
         FyndiqTranslation::init(Mage::app()->getLocale()->getLocaleCode());
