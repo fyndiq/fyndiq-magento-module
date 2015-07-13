@@ -166,14 +166,14 @@ class Fyndiq_Fyndiq_Model_Observer
      * @param  object $productModel
      * @return array
      */
-    protected function getImages($productId, $magProduct, $productModel)
+    protected function getImages($productId, $magProduct)
     {
         $result = array();
         $urls = array();
         $imageId = 1;
         $imageHelper = Mage::helper('catalog/image');
 
-        $images = $productModel->load($magProduct->ID)->getMediaGalleryImages();
+        $images = Mage::getModel('catalog/product')->load($productId)->getMediaGalleryImages();
         if (count($images)) {
             // Get gallery
             foreach ($images as $image) {
@@ -257,7 +257,7 @@ class Fyndiq_Fyndiq_Model_Observer
         }
 
         // Images
-        $images = $this->getImages($magArray['entity_id'], $magProduct, $this->productModel);
+        $images = $this->getImages($magArray['entity_id'], $magProduct);
         $feedProduct = array_merge($feedProduct, $images);
 
         if ($magArray['type_id'] == 'simple') {
