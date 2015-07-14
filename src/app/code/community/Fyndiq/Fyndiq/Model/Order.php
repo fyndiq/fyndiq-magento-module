@@ -132,7 +132,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $isRequired = Mage::helper('directory')->isRegionRequired($countryId);
         if ($isRequired) {
             // Get and set Region
-            if ($shippingAddressArray->country_id != 'DE') {
+            if ($countryId != 'DE') {
                 throw new Exception(sprintf('Error, region is required for `%s`.', $countryId));
             }
 
