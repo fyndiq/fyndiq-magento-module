@@ -90,14 +90,69 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         return $result;
     }
 
-    private function getDeliveryCountry($countryName)
+    private function getCountryId($countryName)
     {
-        switch ($countryName) {
-            case 'Germany':
-                return 'DE';
-            default:
-                return 'SE';
+        $countryId = '';
+        $countryCollection = Mage::getModel('directory/country')->getCollection();
+        foreach ($countryCollection as $country) {
+            if ($countryName == $country->getName()) {
+                $countryId = $country->getCountryId();
+                break;
+            }
         }
+        $countryCollection = null;
+        return $countryId;
+    }
+
+    protected function getRegionHelper()
+    {
+        if (!class_exists('FyndiqRegionHelper')) {
+            require_once dirname(dirname(__FILE__)) . '/includes/FyndiqRegionHelper.php';
+        }
+    }
+
+    private function getShippingAddress($fyndiqOrder)
+    {
+        //Shipping / Billing information gather
+        //if we have a default shipping address, try gathering its values into variables we need
+        $countryId = $this->getCountryId($fyndiqOrder->delivery_country);
+        $shippingAddressArray = array(
+            'firstname' => $fyndiqOrder->delivery_firstname,
+            'lastname' => $fyndiqOrder->delivery_lastname,
+            'street' => $fyndiqOrder->delivery_address,
+            'city' => $fyndiqOrder->delivery_city,
+            'region_id' => '',
+            'region' => '',
+            'postcode' => $fyndiqOrder->delivery_postalcode,
+            'country_id' => $countryId,
+            'telephone' => $fyndiqOrder->delivery_phone,
+        );
+
+        // Check if country region is required
+        $isRequired = Mage::helper('directory')->isRegionRequired($countryId);
+        if ($isRequired) {
+            // Get and set Region
+            if ($countryId != 'DE') {
+                throw new Exception(sprintf('Error, region is required for `%s`.', $countryId));
+            }
+
+            $this->getRegionHelper();
+            $regionCode = FyndiqRegionHelper::codeToRegionCodeDe($fyndiqOrder->delivery_postalcode);
+
+            // Try to deduce the region for Germany
+            $region = Mage::getModel('directory/region')->loadByCode($regionCode, $countryId);
+            if (is_null($region)) {
+                throw new Exception(sprintf(
+                    'Error, could not find region `%s` for `%s.`',
+                    $regionCode,
+                    $fyndiqOrder->delivery_country
+                ));
+            }
+            $shippingAddressArray['region_id'] = $region->getId();
+            $shippingAddressArray['region'] = $region->getName();
+        }
+
+        return $shippingAddressArray;
     }
 
     /**
@@ -152,19 +207,8 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             $quote->addProduct($product, new Varien_Object($productInfo));
         }
 
-        //Shipping / Billing information gather
-        //if we have a default shipping address, try gathering its values into variables we need
-        $shippingAddressArray = array(
-            'firstname' => $fyndiqOrder->delivery_firstname,
-            'lastname' => $fyndiqOrder->delivery_lastname,
-            'street' => $fyndiqOrder->delivery_address,
-            'city' => $fyndiqOrder->delivery_city,
-            'region_id' => '',
-            'region' => '',
-            'postcode' => $fyndiqOrder->delivery_postalcode,
-            'country_id' => $this->getDeliveryCountry($fyndiqOrder->delivery_country),
-            'telephone' => $fyndiqOrder->delivery_phone,
-        );
+
+        $shippingAddressArray = $this->getShippingAddress($fyndiqOrder);
 
         //if we have a default billing address, try gathering its values into variables we need
         $billingAddressArray = $shippingAddressArray;

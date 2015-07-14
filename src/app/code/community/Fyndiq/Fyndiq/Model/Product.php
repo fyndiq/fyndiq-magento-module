@@ -45,7 +45,7 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
         );
 
         if ($group) {
-        $collection->getSelect()->group('e.entity_id');
+            $collection->getSelect()->group('e.entity_id');
         }
 
         if ($page > 0) {
