@@ -105,11 +105,6 @@ class Fyndiq_Fyndiq_Model_Observer
         FyndiqUtils::debug('$idsToExport', $idsToExport);
         FyndiqUtils::debug('$productInfo', $productInfo);
 
-        //Initialize models here so it saves memory.
-        if (!$this->productModel) {
-            $this->productModel = Mage::getModel('catalog/product');
-        }
-
         $batches = array_chunk($idsToExport, self::BATCH_SIZE);
         foreach ($batches as $batchIds) {
             FyndiqUtils::debug('MEMORY', memory_get_usage(true));
@@ -205,9 +200,6 @@ class Fyndiq_Fyndiq_Model_Observer
         FyndiqUtils::debug('$productInfo', $productInfo);
         FyndiqUtils::debug('$magProduct', $magProduct->getData());
         //Initialize models here so it saves memory.
-        if (!$this->productModel) {
-            $this->productModel = Mage::getModel('catalog/product');
-        }
         if (!$this->categoryModel) {
             $this->categoryModel = Mage::getModel('catalog/category');
         }
