@@ -10,6 +10,7 @@ class FyndiqRegionHelperTest extends PHPUnit_Framework_TestCase
             array('97888', 'BAY'),
             array('97896', 'BAW'),
             array('01001', 'SAS'),
+            array('80337', 'BAY'),
         );
     }
 
