@@ -113,7 +113,7 @@ class Fyndiq_Fyndiq_Model_Observer
         $batches = array_chunk($idsToExport, self::BATCH_SIZE);
         foreach ($batches as $batchIds) {
             FyndiqUtils::debug('MEMORY', memory_get_usage(true));
-            $productsToExport = $this->productModel->getCollection()
+            $productsToExport = Mage::getModel('catalog/product')->getCollection()
                 ->addAttributeToSelect('*')
                 ->addStoreFilter($storeId)
                 ->addAttributeToFilter(
@@ -270,7 +270,7 @@ class Fyndiq_Fyndiq_Model_Observer
 
             $productParent = $productInfo['product_id'];
             if ($productParent) {
-                $parentModel = $this->productModel->load($productParent);
+                $parentModel = Mage::getModel('catalog/product')->load($productParent);
                 if (method_exists($parentModel->getTypeInstance(), 'getConfigurableAttributes')) {
                     $productAttrOptions = $parentModel->getTypeInstance()->getConfigurableAttributes();
                     $attrId = 1;
