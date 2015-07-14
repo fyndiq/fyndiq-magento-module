@@ -137,6 +137,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             }
 
             $this->getRegionHelper();
+            $regionCode = FyndiqRegionHelper::codeToRegionCodeDe($fyndiqOrder->delivery_postalcode);
 
             // Try to deduce the region for Germany
             $region = Mage::getModel('directory/region')->loadByCode($regionCode, $countryId);
