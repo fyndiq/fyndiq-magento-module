@@ -204,7 +204,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             $product = Mage::getModel('catalog/product')->load($id);
             //add product to the cart
             $productInfo = array('qty' => $row->quantity);
-            $quote->addProduct($product, new Varien_Object($productInfo));
+            $quote->addProduct($product, new Varien_Object($productInfo))->setOriginalCustomPrice($row->unit_price_amount);
         }
 
 
