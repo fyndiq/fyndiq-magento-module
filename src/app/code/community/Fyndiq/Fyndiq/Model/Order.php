@@ -115,6 +115,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
     {
         //Shipping / Billing information gather
         //if we have a default shipping address, try gathering its values into variables we need
+        $countryId = $this->getCountryId($fyndiqOrder->delivery_country);
         $shippingAddressArray = array(
             'firstname' => $fyndiqOrder->delivery_firstname,
             'lastname' => $fyndiqOrder->delivery_lastname,
@@ -123,24 +124,23 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             'region_id' => '',
             'region' => '',
             'postcode' => $fyndiqOrder->delivery_postalcode,
-            'country_id' => $this->getCountryId($fyndiqOrder->delivery_country),
+            'country_id' => $countryId,
             'telephone' => $fyndiqOrder->delivery_phone,
         );
 
         // Check if country region is required
-        $isRequired = Mage::helper('directory')->isRegionRequired($shippingAddressArray->country_id);
+        $isRequired = Mage::helper('directory')->isRegionRequired($countryId);
         if ($isRequired) {
             // Get and set Region
             if ($shippingAddressArray->country_id != 'DE') {
-                throw new Exception(sprintf('Error, region is required for `%s`.', $fyndiqOrder->delivery_country));
+                throw new Exception(sprintf('Error, region is required for `%s`.', $countryId));
             }
 
             $this->getRegionHelper();
 
             $regionCode = 'BER';
             // Try to deduce the region for Germany
-            $region = Mage::getModel('directory/region')
-                ->loadByCode($regionCode, $shippingAddressArray->country_id);
+            $region = Mage::getModel('directory/region')->loadByCode($regionCode, $countryId);
             if (is_null($region)) {
                 throw new Exception(sprintf(
                     'Error, could not find region `%s` for `%s.`',
