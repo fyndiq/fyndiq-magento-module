@@ -1,5 +1,5 @@
 src/app/code/community/Fyndiq/Fyndiq                      app/code/community/Fyndiq/Fyndiq
-src/app/design/adminhtml/default/default/layout/*         app/design/adminhtml/default/default/layout
+src/app/design/adminhtml/default/default/layout           app/design/adminhtml/default/default/layout
 src/app/design/adminhtml/default/default/template/fyndiq  app/design/adminhtml/default/default/template/fyndiq
 src/app/etc/modules/Fyndiq_Fyndiq.xml                     app/etc/modules/Fyndiq_Fyndiq.xml
 src/fyndiq                                                fyndiq
