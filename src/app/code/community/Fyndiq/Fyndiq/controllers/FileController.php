@@ -14,7 +14,7 @@ class Fyndiq_Fyndiq_FileController extends Mage_Core_Controller_Front_Action
         if ($this->getUsername($storeId) != '' && $this->getAPIToken($storeId) != '') {
             //Check if feed file exist and if it is too old
             $filePath = FmConfig::getFeedPath($storeId);
-            if ($this->mustRegenerateFile($filePath)) {
+            if (FyndiqUtils::mustRegenerateFile($filePath)) {
                 $fyndiqCron = new Fyndiq_Fyndiq_Model_Observer();
                 $fyndiqCron->exportProducts($storeId, false);
             }
@@ -22,23 +22,6 @@ class Fyndiq_Fyndiq_FileController extends Mage_Core_Controller_Front_Action
         }
         //printing out the content from feed file to the visitor.
         $this->getResponse()->setBody($result);
-    }
-
-    /**
-     * Return true if file must be regenerated
-     *
-     * @param  string $filePath
-     * @return bool
-     */
-    private function mustRegenerateFile($filePath)
-    {
-        if (getenv('FYNDIQ_DEBUG') == 1) {
-            return true;
-        }
-        if (file_exists($filePath) && filemtime($filePath) > strtotime('-1 hour')) {
-            return false;
-        }
-        return true;
     }
 
     /**
