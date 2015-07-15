@@ -186,10 +186,16 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $quote->assignCustomer($customer);
         $quote->setStore(Mage::getModel('core/store')->load($storeId));
 
+        //The currency
+        $currency = null;
+
         //Adding products to order
         foreach ($fyndiqOrder->order_rows as $row) {
             // get sku of the product
             $sku = $row->sku;
+            if(is_null($currency)) {
+              $currency = $row->unit_price_currency;
+            }
 
             $id = Mage::getModel('catalog/product')->getResource()->getIdBySku($sku);
             if (!$id) {
@@ -215,6 +221,10 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
 
         // Add the address data to the billing address
         $quote->getBillingAddress()->addData($billingAddressArray);
+
+        // Set the correct currency for order
+        $quote->setBaseCurrencyCode($currency);
+        $quote->setQuoteCurrencyCode($currency);
 
         // Add the adress data to the shipping address
         $shippingAddress = $quote->getShippingAddress()->addData($shippingAddressArray);
