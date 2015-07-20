@@ -2,7 +2,6 @@
 
 class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
 {
-
     const FYNDIQ_ORDERS_EMAIL = 'info@fyndiq.se';
     const FYNDIQ_ORDERS_NAME_FIRST = 'Fyndiq';
     const FYNDIQ_ORDERS_NAME_LAST = 'Orders';
@@ -17,9 +16,10 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
     }
 
     /**
-     * Check if order already exists
+     * Check if order already exists.
      *
      * @param array $fyndiqOrder
+     *
      * @return bool
      */
     public function orderExists($fyndiqOrder)
@@ -39,23 +39,25 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
      *
      * @param int $fyndiqOrderId
      * @param int $orderId
+     *
      * @return mixed
      */
     public function addCheckData($fyndiqOrderId, $orderId)
     {
         $data = array(
             'fyndiq_orderid' => $fyndiqOrderId,
-            'order_id' => $orderId
+            'order_id' => $orderId,
         );
         $model = $this->setData($data);
 
         return $model->save()->getId();
     }
 
-
     /**
-     * Loading Imported orders
+     * Loading Imported orders.
+     *
      * @param $page
+     *
      * @return array
      */
     public function getImportedOrders($page, $itemsPerPage)
@@ -72,17 +74,17 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             $magOrder = Mage::getModel('sales/order')->load($order['order_id']);
             $magArray = $magOrder->getData();
             $url = Mage::helper('adminhtml')->getUrl(
-                "adminhtml/sales_order/view",
+                'adminhtml/sales_order/view',
                 array('order_id' => $order['order_id'])
             );
             $orderArray['order_id'] = $magArray['entity_id'];
             $orderArray['fyndiq_orderid'] = $order['fyndiq_orderid'];
             $orderArray['entity_id'] = $magArray['entity_id'];
-            $orderArray['price'] = number_format((float)$magArray['base_grand_total'], 2, '.', '');
+            $orderArray['price'] = number_format((float) $magArray['base_grand_total'], 2, '.', '');
             $orderArray['total_products'] = intval($magArray['total_qty_ordered']);
             $orderArray['state'] = $magArray['status'];
             $orderArray['created_at'] = date('Y-m-d', strtotime($magArray['created_at']));
-            $orderArray['created_at_time'] = date("G:i:s", strtotime($magArray['created_at']));
+            $orderArray['created_at_time'] = date('G:i:s', strtotime($magArray['created_at']));
             $orderArray['link'] = $url;
             $result[] = $orderArray;
         }
@@ -101,13 +103,14 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             }
         }
         $countryCollection = null;
+
         return $countryId;
     }
 
     protected function getRegionHelper()
     {
         if (!class_exists('FyndiqRegionHelper')) {
-            require_once dirname(dirname(__FILE__)) . '/includes/FyndiqRegionHelper.php';
+            require_once dirname(dirname(__FILE__)).'/includes/FyndiqRegionHelper.php';
         }
     }
 
@@ -156,10 +159,11 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
     }
 
     /**
-     * Create a order in magento based on Fyndiq Order
+     * Create a order in magento based on Fyndiq Order.
      *
-     * @param int $storeId
+     * @param int   $storeId
      * @param array $fyndiqOrder
+     *
      * @throws Exception
      */
     public function create($storeId, $fyndiqOrder)
@@ -178,7 +182,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
                 $customer->setConfirmation(null);
                 $customer->save();
             } catch (Exception $e) {
-                throw new Exception('Error, creating Fyndiq customer: ' . $e->getMessage());
+                throw new Exception('Error, creating Fyndiq customer: '.$e->getMessage());
             }
         }
         //Start a new order quote and assign current customer to it.
@@ -193,8 +197,8 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         foreach ($fyndiqOrder->order_rows as $row) {
             // get sku of the product
             $sku = $row->sku;
-            if(is_null($currency)) {
-              $currency = $row->unit_price_currency;
+            if (is_null($currency)) {
+                $currency = $row->unit_price_currency;
             }
 
             $id = Mage::getModel('catalog/product')->getResource()->getIdBySku($sku);
@@ -212,7 +216,6 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             $productInfo = array('qty' => $row->quantity);
             $quote->addProduct($product, new Varien_Object($productInfo))->setOriginalCustomPrice($row->unit_price_amount);
         }
-
 
         $shippingAddressArray = $this->getShippingAddress($fyndiqOrder);
 
@@ -269,10 +272,11 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
     }
 
     /**
-     * Try to update the order state
+     * Try to update the order state.
      *
-     * @param int $orderId
+     * @param int    $orderId
      * @param string $statusId
+     *
      * @return bool
      */
     public function updateOrderStatuses($orderId, $statusId)
@@ -289,8 +293,10 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
     }
 
     /**
-     * Get Order state name
+     * Get Order state name.
+     *
      * @param $statusId
+     *
      * @return mixed
      */
     public function getStatusName($statusId)
