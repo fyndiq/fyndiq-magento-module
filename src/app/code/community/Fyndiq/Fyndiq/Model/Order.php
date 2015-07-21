@@ -92,21 +92,6 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         return $result;
     }
 
-    private function getCountryId($countryName)
-    {
-        $countryId = '';
-        $countryCollection = Mage::getModel('directory/country')->getCollection();
-        foreach ($countryCollection as $country) {
-            if ($countryName == $country->getName()) {
-                $countryId = $country->getCountryId();
-                break;
-            }
-        }
-        $countryCollection = null;
-
-        return $countryId;
-    }
-
     protected function getRegionHelper()
     {
         if (!class_exists('FyndiqRegionHelper')) {
@@ -118,7 +103,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
     {
         //Shipping / Billing information gather
         //if we have a default shipping address, try gathering its values into variables we need
-        $countryId = $this->getCountryId($fyndiqOrder->delivery_country);
+        $countryId = FyndiqUtils::getCountryCode($fyndiqOrder->delivery_country);
         $shippingAddressArray = array(
             'firstname' => $fyndiqOrder->delivery_firstname,
             'lastname' => $fyndiqOrder->delivery_lastname,
