@@ -132,11 +132,12 @@ class Fyndiq_Fyndiq_Model_Observer
                     }
                     $price = null;
                     $differentPrice = false;
-                    foreach ($articles as $key => $article) {
+                    foreach ($articles as $article) {
                         if (is_null($price)) {
                             $price = $article['product-price'];
                         } elseif ($article['product-price'] != $price) {
                             $differentPrice = true;
+                            break;
                         }
                     }
                     if ($differentPrice) {
@@ -281,7 +282,6 @@ class Fyndiq_Fyndiq_Model_Observer
             $productParent = $productInfo['product_id'];
             if ($productParent) {
                 $parentModel = Mage::getModel('catalog/product')->load($productParent);
-                $magArrayParent = $parentModel->getData();
                 if (method_exists($parentModel->getTypeInstance(), 'getConfigurableAttributes')) {
                     $productAttrOptions = $parentModel->getTypeInstance()->getConfigurableAttributes();
                     $attrId = 1;
