@@ -115,13 +115,13 @@ class Fyndiq_Fyndiq_Model_Observer
                 )->load();
 
             foreach ($productsToExport as $magProduct) {
-                $articles = array();
                 $parent_id = $magProduct->getId();
                 FyndiqUtils::debug('$magProduct->getTypeId()', $magProduct->getTypeId());
 
                 if ($feedWriter->addProduct($this->getProduct($magProduct, $productInfo[$parent_id], $store))
                     && $magProduct->getTypeId() != 'simple'
                 ) {
+                    $articles = array();
                     $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
                     $simpleCollection = $conf->getUsedProductCollection()
                         ->addAttributeToSelect('*')
