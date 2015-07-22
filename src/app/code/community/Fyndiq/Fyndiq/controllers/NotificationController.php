@@ -101,17 +101,13 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         $pingToken = unserialize(FmConfig::get('ping_token', $storeId));
         $token = $this->getRequest()->getParam('token');
 
-
         if (is_null($token) || $token != $pingToken) {
             header('HTTP/1.0 400 Bad Request');
             return die('400 Bad Request');
         }
 
-        define('FYNDIQ_DEBUG', true);
-
+        FyndiqUtils::debugStart();
         FyndiqUtils::debug('USER AGENT', FmConfig::getUserAgent());
-        FyndiqUtils::debug('MEMORY LIMIT', ini_get('memory_limit'));
-        FyndiqUtils::debug('PHP VERSION', phpversion());
         FyndiqUtils::debug('$storeId', $storeId);
         //Check if feed file exist and if it is too old
         $filePath = FmConfig::getFeedPath($storeId);
@@ -124,7 +120,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         $fyndiqCron->exportProducts($storeId, false);
         $result = file_get_contents($filePath);
         FyndiqUtils::debug('$result', $result, true);
-        FyndiqUtils::debug('PEAK MEMORY', memory_get_peak_usage(true));
+        FyndiqUtils::debugStop();
     }
 
     private function _update_product_info($storeId)
