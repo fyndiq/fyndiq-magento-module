@@ -115,8 +115,10 @@ class Fyndiq_Fyndiq_Model_Observer
                 )->load();
 
             foreach ($productsToExport as $magProduct) {
+                $articles = array();
                 $parent_id = $magProduct->getId();
                 FyndiqUtils::debug('$magProduct->getTypeId()', $magProduct->getTypeId());
+
                 if ($feedWriter->addProduct($this->getProduct($magProduct, $productInfo[$parent_id], $store))
                     && $magProduct->getTypeId() != 'simple'
                 ) {
@@ -126,7 +128,25 @@ class Fyndiq_Fyndiq_Model_Observer
                         ->addFilterByRequiredOptions()
                         ->getItems();
                     foreach ($simpleCollection as $simpleProduct) {
-                        $feedWriter->addProduct($this->getProduct($simpleProduct, $productInfo[$parent_id], $store));
+                        $articles[] = $this->getProduct($simpleProduct, $productInfo[$parent_id], $store);
+                    }
+                    $price = null;
+                    $differentPrice = false;
+                    foreach ($articles as $key => $article) {
+                        if (is_null($price)) {
+                            $price = $article['product-price'];
+                        } elseif ($article['product-price'] != $price) {
+                            $differentPrice = true;
+                        }
+                    }
+                    if ($differentPrice) {
+                        foreach ($articles as $key => $article) {
+                            $article['product-id'] .= '-'.$key;
+                            $articles[$key] = $article;
+                        }
+                    }
+                    foreach ($articles as $article) {
+                        $feedWriter->addProduct($article);
                     }
                 }
             }
@@ -281,9 +301,6 @@ class Fyndiq_Fyndiq_Model_Observer
                         $attrId++;
                     }
                     $feedProduct['article-name'] = implode(', ', $tags);
-                }
-                if ($magArrayParent['price'] != $magArray['price']) {
-                    $feedProduct['product-id'] = $productInfo['id'] . '-' . $magArray['entity_id'];
                 }
             }
 
