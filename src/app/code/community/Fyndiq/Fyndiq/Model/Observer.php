@@ -10,7 +10,6 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
  */
 class Fyndiq_Fyndiq_Model_Observer
 {
-
     const BATCH_SIZE = 30;
 
     const UNKNOWN = 'Unknown';
@@ -69,7 +68,6 @@ class Fyndiq_Fyndiq_Model_Observer
         if ($print) {
             print 'Fyndiq :: Done saving feed file' . PHP_EOL;
         }
-
     }
 
     /**
@@ -263,6 +261,7 @@ class Fyndiq_Fyndiq_Model_Observer
             $productParent = $productInfo['product_id'];
             if ($productParent) {
                 $parentModel = Mage::getModel('catalog/product')->load($productParent);
+                $magArrayParent = $parentModel->getData();
                 if (method_exists($parentModel->getTypeInstance(), 'getConfigurableAttributes')) {
                     $productAttrOptions = $parentModel->getTypeInstance()->getConfigurableAttributes();
                     $attrId = 1;
@@ -282,6 +281,9 @@ class Fyndiq_Fyndiq_Model_Observer
                         $attrId++;
                     }
                     $feedProduct['article-name'] = implode(', ', $tags);
+                }
+                if ($magArrayParent['price'] != $magArray['price']) {
+                    $feedProduct['product-id'] = $productInfo['id'] . '-' . $magArray['entity_id'];
                 }
             }
 
