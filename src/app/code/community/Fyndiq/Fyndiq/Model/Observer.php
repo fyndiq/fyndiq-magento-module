@@ -10,7 +10,6 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
  */
 class Fyndiq_Fyndiq_Model_Observer
 {
-
     const BATCH_SIZE = 30;
 
     const UNKNOWN = 'Unknown';
@@ -69,7 +68,6 @@ class Fyndiq_Fyndiq_Model_Observer
         if ($print) {
             print 'Fyndiq :: Done saving feed file' . PHP_EOL;
         }
-
     }
 
     /**
@@ -169,13 +167,13 @@ class Fyndiq_Fyndiq_Model_Observer
         $imageHelper = Mage::helper('catalog/image');
 
         $images = Mage::getModel('catalog/product')->load($productId)->getMediaGalleryImages();
-        $has_real_image_set = ($magProduct->getSmallImage() != null && $magProduct->getSmallImage() != "no_selection");
-        if (count($images) && $has_real_image_set) {
+        $hasRealImagesSet = ($magProduct->getSmallImage() != null && $magProduct->getSmallImage() != "no_selection");
+        if (count($images) && $hasRealImagesSet) {
             // Get gallery
             foreach ($images as $image) {
                 $urls[] = (string)$imageHelper->init($magProduct, 'image', $image->getFile());
             }
-        } elseif ($has_real_image_set) {
+        } elseif ($hasRealImagesSet) {
             // Fallback to main image
             $urls[] = $magProduct->getImageUrl();
         }
