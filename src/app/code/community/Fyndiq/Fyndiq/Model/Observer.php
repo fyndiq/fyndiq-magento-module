@@ -10,7 +10,6 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
  */
 class Fyndiq_Fyndiq_Model_Observer
 {
-
     const BATCH_SIZE = 30;
 
     const UNKNOWN = 'Unknown';
@@ -69,7 +68,6 @@ class Fyndiq_Fyndiq_Model_Observer
         if ($print) {
             print 'Fyndiq :: Done saving feed file' . PHP_EOL;
         }
-
     }
 
     /**
@@ -119,16 +117,37 @@ class Fyndiq_Fyndiq_Model_Observer
             foreach ($productsToExport as $magProduct) {
                 $parent_id = $magProduct->getId();
                 FyndiqUtils::debug('$magProduct->getTypeId()', $magProduct->getTypeId());
+
                 if ($feedWriter->addProduct($this->getProduct($magProduct, $productInfo[$parent_id], $store))
                     && $magProduct->getTypeId() != 'simple'
                 ) {
+                    $articles = array();
                     $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
                     $simpleCollection = $conf->getUsedProductCollection()
                         ->addAttributeToSelect('*')
                         ->addFilterByRequiredOptions()
                         ->getItems();
                     foreach ($simpleCollection as $simpleProduct) {
-                        $feedWriter->addProduct($this->getProduct($simpleProduct, $productInfo[$parent_id], $store));
+                        $articles[] = $this->getProduct($simpleProduct, $productInfo[$parent_id], $store);
+                    }
+                    $price = null;
+                    $differentPrice = false;
+                    foreach ($articles as $article) {
+                        if (is_null($price)) {
+                            $price = $article['product-price'];
+                        } elseif ($article['product-price'] != $price) {
+                            $differentPrice = true;
+                            break;
+                        }
+                    }
+                    if ($differentPrice) {
+                        foreach ($articles as $key => $article) {
+                            $article['product-id'] .= '-'.$key;
+                            $articles[$key] = $article;
+                        }
+                    }
+                    foreach ($articles as $article) {
+                        $feedWriter->addProduct($article);
                     }
                 }
             }
