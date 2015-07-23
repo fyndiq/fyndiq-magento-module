@@ -188,12 +188,13 @@ class Fyndiq_Fyndiq_Model_Observer
         $imageHelper = Mage::helper('catalog/image');
 
         $images = Mage::getModel('catalog/product')->load($productId)->getMediaGalleryImages();
+        $hasRealImagesSet = ($magProduct->getImage() != null && $magProduct->getImage() != "no_selection");
         if (count($images)) {
             // Get gallery
             foreach ($images as $image) {
                 $urls[] = (string)$imageHelper->init($magProduct, 'image', $image->getFile());
             }
-        } else {
+        } elseif ($hasRealImagesSet) {
             // Fallback to main image
             $urls[] = $magProduct->getImageUrl();
         }
