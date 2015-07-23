@@ -118,10 +118,9 @@ class Fyndiq_Fyndiq_Model_Observer
                 $parent_id = $magProduct->getId();
                 FyndiqUtils::debug('$magProduct->getTypeId()', $magProduct->getTypeId());
 
-                if ($feedWriter->addProduct($this->getProduct($magProduct, $productInfo[$parent_id], $store))
-                    && $magProduct->getTypeId() != 'simple'
-                ) {
+                if ($magProduct->getTypeId() != 'simple') {
                     $articles = array();
+                    $articles[] = $this->getProduct($magProduct, $productInfo[$parent_id], $store);
                     $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
                     $simpleCollection = $conf->getUsedProductCollection()
                         ->addAttributeToSelect('*')
@@ -132,23 +131,35 @@ class Fyndiq_Fyndiq_Model_Observer
                     }
                     $price = null;
                     $differentPrice = false;
-                    foreach ($articles as $article) {
-                        if (is_null($price)) {
-                            $price = $article['product-price'];
-                        } elseif ($article['product-price'] != $price) {
-                            $differentPrice = true;
-                            break;
+                    if (count($articles) > 2) {
+                        foreach (array_slice($articles, 1) as $article) {
+                            if (is_null($price)) {
+                                $price = $article['product-price'];
+                            } elseif ($article['product-price'] != $price) {
+                                $differentPrice = true;
+                                break;
+                            }
                         }
                     }
-                    if ($differentPrice) {
+                    if ($differentPrice == true) {
+
+                        //Need to remove the mainProduct so we won't get duplicates
+                        reset($articles);
+                        $articlekey = key($articles);
+                        unset($articles[$articlekey]);
+
+                        //Make the rest of the articles look like products.
                         foreach ($articles as $key => $article) {
                             $article['product-id'] .= '-'.$key;
                             $articles[$key] = $article;
                         }
                     }
+                    FyndiqUtils::debug('differentPrice', $differentPrice);
                     foreach ($articles as $article) {
                         $feedWriter->addProduct($article);
                     }
+                } else {
+                    $feedWriter->addProduct($this->getProduct($magProduct, $productInfo[$parent_id], $store));
                 }
             }
             $productsToExport->clear();
@@ -303,6 +314,9 @@ class Fyndiq_Fyndiq_Model_Observer
                     }
                     $feedProduct['article-name'] = implode(', ', $tags);
                 }
+
+                $images = $this->getImages($productParent, $magProduct);
+                $feedProduct = array_merge($feedProduct, $images);
             }
 
             // We're done
@@ -328,6 +342,7 @@ class Fyndiq_Fyndiq_Model_Observer
         // Images
         $images = $this->getImages($firstProduct->getId(), $firstProduct);
         $feedProduct = array_merge($feedProduct, $images);
+
 
         $feedProduct['article-location'] = self::UNKNOWN;
         $feedProduct['article-sku'] = $firstProduct->getSKU();
