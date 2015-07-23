@@ -168,7 +168,7 @@ class Fyndiq_Fyndiq_Model_Observer
 
         $images = Mage::getModel('catalog/product')->load($productId)->getMediaGalleryImages();
         $hasRealImagesSet = ($magProduct->getSmallImage() != null && $magProduct->getSmallImage() != "no_selection");
-        if (count($images) && $hasRealImagesSet) {
+        if (count($images)) {
             // Get gallery
             foreach ($images as $image) {
                 $urls[] = (string)$imageHelper->init($magProduct, 'image', $image->getFile());
