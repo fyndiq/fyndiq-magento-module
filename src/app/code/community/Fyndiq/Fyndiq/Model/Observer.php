@@ -124,7 +124,6 @@ class Fyndiq_Fyndiq_Model_Observer
                     $articles[] = $this->getProduct($magProduct, $productInfo[$parent_id], $store);
 
                     $this->getImages($parent_id, $magProduct, $productInfo[$parent_id]['id']);
-                    FyndiqUtils::debug('configurable product images', $this->productImages);
 
                     $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
                     $simpleCollection = $conf->getUsedProductCollection()
@@ -147,6 +146,8 @@ class Fyndiq_Fyndiq_Model_Observer
                         }
                     }
                     FyndiqUtils::debug('differentPrice', $differentPrice);
+                    FyndiqUtils::debug('Product images', $this->productImages['product']);
+                    FyndiqUtils::debug('articles images', $this->productImages['articles']);
                     if ($differentPrice == true) {
 
                         //Need to remove the mainProduct so we won't get duplicates
@@ -157,7 +158,7 @@ class Fyndiq_Fyndiq_Model_Observer
                         //Make the rest of the articles look like products.
                         foreach ($articles as $key => $article) {
                             $imageId = 1;
-                            $id = $article['product-id'];
+                            $id = $article['article-sku'];
                             $article['product-id'] .= '-'.$key;
 
                             foreach ($this->productImages['articles'][$id] as $url) {
@@ -258,7 +259,7 @@ class Fyndiq_Fyndiq_Model_Observer
      * @param  object $productModel
      * @return array
      */
-    protected function getImages($productId, $magProduct, $productInfoId)
+    protected function getImages($productId, $magProduct)
     {
         $this->productImages = array();
         $this->productImages['articles'] = array();
@@ -285,13 +286,13 @@ class Fyndiq_Fyndiq_Model_Observer
         }
         unset($images);
         $this->productImages['product'] = $urls;
-        //unset($urls);
 
         $simpleCollection = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct)->getUsedProductCollection()
             ->addAttributeToSelect('*')
             ->addFilterByRequiredOptions()
             ->getItems();
         foreach ($simpleCollection as $simpleProduct) {
+            $urls = array();
             $images = Mage::getModel('catalog/product')->load($simpleProduct->ID)->getMediaGalleryImages();
             $hasRealImagesSet = ($simpleProduct->getImage() != null && $simpleProduct->getImage() != "no_selection");
             if (count($images)) {
@@ -310,10 +311,11 @@ class Fyndiq_Fyndiq_Model_Observer
                 }
             }
             unset($images);
-            $this->productImages['articles'][$productInfoId] = $urls;
+            $sku = $simpleProduct->getSKU();
+            $this->productImages['articles'][$sku] = $urls;
         }
 
-        FyndiqUtils::debug('images', $urls);
+        FyndiqUtils::debug('images', $this->productImages);
     }
 
     /**
