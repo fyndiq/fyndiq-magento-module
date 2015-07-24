@@ -19,6 +19,7 @@ class Fyndiq_Fyndiq_Model_Observer
     private $stockModel = null;
     private $taxCalculationModel = null;
     private $imageHelper = null;
+    private $productImages = array();
 
     public function __construct()
     {
@@ -121,6 +122,10 @@ class Fyndiq_Fyndiq_Model_Observer
                 if ($magProduct->getTypeId() != 'simple') {
                     $articles = array();
                     $articles[] = $this->getProduct($magProduct, $productInfo[$parent_id], $store);
+
+                    $this->getImages($parent_id, $magProduct, $productInfo[$parent_id]['id']);
+                    FyndiqUtils::debug('configurable product images', $this->productImages);
+
                     $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
                     $simpleCollection = $conf->getUsedProductCollection()
                         ->addAttributeToSelect('*')
@@ -141,6 +146,7 @@ class Fyndiq_Fyndiq_Model_Observer
                             }
                         }
                     }
+                    FyndiqUtils::debug('differentPrice', $differentPrice);
                     if ($differentPrice == true) {
 
                         //Need to remove the mainProduct so we won't get duplicates
@@ -150,16 +156,77 @@ class Fyndiq_Fyndiq_Model_Observer
 
                         //Make the rest of the articles look like products.
                         foreach ($articles as $key => $article) {
+                            $imageId = 1;
+                            $id = $article['product-id'];
                             $article['product-id'] .= '-'.$key;
+
+                            foreach ($this->productImages['articles'][$id] as $url) {
+                                $article['product-image-' . $imageId . '-url'] = $url;
+                                $article['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
+                                $imageId++;
+                            }
+
+                            foreach ($this->productImages['product'] as $url) {
+                                $article['product-image-' . $imageId . '-url'] = $url;
+                                $article['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
+                                $imageId++;
+                            }
+
+                            $articles[$key] = $article;
+                        }
+                    } else {
+                        reset($articles);
+                        foreach ($articles as $key => $article) {
+                            foreach ($this->productImages['product'] as $url) {
+                                if (!in_array($url, $article)) {
+                                    $article['product-image-' . $imageId . '-url'] = $url;
+                                    $article['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
+                                    $imageId++;
+                                }
+                            }
+                            foreach ($this->productImages['articles'] as $articleimages) {
+                                foreach ($articleimages as $url) {
+                                    if (!in_array($url, $article)) {
+                                        $article['product-image-' . $imageId . '-url'] = $url;
+                                        $article['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
+                                        $imageId++;
+                                    }
+                                }
+                            }
                             $articles[$key] = $article;
                         }
                     }
-                    FyndiqUtils::debug('differentPrice', $differentPrice);
+                    FyndiqUtils::debug('articles to feed', $articles);
                     foreach ($articles as $article) {
                         $feedWriter->addProduct($article);
                     }
                 } else {
-                    $feedWriter->addProduct($this->getProduct($magProduct, $productInfo[$parent_id], $store));
+                    $imageId = 1;
+                    $product = $this->getProduct($magProduct, $productInfo[$parent_id], $store);
+                    $this->getImages($magProduct->getId(), $magProduct, $productInfo[$parent_id]['id']);
+
+                    $images = array();
+
+                    FyndiqUtils::debug('simpleproduct images', $this->productImages);
+
+                    foreach ($this->productImages['product'] as $url) {
+                        if (!in_array($url, $product)) {
+                            $product['product-image-' . $imageId . '-url'] = $url;
+                            $product['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
+                            $imageId++;
+                        }
+                    }
+                    foreach ($this->productImages['articles'] as $article) {
+                        foreach ($article as $url) {
+                            if (!in_array($url, $product)) {
+                                $product['product-image-' . $imageId . '-url'] = $url;
+                                $product['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
+                                $imageId++;
+                            }
+                        }
+                    }
+
+                    $feedWriter->addProduct($product);
                 }
             }
             $productsToExport->clear();
@@ -191,9 +258,10 @@ class Fyndiq_Fyndiq_Model_Observer
      * @param  object $productModel
      * @return array
      */
-    protected function getImages($productId, $magProduct)
+    protected function getImages($productId, $magProduct, $productInfoId)
     {
-        $result = array();
+        $this->productImages = array();
+        $this->productImages['articles'] = array();
         $urls = array();
         $imageId = 1;
         $imageHelper = Mage::helper('catalog/image');
@@ -216,6 +284,8 @@ class Fyndiq_Fyndiq_Model_Observer
             }
         }
         unset($images);
+        $this->productImages['product'] = $urls;
+        //unset($urls);
 
         $simpleCollection = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct)->getUsedProductCollection()
             ->addAttributeToSelect('*')
@@ -240,14 +310,10 @@ class Fyndiq_Fyndiq_Model_Observer
                 }
             }
             unset($images);
+            $this->productImages['articles'][$productInfoId] = $urls;
         }
+
         FyndiqUtils::debug('images', $urls);
-        foreach ($urls as $url) {
-            $result['product-image-' . $imageId . '-url'] = $url;
-            $result['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
-            $imageId++;
-        }
-        return $result;
     }
 
     /**
@@ -342,8 +408,8 @@ class Fyndiq_Fyndiq_Model_Observer
                     $feedProduct['article-name'] = implode(', ', $tags);
                 }
 
-                $images = $this->getImages($productParent, $parentModel);
-                $feedProduct = array_merge($feedProduct, $images);
+                //$images = $this->getImages($productParent, $parentModel);
+                //$feedProduct = array_merge($feedProduct, $images);
             }
 
             // We're done
@@ -360,8 +426,8 @@ class Fyndiq_Fyndiq_Model_Observer
         FyndiqUtils::debug('$simpleCollection', $simpleCollection);
 
         //Get Images for mainProduct
-        $images = $this->getImages($magProduct->getId(), $magProduct);
-        $feedProduct = array_merge($feedProduct, $images);
+        //$images = $this->getImages($magProduct->getId(), $magProduct);
+        //$feedProduct = array_merge($feedProduct, $images);
 
         //Get first article to the product.
         $firstProduct = array_shift($simpleCollection);
