@@ -285,7 +285,7 @@ class Fyndiq_Fyndiq_Model_Observer
             }
         } elseif ($hasRealImagesSet) {
             // Fallback to main image
-            $url = $simpleProduct->getImageUrl();
+            $url = $magProduct->getImageUrl();
             if (!in_array($url, $urls)) {
                 $urls[] = $url;
             }
