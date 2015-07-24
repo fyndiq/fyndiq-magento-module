@@ -407,9 +407,6 @@ class Fyndiq_Fyndiq_Model_Observer
                     }
                     $feedProduct['article-name'] = implode(', ', $tags);
                 }
-
-                //$images = $this->getImages($productParent, $parentModel);
-                //$feedProduct = array_merge($feedProduct, $images);
             }
 
             // We're done
@@ -424,10 +421,6 @@ class Fyndiq_Fyndiq_Model_Observer
         $simpleCollection = $conf->getUsedProductCollection()->addAttributeToSelect('*')
             ->addFilterByRequiredOptions()->getItems();
         FyndiqUtils::debug('$simpleCollection', $simpleCollection);
-
-        //Get Images for mainProduct
-        //$images = $this->getImages($magProduct->getId(), $magProduct);
-        //$feedProduct = array_merge($feedProduct, $images);
 
         //Get first article to the product.
         $firstProduct = array_shift($simpleCollection);
