@@ -203,14 +203,45 @@ class Fyndiq_Fyndiq_Model_Observer
         if (count($images)) {
             // Get gallery
             foreach ($images as $image) {
-                $urls[] = (string)$imageHelper->init($magProduct, 'image', $image->getFile());
+                $url = (string)$imageHelper->init($magProduct, 'image', $image->getFile());
+                if (!in_array($url, $urls)) {
+                    $urls[] = $url;
+                }
             }
         } elseif ($hasRealImagesSet) {
             // Fallback to main image
-            $urls[] = $magProduct->getImageUrl();
+            $url = $simpleProduct->getImageUrl();
+            if (!in_array($url, $urls)) {
+                $urls[] = $url;
+            }
         }
         unset($images);
 
+        $simpleCollection = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct)->getUsedProductCollection()
+            ->addAttributeToSelect('*')
+            ->addFilterByRequiredOptions()
+            ->getItems();
+        foreach ($simpleCollection as $simpleProduct) {
+            $images = Mage::getModel('catalog/product')->load($simpleProduct->ID)->getMediaGalleryImages();
+            $hasRealImagesSet = ($simpleProduct->getImage() != null && $simpleProduct->getImage() != "no_selection");
+            if (count($images)) {
+                // Get gallery
+              foreach ($images as $image) {
+                  $url = (string)$imageHelper->init($simpleProduct, 'image', $image->getFile());
+                  if (!in_array($url, $urls)) {
+                      $urls[] = $url;
+                  }
+              }
+            } elseif ($hasRealImagesSet) {
+                // Fallback to main image
+                $url = $simpleProduct->getImageUrl();
+                if (!in_array($url, $urls)) {
+                    $urls[] = $url;
+                }
+            }
+            unset($images);
+        }
+        FyndiqUtils::debug('images', $urls);
         foreach ($urls as $url) {
             $result['product-image-' . $imageId . '-url'] = $url;
             $result['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
@@ -279,10 +310,6 @@ class Fyndiq_Fyndiq_Model_Observer
             $feedProduct['product-category-id'] = $firstCategoryId;
         }
 
-        // Images
-        $images = $this->getImages($magArray['entity_id'], $magProduct);
-        $feedProduct = array_merge($feedProduct, $images);
-
         if ($magArray['type_id'] == 'simple') {
             $qtyStock = $this->stockModel->loadByProduct($magProduct->getId())->getQty();
             $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
@@ -315,7 +342,7 @@ class Fyndiq_Fyndiq_Model_Observer
                     $feedProduct['article-name'] = implode(', ', $tags);
                 }
 
-                $images = $this->getImages($productParent, $magProduct);
+                $images = $this->getImages($productParent, $parentModel);
                 $feedProduct = array_merge($feedProduct, $images);
             }
 
@@ -327,9 +354,15 @@ class Fyndiq_Fyndiq_Model_Observer
 
         //Get child articles
         $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
+
         $simpleCollection = $conf->getUsedProductCollection()->addAttributeToSelect('*')
             ->addFilterByRequiredOptions()->getItems();
         FyndiqUtils::debug('$simpleCollection', $simpleCollection);
+
+        //Get Images for mainProduct
+        $images = $this->getImages($magProduct->getId(), $magProduct);
+        $feedProduct = array_merge($feedProduct, $images);
+
         //Get first article to the product.
         $firstProduct = array_shift($simpleCollection);
         if ($firstProduct == null) {
@@ -338,11 +371,6 @@ class Fyndiq_Fyndiq_Model_Observer
         $qtyStock = $this->stockModel->loadByProduct($firstProduct->getId())->getQty();
 
         $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
-
-        // Images
-        $images = $this->getImages($firstProduct->getId(), $firstProduct);
-        $feedProduct = array_merge($feedProduct, $images);
-
 
         $feedProduct['article-location'] = self::UNKNOWN;
         $feedProduct['article-sku'] = $firstProduct->getSKU();
