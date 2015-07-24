@@ -19,6 +19,8 @@ class Fyndiq_Fyndiq_Model_Observer
     private $stockModel = null;
     private $taxCalculationModel = null;
     private $imageHelper = null;
+    private $productImages = array();
+    private $productMediaConfig = null;
 
     public function __construct()
     {
@@ -80,6 +82,7 @@ class Fyndiq_Fyndiq_Model_Observer
     {
         $store = Mage::getModel('core/store')->load($storeId);
         $fileName = FmConfig::getFeedPath($storeId);
+        $this->productMediaConfig = Mage::getModel('catalog/product_media_config');
 
         FyndiqUtils::debug('$fileName', $fileName);
         $file = fopen($fileName, 'w+');
@@ -192,13 +195,48 @@ class Fyndiq_Fyndiq_Model_Observer
         if (count($images)) {
             // Get gallery
             foreach ($images as $image) {
-                $urls[] = (string)$imageHelper->init($magProduct, 'image', $image->getFile());
+                $url = $this->productMediaConfig->getMediaUrl($image->getFile());
+                if (!in_array($url, $urls)) {
+                    $urls[] = $url;
+                }
             }
         } elseif ($hasRealImagesSet) {
             // Fallback to main image
-            $urls[] = $magProduct->getImageUrl();
+            $url = $this->productMediaConfig->getMediaUrl($magProduct->getImage());
+            if (!in_array($url, $urls)) {
+                $urls[] = $url;
+            }
         }
         unset($images);
+        $this->productImages['product'] = $urls;
+
+        $simpleCollection = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct)->getUsedProductCollection()
+            ->addAttributeToSelect('*')
+            ->addFilterByRequiredOptions()
+            ->getItems();
+        foreach ($simpleCollection as $simpleProduct) {
+            $urls = array();
+            $images = Mage::getModel('catalog/product')->load($simpleProduct->ID)->getMediaGalleryImages();
+            $hasRealImagesSet = ($simpleProduct->getImage() != null && $simpleProduct->getImage() != "no_selection");
+            if (count($images)) {
+                // Get gallery
+                foreach ($images as $image) {
+                    $url = $this->productMediaConfig->getMediaUrl($image->getFile());
+                    if (!in_array($url, $urls)) {
+                        $urls[] = $url;
+                    }
+                }
+            } elseif ($hasRealImagesSet) {
+                // Fallback to main image
+                $url = $this->productMediaConfig->getMediaUrl($simpleProduct->getImage());
+                if (!in_array($url, $urls)) {
+                    $urls[] = $url;
+                }
+            }
+            unset($images);
+            $sku = $simpleProduct->getSKU();
+            $this->productImages['articles'][$sku] = $urls;
+        }
 
         foreach ($urls as $url) {
             $result['product-image-' . $imageId . '-url'] = $url;
