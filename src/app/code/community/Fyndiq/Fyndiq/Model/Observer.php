@@ -148,13 +148,14 @@ class Fyndiq_Fyndiq_Model_Observer
                     FyndiqUtils::debug('differentPrice', $differentPrice);
                     FyndiqUtils::debug('Product images', $this->productImages['product']);
                     FyndiqUtils::debug('articles images', $this->productImages['articles']);
+
+                    //Need to remove the mainProduct so we won't get duplicates
+                    reset($articles);
+                    $articlekey = key($articles);
+                    unset($articles[$articlekey]);
+
                     //If price is different, make all articles products and add specific images.
                     if ($differentPrice == true) {
-                        //Need to remove the mainProduct so we won't get duplicates
-                        reset($articles);
-                        $articlekey = key($articles);
-                        unset($articles[$articlekey]);
-
                         //Make the rest of the articles look like products.
                         foreach ($articles as $key => $article) {
                             $imageId = 1;
