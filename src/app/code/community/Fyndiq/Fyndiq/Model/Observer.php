@@ -148,6 +148,7 @@ class Fyndiq_Fyndiq_Model_Observer
                     FyndiqUtils::debug('differentPrice', $differentPrice);
                     FyndiqUtils::debug('Product images', $this->productImages['product']);
                     FyndiqUtils::debug('articles images', $this->productImages['articles']);
+                    //If price is different, make all articles products and add specific images.
                     if ($differentPrice == true) {
                         //Need to remove the mainProduct so we won't get duplicates
                         reset($articles);
@@ -160,6 +161,7 @@ class Fyndiq_Fyndiq_Model_Observer
                             $id = $article['article-sku'];
                             $article['product-id'] .= '-'.$key;
 
+                            //We want to just add article's and the main products images to articles if split.
                             $images = $this->getImagesFromArray($id);
                             $article = array_merge($article, $images);
 
@@ -167,9 +169,10 @@ class Fyndiq_Fyndiq_Model_Observer
                         }
                     } else {
                         reset($articles);
+                        //If the price is not differnet - add all images to product and articles.
                         foreach ($articles as $key => $article) {
                             $images = $this->getImagesFromArray();
-                            -                           $article = array_merge($article, $images);
+                            $article = array_merge($article, $images);
                             $articles[$key] = $article;
                         }
                     }
@@ -178,6 +181,8 @@ class Fyndiq_Fyndiq_Model_Observer
                         $feedWriter->addProduct($article);
                     }
                 } else {
+                    //No configurable products or anything, just a lonely product
+                    //Just get the products images and add them all to the product.
                     $imageId = 1;
                     $product = $this->getProduct($magProduct, $productInfo[$parent_id], $store);
                     $this->getImages($magProduct->getId(), $magProduct, $productInfo[$parent_id]['id']);
@@ -200,6 +205,7 @@ class Fyndiq_Fyndiq_Model_Observer
     {
         $product = array();
         $imageId = 1;
+        //If we don't want to add a specific article, add all of them.
         if (is_null($articleId)) {
             foreach ($this->productImages['product'] as $url) {
                 if (!in_array($url, $product)) {
@@ -217,6 +223,7 @@ class Fyndiq_Fyndiq_Model_Observer
                     }
                 }
             }
+        // If we want to add just the product images and the article's images - run this.
         } else {
             foreach ($this->productImages['articles'][$articleId] as $url) {
                 $product['product-image-' . $imageId . '-url'] = $url;
