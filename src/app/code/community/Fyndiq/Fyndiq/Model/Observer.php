@@ -121,10 +121,12 @@ class Fyndiq_Fyndiq_Model_Observer
                 $parent_id = $magProduct->getId();
                 FyndiqUtils::debug('$magProduct->getTypeId()', $magProduct->getTypeId());
 
-                if ($feedWriter->addProduct($this->getProduct($magProduct, $productInfo[$parent_id], $store))
-                    && $magProduct->getTypeId() != 'simple'
-                ) {
+                if ($magProduct->getTypeId() != 'simple') {
                     $articles = array();
+                    $articles[] = $this->getProduct($magProduct, $productInfo[$parent_id], $store);
+
+                    $this->getImages($parent_id, $magProduct, $productInfo[$parent_id]['id']);
+
                     $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
                     $simpleCollection = $conf->getUsedProductCollection()
                         ->addAttributeToSelect('*')
@@ -135,28 +137,110 @@ class Fyndiq_Fyndiq_Model_Observer
                     }
                     $price = null;
                     $differentPrice = false;
-                    foreach ($articles as $article) {
-                        if (is_null($price)) {
-                            $price = $article['product-price'];
-                        } elseif ($article['product-price'] != $price) {
-                            $differentPrice = true;
-                            break;
+                    if (count($articles) > 2) {
+                        foreach (array_slice($articles, 1) as $article) {
+                            if (is_null($price)) {
+                                $price = $article['product-price'];
+                            } elseif ($article['product-price'] != $price) {
+                                $differentPrice = true;
+                                break;
+                            }
                         }
                     }
-                    if ($differentPrice) {
+                    FyndiqUtils::debug('differentPrice', $differentPrice);
+                    FyndiqUtils::debug('Product images', $this->productImages['product']);
+                    FyndiqUtils::debug('articles images', $this->productImages['articles']);
+
+                    //Need to remove the mainProduct so we won't get duplicates
+                    reset($articles);
+                    $articlekey = key($articles);
+                    unset($articles[$articlekey]);
+
+                    //If price is different, make all articles products and add specific images.
+                    if ($differentPrice == true) {
+                        //Make the rest of the articles look like products.
                         foreach ($articles as $key => $article) {
+                            $imageId = 1;
+                            $id = $article['article-sku'];
                             $article['product-id'] .= '-'.$key;
+
+                            //We want to just add article's and the main products images to articles if split.
+                            $images = $this->getImagesFromArray($id);
+                            $article = array_merge($article, $images);
+
+                            $articles[$key] = $article;
+                        }
+                    } else {
+                        reset($articles);
+                        //If the price is not differnet - add all images to product and articles.
+                        foreach ($articles as $key => $article) {
+                            $images = $this->getImagesFromArray();
+                            $article = array_merge($article, $images);
                             $articles[$key] = $article;
                         }
                     }
+                    FyndiqUtils::debug('articles to feed', $articles);
                     foreach ($articles as $article) {
                         $feedWriter->addProduct($article);
                     }
+                } else {
+                    //No configurable products or anything, just a lonely product
+                    //Just get the products images and add them all to the product.
+                    $imageId = 1;
+                    $product = $this->getProduct($magProduct, $productInfo[$parent_id], $store);
+                    $this->getImages($magProduct->getId(), $magProduct, $productInfo[$parent_id]['id']);
+
+                    $images = $this->getImagesFromArray();
+                    $product = array_merge($product, $images);
+
+                    FyndiqUtils::debug('simpleproduct images', $this->productImages);
+
+                    $feedWriter->addProduct($product);
                 }
             }
             $productsToExport->clear();
         }
         return $feedWriter->write();
+    }
+
+
+    private function getImagesFromArray($articleId = null)
+    {
+        $product = array();
+        $imageId = 1;
+        //If we don't want to add a specific article, add all of them.
+        if (is_null($articleId)) {
+            foreach ($this->productImages['product'] as $url) {
+                if (!in_array($url, $product)) {
+                    $product['product-image-' . $imageId . '-url'] = $url;
+                    $product['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
+                    $imageId++;
+                }
+            }
+            foreach ($this->productImages['articles'] as $article) {
+                foreach ($article as $url) {
+                    if (!in_array($url, $product)) {
+                        $product['product-image-' . $imageId . '-url'] = $url;
+                        $product['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
+                        $imageId++;
+                    }
+                }
+            }
+        // If we want to add just the product images and the article's images - run this.
+        } else {
+            foreach ($this->productImages['articles'][$articleId] as $url) {
+                $product['product-image-' . $imageId . '-url'] = $url;
+                $product['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
+                $imageId++;
+            }
+
+            foreach ($this->productImages['product'] as $url) {
+                $product['product-image-' . $imageId . '-url'] = $url;
+                $product['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
+                $imageId++;
+            }
+        }
+        return $product;
     }
 
     /**
@@ -185,7 +269,8 @@ class Fyndiq_Fyndiq_Model_Observer
      */
     protected function getImages($productId, $magProduct)
     {
-        $result = array();
+        $this->productImages = array();
+        $this->productImages['articles'] = array();
         $urls = array();
         $imageId = 1;
         $imageHelper = Mage::helper('catalog/image');
@@ -238,12 +323,7 @@ class Fyndiq_Fyndiq_Model_Observer
             $this->productImages['articles'][$sku] = $urls;
         }
 
-        foreach ($urls as $url) {
-            $result['product-image-' . $imageId . '-url'] = $url;
-            $result['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
-            $imageId++;
-        }
-        return $result;
+        FyndiqUtils::debug('images', $this->productImages);
     }
 
     /**
@@ -306,10 +386,6 @@ class Fyndiq_Fyndiq_Model_Observer
             $feedProduct['product-category-id'] = $firstCategoryId;
         }
 
-        // Images
-        $images = $this->getImages($magArray['entity_id'], $magProduct);
-        $feedProduct = array_merge($feedProduct, $images);
-
         if ($magArray['type_id'] == 'simple') {
             $qtyStock = $this->stockModel->loadByProduct($magProduct->getId())->getQty();
             $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
@@ -351,9 +427,11 @@ class Fyndiq_Fyndiq_Model_Observer
 
         //Get child articles
         $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
+
         $simpleCollection = $conf->getUsedProductCollection()->addAttributeToSelect('*')
             ->addFilterByRequiredOptions()->getItems();
         FyndiqUtils::debug('$simpleCollection', $simpleCollection);
+
         //Get first article to the product.
         $firstProduct = array_shift($simpleCollection);
         if ($firstProduct == null) {
@@ -362,10 +440,6 @@ class Fyndiq_Fyndiq_Model_Observer
         $qtyStock = $this->stockModel->loadByProduct($firstProduct->getId())->getQty();
 
         $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
-
-        // Images
-        $images = $this->getImages($firstProduct->getId(), $firstProduct);
-        $feedProduct = array_merge($feedProduct, $images);
 
         $feedProduct['article-location'] = self::UNKNOWN;
         $feedProduct['article-sku'] = $firstProduct->getSKU();
