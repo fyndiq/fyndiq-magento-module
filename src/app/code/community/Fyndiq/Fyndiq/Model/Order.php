@@ -199,7 +199,11 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             $product = Mage::getModel('catalog/product')->load($id);
 
             //Set price minus VAT:
-            $price = $row->unit_price_amount / ((100+intval($row->vat_percent)) / 100);
+            if (Mage::getModel('Tax/Config')->priceIncludesTax()) {
+                $price = $row->unit_price_amount / ((100+intval($row->vat_percent)) / 100);
+            } else {
+                $price = $row->unit_price_amount;
+            }
 
             //add product to the cart
             $productInfo = array('qty' => $row->quantity);
