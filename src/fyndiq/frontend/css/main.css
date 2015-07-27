@@ -165,7 +165,9 @@
     border-spacing: 0;
     border-top: 1px solid #e3e8ec;
     font-size: 9pt;
-    padding: .4em; }
+    padding: .4em;
+    max-width: 280px;
+    overflow: hidden; }
   .fm-panel table tr:nth-child(even) {
     background-color: #f5f8fb; }
 
@@ -349,6 +351,10 @@
   .lastupdated .last-header {
     display: block;
     margin: 3px 0 -5px; }
+
+.fm-orders-list a {
+  color: #f08c48;
+  text-decoration: underline; }
 
 .fm-container {
   background-color: #e7eef4;
