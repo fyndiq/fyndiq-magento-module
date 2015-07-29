@@ -362,13 +362,15 @@ class Fyndiq_Fyndiq_Model_Observer
             $description = $magProduct->getShortDescription();
         }
 
+        $magPrice = FmHelpers::getProductPrice($magProduct);
+
         $feedProduct['product-description'] = $description;
 
         $discount = $productInfo['exported_price_percentage'];
-        $price = FyndiqUtils::getFyndiqPrice($magArray['price'], $discount);
+        $price = FyndiqUtils::getFyndiqPrice($magPrice, $discount);
         $feedProduct['product-price'] = FyndiqUtils::formatPrice($price);
         $feedProduct['product-vat-percent'] = $this->getTaxRate($magProduct, $store);
-        $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($magArray['price']);
+        $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($magPrice);
         $feedProduct['product-market'] = Mage::getStoreConfig('general/country/default');
         $feedProduct['product-currency'] = $store->getCurrentCurrencyCode();
 
