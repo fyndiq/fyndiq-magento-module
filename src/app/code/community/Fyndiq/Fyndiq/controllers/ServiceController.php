@@ -15,7 +15,6 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
 
 class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 {
-
     const ALL_PRODUCTS_CATEGORY_ID = -1;
     protected function _construct()
     {
@@ -186,13 +185,16 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 $name_short = FyndiqFeedWriter::sanitizeColumn("product-title", $name);
             }
 
+            $magPrice = FmHelpers::getProductPrice($prod);
+
             $prodData = array(
                 'id' => $prod->getId(),
                 'url' => $prod->getUrl(),
                 'name' => $name,
                 'name_short' => $name_short,
                 'quantity' => intval($this->getProductQty($prod)),
-                'price' => number_format((float)$prod->getPrice(), 2, '.', ''),
+                //'price' => number_format((float)$magPrice, 2, '.', ''),
+                'price' => $magPrice,
                 'fyndiq_percentage' => $fyndiqPercentage,
                 'fyndiq_exported' => $fyndiq,
                 'fyndiq_state' => $fyndiqState,
@@ -320,7 +322,6 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             }
             $data['product_id'] = $product['id'];
             $result[] = $productModel->addProduct($data);
-
         }
 
         return $this->response($result);
