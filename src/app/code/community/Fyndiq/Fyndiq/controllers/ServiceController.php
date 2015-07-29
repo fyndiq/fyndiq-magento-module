@@ -483,11 +483,9 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
     private function getTaxRate($product, $store)
     {
-        if (!$this->taxCalculationModel) {
-            $this->taxCalculationModel = Mage::getModel('tax/calculation');
-        }
+        $taxCalculationModel = Mage::getModel('tax/calculation');
         $taxClassId = $product->getTaxClassId();
-        $request = $this->taxCalculationModel->getRateRequest(null, null, null, $store);
-        return $this->taxCalculationModel->getRate($request->setProductClassId($taxClassId));
+        $request = $taxCalculationModel->getRateRequest(null, null, null, $store);
+        return $taxCalculationModel->getRate($request->setProductClassId($taxClassId));
     }
 }
