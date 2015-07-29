@@ -56,20 +56,20 @@ class FmHelpers
         $catalogRulePrice = "";
         $catalogRulePrice = Mage::getModel('catalogrule/rule')->calcProductPriceRule($objProduct, $objProduct->getFinalPrice());
             // Added logc to consider speacial price in feed if it is available
-            if ($objProduct->getSpecialPrice()) {
-                $today = mktime(0, 0, 0, date('m'), date('d'), date('y'));
-                $todaytimestamp = strtotime(date('Y-m-d 00:00:00', $today));
-                $spcl_pri_time = is_null($objProduct->getSpecialToDate()) ? $todaytimestamp : strtotime($objProduct->getSpecialToDate());
-                if ($spcl_pri_time <= $todaytimestamp) {
-                    $price = $objProduct->getSpecialPrice();
-                } else {
-                    $price = $objProduct->getPrice();
-                }
-            } elseif ($catalogRulePrice) {
-                $price = $catalogRulePrice;
+        if ($objProduct->getSpecialPrice()) {
+            $today = mktime(0, 0, 0, date('m'), date('d'), date('y'));
+            $todaytimestamp = strtotime(date('Y-m-d 00:00:00', $today));
+            $spcl_pri_time = is_null($objProduct->getSpecialToDate()) ? $todaytimestamp : strtotime($objProduct->getSpecialToDate());
+            if ($spcl_pri_time <= $todaytimestamp) {
+                $price = $objProduct->getSpecialPrice();
             } else {
                 $price = $objProduct->getPrice();
             }
+        } elseif ($catalogRulePrice) {
+            $price = $catalogRulePrice;
+        } else {
+            $price = $objProduct->getPrice();
+        }
 
         if (!Mage::helper('tax')->priceIncludesTax()) {
             $price = Mage::helper('tax')->getPrice($objProduct, $price);
