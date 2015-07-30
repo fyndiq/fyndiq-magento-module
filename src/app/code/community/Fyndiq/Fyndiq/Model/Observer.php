@@ -16,7 +16,6 @@ class Fyndiq_Fyndiq_Model_Observer
 
     private $productModel = null;
     private $categoryModel = null;
-    private $stockModel = null;
     private $taxCalculationModel = null;
     private $imageHelper = null;
     private $productImages = array();
@@ -341,9 +340,6 @@ class Fyndiq_Fyndiq_Model_Observer
         if (!$this->categoryModel) {
             $this->categoryModel = Mage::getModel('catalog/category');
         }
-        if (!$this->stockModel) {
-            $this->stockModel = Mage::getModel('cataloginventory/stock_item');
-        }
 
         $feedProduct = array();
         $magArray = $magProduct->getData();
@@ -387,7 +383,6 @@ class Fyndiq_Fyndiq_Model_Observer
         }
 
         if ($magArray['type_id'] == 'simple') {
-            $qtyStock = $this->stockModel->loadByProduct($magProduct->getId())->getQty();
             $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
 
             $feedProduct['article-location'] = self::UNKNOWN;
@@ -437,7 +432,6 @@ class Fyndiq_Fyndiq_Model_Observer
         if ($firstProduct == null) {
             $firstProduct = $magProduct;
         }
-        $qtyStock = $this->stockModel->loadByProduct($firstProduct->getId())->getQty();
 
         $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
 
