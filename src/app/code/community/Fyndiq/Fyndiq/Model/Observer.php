@@ -383,6 +383,16 @@ class Fyndiq_Fyndiq_Model_Observer
         }
 
         if ($magArray['type_id'] == 'simple') {
+            //var_dump($stockItem);
+            $stock_item = Mage::getModel('cataloginventory/stock_item')->loadByProduct($magProduct);
+            FyndiqUtils::debug('stockitem', $stock_item);
+            if ($magProduct->getStatus() != 1 || $stock_item->getIsInStock()== 0) {
+                $qtyStock = 0;
+            } else {
+                $qtyStock = $stock_item->getQty();
+            }
+            FyndiqUtils::debug('$qtystock', $qtyStock);
+
             $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
 
             $feedProduct['article-location'] = self::UNKNOWN;
@@ -433,6 +443,14 @@ class Fyndiq_Fyndiq_Model_Observer
             $firstProduct = $magProduct;
         }
 
+        $stock_item = Mage::getModel('cataloginventory/stock_item')->loadByProduct($firstProduct);
+        FyndiqUtils::debug('stockitem', $stock_item);
+        if ($firstProduct->getStatus() != 1 || $stock_item->getIsInStock()== 0) {
+            $qtyStock = 0;
+        } else {
+            $qtyStock = $stock_item->getQty();
+        }
+        FyndiqUtils::debug('$qtystock', $qtyStock);
         $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
 
         $feedProduct['article-location'] = self::UNKNOWN;
