@@ -383,15 +383,7 @@ class Fyndiq_Fyndiq_Model_Observer
         }
 
         if ($magArray['type_id'] == 'simple') {
-            //var_dump($stockItem);
-            $stock_item = Mage::getModel('cataloginventory/stock_item')->loadByProduct($magProduct);
-            FyndiqUtils::debug('stockitem', $stock_item);
-            if ($magProduct->getStatus() != 1 || $stock_item->getIsInStock()== 0) {
-                $qtyStock = 0;
-            } else {
-                $qtyStock = $stock_item->getQty();
-            }
-            FyndiqUtils::debug('$qtystock', $qtyStock);
+            $qtyStock = $this->get_quantity($magProduct);
 
             $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
 
@@ -443,14 +435,8 @@ class Fyndiq_Fyndiq_Model_Observer
             $firstProduct = $magProduct;
         }
 
-        $stock_item = Mage::getModel('cataloginventory/stock_item')->loadByProduct($firstProduct);
-        FyndiqUtils::debug('stockitem', $stock_item);
-        if ($firstProduct->getStatus() != 1 || $stock_item->getIsInStock()== 0) {
-            $qtyStock = 0;
-        } else {
-            $qtyStock = $stock_item->getQty();
-        }
-        FyndiqUtils::debug('$qtystock', $qtyStock);
+        $qtyStock = $this->get_quantity($firstProduct);
+
         $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
 
         $feedProduct['article-location'] = self::UNKNOWN;
@@ -523,6 +509,19 @@ class Fyndiq_Fyndiq_Model_Observer
             return FmHelpers::callApi($storeId, 'PATCH', 'settings/', $data);
         }
         throw new Exception(FyndiqTranslation::get('empty-username-token'));
+    }
+
+    private function get_quantity($product)
+    {
+        $stock_item = Mage::getModel('cataloginventory/stock_item')->loadByProduct($product);
+        FyndiqUtils::debug('stockitem', $stock_item);
+        if ($product->getStatus() != 1 || $stock_item->getIsInStock()== 0) {
+            $qtyStock = 0;
+        } else {
+            $qtyStock = $stock_item->getQty();
+        }
+        FyndiqUtils::debug('$qtystock', $qtyStock);
+        return $qtyStock;
     }
 
     public function getStoreId()
