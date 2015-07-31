@@ -103,7 +103,6 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
     {
         //Shipping / Billing information gather
         //if we have a default shipping address, try gathering its values into variables we need
-        $countryId = FyndiqUtils::getCountryCode($fyndiqOrder->delivery_country);
         $shippingAddressArray = array(
             'firstname' => $fyndiqOrder->delivery_firstname,
             'lastname' => $fyndiqOrder->delivery_lastname,
@@ -112,23 +111,23 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             'region_id' => '',
             'region' => '',
             'postcode' => $fyndiqOrder->delivery_postalcode,
-            'country_id' => $countryId,
+            'country_id' => $fyndiqOrder->delivery_country_code,
             'telephone' => $fyndiqOrder->delivery_phone,
         );
 
         // Check if country region is required
-        $isRequired = Mage::helper('directory')->isRegionRequired($countryId);
+        $isRequired = Mage::helper('directory')->isRegionRequired($fyndiqOrder->delivery_country_code);
         if ($isRequired) {
             // Get and set Region
-            if ($countryId != 'DE') {
-                throw new Exception(sprintf('Error, region is required for `%s`.', $countryId));
+            if ($fyndiqOrder->delivery_country_code != 'DE') {
+                throw new Exception(sprintf('Error, region is required for `%s`.', $fyndiqOrder->delivery_country_code));
             }
 
             $this->getRegionHelper();
             $regionCode = FyndiqRegionHelper::codeToRegionCodeDe($fyndiqOrder->delivery_postalcode);
 
             // Try to deduce the region for Germany
-            $region = Mage::getModel('directory/region')->loadByCode($regionCode, $countryId);
+            $region = Mage::getModel('directory/region')->loadByCode($regionCode, $fyndiqOrder->delivery_country_code);
             if (is_null($region)) {
                 throw new Exception(sprintf(
                     'Error, could not find region `%s` for `%s.`',
