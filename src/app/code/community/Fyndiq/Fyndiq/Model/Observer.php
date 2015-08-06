@@ -16,10 +16,10 @@ class Fyndiq_Fyndiq_Model_Observer
 
     private $productModel = null;
     private $categoryModel = null;
-    private $stockModel = null;
     private $taxCalculationModel = null;
     private $imageHelper = null;
     private $productImages = array();
+    private $productMediaConfig = null;
 
     public function __construct()
     {
@@ -81,6 +81,7 @@ class Fyndiq_Fyndiq_Model_Observer
     {
         $store = Mage::getModel('core/store')->load($storeId);
         $fileName = FmConfig::getFeedPath($storeId);
+        $this->productMediaConfig = Mage::getModel('catalog/product_media_config');
 
         FyndiqUtils::debug('$fileName', $fileName);
         $file = fopen($fileName, 'w+');
@@ -278,14 +279,14 @@ class Fyndiq_Fyndiq_Model_Observer
         if (count($images)) {
             // Get gallery
             foreach ($images as $image) {
-                $url = (string)$imageHelper->init($magProduct, 'image', $image->getFile());
+                $url = $this->productMediaConfig->getMediaUrl($image->getFile());
                 if (!in_array($url, $urls)) {
                     $urls[] = $url;
                 }
             }
         } elseif ($hasRealImagesSet) {
             // Fallback to main image
-            $url = $magProduct->getImageUrl();
+            $url = $this->productMediaConfig->getMediaUrl($magProduct->getImage());
             if (!in_array($url, $urls)) {
                 $urls[] = $url;
             }
@@ -304,14 +305,14 @@ class Fyndiq_Fyndiq_Model_Observer
             if (count($images)) {
                 // Get gallery
                 foreach ($images as $image) {
-                    $url = (string)$imageHelper->init($simpleProduct, 'image', $image->getFile());
+                    $url = $this->productMediaConfig->getMediaUrl($image->getFile());
                     if (!in_array($url, $urls)) {
                         $urls[] = $url;
                     }
                 }
             } elseif ($hasRealImagesSet) {
                 // Fallback to main image
-                $url = $simpleProduct->getImageUrl();
+                $url = $this->productMediaConfig->getMediaUrl($simpleProduct->getImage());
                 if (!in_array($url, $urls)) {
                     $urls[] = $url;
                 }
@@ -339,9 +340,6 @@ class Fyndiq_Fyndiq_Model_Observer
         if (!$this->categoryModel) {
             $this->categoryModel = Mage::getModel('catalog/category');
         }
-        if (!$this->stockModel) {
-            $this->stockModel = Mage::getModel('cataloginventory/stock_item');
-        }
 
         $feedProduct = array();
         $magArray = $magProduct->getData();
@@ -360,13 +358,15 @@ class Fyndiq_Fyndiq_Model_Observer
             $description = $magProduct->getShortDescription();
         }
 
+        $magPrice = FmHelpers::getProductPrice($magProduct);
+
         $feedProduct['product-description'] = $description;
 
         $discount = $productInfo['exported_price_percentage'];
-        $price = FyndiqUtils::getFyndiqPrice($magArray['price'], $discount);
+        $price = FyndiqUtils::getFyndiqPrice($magPrice, $discount);
         $feedProduct['product-price'] = FyndiqUtils::formatPrice($price);
         $feedProduct['product-vat-percent'] = $this->getTaxRate($magProduct, $store);
-        $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($magArray['price']);
+        $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($magPrice);
         $feedProduct['product-market'] = Mage::getStoreConfig('general/country/default');
         $feedProduct['product-currency'] = $store->getCurrentCurrencyCode();
 
@@ -385,7 +385,8 @@ class Fyndiq_Fyndiq_Model_Observer
         }
 
         if ($magArray['type_id'] == 'simple') {
-            $qtyStock = $this->stockModel->loadByProduct($magProduct->getId())->getQty();
+            $qtyStock = $this->get_quantity($magProduct);
+
             $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
 
             $feedProduct['article-location'] = self::UNKNOWN;
@@ -435,7 +436,8 @@ class Fyndiq_Fyndiq_Model_Observer
         if ($firstProduct == null) {
             $firstProduct = $magProduct;
         }
-        $qtyStock = $this->stockModel->loadByProduct($firstProduct->getId())->getQty();
+
+        $qtyStock = $this->get_quantity($firstProduct);
 
         $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
 
@@ -509,6 +511,19 @@ class Fyndiq_Fyndiq_Model_Observer
             return FmHelpers::callApi($storeId, 'PATCH', 'settings/', $data);
         }
         throw new Exception(FyndiqTranslation::get('empty-username-token'));
+    }
+
+    private function get_quantity($product)
+    {
+        $stock_item = Mage::getModel('cataloginventory/stock_item')->loadByProduct($product);
+        FyndiqUtils::debug('stockitem', $stock_item);
+        if ($product->getStatus() != 1 || $stock_item->getIsInStock()== 0) {
+            $qtyStock = 0;
+        } else {
+            $qtyStock = $stock_item->getQty();
+        }
+        FyndiqUtils::debug('$qtystock', $qtyStock);
+        return $qtyStock;
     }
 
     public function getStoreId()
