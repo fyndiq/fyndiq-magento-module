@@ -133,7 +133,7 @@ class Fyndiq_Fyndiq_Model_Observer
                         ->addFilterByRequiredOptions()
                         ->getItems();
                     foreach ($simpleCollection as $simpleProduct) {
-                        $prices[] = $magPrice = FmHelpers::getProductPrice($simpleProduct);
+                        $prices[] = FmHelpers::getProductPrice($simpleProduct);
                         $articles[] = $this->getProduct($simpleProduct, $productInfo[$parent_id], $store);
                     }
                     $price = null;
