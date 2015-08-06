@@ -122,6 +122,7 @@ class Fyndiq_Fyndiq_Model_Observer
 
                 if ($magProduct->getTypeId() != 'simple') {
                     $articles = array();
+                    $prices = array();
                     $articles[] = $this->getProduct($magProduct, $productInfo[$parent_id], $store);
 
                     $this->getImages($parent_id, $magProduct, $productInfo[$parent_id]['id']);
@@ -132,20 +133,12 @@ class Fyndiq_Fyndiq_Model_Observer
                         ->addFilterByRequiredOptions()
                         ->getItems();
                     foreach ($simpleCollection as $simpleProduct) {
+                        $prices[] = $magPrice = FmHelpers::getProductPrice($simpleProduct);
                         $articles[] = $this->getProduct($simpleProduct, $productInfo[$parent_id], $store);
                     }
                     $price = null;
-                    $differentPrice = false;
-                    if (count($articles) > 2) {
-                        foreach (array_slice($articles, 1) as $article) {
-                            if (is_null($price)) {
-                                $price = $article['product-price'];
-                            } elseif ($article['product-price'] != $price) {
-                                $differentPrice = true;
-                                break;
-                            }
-                        }
-                    }
+                    $differentPrice = count(array_unique($prices)) > 1;
+
                     FyndiqUtils::debug('differentPrice', $differentPrice);
                     FyndiqUtils::debug('Product images', $this->productImages['product']);
                     FyndiqUtils::debug('articles images', $this->productImages['articles']);
