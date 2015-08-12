@@ -249,6 +249,13 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $importStatus = FmConfig::get('import_state', $storeId);
         $order->setStatus($importStatus);
 
+        // Add fyndiqOrder id as comment
+        $comment = sprintf(
+            "Fyndiq order id: %s",
+            $fyndiqOrder->id
+        );
+        $order->addStatusHistoryComment($comment);
+
         // Add delivery note as comment
         $comment = sprintf(
             "Fyndiq delivery note: http://fyndiq.se%s \n just copy url and paste in the browser to download the delivery note.",
