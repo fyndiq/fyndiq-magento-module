@@ -15,7 +15,6 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
 
 class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 {
-
     const ALL_PRODUCTS_CATEGORY_ID = -1;
     protected function _construct()
     {
@@ -186,13 +185,16 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 $name_short = FyndiqFeedWriter::sanitizeColumn("product-title", $name);
             }
 
+            $magPrice = FmHelpers::getProductPrice($prod);
+
             $prodData = array(
                 'id' => $prod->getId(),
                 'url' => $prod->getUrl(),
                 'name' => $name,
                 'name_short' => $name_short,
                 'quantity' => intval($this->getProductQty($prod)),
-                'price' => number_format((float)$prod->getPrice(), 2, '.', ''),
+                //'price' => number_format((float)$magPrice, 2, '.', ''),
+                'price' => $magPrice,
                 'fyndiq_percentage' => $fyndiqPercentage,
                 'fyndiq_exported' => $fyndiq,
                 'fyndiq_state' => $fyndiqState,
@@ -203,7 +205,9 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 'fyndiq_status' => $fyndiqStatus,
                 'fyndiq_check_on' => ($fyndiq && $fyndiqState == 'FOR_SALE'),
                 'currency' => $currency,
-                'fyndiq_check_pending' => ($fyndiq && $fyndiqState === null)
+                'fyndiq_check_pending' => ($fyndiq && $fyndiqState === null),
+                'vat_percent_zero' => ($this->getTaxRate($prod, $storeId) == 0),
+                'vat_percent_not_zero' => ($this->getTaxRate($prod, $storeId) > 0)
             );
 
             //trying to get image, if not image will be false
@@ -320,7 +324,6 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             }
             $data['product_id'] = $product['id'];
             $result[] = $productModel->addProduct($data);
-
         }
 
         return $this->response($result);
@@ -479,5 +482,14 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')'
             );
         }
+    }
+
+    private function getTaxRate($product, $storeId)
+    {
+        $taxCalculationModel = Mage::getModel('tax/calculation');
+        $taxClassId = $product->getTaxClassId();
+        $store = Mage::app()->getStore($storeId);
+        $request = $taxCalculationModel->getRateRequest(null, null, null, $store);
+        return $taxCalculationModel->getRate($request->setProductClassId($taxClassId));
     }
 }
