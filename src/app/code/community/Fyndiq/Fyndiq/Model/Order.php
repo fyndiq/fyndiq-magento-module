@@ -251,15 +251,15 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
 
         // Add fyndiqOrder id as comment
         $comment = sprintf(
-            "Fyndiq order id: %s",
+            FyndiqTranslation::get('Fyndiq order id: %s'),
             $fyndiqOrder->id
         );
         $order->addStatusHistoryComment($comment);
 
         // Add delivery note as comment
         $comment = sprintf(
-            "Fyndiq delivery note: http://fyndiq.se%s \n just copy url and paste in the browser to download the delivery note.",
-            $fyndiqOrder->delivery_note
+            FyndiqTranslation::get('Fyndiq delivery note: %s \n just copy url and paste in the browser to download the delivery note.'),
+            'http://fyndiq.se' . $fyndiqOrder->delivery_note
         );
         $order->addStatusHistoryComment($comment);
 
