@@ -346,9 +346,19 @@ class Fyndiq_Fyndiq_Model_Observer
 
         $feedProduct['product-id'] = $productInfo['id'];
         $feedProduct['product-title'] = $magArray['name'];
-        $description = $magProduct->getDescription();
-        if (is_null($description)) {
-            $description = $magProduct->getShortDescription();
+
+        $descriptionSetting = FmConfig::get('description', $store);
+
+        switch ($descriptionSetting) {
+            case 1:
+                $description = $magProduct->getDescription();
+                break;
+            case 2:
+                $description = $magProduct->getShortDescription();
+                break;
+            case 3:
+                $description = $magProduct->getShortDescription() . '\n' . $description = $magProduct->getDescription();
+                break;
         }
 
         $magPrice = FmHelpers::getProductPrice($magProduct);
