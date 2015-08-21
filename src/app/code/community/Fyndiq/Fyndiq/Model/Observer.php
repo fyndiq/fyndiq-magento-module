@@ -120,6 +120,7 @@ class Fyndiq_Fyndiq_Model_Observer
                 $parent_id = $magProduct->getId();
                 FyndiqUtils::debug('$magProduct->getTypeId()', $magProduct->getTypeId());
 
+
                 if ($magProduct->getTypeId() != 'simple') {
                     $articles = array();
                     $prices = array();
@@ -133,6 +134,10 @@ class Fyndiq_Fyndiq_Model_Observer
                         ->addFilterByRequiredOptions()
                         ->getItems();
                     foreach ($simpleCollection as $simpleProduct) {
+                        if ($simpleProduct->getStockItem()->getMinSaleQty() > 1) {
+                            FyndiqUtils::debug('min sale qty is > 1, SKIPPING ARTICLE');
+                            continue;
+                        }
                         $prices[] = FmHelpers::getProductPrice($simpleProduct);
                         $articles[] = $this->getProduct($simpleProduct, $productInfo[$parent_id], $store);
                     }
@@ -177,6 +182,13 @@ class Fyndiq_Fyndiq_Model_Observer
                     }
                 } else {
                     //No configurable products or anything, just a lonely product
+
+                    //Check if minimumQuantity is > 1, if it is it will skip this product.
+                    if ($magProduct->getStockItem()->getMinSaleQty() > 1) {
+                        FyndiqUtils::debug('min sale qty is > 1, SKIPPING PRODUCT');
+                        continue;
+                    }
+
                     //Just get the products images and add them all to the product.
                     $imageId = 1;
                     $product = $this->getProduct($magProduct, $productInfo[$parent_id], $store);
@@ -509,7 +521,6 @@ class Fyndiq_Fyndiq_Model_Observer
     private function get_quantity($product)
     {
         $stock_item = Mage::getModel('cataloginventory/stock_item')->loadByProduct($product);
-        FyndiqUtils::debug('stockitem', $stock_item);
         if ($product->getStatus() != 1 || $stock_item->getIsInStock()== 0) {
             $qtyStock = 0;
         } else {
