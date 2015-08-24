@@ -347,7 +347,7 @@ class Fyndiq_Fyndiq_Model_Observer
         $feedProduct['product-id'] = $productInfo['id'];
         $feedProduct['product-title'] = $magArray['name'];
 
-        $descriptionSetting = FmConfig::get('description', $store);
+        $descriptionSetting = intval(FmConfig::get('description', $store));
 
         switch ($descriptionSetting) {
             case 1:
@@ -357,7 +357,7 @@ class Fyndiq_Fyndiq_Model_Observer
                 $description = $magProduct->getShortDescription();
                 break;
             case 3:
-                $description = $magProduct->getShortDescription() . "\n" . $description = $magProduct->getDescription();
+                $description = $magProduct->getShortDescription() . "\n\n" . $description = $magProduct->getDescription();
                 break;
             default:
                 $description = $magProduct->getDescription();
