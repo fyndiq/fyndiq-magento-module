@@ -257,9 +257,10 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $order->addStatusHistoryComment($comment);
 
         // Add delivery note as comment
-        $comment = sprintf(
-            FyndiqTranslation::get('Fyndiq delivery note: %s \n just copy url and paste in the browser to download the delivery note.'),
-            $fyndiqOrder->delivery_note
+        $comment = sprintf(FyndiqTranslation::get('Fyndiq delivery note: %s'), $fyndiqOrder->delivery_note);
+        $comment .= PHP_EOL;
+        $comment .= FyndiqTranslation::get(
+            'Copy the URL and paste it in the browser to download the delivery note.'
         );
         $order->addStatusHistoryComment($comment);
 
