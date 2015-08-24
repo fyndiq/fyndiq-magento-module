@@ -357,7 +357,10 @@ class Fyndiq_Fyndiq_Model_Observer
                 $description = $magProduct->getShortDescription();
                 break;
             case 3:
-                $description = $magProduct->getShortDescription() . '\n' . $description = $magProduct->getDescription();
+                $description = $magProduct->getShortDescription() . "\n" . $description = $magProduct->getDescription();
+                break;
+            default:
+                $description = $magProduct->getDescription();
                 break;
         }
 
