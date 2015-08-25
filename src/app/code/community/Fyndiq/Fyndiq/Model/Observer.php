@@ -279,7 +279,7 @@ class Fyndiq_Fyndiq_Model_Observer
         $imageId = 1;
         $imageHelper = Mage::helper('catalog/image');
 
-        $images = Mage::getModel('catalog/product')->load($productId)->getMediaGalleryImages();
+        $images = Mage::getModel('catalog/product')->load($productId)->getMediaGalleryImages()->setOrder('position', 'ASC');
         $hasRealImagesSet = ($magProduct->getImage() != null && $magProduct->getImage() != "no_selection");
         if (count($images)) {
             // Get gallery
@@ -305,7 +305,7 @@ class Fyndiq_Fyndiq_Model_Observer
             ->getItems();
         foreach ($simpleCollection as $simpleProduct) {
             $urls = array();
-            $images = Mage::getModel('catalog/product')->load($simpleProduct->ID)->getMediaGalleryImages();
+            $images = Mage::getModel('catalog/product')->load($simpleProduct->ID)->getMediaGalleryImages()->setOrder('position', 'ASC');
             $hasRealImagesSet = ($simpleProduct->getImage() != null && $simpleProduct->getImage() != "no_selection");
             if (count($images)) {
                 // Get gallery
