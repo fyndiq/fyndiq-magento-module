@@ -280,10 +280,21 @@ class Fyndiq_Fyndiq_Model_Observer
         $imageHelper = Mage::helper('catalog/image');
 
         $images = Mage::getModel('catalog/product')->load($productId)->getMediaGalleryImages()->setOrder('position', 'ASC');
+        $newImages = array();
+        FyndiqUtils::debug('getMediaGalleryImages', $images);
         $hasRealImagesSet = ($magProduct->getImage() != null && $magProduct->getImage() != "no_selection");
         if (count($images)) {
             // Get gallery
+            $positions = array();
             foreach ($images as $image) {
+                $positions[] = $image->getPosition();
+                $newImages[] = $image;
+            }
+            if (count(array_unique($positions)) < count($images)) {
+                usort($newImages, array("Fyndiq_Fyndiq_Model_Observer", "sortImages"));
+            }
+            foreach ($newImages as $image) {
+                FyndiqUtils::debug('getMediaGalleryImages $image', $image);
                 $url = $this->productMediaConfig->getMediaUrl($image->getFile());
                 if (!in_array($url, $urls)) {
                     $urls[] = $url;
@@ -328,6 +339,14 @@ class Fyndiq_Fyndiq_Model_Observer
         }
 
         FyndiqUtils::debug('images', $this->productImages);
+    }
+
+    private function sortImages($a, $b)
+    {
+        if ($a->getId() == $b->getId()) {
+            return 0;
+        }
+        return ($a->getId() < $b->getId()) ? -1 : 1;
     }
 
     /**
