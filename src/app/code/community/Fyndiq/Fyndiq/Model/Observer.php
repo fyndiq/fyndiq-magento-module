@@ -275,7 +275,7 @@ class Fyndiq_Fyndiq_Model_Observer
     {
         $this->productImages = array();
         $this->productImages['articles'] = array();
-        $urls = $this->imageCheck($productId, $magProduct);
+        $urls = $this->getProductImages($productId, $magProduct);
         $this->productImages['product'] = $urls;
 
         $simpleCollection = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct)->getUsedProductCollection()
@@ -283,7 +283,7 @@ class Fyndiq_Fyndiq_Model_Observer
             ->addFilterByRequiredOptions()
             ->getItems();
         foreach ($simpleCollection as $simpleProduct) {
-            $urls = $this->imageCheck($simpleProduct->ID, $simpleProduct);
+            $urls = $this->getProductImages($simpleProduct->ID, $simpleProduct);
             $sku = $simpleProduct->getSKU();
             $this->productImages['articles'][$sku] = $urls;
         }
@@ -291,7 +291,7 @@ class Fyndiq_Fyndiq_Model_Observer
         FyndiqUtils::debug('images', $this->productImages);
     }
 
-    private function imageCheck($productId, $product)
+    private function getProductImages($productId, $product)
     {
         $images = Mage::getModel('catalog/product')->load($productId)->getMediaGalleryImages()->setOrder('position', 'ASC');
         $hasRealImagesSet = ($product->getImage() != null && $product->getImage() != "no_selection");
