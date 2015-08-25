@@ -293,7 +293,7 @@ class Fyndiq_Fyndiq_Model_Observer
 
     private function getProductImages($productId, $product)
     {
-        $images = Mage::getModel('catalog/product')->load($productId)->getMediaGalleryImages()->setOrder('position', 'ASC');
+        $images = Mage::getModel('catalog/product')->load($productId)->getMediaGalleryImages();
         $hasRealImagesSet = ($product->getImage() != null && $product->getImage() != "no_selection");
         $urls = array();
         $positions = array();
