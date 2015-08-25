@@ -275,39 +275,7 @@ class Fyndiq_Fyndiq_Model_Observer
     {
         $this->productImages = array();
         $this->productImages['articles'] = array();
-        $urls = array();
-        $imageId = 1;
-        $imageHelper = Mage::helper('catalog/image');
-
-        $images = Mage::getModel('catalog/product')->load($productId)->getMediaGalleryImages()->setOrder('position', 'ASC');
-        $newImages = array();
-        FyndiqUtils::debug('getMediaGalleryImages', $images);
-        $hasRealImagesSet = ($magProduct->getImage() != null && $magProduct->getImage() != "no_selection");
-        if (count($images)) {
-            // Get gallery
-            $positions = array();
-            foreach ($images as $image) {
-                $positions[] = $image->getPosition();
-                $newImages[] = $image;
-            }
-            if (count(array_unique($positions)) < count($images)) {
-                usort($newImages, array("Fyndiq_Fyndiq_Model_Observer", "sortImages"));
-            }
-            foreach ($newImages as $image) {
-                FyndiqUtils::debug('getMediaGalleryImages $image', $image);
-                $url = $this->productMediaConfig->getMediaUrl($image->getFile());
-                if (!in_array($url, $urls)) {
-                    $urls[] = $url;
-                }
-            }
-        } elseif ($hasRealImagesSet) {
-            // Fallback to main image
-            $url = $this->productMediaConfig->getMediaUrl($magProduct->getImage());
-            if (!in_array($url, $urls)) {
-                $urls[] = $url;
-            }
-        }
-        unset($images);
+        $urls = $this->imageCheck($productId, $magProduct);
         $this->productImages['product'] = $urls;
 
         $simpleCollection = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct)->getUsedProductCollection()
@@ -315,30 +283,44 @@ class Fyndiq_Fyndiq_Model_Observer
             ->addFilterByRequiredOptions()
             ->getItems();
         foreach ($simpleCollection as $simpleProduct) {
-            $urls = array();
-            $images = Mage::getModel('catalog/product')->load($simpleProduct->ID)->getMediaGalleryImages()->setOrder('position', 'ASC');
-            $hasRealImagesSet = ($simpleProduct->getImage() != null && $simpleProduct->getImage() != "no_selection");
-            if (count($images)) {
-                // Get gallery
-                foreach ($images as $image) {
-                    $url = $this->productMediaConfig->getMediaUrl($image->getFile());
-                    if (!in_array($url, $urls)) {
-                        $urls[] = $url;
-                    }
-                }
-            } elseif ($hasRealImagesSet) {
-                // Fallback to main image
-                $url = $this->productMediaConfig->getMediaUrl($simpleProduct->getImage());
-                if (!in_array($url, $urls)) {
-                    $urls[] = $url;
-                }
-            }
-            unset($images);
+            $urls = $this->imageCheck($simpleProduct->ID, $simpleProduct);
             $sku = $simpleProduct->getSKU();
             $this->productImages['articles'][$sku] = $urls;
         }
 
         FyndiqUtils::debug('images', $this->productImages);
+    }
+
+    private function imageCheck($productId, $product)
+    {
+        $images = Mage::getModel('catalog/product')->load($productId)->getMediaGalleryImages()->setOrder('position', 'ASC');
+        $hasRealImagesSet = ($product->getImage() != null && $product->getImage() != "no_selection");
+        $urls = array();
+        $positions = array();
+        $newImages = array();
+        foreach ($images as $image) {
+            $positions[] = $image->getPosition();
+            $newImages[] = $image;
+        }
+        if (count(array_unique($positions)) < count($images)) {
+            usort($newImages, array("Fyndiq_Fyndiq_Model_Observer", "sortImages"));
+        }
+        if (count($newImages)) {
+            // Get gallery
+            foreach ($newImages as $image) {
+                $url = $this->productMediaConfig->getMediaUrl($image->getFile());
+                if (!in_array($url, $urls)) {
+                    $urls[] = $url;
+                }
+            }
+        } elseif ($hasRealImagesSet) {
+            // Fallback to main image
+            $url = $this->productMediaConfig->getMediaUrl($product->getImage());
+            if (!in_array($url, $urls)) {
+                $urls[] = $url;
+            }
+        }
+        return $urls;
     }
 
     private function sortImages($a, $b)
