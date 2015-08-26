@@ -34,7 +34,7 @@ test:
 	$(BIN_DIR)/phpunit
 
 scss-lint:
-	scss-lint $(SRC_DIR)/admin/fyndiq/frontend/css/*.scss
+	scss-lint $(SRC_DIR)/fyndiq/frontend/css/*.scss
 
 php-lint:
 	find $(SRC_DIR) -name "*.php" -print0 | xargs -0 -n1 -P8 php -l
