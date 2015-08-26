@@ -179,6 +179,7 @@ class Fyndiq_Fyndiq_Model_Observer
                     FyndiqUtils::debug('articles to feed', $articles);
                     foreach ($articles as $article) {
                         $feedWriter->addProduct($article);
+                        FyndiqUtils::debug('Any Validation Errors', $feedWriter->getLastProductErrors());
                     }
                 } else {
                     //No configurable products or anything, just a lonely product
@@ -200,6 +201,7 @@ class Fyndiq_Fyndiq_Model_Observer
                     FyndiqUtils::debug('simpleproduct images', $this->productImages);
 
                     $feedWriter->addProduct($product);
+                    FyndiqUtils::debug('Any Validation Errors', $feedWriter->getLastProductErrors());
                 }
             }
             $productsToExport->clear();
