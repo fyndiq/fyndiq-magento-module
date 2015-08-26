@@ -10,6 +10,9 @@ class FmConfig
 {
 
     const COMMIT = 'XXXXXX';
+    const REPOSITORY_PATH = 'fyndiq/fyndiq-magento-module/';
+    const DISABLE_UPDATE_CHECK = 0;
+
     const CONFIG_NAME = 'fyndiq/fyndiq_group';
 
     private static function key($name)

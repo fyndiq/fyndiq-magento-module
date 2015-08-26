@@ -12,7 +12,10 @@
             url: '<?php echo str_replace('index.php/','',Mage::getBaseUrl()); ?>'
         };
         var extra_data = {'form_key': window.FORM_KEY};
-        var messages = <?php echo json_encode($this->getMessages())?>
+        var messages = <?php echo json_encode($this->getMessages())?>;
+        var fmRepositoryPath = '<?php echo $this->getRepositoryPath() ?>';
+        var fmModuleVersion = '<?php echo $this->getModuleVersion() ?>';
+        var fmDisableUpdateCheck = <?php echo $this->getDisableUpdateCheck() ?>;
     </script>
 <?php } ?>
 <style type="text/css">
@@ -47,6 +50,7 @@
     <script type="text/javascript" src="<?php echo $this->getSharedPath(); ?>frontend/js/handlebars-v1.1.2.js"></script>
     <script type="text/javascript" src="<?php echo $this->getSharedPath(); ?>frontend/js/FmGui.js"></script>
     <script type="text/javascript" src="<?php echo $this->getSharedPath(); ?>frontend/js/FmCtrl.js"></script>
+    <script type="text/javascript" src="<?php echo $this->getSharedPath(); ?>frontend/js/FmUpdate.js"></script>
 <?php } ?>
 
 
