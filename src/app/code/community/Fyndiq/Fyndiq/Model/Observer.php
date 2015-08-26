@@ -179,6 +179,7 @@ class Fyndiq_Fyndiq_Model_Observer
                     FyndiqUtils::debug('articles to feed', $articles);
                     foreach ($articles as $article) {
                         $feedWriter->addProduct($article);
+                        FyndiqUtils::debug('Any Validation Errors', $feedWriter->getLastProductErrors());
                     }
                 } else {
                     //No configurable products or anything, just a lonely product
@@ -200,6 +201,7 @@ class Fyndiq_Fyndiq_Model_Observer
                     FyndiqUtils::debug('simpleproduct images', $this->productImages);
 
                     $feedWriter->addProduct($product);
+                    FyndiqUtils::debug('Any Validation Errors', $feedWriter->getLastProductErrors());
                 }
             }
             $productsToExport->clear();
@@ -211,38 +213,39 @@ class Fyndiq_Fyndiq_Model_Observer
     private function getImagesFromArray($articleId = null)
     {
         $product = array();
-        $imageId = 1;
+        $urls = array();
         //If we don't want to add a specific article, add all of them.
         if (is_null($articleId)) {
             foreach ($this->productImages['product'] as $url) {
-                if (!in_array($url, $product)) {
-                    $product['product-image-' . $imageId . '-url'] = $url;
-                    $product['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
-                    $imageId++;
+                if (!in_array($url, $urls)) {
+                    $urls[] = $url;
                 }
             }
             foreach ($this->productImages['articles'] as $article) {
                 foreach ($article as $url) {
-                    if (!in_array($url, $product)) {
-                        $product['product-image-' . $imageId . '-url'] = $url;
-                        $product['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
-                        $imageId++;
+                    if (!in_array($url, $urls)) {
+                        $urls[] = $url;
                     }
                 }
             }
         // If we want to add just the product images and the article's images - run this.
         } else {
             foreach ($this->productImages['articles'][$articleId] as $url) {
-                $product['product-image-' . $imageId . '-url'] = $url;
-                $product['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
-                $imageId++;
+                $urls[] = $url;
             }
 
             foreach ($this->productImages['product'] as $url) {
-                $product['product-image-' . $imageId . '-url'] = $url;
-                $product['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
-                $imageId++;
+                $urls[] = $url;
             }
+        }
+        $imageId = 1;
+        foreach ($urls as $url) {
+            if ($imageId > FyndiqUtils::NUMBER_OF_ALLOWED_IMAGES) {
+                break;
+            }
+            $product['product-image-' . $imageId . '-url'] = $url;
+            $product['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
+            $imageId++;
         }
         return $product;
     }
@@ -420,6 +423,9 @@ class Fyndiq_Fyndiq_Model_Observer
                     $attrId = 1;
                     $tags = array();
                     foreach ($productAttrOptions as $productAttribute) {
+                        if ($attrId > FyndiqUtils::NUMBER_OF_ALLOWED_PROPERTIES) {
+                            break;
+                        }
                         $attrValue = $parentModel->getResource()->getAttribute(
                             $productAttribute->getProductAttribute()->getAttributeCode()
                         )->getFrontend();
