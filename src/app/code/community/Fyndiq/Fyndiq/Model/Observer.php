@@ -421,6 +421,9 @@ class Fyndiq_Fyndiq_Model_Observer
                     $attrId = 1;
                     $tags = array();
                     foreach ($productAttrOptions as $productAttribute) {
+                        if ($attrId > FyndiqUtils::NUMBER_OF_ALLOWED_PROPERTIES) {
+                            break;
+                        }
                         $attrValue = $parentModel->getResource()->getAttribute(
                             $productAttribute->getProductAttribute()->getAttributeCode()
                         )->getFrontend();
