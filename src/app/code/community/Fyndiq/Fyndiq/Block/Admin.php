@@ -131,6 +131,4 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
     {
         return FmConfig::DISABLE_UPDATE_CHECK;
     }
-
-
 }
