@@ -116,4 +116,21 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
 
         return $switcher->getStoreSelectOptions();
     }
+
+    public function getRepositoryPath()
+    {
+        return FmConfig::REPOSITORY_PATH;
+    }
+
+    public function getModuleVersion()
+    {
+        return FmConfig::getVersion();
+    }
+
+    public function getDisableUpdateCheck()
+    {
+        return FmConfig::DISABLE_UPDATE_CHECK;
+    }
+
+
 }
