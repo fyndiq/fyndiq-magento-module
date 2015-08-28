@@ -353,9 +353,15 @@ class Fyndiq_Fyndiq_Model_Observer
         $feedProduct = array();
         $magArray = $magProduct->getData();
 
+
         // Setting the data
         if (!isset($magArray['price'])) {
             FyndiqUtils::debug('No price is set');
+
+            return $feedProduct;
+        }
+        if ($magProduct->getStatus() != Mage_Catalog_Model_Product_Status::STATUS_ENABLED) {
+            FyndiqUtils::debug('product is not enabled');
 
             return $feedProduct;
         }
