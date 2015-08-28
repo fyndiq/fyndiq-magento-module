@@ -2,7 +2,6 @@
 
 class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
 {
-
     public function _construct()
     {
         parent::_construct();
@@ -14,7 +13,7 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
      * @param int $productId
      * @return bool|array
      */
-    function getProductExportData($productId)
+    public function getProductExportData($productId)
     {
         $collection = $this->getCollection()->addFieldToFilter('product_id', $productId)->getFirstItem();
         if ($collection->getId()) {
@@ -24,7 +23,7 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
         return false;
     }
 
-    function getMagentoProducts($storeId, $group = false, $category = null, $page = 0)
+    public function getMagentoProducts($storeId, $group = false, $category = null, $page = 0)
     {
         $collection = Mage::getResourceModel('catalog/product_collection')
             ->joinTable(
@@ -43,6 +42,8 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
         $collection->getSelect()->where(
             "((`e`.`type_id` = 'configurable') OR ((`e`.`type_id` = 'simple') AND (catalog_product_super_link.parent_id is null)))"
         );
+
+        $collection->addAttributeToFilter('status', array('eq' => Mage_Catalog_Model_Product_Status::STATUS_ENABLED));
 
         if ($group) {
             $collection->getSelect()->group('e.entity_id');
@@ -64,7 +65,7 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
      * @param array $insertData
      * @return mixed
      */
-    function addProduct($insertData)
+    public function addProduct($insertData)
     {
         $model = $this->setData($insertData);
 
@@ -77,7 +78,7 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
      * @param array $updateData
      * @return bool
      */
-    function updateProduct($productId, $updateData)
+    public function updateProduct($productId, $updateData)
     {
         $collection = $this->getCollection()->addFieldToFilter('product_id', $productId)->getFirstItem();
         $model = $this->load($collection->getId())->addData($updateData);
@@ -96,7 +97,7 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
      * @param array $updateData
      * @return bool
      */
-    function updateProductState($id, $updateData)
+    public function updateProductState($id, $updateData)
     {
         $model = $this->load($id)->addData($updateData);
         try {
@@ -114,7 +115,7 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
      * @param int $productId
      * @return bool
      */
-    function deleteProduct($productId)
+    public function deleteProduct($productId)
     {
         $collection = $this->getCollection()->addFieldToFilter('product_id', $productId)->getFirstItem();
         try {
