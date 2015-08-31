@@ -170,7 +170,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             }
         }
         //Start a new order quote and assign current customer to it.
-        $quote = Mage::getModel('sales/quote')->setStoreId(Mage::app('default')->getStore('default')->getId());
+        $quote = Mage::getModel('sales/quote')->setStoreId($storeId);
         $quote->assignCustomer($customer);
         $quote->setStore(Mage::getModel('core/store')->load($storeId));
 
