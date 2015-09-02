@@ -5,7 +5,7 @@ class NotificationControllerTest extends PHPUnit_Framework_TestCase
     function setUp() {
         parent::setUp();;
         $this->notification = $this->getMockBuilder('Fyndiq_Fyndiq_NotificationController')
-            ->setMethods(array('getParam', 'pingObserver', 'getFyndiqOutput'))
+            ->setMethods(array('getParam', 'pingObserver', 'getFyndiqOutput', 'updateProductInfo'))
             ->disableOriginalConstructor()->getMock();
         $fyndiqOutput = $this->getMockBuilder('stdClass')
             ->setMethods(array('showError', 'flushHeader'))
@@ -21,10 +21,14 @@ class NotificationControllerTest extends PHPUnit_Framework_TestCase
     }
 
     function testIndexActionWorking() {
-        $this->notification->expects($this->at(0))->method('getParam')->will($this->returnValue("ping"));
-        $this->notification->expects($this->at(1))->method('getParam')->will($this->returnValue("blablabla"));
-        $this->notification->expects($this->once())->method('pingObserver')->willReturn(true);
-        $this->setExpectedException('FyndiqAPIAuthorizationFailed');
+        $this->notification->expects($this->at(0))
+            ->method('getParam')
+            ->will($this->returnValue("ping"));
+        $this->notification->expects($this->at(1))
+            ->method('getParam')
+            ->will($this->returnValue("blablabla"));
+        $this->notification->expects($this->once())
+            ->method('pingObserver')->willReturn(true);
         $this->notification->indexAction();
     }
 }

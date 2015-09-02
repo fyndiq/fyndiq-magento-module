@@ -47,8 +47,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 
             return true;
         }
-        header('HTTP/1.0 400 Bad Request');
-        die('400 Bad Request');
+        $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
     }
 
 
@@ -77,7 +76,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         if (!$locked) {
             FmConfig::set('ping_time', time());
             $this->pingObserver();
-            $this->_update_product_info($storeId);
+            $this->updateProductInfo($storeId);
         }
     }
 
@@ -109,18 +108,18 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         FyndiqUtils::debugStop();
     }
 
-    private function _update_product_info($storeId)
+    protected function updateProductInfo($storeId)
     {
         $pi = new FmProductInfo($storeId);
         $pi->getAll();
     }
 
-    function getParam($event)
+    protected function getParam($event)
     {
         return $this->getRequest()->getParam($event);
     }
 
-    function pingObserver()
+    protected function pingObserver()
     {
         $fyndiqCron = new Fyndiq_Fyndiq_Model_Observer();
         $fyndiqCron->exportProducts($storeId, false);
