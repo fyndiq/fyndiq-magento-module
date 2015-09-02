@@ -10,6 +10,7 @@ require_once(dirname(__FILE__) . '/dep/mage_front_controller.php');
 require_once(dirname(__FILE__) . '/dep/core_model_abstract.php');
 require_once(dirname(__FILE__) . '/dep/Mage.php');
 require_once(dirname(__FILE__) . '/dep/product_model.php');
+require_once(dirname(__FILE__) . '/dep/fyndiqOutputTest.php');
 
 require_once(dirname(dirname(__FILE__)) . '/src/app/code/community/Fyndiq/Fyndiq/controllers/AdminController.php');
 require_once(dirname(dirname(__FILE__)) . '/src/app/code/community/Fyndiq/Fyndiq/controllers/FileController.php');
