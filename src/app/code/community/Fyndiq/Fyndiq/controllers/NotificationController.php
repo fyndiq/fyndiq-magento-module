@@ -8,14 +8,8 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/FyndiqUtils.php');
 
 class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Action
 {
-
-    function __construct() {
-        parent::__construct();
-    }
-
-    function indexAction()
+    public function indexAction()
     {
-        $this->fyndiqOutput = $this->getFyndiqOutput();
         $event = $this->getParam('event');
         $eventName = $event ? $event : false;
         if ($eventName) {
@@ -23,7 +17,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
                 return $this->$eventName();
             }
         }
-        $this->fyndiqOutput->showError(400, 'Bad Request', 'The request did not work.');
+        $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
     }
 
     /**
@@ -75,7 +69,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
             return die('400 Bad Request');
         }
 
-        $this->fyndiqOutput->flushHeader('');
+        $this->getFyndiqOutput()->flushHeader('');
 
         $locked = false;
         $lastPing = FmConfig::get('ping_time', $storeId);
@@ -136,8 +130,10 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         $fyndiqCron->exportProducts($storeId, false);
     }
 
-    function getFyndiqOutput()
-    {
-        return new FyndiqOutput();
+    protected function getFyndiqOutput() {
+        if (!$this->fyndiqOutput) {
+           $this->fyndiqOutput = new FyndiqOutput();
+        }
+        return $this->fyndiqOutput;
     }
 }
