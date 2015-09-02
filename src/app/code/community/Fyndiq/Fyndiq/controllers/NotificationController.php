@@ -11,6 +11,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 
     function __construct() {
         parent::__construct();
+        $this->fyndiqOutput = new fyndiqOutput();
     }
 
     function indexAction()
@@ -74,7 +75,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
             return die('400 Bad Request');
         }
 
-        $this->closeEarly();
+        $this->flushHeader();
 
         $locked = false;
         $lastPing = FmConfig::get('ping_time', $storeId);
@@ -129,17 +130,8 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         return $this->getRequest()->getParam($event);
     }
 
-    function closeEarly() {
-        // http://stackoverflow.com/questions/138374/close-a-connection-early
-        ob_end_clean();
-        header('Connection: close');
-        ignore_user_abort(true); // just to be safe
-        ob_start();
-        echo 'OK';
-        $size = ob_get_length();
-        header('Content-Length: ' . $size);
-        ob_end_flush(); // Strange behaviour, will not work
-        flush(); // Unless both are called !
+    function flushHeader() {
+        return $this->fyndiqOutput->flushHeader();
     }
 
     function pingObserver()

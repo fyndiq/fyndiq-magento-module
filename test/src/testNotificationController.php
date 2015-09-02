@@ -4,7 +4,7 @@ class NotificationControllerTest extends PHPUnit_Framework_TestCase
 {
     function setUp() {
         parent::setUp();
-        $this->notification = $this->getMockBuilder('Fyndiq_Fyndiq_NotificationController')->setMethods(array('error', 'getParam', 'closeEarly', 'pingObserver', '_update_product_info'))->disableOriginalConstructor()->getMock();
+        $this->notification = $this->getMockBuilder('Fyndiq_Fyndiq_NotificationController')->setMethods(array('error', 'getParam', 'flushHeader', 'pingObserver', '_update_product_info'))->disableOriginalConstructor()->getMock();
     }
 
     function testIndexAction() {
