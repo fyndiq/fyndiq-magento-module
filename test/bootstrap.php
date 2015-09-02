@@ -16,6 +16,6 @@ require_once(dirname(dirname(__FILE__)) . '/src/app/code/community/Fyndiq/Fyndiq
 require_once(dirname(dirname(__FILE__)) . '/src/app/code/community/Fyndiq/Fyndiq/controllers/NotificationController.php');
 require_once(dirname(dirname(__FILE__)) . '/src/app/code/community/Fyndiq/Fyndiq/controllers/ServiceController.php');
 
-require_once(dirname(dirname(__FILE__)) . '/code/Model/Product.php');
+require_once(dirname(dirname(__FILE__)) . '/src/app/code/community/Fyndiq/Fyndiq/Model/Product.php');
 
 require_once MAGENTO_ROOT .  '/app/code/community/Fyndiq/Fyndiq/includes/FyndiqRegionHelper.php';
