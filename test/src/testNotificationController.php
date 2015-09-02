@@ -5,8 +5,15 @@ class NotificationControllerTest extends PHPUnit_Framework_TestCase
     function setUp() {
         parent::setUp();;
         $this->notification = $this->getMockBuilder('Fyndiq_Fyndiq_NotificationController')
-            ->setMethods(array('getParam', 'pingObserver', 'getFyndiqOutput', 'updateProductInfo'))
-            ->disableOriginalConstructor()->getMock();
+            ->setMethods(array('getRequest', 'pingObserver', 'getFyndiqOutput', 'updateProductInfo'))
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->request = $this->getMockBuilder('stdClass')
+            ->setMethods(array('getParam'))
+            ->getMock();
+        $this->notification->expects($this->any())
+            ->method('getRequest')
+            ->will($this->returnValue($this->request));
         $fyndiqOutput = $this->getMockBuilder('stdClass')
             ->setMethods(array('showError', 'flushHeader'))
             ->getMock();
@@ -21,10 +28,10 @@ class NotificationControllerTest extends PHPUnit_Framework_TestCase
     }
 
     function testIndexActionWorking() {
-        $this->notification->expects($this->at(0))
+        $this->request->expects($this->at(0))
             ->method('getParam')
             ->will($this->returnValue("ping"));
-        $this->notification->expects($this->at(1))
+        $this->request->expects($this->at(1))
             ->method('getParam')
             ->will($this->returnValue("blablabla"));
         $this->notification->expects($this->once())

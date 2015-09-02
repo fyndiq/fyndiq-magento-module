@@ -10,7 +10,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 {
     public function indexAction()
     {
-        $event = $this->getParam('event');
+        $event = $this->getRequest()->getParam('event');
         $eventName = $event ? $event : false;
         if ($eventName) {
             if ($eventName[0] != '_' && method_exists($this, $eventName)) {
@@ -60,7 +60,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         $storeId = Mage::app()->getStore()->getStoreId();
         $pingToken = unserialize(FmConfig::get('ping_token', $storeId));
 
-        $token = $this->getParam('token');
+        $token = $this->getRequest()->getParam('token');
         if (is_null($token) || $token != $pingToken) {
             $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
         }
@@ -112,11 +112,6 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
     {
         $pi = new FmProductInfo($storeId);
         $pi->getAll();
-    }
-
-    protected function getParam($event)
-    {
-        return $this->getRequest()->getParam($event);
     }
 
     protected function pingObserver()
