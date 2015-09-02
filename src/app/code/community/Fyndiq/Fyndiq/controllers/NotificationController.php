@@ -42,8 +42,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
                     $orderModel->create($storeId, $fyndiqOrder);
                 }
             } catch (Exception $e) {
-                header('HTTP/1.0 500 Internal Server Error');
-                die('500 Internal Server Error');
+                $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
             }
 
             return true;
@@ -64,12 +63,10 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 
         $token = $this->getParam('token');
         if (is_null($token) || $token != $pingToken) {
-            header('HTTP/1.0 400 Bad Request');
-
-            return die('400 Bad Request');
+            $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
         }
 
-        $this->getFyndiqOutput()->flushHeader('');
+        $this->getFyndiqOutput()->flushHeader('OK');
 
         $locked = false;
         $lastPing = FmConfig::get('ping_time', $storeId);
@@ -92,8 +89,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         $token = $this->getRequest()->getParam('token');
 
         if (is_null($token) || $token != $pingToken) {
-            header('HTTP/1.0 400 Bad Request');
-            return die('400 Bad Request');
+            $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
         }
 
         FyndiqUtils::debugStart();
