@@ -2,15 +2,18 @@
 
 class Mage_Adminhtml_Controller_Action
 {
-    function loadLayout($layout) {
+    function loadLayout($layout)
+    {
         return true;
     }
 
-    function getRequest() {
+    function getRequest()
+    {
         return new ParamClass();
     }
 
-    function renderLayout($test = false) {
+    function renderLayout($test = false)
+    {
         return true;
     }
 
@@ -22,7 +25,8 @@ class Mage_Adminhtml_Controller_Action
 
 class ParamClass
 {
-    function getParam($test) {
+    function getParam($test)
+    {
         return 1;
     }
 }

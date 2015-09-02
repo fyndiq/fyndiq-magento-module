@@ -2,12 +2,14 @@
 
 class AdminControllerTest extends PHPUnit_Framework_TestCase
 {
-    function setUp() {
+    function setUp()
+    {
         parent::setUp();
         $this->admincontroller = $this->getMockBuilder('Fyndiq_Fyndiq_AdminController')->setMethods(array('loadLayout', 'setupTemplate', 'renderLayout', 'getUsername', 'getAPIToken', 'callAPI'))->disableOriginalConstructor()->getMock();
     }
 
-    function testIndexAction() {
+    function testIndexAction()
+    {
         $this->admincontroller->expects($this->once())->method('loadLayout')->willReturn(true);
         $this->admincontroller->expects($this->once())->method('renderLayout')->willReturn(true);
         $this->admincontroller->expects($this->once())->method('callAPI')->willReturn(true);
@@ -15,7 +17,8 @@ class AdminControllerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(false, $return);
     }
 
-    function testOrderlistAction() {
+    function testOrderlistAction()
+    {
         $this->admincontroller->expects($this->once())->method('loadLayout')->willReturn(true);
         $this->admincontroller->expects($this->once())->method('renderLayout')->willReturn(true);
         $this->admincontroller->expects($this->once())->method('callAPI')->willReturn(true);
@@ -23,7 +26,8 @@ class AdminControllerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(false, $return);
     }
 
-    function testSetTemplate() {
+    function testSetTemplate()
+    {
         $this->admincontroller->expects($this->once())->method('renderLayout')->willReturn(true);
         $this->admincontroller->expects($this->once())->method('getUsername')->willReturn("testuser");
         $this->admincontroller->expects($this->once())->method('getAPIToken')->willReturn("testapi");

@@ -120,9 +120,10 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         $fyndiqCron->exportProducts($storeId, false);
     }
 
-    protected function getFyndiqOutput() {
+    protected function getFyndiqOutput()
+    {
         if (!$this->fyndiqOutput) {
-           $this->fyndiqOutput = new FyndiqOutput();
+            $this->fyndiqOutput = new FyndiqOutput();
         }
         return $this->fyndiqOutput;
     }

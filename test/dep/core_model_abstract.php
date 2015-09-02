@@ -39,8 +39,7 @@ class Magdata
     function __construct()
     {
         $this->items = array();
-        for($i = 0;$i<6;$i++)
-        {
+        for ($i = 0; $i<6; $i++) {
             $prod = new MagProd();
             $prod->product_id = $i;
             $prod->id = $i;

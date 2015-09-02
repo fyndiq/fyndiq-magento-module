@@ -73,7 +73,8 @@ class GetConfig
 
 class GetNode
 {
-    function __construct() {
+    function __construct()
+    {
         $this->modules = new getModule();
     }
 
@@ -82,19 +83,22 @@ class GetNode
         return "SEK";
     }
 
-    function getStoreId() {
+    function getStoreId()
+    {
         return 1;
     }
 }
 class getModule
 {
-    function __construct() {
+    function __construct()
+    {
         $this->Fyndiq_Fyndiq = new FyndiqModule();
     }
 }
 class FyndiqModule
 {
-    function __construct() {
+    function __construct()
+    {
         $this->version = "1.0.0";
     }
 }
