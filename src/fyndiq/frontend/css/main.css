@@ -62,7 +62,7 @@
   width: 30px; }
 
 .text-warning {
-  color: #e85353; }
+  color: #ea524f; }
 
 .btn,
 .fm-button {
@@ -165,6 +165,8 @@
     border-spacing: 0;
     border-top: 1px solid #e3e8ec;
     font-size: 9pt;
+    max-width: 280px;
+    overflow: hidden;
     padding: .4em; }
   .fm-panel table tr:nth-child(even) {
     background-color: #f5f8fb; }
@@ -187,11 +189,14 @@
   box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.3);
   color: #fff;
   left: 0;
-  padding: 30px 0 30px 10px;
   position: fixed;
   top: 0;
   width: 100%;
   z-index: 9999; }
+  .fm-message-overlay h3,
+  .fm-message-overlay p {
+    margin: 1em;
+    text-align: center; }
   .fm-message-overlay.fm-info {
     background-color: #799ec4;
     border-color: #87acd3; }
@@ -212,9 +217,15 @@
     right: 15px;
     top: 15px;
     width: 30px; }
-  .fm-message-overlay h3,
-  .fm-message-overlay p {
-    text-align: center; }
+
+.fm-update-message {
+  background: #ea524f;
+  color: #fff;
+  margin-top: 30px;
+  padding: 1em; }
+  .fm-update-message a {
+    color: #fff;
+    text-decoration: underline; }
 
 .pages {
   float: left;
@@ -350,6 +361,10 @@
     display: block;
     margin: 3px 0 -5px; }
 
+.fm-orders-list a {
+  color: #f08c48;
+  text-decoration: underline; }
+
 .fm-container {
   background-color: #e7eef4;
   font-family: "Montserrat", sans-serif;
@@ -374,10 +389,13 @@
 .clear {
   clear: both; }
 
+.fm-footer {
+  margin: 1em 0 0; }
+
 #anchor-content {
-  padding: 0px; }
+  padding: 0; }
 
 #page\3a main-container {
-  margin: 0px !important;
   background-color: #e7eef4 !important;
+  margin: 0 !important;
   padding-bottom: 20px; }

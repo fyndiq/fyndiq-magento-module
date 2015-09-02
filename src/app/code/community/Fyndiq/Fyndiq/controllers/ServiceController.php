@@ -15,7 +15,7 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
 
 class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 {
-
+    const ALL_PRODUCTS_CATEGORY_ID = -1;
     protected function _construct()
     {
         $this->observer = Mage::getModel('fyndiq/observer');
@@ -121,36 +121,16 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $productModel = Mage::getModel('catalog/product');
 
         $currency = Mage::app()->getStore($storeId)->getCurrentCurrencyCode();
-        $products = $productModel->getCollection()
-            ->addStoreFilter($storeId)
-            ->addAttributeToFilter(
-                array(
-                    array('attribute' => 'type_id', 'eq' => 'configurable'),
-                    array('attribute' => 'type_id', 'eq' => 'simple'),
-                )
-            )
-            ->addCategoryFilter($category)
-            ->addAttributeToSelect('*');
+
+        $fyndiqProductModel = Mage::getModel('fyndiq/product');
+        $products = $fyndiqProductModel->getMagentoProducts($storeId, true, $category, $page);
 
         $products->load();
         $products = $products->getItems();
         $fyndiqPercentage = FmConfig::get('price_percentage', $this->getRequest()->getParam('store'));
 
         // get all the products
-        $id = -1;
         foreach ($products as $prod) {
-            if ($prod->getTypeId() == 'simple') {
-                $children = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild($prod->getId());
-                if (isset($children) && count($children) > 0) {
-                    continue;
-                }
-            }
-
-            $id++;
-            if ($id < (($page - 1) * FyndiqUtils::PAGINATION_ITEMS_PER_PAGE) || $id > ($page * FyndiqUtils::PAGINATION_ITEMS_PER_PAGE)) {
-                continue;
-            }
-
             $fyndiqData = Mage::getModel('fyndiq/product')->getProductExportData($prod->getId());
             $fyndiq = !empty($fyndiqData);
             $fyndiqState = $fyndiqData['state'];
@@ -198,12 +178,23 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 };
             }
 
+            //title length checks
+            $name = $prod->getName();
+            $name_short = "";
+            if (FyndiqFeedWriter::isColumnTooLong("product-title", $name)) {
+                $name_short = FyndiqFeedWriter::sanitizeColumn("product-title", $name);
+            }
+
+            $magPrice = FmHelpers::getProductPrice($prod);
+
             $prodData = array(
                 'id' => $prod->getId(),
                 'url' => $prod->getUrl(),
-                'name' => $prod->getName(),
+                'name' => $name,
+                'name_short' => $name_short,
                 'quantity' => intval($this->getProductQty($prod)),
-                'price' => number_format((float)$prod->getPrice(), 2, '.', ''),
+                //'price' => number_format((float)$magPrice, 2, '.', ''),
+                'price' => $magPrice,
                 'fyndiq_percentage' => $fyndiqPercentage,
                 'fyndiq_exported' => $fyndiq,
                 'fyndiq_state' => $fyndiqState,
@@ -214,7 +205,9 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 'fyndiq_status' => $fyndiqStatus,
                 'fyndiq_check_on' => ($fyndiq && $fyndiqState == 'FOR_SALE'),
                 'currency' => $currency,
-                'fyndiq_check_pending' => ($fyndiq && $fyndiqState === null)
+                'fyndiq_check_pending' => ($fyndiq && $fyndiqState === null),
+                'vat_percent_zero' => ($this->getTaxRate($prod, $storeId) == 0),
+                'vat_percent_not_zero' => ($this->getTaxRate($prod, $storeId) > 0)
             );
 
             //trying to get image, if not image will be false
@@ -252,33 +245,14 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     private function getTotalProducts($storeId, $category)
     {
-        $collection = Mage::getModel('catalog/product')
-            ->getCollection()
-            ->addStoreFilter($storeId)
-            ->addAttributeToFilter(
-                array(
-                    array('attribute' => 'type_id', 'eq' => 'configurable'),
-                    array('attribute' => 'type_id', 'eq' => 'simple'),
-                )
-            )
-            ->addCategoryFilter($category)
-            ->addAttributeToSelect('*');
+        $fyndiqProductModel = Mage::getModel('fyndiq/product');
+        $collection = $fyndiqProductModel->getMagentoProducts($storeId, false, $category);
+
         if ($collection == 'null') {
             return 0;
         }
 
-        $collection = $collection->getItems();
-
-        foreach ($collection as $key => $prod) {
-            if ($prod->getTypeId() == 'simple') {
-                $parent = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild($prod->getId());
-                if (isset($parent) && count($parent) > 0) {
-                    unset($collection[$key]);
-                }
-            }
-        }
-
-        return count($collection);
+        return $collection ? $collection->getSize() : 0;
     }
 
 
@@ -295,7 +269,10 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             'pagination' => ''
         );
         if (!empty($args['category'])) {
-            $category = Mage::getModel('catalog/category')->load($args['category']);
+            $category = null;
+            if (intval($args['category']) != self::ALL_PRODUCTS_CATEGORY_ID) {
+                $category = Mage::getModel('catalog/category')->load($args['category']);
+            }
             $storeId = $this->observer->getStoreId();
             $total = $this->getTotalProducts($storeId, $category);
             $response['products'] = $this->getAllProducts($storeId, $category, $page);
@@ -347,7 +324,6 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             }
             $data['product_id'] = $product['id'];
             $result[] = $productModel->addProduct($data);
-
         }
 
         return $this->response($result);
@@ -506,5 +482,14 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')'
             );
         }
+    }
+
+    private function getTaxRate($product, $storeId)
+    {
+        $taxCalculationModel = Mage::getModel('tax/calculation');
+        $taxClassId = $product->getTaxClassId();
+        $store = Mage::app()->getStore($storeId);
+        $request = $taxCalculationModel->getRateRequest(null, null, null, $store);
+        return $taxCalculationModel->getRate($request->setProductClassId($taxClassId));
     }
 }

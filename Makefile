@@ -1,6 +1,9 @@
+.PHONY: build test coverage
+
 BASE = $(realpath ./)
 SRC_DIR = $(BASE)/src
 TESTS_DIR = $(BASE)/tests
+TOOLS_DIR = $(BASE)/tools
 BUILD_DIR = $(BASE)/build
 DOCS_DIR = $(BASE)/docs
 COVERAGE_DIR = $(BASE)/coverage
@@ -11,8 +14,11 @@ MODULE_VERSION=$(shell perl -nle"print $$& if m{(?<=<version>)[^<]+}" src/app/co
 
 build: clean
 	rsync -a --exclude='.*' $(SRC_DIR) $(BUILD_DIR)
-	#cp $(DOCS)/* $(BUILD_DIR)/fyndiqmerchant
-	cd $(BUILD_DIR); zip -r -X fyndiq-magento-module-v$(MODULE_VERSION)-$(COMMIT).zip src/
+	# replace COMMIT hash
+	sed -i'' 's/XXXXXX/$(COMMIT)/g' $(BUILD_DIR)/src/app/code/community/Fyndiq/Fyndiq/includes/config.php;
+	mkdir -p $(BUILD_DIR)/src/docs
+	cp $(DOCS_DIR)/* $(BUILD_DIR)/src/docs
+	cd $(BUILD_DIR)/src; zip -r -X ../fyndiq-magento-module-v$(MODULE_VERSION)-$(COMMIT).zip .
 	rm -r $(BUILD_DIR)/src
 
 clean:
@@ -28,13 +34,13 @@ test:
 	$(BIN_DIR)/phpunit
 
 scss-lint:
-	scss-lint $(SRC_DIR)/admin/fyndiq/frontend/css/*.scss
+	scss-lint $(SRC_DIR)/fyndiq/frontend/css/*.scss
 
 php-lint:
 	find $(SRC_DIR) -name "*.php" -print0 | xargs -0 -n1 -P8 php -l
 
 phpmd:
-	$(BIN_DIR)/phpmd $(SRC_DIR) --exclude /includes/ text cleancode,codesize,controversial,design,naming,unusedcode
+	$(BIN_DIR)/phpmd $(SRC_DIR) --exclude /api,/shared text cleancode,codesize,controversial,design,naming,unusedcode
 
 coverage: clear_coverage
 	$(BIN_DIR)/phpunit --coverage-html $(COVERAGE_DIR)
@@ -48,6 +54,7 @@ sniff:
 sniff-fix:
 	$(BIN_DIR)/phpcbf --standard=PSR2 --extensions=php --ignore=shared,templates,api $(SRC_DIR)
 	$(BIN_DIR)/phpcbf --standard=PSR2 --extensions=php $(TESTS_DIR)
+	$(BIN_DIR)/phpcbf --standard=PSR2 --extensions=php $(TOOLS_DIR)
 
 compatinfo:
 	$(BIN_DIR)/phpcompatinfo analyser:run $(SRC_DIR)

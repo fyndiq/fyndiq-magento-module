@@ -12,7 +12,6 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/FyndiqAPICall.php');
 
 class FmHelpers
 {
-
     public static function apiConnectionExists()
     {
         return FmConfig::getBool('username') && FmConfig::getBool('apikey');
@@ -36,7 +35,7 @@ class FmHelpers
     {
         $username = FmConfig::get('username', $storeId);
         $apiToken = FmConfig::get('apikey', $storeId);
-        $userAgent = "FyndiqMerchantMagento" . FmConfig::getVersion() . "-" . Mage::getVersion();
+        $userAgent = FmConfig::getUserAgent();
 
         return FyndiqAPICall::callApiRaw(
             $userAgent,
@@ -47,5 +46,35 @@ class FmHelpers
             $data,
             array('FyndiqAPI', 'call')
         );
+    }
+
+
+    public static function getProductPrice($objProduct)
+    {
+        $price = '';
+
+        $catalogRulePrice = "";
+        $catalogRulePrice = Mage::getModel('catalogrule/rule')->calcProductPriceRule($objProduct, $objProduct->getFinalPrice());
+            // Added logc to consider speacial price in feed if it is available
+        if ($objProduct->getSpecialPrice()) {
+            $today = mktime(0, 0, 0, date('m'), date('d'), date('y'));
+            $todaytimestamp = strtotime(date('Y-m-d 00:00:00', $today));
+            $spcl_pri_time = is_null($objProduct->getSpecialToDate()) ? $todaytimestamp : strtotime($objProduct->getSpecialToDate());
+            if ($spcl_pri_time <= $todaytimestamp) {
+                $price = $objProduct->getSpecialPrice();
+            } else {
+                $price = $objProduct->getPrice();
+            }
+        } elseif ($catalogRulePrice) {
+            $price = $catalogRulePrice;
+        } else {
+            $price = $objProduct->getPrice();
+        }
+
+        if (!Mage::helper('tax')->priceIncludesTax()) {
+            $price = Mage::helper('tax')->getPrice($objProduct, $price);
+        }
+
+        return number_format($price, 2, ".", "");
     }
 }

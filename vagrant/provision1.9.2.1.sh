@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MAGE_VERSION="1.9.1.0"
+MAGE_VERSION="1.9.2.1"
 DATA_VERSION="1.9.1.0"
 
 apt-get update
@@ -16,6 +16,8 @@ echo "mysql-server-5.5 mysql-server/root_password password 123" | sudo debconf-s
 echo "mysql-server-5.5 mysql-server/root_password_again password 123" | sudo debconf-set-selections
 apt-get install -y mysql-server
 apt-get install -y apache2 php5 php5-mysql php5-gd php5-mcrypt php5-curl
+
+apt-get remove -y puppet chef
 
 php5enmod mcrypt
 
@@ -42,9 +44,9 @@ fi
 if [[ ! -f "/var/www/html/magento/index.php" ]]; then
     cd /tmp
     echo "Downloading Magento ${MAGE_VERSION} ..."
-    wget --quiet http://www.magentocommerce.com/downloads/assets/${MAGE_VERSION}/magento-${MAGE_VERSION}.tar.gz
+    wget --quiet http://pubfiles.nexcess.net/magento/ce-packages/magento-${MAGE_VERSION}.tar.gz
     echo "Downloading Magento Sample files ${DATA_VERSION} ..."
-    wget --quiet http://www.magentocommerce.com/downloads/assets/${DATA_VERSION}/magento-sample-data-${DATA_VERSION}.tar.gz
+    wget --quiet http://mirror.gunah.eu/magento/sample-data/magento-sample-data-${DATA_VERSION}.tar.gz
     tar -zxvf magento-${MAGE_VERSION}.tar.gz
     tar -zxvf magento-sample-data-${DATA_VERSION}.tar.gz
     cp -R magento-sample-data-${DATA_VERSION}/* magento
@@ -99,6 +101,9 @@ if [ ! -f "/var/www/html/magento/app/etc/local.xml" ]; then
     ## Add hosts to file
     echo "192.168.44.44  fyndiq.local" >> /etc/hosts
     echo "127.0.0.1  magento.local" >> /etc/hosts
+
+    ## Enable template sym-links
+    mysql -u root -p123 -e "UPDATE magento.core_config_data SET value = '1' WHERE path = 'dev/template/allow_symlink'"
 fi
 
 echo "Done. Happy hacking!"

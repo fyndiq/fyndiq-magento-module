@@ -9,6 +9,10 @@
 class FmConfig
 {
 
+    const COMMIT = 'XXXXXX';
+    const REPOSITORY_PATH = 'fyndiq/fyndiq-magento-module/';
+    const DISABLE_UPDATE_CHECK = 0;
+
     const CONFIG_NAME = 'fyndiq/fyndiq_group';
 
     private static function key($name)
@@ -33,12 +37,20 @@ class FmConfig
 
     public static function set($name, $value)
     {
-        return Mage::getConfig()->saveConfig(self::key($name), serialize($value));
+        $result =  Mage::getConfig()->saveConfig(self::key($name), serialize($value));
+        Mage::getConfig()->reinit();
+        Mage::app()->reinitStores();
+        return $result;
     }
 
     public static function getVersion()
     {
         return (string)Mage::getConfig()->getNode()->modules->Fyndiq_Fyndiq->version;
+    }
+
+    public static function getUserAgent()
+    {
+        return FyndiqUtils::getUserAgentString("Magento", Mage::getVersion(), "module", FmConfig::getVersion(), FmConfig::COMMIT);
     }
 
     public static function getFeedPath($storeId)

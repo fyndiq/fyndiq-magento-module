@@ -97,7 +97,7 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
 
     public function getVersion()
     {
-        return FmConfig::getVersion();
+        return FyndiqUtils::getVersionLabel(FmConfig::getVersion(), FmConfig::COMMIT);
     }
 
     public function getLastUpdatedDate($storeId)
@@ -115,5 +115,20 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
         $switcher = new Mage_Adminhtml_Block_System_Config_Switcher();
 
         return $switcher->getStoreSelectOptions();
+    }
+
+    public function getRepositoryPath()
+    {
+        return FmConfig::REPOSITORY_PATH;
+    }
+
+    public function getModuleVersion()
+    {
+        return FmConfig::getVersion();
+    }
+
+    public function getDisableUpdateCheck()
+    {
+        return FmConfig::DISABLE_UPDATE_CHECK;
     }
 }

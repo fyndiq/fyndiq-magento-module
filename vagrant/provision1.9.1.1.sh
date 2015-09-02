@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-MAGE_VERSION="1.7.0.2"
-DATA_VERSION="1.6.1.0"
+MAGE_VERSION="1.9.1.1"
+DATA_VERSION="1.9.1.0"
 
 apt-get update
 apt-get install -y build-essential vim-nox git
@@ -41,9 +41,10 @@ fi
 
 if [[ ! -f "/var/www/html/magento/index.php" ]]; then
     cd /tmp
-    echo "Downloading..."
-    wget --quiet http://www.magentocommerce.com/downloads/assets/${MAGE_VERSION}/magento-${MAGE_VERSION}.tar.gz
-    wget --quiet http://www.magentocommerce.com/downloads/assets/${DATA_VERSION}/magento-sample-data-${DATA_VERSION}.tar.gz
+    echo "Downloading Magento ${MAGE_VERSION} ..."
+    wget --quiet http://mirror.gunah.eu/magento/magento-${MAGE_VERSION}.tar.gz
+    echo "Downloading Magento Sample files ${DATA_VERSION} ..."
+    wget --quiet http://mirror.gunah.eu/magento/sample-data/magento-sample-data-${DATA_VERSION}.tar.gz
     tar -zxvf magento-${MAGE_VERSION}.tar.gz
     tar -zxvf magento-sample-data-${DATA_VERSION}.tar.gz
     cp -R magento-sample-data-${DATA_VERSION}/* magento
@@ -58,10 +59,6 @@ if [[ ! -f "/var/www/html/magento/index.php" ]]; then
 
     mysql -u root -p123 magento < magento/magento_sample_data_for_${DATA_VERSION}.sql
     mv magento /var/www/html/
-
-    ## Fix magento bug
-    sed "s#<pdo_mysql/>#<pdo_mysql>1</pdo_mysql>#" /var/www/html/magento/app/code/core/Mage/Install/etc/config.xml > /tmp/config.xml
-    mv /tmp/config.xml /var/www/html/magento/app/code/core/Mage/Install/etc/config.xml
 
     ## Fix ownership and permissions
     chown -R vagrant:www-data /var/www/html/magento/
@@ -105,6 +102,9 @@ if [ ! -f "/var/www/html/magento/app/etc/local.xml" ]; then
 
     ## Enable template sym-links
     mysql -u root -p123 -e "UPDATE magento.core_config_data SET value = '1' WHERE path = 'dev/template/allow_symlink'"
+
+    ## Copy sample image for data import
+    cp /var/www/html/magento/media/catalog/product/m/a/mac000.jpg /var/www/html/magento/media/import/m/s/msj000t_1.jpg
 fi
 
 echo "Done. Happy hacking!"

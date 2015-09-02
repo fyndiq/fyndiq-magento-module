@@ -21,10 +21,18 @@
     </div>
 
     <div class="fm-content-wrapper">
+        <div class="fm-update-message-container"></div>
         <div class="fm-left-sidebar">
             <div class="fm-panel">
                 <div class="fm-panel-header"><?php echo $this->getMessage('Categories'); ?></div>
-                <div class="fm-panel-body fm-category-tree-container no-padding"></div>
+                <div class="fm-panel-body no-padding">
+                    <ul class="fm-category-tree">
+                        <li data-category_id="-1">
+                            <a href="#" title="<?php echo $this->getMessage('All products'); ?>"><?php echo $this->getMessage('All products'); ?></a>
+                        </li>
+                    </ul>
+                    <div class="fm-category-tree-container"></div>
+                </div>
             </div>
         </div>
 
@@ -50,6 +58,10 @@
                 </div>
             </div>
         </div>
+        <br class="clear" />
+        <div class="fm-content-wrapper fm-footer muted text-right">
+            <img class="fm-update-check" style="display:none" src="<?php echo $this->getSharedPath() ?>frontend/images/update-loader.gif" />
+            <?php echo $this->getVersion(); ?>
+        </div>
     </div>
-    <br class="clear" />
 </div>
