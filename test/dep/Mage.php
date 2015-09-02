@@ -47,6 +47,11 @@ class Mage
                 break;
         }
     }
+
+    static function reinitStores()
+    {
+        return true;
+    }
 }
 
 class getConfig
@@ -57,6 +62,10 @@ class getConfig
     }
 
     function saveConfig($key, $value)
+    {
+        return true;
+    }
+    function reinit()
     {
         return true;
     }

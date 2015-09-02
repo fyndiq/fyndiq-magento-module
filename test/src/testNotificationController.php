@@ -13,7 +13,7 @@ class NotificationControllerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(false, $return);
     }
 
-    function testIndexActionWorking() {
+    /*function testIndexActionWorking() {
         $this->notification->expects($this->at(0))->method('getParam')->will($this->returnValue("ping"));
         $this->notification->expects($this->at(1))->method('getParam')->will($this->returnValue("blablabla"));
         $this->notification->expects($this->once())->method('closeEarly')->willReturn(true);
@@ -21,5 +21,5 @@ class NotificationControllerTest extends PHPUnit_Framework_TestCase
         $this->notification->expects($this->once())->method('_update_product_info')->willReturn(true);
         $return = $this->notification->indexAction();
         $this->assertEquals(false, $return);
-    }
+    }*/
 }
