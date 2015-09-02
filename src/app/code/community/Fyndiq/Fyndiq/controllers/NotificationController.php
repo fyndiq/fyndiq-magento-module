@@ -11,7 +11,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 
     function __construct() {
         parent::__construct();
-        $this->fyndiqOutput = new fyndiqOutput();
+        $this->fyndiqOutput = new FyndiqOutput();
     }
 
     function indexAction()
