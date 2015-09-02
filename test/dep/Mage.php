@@ -18,7 +18,7 @@ class Mage
 
     static function getConfig()
     {
-        return new getConfig();
+        return new GetConfig();
     }
 
     static function getVersion()
@@ -33,7 +33,7 @@ class Mage
 
     function getLocale()
     {
-        return new getLocale();
+        return new GetLocale();
     }
 
     static function getModel($model)
@@ -54,11 +54,11 @@ class Mage
     }
 }
 
-class getConfig
+class GetConfig
 {
     function getNode()
     {
-        return new getNode();
+        return new GetNode();
     }
 
     function saveConfig($key, $value)
@@ -71,7 +71,7 @@ class getConfig
     }
 }
 
-class getNode
+class GetNode
 {
     function __construct() {
         $this->modules = new getModule();
@@ -99,7 +99,7 @@ class FyndiqModule
     }
 }
 
-class getLocale
+class GetLocale
 {
     function getLocaleCode()
     {

@@ -41,7 +41,7 @@ class Magdata
         $this->items = array();
         for($i = 0;$i<6;$i++)
         {
-            $prod = new magProd();
+            $prod = new MagProd();
             $prod->product_id = $i;
             $prod->id = $i;
             $this->items[] = $prod;
@@ -53,7 +53,7 @@ class Magdata
         return $this->items;
     }
 }
-class magProd
+class MagProd
 {
     function getData()
     {

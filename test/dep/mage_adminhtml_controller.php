@@ -7,7 +7,7 @@ class Mage_Adminhtml_Controller_Action
     }
 
     function getRequest() {
-        return new paramClass();
+        return new ParamClass();
     }
 
     function renderLayout($test = false) {
@@ -16,30 +16,30 @@ class Mage_Adminhtml_Controller_Action
 
     function getLayout()
     {
-        return new getLayout();
+        return new GetLayout();
     }
 }
 
-class paramClass
+class ParamClass
 {
     function getParam($test) {
         return 1;
     }
 }
 
-class getLayout
+class GetLayout
 {
     function getBlock($test)
     {
-        return new getBlock();
+        return new GetBlock();
     }
     function CreateBlock($test, $test2)
     {
-        return new getBlock();
+        return new GetBlock();
     }
 }
 
-class getBlock
+class GetBlock
 {
     function append($test)
     {
