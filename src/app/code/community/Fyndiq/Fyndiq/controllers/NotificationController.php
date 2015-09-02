@@ -42,13 +42,12 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
                     $orderModel->create($storeId, $fyndiqOrder);
                 }
             } catch (Exception $e) {
-                $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
+                $this->getFyndiqOutput()->showError(500, 'Internal Server Error', 'Internal Server Error');
             }
 
             return true;
         }
-        header('HTTP/1.0 400 Bad Request');
-        die('400 Bad Request');
+        $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
     }
 
 
