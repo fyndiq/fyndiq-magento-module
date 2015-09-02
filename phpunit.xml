@@ -13,7 +13,7 @@
     </testsuites>
     <filter>
         <blacklist>
-            <directory>./fyndiq</directory>
+            <directory>./src/fyndiq</directory>
             <directory>./test/dep</directory>
         </blacklist>
     </filter>

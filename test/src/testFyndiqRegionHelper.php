@@ -41,5 +41,4 @@ class FyndiqRegionHelperTest extends PHPUnit_Framework_TestCase
         $result = FyndiqRegionHelper::getRegionName($code);
         $this->assertEquals($expected, $result);
     }
-
 }

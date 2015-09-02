@@ -1,4 +1,5 @@
 <?php
+
 require_once(dirname(dirname(__FILE__)) . '/Model/Order.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
@@ -7,7 +8,7 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/FyndiqUtils.php');
 
 class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Action
 {
-    function indexAction()
+    public function indexAction()
     {
         $event = $this->getRequest()->getParam('event');
         $eventName = $event ? $event : false;
@@ -16,8 +17,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
                 return $this->$eventName();
             }
         }
-        header('HTTP/1.0 400 Bad Request');
-        die('400 Bad Request');
+        $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
     }
 
     /**
@@ -42,14 +42,12 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
                     $orderModel->create($storeId, $fyndiqOrder);
                 }
             } catch (Exception $e) {
-                header('HTTP/1.0 500 Internal Server Error');
-                die('500 Internal Server Error');
+                $this->getFyndiqOutput()->showError(500, 'Internal Server Error', 'Internal Server Error');
             }
 
             return true;
         }
-        header('HTTP/1.0 400 Bad Request');
-        die('400 Bad Request');
+        $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
     }
 
 
@@ -64,21 +62,10 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 
         $token = $this->getRequest()->getParam('token');
         if (is_null($token) || $token != $pingToken) {
-            header('HTTP/1.0 400 Bad Request');
-
-            return die('400 Bad Request');
+            $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
         }
 
-        // http://stackoverflow.com/questions/138374/close-a-connection-early
-        ob_end_clean();
-        header('Connection: close');
-        ignore_user_abort(true); // just to be safe
-        ob_start();
-        echo 'OK';
-        $size = ob_get_length();
-        header('Content-Length: ' . $size);
-        ob_end_flush(); // Strange behaviour, will not work
-        flush(); // Unless both are called !
+        $this->getFyndiqOutput()->flushHeader('OK');
 
         $locked = false;
         $lastPing = FmConfig::get('ping_time', $storeId);
@@ -88,9 +75,8 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         }
         if (!$locked) {
             FmConfig::set('ping_time', time());
-            $fyndiqCron = new Fyndiq_Fyndiq_Model_Observer();
-            $fyndiqCron->exportProducts($storeId, false);
-            $this->_update_product_info($storeId);
+            $this->pingObserver();
+            $this->updateProductInfo($storeId);
         }
     }
 
@@ -102,8 +88,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         $token = $this->getRequest()->getParam('token');
 
         if (is_null($token) || $token != $pingToken) {
-            header('HTTP/1.0 400 Bad Request');
-            return die('400 Bad Request');
+            $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
         }
 
         FyndiqUtils::debugStart();
@@ -123,9 +108,23 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         FyndiqUtils::debugStop();
     }
 
-    private function _update_product_info($storeId)
+    protected function updateProductInfo($storeId)
     {
         $pi = new FmProductInfo($storeId);
         $pi->getAll();
+    }
+
+    protected function pingObserver()
+    {
+        $fyndiqCron = new Fyndiq_Fyndiq_Model_Observer();
+        $fyndiqCron->exportProducts($storeId, false);
+    }
+
+    protected function getFyndiqOutput()
+    {
+        if (!$this->fyndiqOutput) {
+            $this->fyndiqOutput = new FyndiqOutput();
+        }
+        return $this->fyndiqOutput;
     }
 }

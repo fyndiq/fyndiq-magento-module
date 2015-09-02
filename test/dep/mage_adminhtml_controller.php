@@ -2,44 +2,48 @@
 
 class Mage_Adminhtml_Controller_Action
 {
-    function loadLayout($layout) {
+    function loadLayout($layout)
+    {
         return true;
     }
 
-    function getRequest() {
-        return new paramClass();
+    function getRequest()
+    {
+        return new ParamClass();
     }
 
-    function renderLayout($test = false) {
+    function renderLayout($test = false)
+    {
         return true;
     }
 
     function getLayout()
     {
-        return new getLayout();
+        return new GetLayout();
     }
 }
 
-class paramClass
+class ParamClass
 {
-    function getParam($test) {
+    function getParam($test)
+    {
         return 1;
     }
 }
 
-class getLayout
+class GetLayout
 {
     function getBlock($test)
     {
-        return new getBlock();
+        return new GetBlock();
     }
     function CreateBlock($test, $test2)
     {
-        return new getBlock();
+        return new GetBlock();
     }
 }
 
-class getBlock
+class GetBlock
 {
     function append($test)
     {
