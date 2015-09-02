@@ -142,7 +142,6 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 
     function error()
     {
-        header('HTTP/1.0 400 Bad Request');
-        die('400 Bad Request');
+        return $this->fyndiqOutput->showError(400, 'Bad Request', 'The request did not work.');
     }
 }
