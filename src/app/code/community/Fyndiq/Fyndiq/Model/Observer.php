@@ -65,10 +65,27 @@ class Fyndiq_Fyndiq_Model_Observer
         if ($print) {
             print 'Fyndiq :: Saving feed file' . PHP_EOL;
         }
-        $this->exportingProducts($storeId);
-        if ($print) {
-            print 'Fyndiq :: Done saving feed file' . PHP_EOL;
+        $fileName = FmConfig::getFeedPath($storeId);
+        $tempFileName = FyndiqUtils::getTempFilename(dirname($fileName));
+
+        FyndiqUtils::debug('$fileName', $fileName);
+        FyndiqUtils::debug('$tempFileName', $tempFileName);
+
+        $file = fopen($tempFileName, 'w+');
+        if (!$file) {
+            FyndiqUtils::debug('Cannot create file: ' . $fileName);
+            return false;
         }
+        $feedWriter = new FyndiqCSVFeedWriter($file);
+        $exportResult = $this->exportingProducts($storeId, $feedWriter);
+        fclose($file);
+        if ($exportResult) {
+            // File successfully generated
+            return FyndiqUtils::moveFile($tempFileName, $fileName);
+        }
+        // Something wrong happened, clean the file
+        FyndiqUtils::deleteFile($tempFileName);
+        return false;
     }
 
     /**
@@ -77,21 +94,12 @@ class Fyndiq_Fyndiq_Model_Observer
      * @param $storeId
      * @return bool
      */
-    private function exportingProducts($storeId)
+    private function exportingProducts($storeId, $feedWriter)
     {
         $store = Mage::getModel('core/store')->load($storeId);
-        $fileName = FmConfig::getFeedPath($storeId);
+
         $this->productMediaConfig = Mage::getModel('catalog/product_media_config');
 
-        FyndiqUtils::debug('$fileName', $fileName);
-        $file = fopen($fileName, 'w+');
-
-        if (!$file) {
-            FyndiqUtils::debug('Cannot create file: ' . $fileName);
-
-            return false;
-        }
-        $feedWriter = new FyndiqCSVFeedWriter($file);
         $products = Mage::getModel('fyndiq/product')->getCollection()->setOrder('id', 'DESC');
         $products = $products->getItems();
         $idsToExport = array();
