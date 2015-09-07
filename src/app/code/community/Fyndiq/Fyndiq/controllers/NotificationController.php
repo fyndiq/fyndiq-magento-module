@@ -57,7 +57,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
      */
     private function ping()
     {
-        $storeId = Mage::app()->getStore()->getStoreId();
+        $storeId = Mage::app()->getRequest()->getParam('store');
         $pingToken = unserialize(FmConfig::get('ping_token', $storeId));
 
         $token = $this->getRequest()->getParam('token');
@@ -75,7 +75,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         }
         if (!$locked) {
             FmConfig::set('ping_time', time());
-            $this->pingObserver();
+            $this->pingObserver($storeId);
             $this->updateProductInfo($storeId);
         }
     }
@@ -114,7 +114,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         $pi->getAll();
     }
 
-    protected function pingObserver()
+    protected function pingObserver($storeId)
     {
         $fyndiqCron = new Fyndiq_Fyndiq_Model_Observer();
         $fyndiqCron->exportProducts($storeId, false);
