@@ -57,7 +57,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
      */
     private function ping()
     {
-        $storeId = Mage::app()->getRequest()->getParam('store');
+        $storeId = $this->getRequest()->getParam('store');
         $pingToken = unserialize(FmConfig::get('ping_token', $storeId));
 
         $token = $this->getRequest()->getParam('token');
@@ -101,8 +101,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 
         $fileExistsAndFresh = file_exists($filePath) && filemtime($filePath) > strtotime('-1 hour');
         FyndiqUtils::debug('$fileExistsAndFresh', $fileExistsAndFresh);
-        $fyndiqCron = new Fyndiq_Fyndiq_Model_Observer();
-        $fyndiqCron->exportProducts($storeId, false);
+        $this->pingObserver($storeId);
         $result = file_get_contents($filePath);
         FyndiqUtils::debug('$result', $result, true);
         FyndiqUtils::debugStop();
