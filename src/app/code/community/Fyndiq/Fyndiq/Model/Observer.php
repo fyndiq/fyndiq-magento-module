@@ -66,7 +66,7 @@ class Fyndiq_Fyndiq_Model_Observer
             print 'Fyndiq :: Saving feed file' . PHP_EOL;
         }
         $fileName = FmConfig::getFeedPath($storeId);
-        $tempFileName = FyndiqUtils(dirname($fileName));
+        $tempFileName = FyndiqUtils::getTempFilename(dirname($fileName));
 
         FyndiqUtils::debug('$fileName', $fileName);
         FyndiqUtils::debug('$tempFileName', $tempFileName);
