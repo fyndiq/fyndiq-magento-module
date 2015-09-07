@@ -57,7 +57,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
      */
     private function ping()
     {
-        $storeId = Mage::app()->getStore()->getStoreId();
+        $storeId = Mage::app()->getRequest()->getParam('store');
         $pingToken = unserialize(FmConfig::get('ping_token', $storeId));
 
         $token = $this->getRequest()->getParam('token');
