@@ -11,11 +11,11 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 
     public function indexAction()
     {
+        FyndiqTranslation::init(Mage::app()->getLocale()->getLocaleCode());
         $event = $this->getRequest()->getParam('event');
         $eventName = $event ? $event : false;
         if ($eventName) {
             if ($eventName[0] != '_' && method_exists($this, $eventName)) {
-                FyndiqTranslation::init(Mage::app()->getLocale()->getLocaleCode());
                 return $this->$eventName();
             }
         }
