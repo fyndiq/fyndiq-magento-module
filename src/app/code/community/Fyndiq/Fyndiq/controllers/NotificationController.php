@@ -9,17 +9,13 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
 class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Action
 {
 
-    public function __construct()
-    {
-        FyndiqTranslation::init(Mage::app()->getLocale()->getLocaleCode());
-    }
-
     public function indexAction()
     {
         $event = $this->getRequest()->getParam('event');
         $eventName = $event ? $event : false;
         if ($eventName) {
             if ($eventName[0] != '_' && method_exists($this, $eventName)) {
+                FyndiqTranslation::init(Mage::app()->getLocale()->getLocaleCode());
                 return $this->$eventName();
             }
         }
