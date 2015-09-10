@@ -6,7 +6,9 @@ Fyndiq's official Magento module
 * Magento 1.7-
 * PHP >5.2
 
+### Documentation
 
+You can find the latest version of this module and up to date documentation on the following page: http://developers.fyndiq.com/fyndiq-built-integrations/#magento
 
 ### INSTALL
 You can just drag the app directory to your magento directory to make the files get added to right place.
