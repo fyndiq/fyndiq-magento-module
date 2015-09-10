@@ -8,6 +8,7 @@ class Fyndiq_Fyndiq_FileController extends Mage_Core_Controller_Front_Action
     function indexAction()
     {
         $result = '';
+        $lastModified = 0;
         //Setting content type to csv.
         $this->getResponse()->setHeader('Content-type', 'text/csv');
         $storeId = Mage::app()->getRequest()->getParam('store');
@@ -18,7 +19,13 @@ class Fyndiq_Fyndiq_FileController extends Mage_Core_Controller_Front_Action
                 $fyndiqCron = new Fyndiq_Fyndiq_Model_Observer();
                 $fyndiqCron->exportProducts($storeId, false);
             }
+            if (file_exists($filePath)) {
+                $lastModified = filemtime($filePath);
+            }
             $result = file_get_contents($filePath);
+        }
+        if ($lastModified) {
+            $this->getResponse()->setHeader('Last-Modified', gmdate('D, d M Y H:i:s T', $lastModified));
         }
         //printing out the content from feed file to the visitor.
         $this->getResponse()->setBody($result);
