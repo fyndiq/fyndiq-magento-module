@@ -186,7 +186,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             }
 
             $magPrice = FmHelpers::getProductPrice($prod);
-
+            $producturl = Mage::helper('adminhtml')->getUrl('adminhtml/catalog_product/edit', array('id' => $prod->getId()));
             $prodData = array(
                 'id' => $prod->getId(),
                 'url' => $prod->getUrl(),
@@ -198,6 +198,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 'fyndiq_percentage' => $fyndiqPercentage,
                 'fyndiq_exported' => $fyndiq,
                 'fyndiq_state' => $fyndiqState,
+                'producturl' => $producturl,
                 'description' => $prod->getDescription(),
                 'reference' => $prod->getSKU(),
                 'properties' => implode(', ', $tags),
