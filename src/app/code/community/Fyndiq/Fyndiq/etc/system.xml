@@ -32,11 +32,11 @@
                             <show_in_store>1</show_in_store>
                         </disconnect>
                         <stockmin translate="label">
-                            <label>Description to use</label>
+                            <label>Lowest quantity to send to fyndiq</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>14</sort_order>
                             <comment>
-                                <![CDATA[Set this to a number which will be the lowest Fyndiq can go to, If set to ten, the module will send the quantity amount minus 10 to Fyndiq, if the quantity minus 10 becomes 0 or below zero it will be sent as 0.]]>
+                                <![CDATA[Set this to a number which will be the lowest Fyndiq can go to, If set to ten, the module will send the quantity amount minus 10 to Fyndiq, if the quantity minus 10 becomes 0 or below 0 it will be sent as 0.]]>
                             </comment>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
