@@ -11,7 +11,7 @@ class ObserverTest extends PHPUnit_Framework_TestCase
     function testQuantity()
     {
         $product = new Catalog_Product();
-        $qtystock = $this->observer->get_quantity($product, 1);
+        $qtystock = $this->observer->getQuantity($product, 1);
 
         $this->assertEquals(3, $qtystock);
     }
