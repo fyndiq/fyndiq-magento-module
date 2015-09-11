@@ -421,7 +421,7 @@ class Fyndiq_Fyndiq_Model_Observer
         }
 
         if ($magArray['type_id'] == 'simple') {
-            $qtyStock = $this->get_quantity($magProduct, $store);
+            $qtyStock = $this->getQuantity($magProduct, $store);
 
             $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
 
@@ -476,7 +476,7 @@ class Fyndiq_Fyndiq_Model_Observer
             $firstProduct = $magProduct;
         }
 
-        $qtyStock = $this->get_quantity($firstProduct, $store);
+        $qtyStock = $this->getQuantity($firstProduct, $store);
 
         $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
 
@@ -552,7 +552,7 @@ class Fyndiq_Fyndiq_Model_Observer
         throw new Exception(FyndiqTranslation::get('empty-username-token'));
     }
 
-    public function get_quantity($product, $store)
+    public function getQuantity($product, $store)
     {
         $qtyStock = 0;
         $stock_item = Mage::getModel('cataloginventory/stock_item')->loadByProduct($product);
