@@ -552,7 +552,7 @@ class Fyndiq_Fyndiq_Model_Observer
         throw new Exception(FyndiqTranslation::get('empty-username-token'));
     }
 
-    private function get_quantity($product, $store)
+    public function get_quantity($product, $store)
     {
         $qtyStock = 0;
         $stock_item = Mage::getModel('cataloginventory/stock_item')->loadByProduct($product);

@@ -45,6 +45,9 @@ class Mage
             case 'catalog/product':
                 return new Catalog_Product();
                 break;
+            case 'cataloginventory/stock_item':
+                return new Catalog_Stock();
+                break;
         }
     }
 
