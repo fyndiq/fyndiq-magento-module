@@ -563,7 +563,7 @@ class Fyndiq_Fyndiq_Model_Observer
 
         //Remove the minstock from quantity.
         $stockmin = FmConfig::get('stockmin', $store);
-        if(isset($stockmin)) {
+        if (isset($stockmin)) {
             $qtyStock = $qtyStock - $stockmin;
         }
 
