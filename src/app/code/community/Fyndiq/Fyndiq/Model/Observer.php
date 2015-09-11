@@ -421,7 +421,7 @@ class Fyndiq_Fyndiq_Model_Observer
         }
 
         if ($magArray['type_id'] == 'simple') {
-            $qtyStock = $this->get_quantity($magProduct);
+            $qtyStock = $this->getQuantity($magProduct, $store);
 
             $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
 
@@ -476,7 +476,7 @@ class Fyndiq_Fyndiq_Model_Observer
             $firstProduct = $magProduct;
         }
 
-        $qtyStock = $this->get_quantity($firstProduct);
+        $qtyStock = $this->getQuantity($firstProduct, $store);
 
         $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
 
@@ -552,15 +552,21 @@ class Fyndiq_Fyndiq_Model_Observer
         throw new Exception(FyndiqTranslation::get('empty-username-token'));
     }
 
-    private function get_quantity($product)
+    public function getQuantity($product, $store)
     {
+        $qtyStock = 0;
         $stock_item = Mage::getModel('cataloginventory/stock_item')->loadByProduct($product);
-        if ($product->getStatus() != 1 || $stock_item->getIsInStock()== 0) {
-            $qtyStock = 0;
-        } else {
+        if ($product->getStatus() == 1 || $stock_item->getIsInStock() != 0) {
             $qtyStock = $stock_item->getQty();
         }
         FyndiqUtils::debug('$qtystock', $qtyStock);
+
+        //Remove the minstock from quantity.
+        $stockmin = FmConfig::get('stockmin', $store);
+        if (isset($stockmin)) {
+            $qtyStock = $qtyStock - $stockmin;
+        }
+
         return $qtyStock;
     }
 
