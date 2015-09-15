@@ -1,38 +1,40 @@
 <?php
 
-$installer = $this;
+$installer2 = Mage::getResourceModel('catalog/setup', 'catalog_setup');
 
-$installer->startSetup();
+$installer2->startSetup();
 
-$attrCode = 'fyndiq_status';
+$attrCode = 'fyndiq_exported';
 $attrGroupName = 'Fyndiq';
-$attrLabel = 'Fyndiq Status';
+$attrLabel = 'Fyndiq Exported';
 $attrNote = 'Show if product is exported or not';
 
-$objCatalogEavSetup = Mage::getResourceModel('catalog/eav_mysql4_setup', 'core_setup');
-$attrIdTest = $objCatalogEavSetup->getAttributeId(Mage_Catalog_Model_Product::ENTITY, $attrCode);
+$installer2->addAttribute(
+    'catalog_product',
+    $attrCode,
+    array(
+    'type'          => 'int',
+    'input'         => 'select',
+    'label'         => $attrLabel,
+    'required'      => false,
+    'global'        => Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_STORE,
+    'searchable'    => true,
+    'source'        => 'fyndiq/attribute_exported',
+    'filterable_in_search' => true,
+    'sort_order'    => 5, // Place just below SKU (4)
+    'default'       => '0'
+    )
+);
 
-if ($attrIdTest === false) {
-    $objCatalogEavSetup->addAttribute(Mage_Catalog_Model_Product::ENTITY, $attrCode, array(
-        'group' => $attrGroupName,
-        'sort_order' => 7,
-        'type' => 'varchar',
-        'backend' => '',
-        'frontend' => '',
-        'label' => $attrLabel,
-        'note' => $attrNote,
-        'input' => 'text',
-        'class' => '',
-        'source' => '',
-        'global' => Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_GLOBAL,
-        'visible' => true,
-        'required' => false,
-        'user_defined' => true,
-        'default' => '0',
-        'visible_on_front' => false,
-        'unique' => false,
-        'is_configurable' => false,
-        'used_for_promo_rules' => false
-    ));
-}
-$installer->endSetup();
+$attrData = array(
+    $attrCode => '0',
+);
+$storeId = 0;
+$productIds = Mage::getModel('catalog/product')->getCollection()->getAllIds();
+Mage::getModel("catalog/product_action")->updateAttributes(
+    $productIds,
+    $attrData,
+    $storeId
+);
+
+$installer2->endSetup();
