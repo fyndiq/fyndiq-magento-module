@@ -33,6 +33,7 @@
             <fyndiqmodule_setup>
                 <setup>
                     <module>Fyndiq_Fyndiq</module>
+                    <class>Mage_Eav_Model_Entity_Setup</class>
                 </setup>
             </fyndiqmodule_setup>
         </resources>
@@ -42,6 +43,11 @@
                     <exportproducts>Fyndiq_Fyndiq_Block_Exportproducts</exportproducts>
                 </rewrite>
             </Fyndiq>
+            <adminhtml>
+               <rewrite>
+                   <catalog_product_grid>Fyndiq_Fyndiq_Block_Adminhtml_Catalog_Product_Grid</catalog_product_grid>
+               </rewrite>
+            </adminhtml>
         </blocks>
         <events>
             <admin_system_config_changed_section_fyndiq>
