@@ -120,8 +120,8 @@ class Fyndiq_Fyndiq_Model_Observer
                 ->addAttributeToSelect('*')
                 ->addStoreFilter($storeId)
                 ->addAttributeToFilter(
-                    'entity_id',
-                    array('in' => $batchIds)
+                    'fyndiq_exported',
+                    '1'
                 )->load();
 
             foreach ($productsToExport as $magProduct) {
