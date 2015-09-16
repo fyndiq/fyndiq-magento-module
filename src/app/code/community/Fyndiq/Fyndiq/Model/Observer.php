@@ -100,18 +100,19 @@ class Fyndiq_Fyndiq_Model_Observer
 
         $this->productMediaConfig = Mage::getModel('catalog/product_media_config');
 
-        $products = Mage::getModel('fyndiq/product')->getCollection()->setOrder('id', 'DESC');
-        $products = $products->getItems();
-        $idsToExport = array();
-        $productInfo = array();
-        foreach ($products as $product) {
-            $productData = $product->getData();
-            $idsToExport[] = intval($productData['product_id']);
-            $productInfo[$productData['product_id']] = $productData;
-        }
+        $fyndiq_exported = Mage::getResourceModel('catalog/product')->getAttributeRawValue(403, 'fyndiq_exported', $storeId);
+
+        FyndiqUtils::debug('$fyndiq_exported', $fyndiq_exported);
+
+        $idsToExport = Mage::getModel('catalog/product')->getCollection()
+            ->addAttributeToSelect('*')
+            ->addStoreFilter($storeId)
+            ->addAttributeToFilter(
+                'fyndiq_exported',
+                array('eq' => "Exported")
+            )->getAllIds();
 
         FyndiqUtils::debug('$idsToExport', $idsToExport);
-        FyndiqUtils::debug('$productInfo', $productInfo);
 
         $batches = array_chunk($idsToExport, self::BATCH_SIZE);
         foreach ($batches as $batchIds) {
@@ -121,7 +122,7 @@ class Fyndiq_Fyndiq_Model_Observer
                 ->addStoreFilter($storeId)
                 ->addAttributeToFilter(
                     'fyndiq_exported',
-                    '1'
+                    array('eq' => "Exported")
                 )->load();
 
             foreach ($productsToExport as $magProduct) {
@@ -132,9 +133,9 @@ class Fyndiq_Fyndiq_Model_Observer
                 if ($magProduct->getTypeId() != 'simple') {
                     $articles = array();
                     $prices = array();
-                    $articles[] = $this->getProduct($magProduct, $productInfo[$parent_id], $store);
+                    $articles[] = $this->getProduct($magProduct, null,$store);
 
-                    $this->getImages($parent_id, $magProduct, $productInfo[$parent_id]['id']);
+                    $this->getImages($parent_id, $magProduct, $parent_id);
 
                     $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
                     $simpleCollection = $conf->getUsedProductCollection()
@@ -146,8 +147,8 @@ class Fyndiq_Fyndiq_Model_Observer
                             FyndiqUtils::debug('min sale qty is > 1, SKIPPING ARTICLE');
                             continue;
                         }
-                        $prices[] = FmHelpers::getProductPrice($simpleProduct);
-                        $articles[] = $this->getProduct($simpleProduct, $productInfo[$parent_id], $store);
+                        $prices[] = FmHelpers::getProductPrice($simpleProduct, $storeId);
+                        $articles[] = $this->getProduct($simpleProduct, $magProduct, $store);
                     }
                     $price = null;
                     $differentPrice = count(array_unique($prices)) > 1;
@@ -200,8 +201,8 @@ class Fyndiq_Fyndiq_Model_Observer
 
                     //Just get the products images and add them all to the product.
                     $imageId = 1;
-                    $product = $this->getProduct($magProduct, $productInfo[$parent_id], $store);
-                    $this->getImages($magProduct->getId(), $magProduct, $productInfo[$parent_id]['id']);
+                    $product = $this->getProduct($magProduct, null, $store);
+                    $this->getImages($magProduct->getId(), $magProduct, $parent_id);
 
                     $images = $this->getImagesFromArray();
                     $product = array_merge($product, $images);
@@ -349,9 +350,8 @@ class Fyndiq_Fyndiq_Model_Observer
      * @param array $productInfo
      * @return array
      */
-    private function getProduct($magProduct, $productInfo, $store)
+    private function getProduct($magProduct, $parent = null, $store)
     {
-        FyndiqUtils::debug('$productInfo', $productInfo);
         FyndiqUtils::debug('$magProduct', $magProduct->getData());
         //Initialize models here so it saves memory.
         if (!$this->categoryModel) {
@@ -373,8 +373,11 @@ class Fyndiq_Fyndiq_Model_Observer
 
             return $feedProduct;
         }
-
-        $feedProduct['product-id'] = $productInfo['id'];
+        $parent_id = $magProduct->getId();
+        if(isset($parent)) {
+            $parent_id= $parent->getId();
+        }
+        $feedProduct['product-id'] = $parent_id;
         $feedProduct['product-title'] = $magArray['name'];
 
         $descriptionSetting = intval(FmConfig::get('description', $store));
@@ -394,7 +397,7 @@ class Fyndiq_Fyndiq_Model_Observer
                 break;
         }
 
-        $magPrice = FmHelpers::getProductPrice($magProduct);
+        $magPrice = FmHelpers::getProductPrice($magProduct, $storeId);
 
         $feedProduct['product-description'] = $description;
 

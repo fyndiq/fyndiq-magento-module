@@ -49,9 +49,10 @@ class FmHelpers
     }
 
 
-    public static function getProductPrice($objProduct)
+    public static function getProductPrice($objProduct, $storeid)
     {
         $price = '';
+        $fyndiq_price = Mage::getResourceModel('catalog/product')->getAttributeRawValue($objProduct->getId(), 'fyndiq_price', $storeId);
 
         $catalogRulePrice = "";
         $catalogRulePrice = Mage::getModel('catalogrule/rule')->calcProductPriceRule($objProduct, $objProduct->getFinalPrice());
@@ -73,6 +74,10 @@ class FmHelpers
 
         if (!Mage::helper('tax')->priceIncludesTax()) {
             $price = Mage::helper('tax')->getPrice($objProduct, $price);
+        }
+
+        if(!empty($fyndiq_price) && $price > $fyndiq_price) {
+            $price = $fyndiq_price;
         }
 
         return number_format($price, 2, ".", "");
