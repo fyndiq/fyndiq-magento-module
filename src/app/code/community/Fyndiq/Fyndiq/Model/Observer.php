@@ -65,26 +65,38 @@ class Fyndiq_Fyndiq_Model_Observer
         if ($print) {
             print 'Fyndiq :: Saving feed file' . PHP_EOL;
         }
-        $fileName = FmConfig::getFeedPath($storeId);
-        $tempFileName = FyndiqUtils::getTempFilename(dirname($fileName));
+        try {
+            $fileName = FmConfig::getFeedPath($storeId);
+            $tempFileName = FyndiqUtils::getTempFilename(dirname($fileName));
 
-        FyndiqUtils::debug('$fileName', $fileName);
-        FyndiqUtils::debug('$tempFileName', $tempFileName);
+            FyndiqUtils::debug('$fileName', $fileName);
+            FyndiqUtils::debug('$tempFileName', $tempFileName);
 
-        $file = fopen($tempFileName, 'w+');
-        if (!$file) {
-            FyndiqUtils::debug('Cannot create file: ' . $fileName);
-            return false;
+            $file = fopen($tempFileName, 'w+');
+
+            if (!$file) {
+                FyndiqUtils::debug('Cannot create file: ' . $tempFileName);
+                return false;
+            }
+
+            FyndiqUtils::debug('new FyndiqCSVFeedWriter');
+            $feedWriter = new FyndiqCSVFeedWriter($file);
+            FyndiqUtils::debug('FyndiqCSVFeedWriter::exportingProducts');
+            $exportResult = $this->exportingProducts($storeId, $feedWriter);
+            FyndiqUtils::debug('Closing file');
+            fclose($file);
+            if ($exportResult) {
+                // File successfully generated
+                FyndiqUtils::debug('Moving file', $tempFileName, $fileName);
+                return FyndiqUtils::moveFile($tempFileName, $fileName);
+            }
+            // Something wrong happened, clean the file
+            FyndiqUtils::debug('Deleting temp file', $tempFileName);
+            FyndiqUtils::deleteFile($tempFileName);
+        } catch (Exception $e) {
+            $file = false;
+            FyndiqUtils::debug('UNHANDLED ERROR ' . $e->getMessage());
         }
-        $feedWriter = new FyndiqCSVFeedWriter($file);
-        $exportResult = $this->exportingProducts($storeId, $feedWriter);
-        fclose($file);
-        if ($exportResult) {
-            // File successfully generated
-            return FyndiqUtils::moveFile($tempFileName, $fileName);
-        }
-        // Something wrong happened, clean the file
-        FyndiqUtils::deleteFile($tempFileName);
         return false;
     }
 
@@ -96,6 +108,7 @@ class Fyndiq_Fyndiq_Model_Observer
      */
     private function exportingProducts($storeId, $feedWriter)
     {
+        FyndiqUtils::debug('exportingProducts');
         $store = Mage::getModel('core/store')->load($storeId);
 
         $this->productMediaConfig = Mage::getModel('catalog/product_media_config');
