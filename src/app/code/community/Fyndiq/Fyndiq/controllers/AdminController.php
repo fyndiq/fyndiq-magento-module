@@ -44,6 +44,10 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
     {
         $isAuthorized = true;
         $message = '';
+        if ($this->getAPIToken() == '' || $this->getUsername() == '') {
+            $this->setupTemplate('fyndiq/needapiinfo.phtml');
+            return false;
+        }
         try {
             $storeId = $this->getRequest()->getParam('store');
             $this->callAPI($storeId);
@@ -55,11 +59,6 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
         }
         if ($message && !$isAuthorized) {
             $this->setupTemplate('fyndiq/apierror.phtml', array('message' => $message));
-
-            return false;
-        }
-        if ($this->getAPIToken() == '' || $this->getUsername() == '') {
-            $this->setupTemplate('fyndiq/needapiinfo.phtml');
 
             return false;
         }
@@ -77,9 +76,10 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
     function disconnectAction()
     {
         $config = new Mage_Core_Model_Config();
-        $config->saveConfig('fyndiq/fyndiq_group/apikey', "", 'default', "");
-        $config->saveConfig('fyndiq/fyndiq_group/username', "", 'default', "");
-        $this->_redirect("fyndiq/admin/index");
+        $config->saveConfig('fyndiq/fyndiq_group/apikey', '', 'default', '');
+        $config->saveConfig('fyndiq/fyndiq_group/username', '', 'default', '');
+        $config->reinit();
+        $this->_redirect('fyndiq/admin/index');
     }
 
     /**
