@@ -75,7 +75,9 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         # call static function on self with name of the value provided in $action
         if (method_exists($this, $action)) {
             $this->$action($args);
+            return;
         }
+        $this->responseError('Method not found', sprintf('Method `%s` not found.', $action));
     }
 
     /**

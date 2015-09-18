@@ -1,0 +1,107 @@
+<?php require('common.phtml'); ?>
+
+<div class="fm-container">
+
+    <div class="fm-header">
+        <div class="fm-header-wrapper">
+            <img class="navbar-brand" src="<?php echo $this->getSharedPath(); ?>frontend/images/logo.png"
+                 alt="<?php echo $this->getMessage('Fyndiq logotype'); ?>">
+
+            <div class="navbar-right">
+                <a href="<?php echo $this->getAdminPath("fyndiq/admin/index"); ?>" class="btn btn-nav"><i
+                        class="menu-icon comp"></i> <?php echo $this->getMessage('Export Products'); ?></a>
+                <a href="<?php echo $this->getAdminPath("fyndiq/admin/orderlist"); ?>" class="btn btn-nav"><i
+                        class="menu-icon boxes"></i> <?php echo $this->getMessage('Imported Orders'); ?></a>
+                <a href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>"
+                   class="btn btn-nav"><i class="menu-icon cog"></i> <?php echo $this->getMessage('Settings'); ?></a>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="fm-content-wrapper">
+        <div class="fm-update-message-container"></div>
+        <div class="fm-panel">
+            <div class="fm-panel-header"><?php echo $this->getMessage('Module setup check'); ?></div>
+            <div class="fm-panel-body">
+                <ul class="fm-module-check">
+                </ul>
+            </div>
+        </div>
+        <br class="clear" />
+        <div class="fm-content-wrapper fm-footer muted text-right">
+            <a href="<?php echo $this->getAdminPath("fyndiq/admin/check"); ?>"><?php echo $this->getMessage('Check module'); ?></a>
+            <img class="fm-update-check" style="display:none" src="<?php echo $this->getSharedPath() ?>frontend/images/update-loader.gif" />
+            <?php echo $this->getVersion(); ?>
+        </div>
+    </div>
+</div>
+
+<script>
+(function($, serviceURL, formKey){
+
+    var probes = [
+        {
+            label: 'Test 1',
+            action: 'probe_one'
+        },
+        {
+            label: 'Test 2',
+            action: 'probe_two'
+        }
+    ];
+
+    function setupProbe($container, probe) {
+        var $probeLine = $([
+                '<li class="fm-probe">',
+                '<img class="trobber" src="<?php echo $this->getSharedPath() ?>frontend/images/update-loader.gif" /> ',
+                probe.label,
+                ': <span class="fm-probe-result"></span>',
+                '<li>'
+            ].join(''));
+        $element = $container.append($probeLine);
+        $.ajax({
+            url: serviceURL,
+            method: 'POST',
+            data: {
+                form_key: formKey,
+                action : probe.action
+            }
+        })
+            .done(function(data) {
+                var errorMessage = data;
+                if (data.hasOwnProperty('fm-service-status')) {
+                    if (data['fm-service-status'] === 'success') {
+                        $probeLine.addClass('fm-probe-success');
+                        $probeLine.find('.fm-probe-result').html(data['message']);
+                        return;
+                    }
+                    errorMessage = data['message'];
+                }
+                // Failure show the result
+                $probeLine.addClass('fm-probe-error');
+                $probeLine.find('.fm-probe-result').html(errorMessage);
+                console.log(data);
+            })
+            .fail(function(jqXHR, textStatus) {
+                $probeLine.addClass('fm-probe-error');
+                $probeLine.find('.fm-probe-result').html(textStatus);
+            })
+            .always(function() {
+                $probeLine.find('img').remove();
+            });
+        console.log(probe, $element);
+    }
+
+    $('document').ready(function() {
+
+        var $moduleCheckList = $('.fm-module-check');
+
+        probes.forEach(function(probe, i){
+            setTimeout(function() {
+                setupProbe($moduleCheckList, probe);
+            }, i * 500);
+        });
+    });
+})(window.jQuery, window.FmPaths.service, window.FORM_KEY);
+</script>

@@ -40,7 +40,15 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
         return $this->setTemplate('fyndiq/orderlist.phtml');
     }
 
-    function setTemplate($template)
+    public function checkAction()
+    {
+        $this->loadLayout(array('default'));
+        // We skip all checks for check
+        return $this->setupTemplate('fyndiq/check.phtml');
+    }
+
+
+    protected function setTemplate($template)
     {
         $isAuthorized = true;
         $message = '';
@@ -68,7 +76,6 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
 
             return false;
         }
-
         return $this->setupTemplate($template);
 
     }
