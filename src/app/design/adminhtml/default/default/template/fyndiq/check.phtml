@@ -24,8 +24,12 @@
         <div class="fm-panel">
             <div class="fm-panel-header"><?php echo $this->getMessage('Module setup check'); ?></div>
             <div class="fm-panel-body">
-                <ul class="fm-module-check">
-                </ul>
+                <ul class="fm-module-check"></ul>
+                <p class="text-right">
+                    <a class="fm-button red fm-reinstall-module" type="submit" href="#" rel="nofollow">
+                        <?php echo $this->getMessage('Reinstall module'); ?>
+                    </a>
+                </p>
             </div>
         </div>
         <br class="clear" />
@@ -38,7 +42,7 @@
 </div>
 
 <script>
-(function($, serviceURL, formKey){
+(function($, window, serviceURL, formKey){
 
     var probes = <?php echo $this->getProbes(); ?>;
 
@@ -69,12 +73,11 @@
                         $probeLine.find('.fm-probe-result').html(data.data);
                         return;
                     }
-                    errorMessage = data['message'];
+                    errorMessage = data.message;
                 }
                 // Failure show the result
                 $probeLine.addClass('fm-probe-error');
                 $probeLine.find('.fm-probe-result').html(errorMessage);
-                console.log(data);
             })
             .fail(function(jqXHR, textStatus) {
                 $probeLine.addClass('fm-probe-error');
@@ -83,7 +86,6 @@
             .always(function() {
                 $probeLine.find('img').remove();
             });
-        console.log(probe, $element);
     }
 
     $('document').ready(function() {
@@ -95,6 +97,31 @@
                 setupProbe($moduleCheckList, probe);
             }, i * 500);
         });
+
+        $('.fm-reinstall-module').click(function(event) {
+            event.preventDefault();
+            var resp = confirm(window.messages['Are you sure you want to reinstall the module?']);
+            if (resp === true) {
+                $.ajax({
+                    url: serviceURL,
+                    method: 'POST',
+                    data: {
+                        form_key: formKey,
+                        action : 'action_reinstall_module'
+                    }
+                })
+                    .done(function(data) {
+                        if (data.hasOwnProperty('fm-service-status') && data['fm-service-status'] === 'success') {
+                            alert(data.data);
+                            return;
+                        }
+                        alert(data.message);
+                    })
+                    .fail(function(jqXHR, textStatus) {
+                        alert(textStatus);
+                    });
+            }
+        });
     });
-})(window.jQuery, window.FmPaths.service, window.FORM_KEY);
+})(window.jQuery, window, window.FmPaths.service, window.FORM_KEY);
 </script>

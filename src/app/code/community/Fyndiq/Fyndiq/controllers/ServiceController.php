@@ -633,4 +633,20 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             );
         }
     }
+
+    protected function action_reinstall_module()
+    {
+        $moduleName = 'fyndiqmodule_setup';
+        $sql = 'DELETE FROM core_resource WHERE code = "' . $moduleName . '";';
+        $connection = Mage::getSingleton('core/resource')->getConnection('core_write');
+        try {
+            $connection->query($sql);
+        } catch (Exception $e) {
+            $this->responseError(
+                '',
+                $e->getMessage()
+            );
+        }
+        $this->response(FyndiqTranslation::get('Please flush the Magento Cache on System -> Cache management to reinstall the module'));
+    }
 }
