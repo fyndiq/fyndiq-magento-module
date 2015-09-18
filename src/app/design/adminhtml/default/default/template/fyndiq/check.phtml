@@ -45,9 +45,11 @@
     function setupProbe($container, probe) {
         var $probeLine = $([
                 '<li class="fm-probe fm-probe-' + probe.action +'">',
+                '<h3>',
                 '<img class="trobber" src="<?php echo $this->getSharedPath() ?>frontend/images/update-loader.gif" /> ',
                 probe.label,
-                ': <span class="fm-probe-result"></span>',
+                '</h3>',
+                '<div class="fm-probe-result"></div>',
                 '</li>'
             ].join(''));
         $element = $container.append($probeLine);

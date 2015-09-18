@@ -498,12 +498,40 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
 
     protected function probe_file_permissions() {
+        $messages = array();
+        $storeId = $this->observer->getStoreId();
+        $testMessage = time();
         try {
-
+            $fileName = FmConfig::getFeedPath($storeId);
+            $exists =  file_exists($fileName) ?
+                FyndiqTranslation::get('exists') :
+                FyndiqTranslation::get('does not exist');
+            $messages[] = sprintf(FyndiqTranslation::get('Feed file name: %s (%s)'), $fileName, $exists);
+            $tempFileName = FyndiqUtils::getTempFilename(dirname($fileName));
+            if (dirname($tempFileName) !== dirname($fileName)) {
+                throw new Exception(sprintf(
+                    FyndiqTranslation::get('Cannot create file, Please make sure that the server can create new files in %s'),
+                    dirname($fileName)));
+            }
+            $messages[] = sprintf(FyndiqTranslation::get('Trying to create temporary file: %s'), $tempFileName);
+            $file = fopen($tempFileName, 'w+');
+            if (!$file) {
+                throw new Exception(sprintf(FyndiqTranslation::get('Cannot create file: %s'), $tempFileName));
+            }
+            fwrite($file, $testMessage);
+            fclose($file);
+            $content = file_get_contents($tempFileName);
+            if ($testMessage == file_get_contents($tempFileName)) {
+                $messages[] = sprintf(FyndiqTranslation::get('File %s successfully read.'), $tempFileName);
+            }
+            FyndiqUtils::deleteFile($tempFileName);
+            $messages[] = sprintf(FyndiqTranslation::get('Successfully deleted temp file'));
+            $this->response(implode('<br />', $messages));
         } catch(Exception $e) {
+            $messages[] = $e->getMessage();
             $this->responseError(
                 FyndiqTranslation::get('unhandled-error-title'),
-                FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')'
+                implode('<br />', $messages)
             );
         }
     }
