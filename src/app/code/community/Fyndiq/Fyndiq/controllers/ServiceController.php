@@ -506,31 +506,129 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             $exists =  file_exists($fileName) ?
                 FyndiqTranslation::get('exists') :
                 FyndiqTranslation::get('does not exist');
-            $messages[] = sprintf(FyndiqTranslation::get('Feed file name: %s (%s)'), $fileName, $exists);
+            $messages[] = sprintf(FyndiqTranslation::get('Feed file name: `%s` (%s)'), $fileName, $exists);
             $tempFileName = FyndiqUtils::getTempFilename(dirname($fileName));
             if (dirname($tempFileName) !== dirname($fileName)) {
                 throw new Exception(sprintf(
-                    FyndiqTranslation::get('Cannot create file, Please make sure that the server can create new files in %s'),
+                    FyndiqTranslation::get('Cannot create file, Please make sure that the server can create new files in `%s`'),
                     dirname($fileName)));
             }
-            $messages[] = sprintf(FyndiqTranslation::get('Trying to create temporary file: %s'), $tempFileName);
+            $messages[] = sprintf(FyndiqTranslation::get('Trying to create temporary file: `%s`'), $tempFileName);
             $file = fopen($tempFileName, 'w+');
             if (!$file) {
-                throw new Exception(sprintf(FyndiqTranslation::get('Cannot create file: %s'), $tempFileName));
+                throw new Exception(sprintf(FyndiqTranslation::get('Cannot create file: `%s`'), $tempFileName));
             }
             fwrite($file, $testMessage);
             fclose($file);
             $content = file_get_contents($tempFileName);
             if ($testMessage == file_get_contents($tempFileName)) {
-                $messages[] = sprintf(FyndiqTranslation::get('File %s successfully read.'), $tempFileName);
+                $messages[] = sprintf(FyndiqTranslation::get('File `%s` successfully read.'), $tempFileName);
             }
             FyndiqUtils::deleteFile($tempFileName);
-            $messages[] = sprintf(FyndiqTranslation::get('Successfully deleted temp file'));
+            $messages[] = sprintf(FyndiqTranslation::get('Successfully deleted temp file `%s`'), $tempFileName);
             $this->response(implode('<br />', $messages));
         } catch(Exception $e) {
             $messages[] = $e->getMessage();
             $this->responseError(
-                FyndiqTranslation::get('unhandled-error-title'),
+                '',
+                implode('<br />', $messages)
+            );
+        }
+    }
+
+    protected function probe_database()
+    {
+        $messages = array();
+        try {
+            $tables = array(
+                'fyndiq/product',
+                'fyndiq/order',
+                'fyndiq/setting',
+            );
+
+            $missing = array();
+
+            $coreResource = Mage::getSingleton('core/resource');
+            foreach ($tables as $table) {
+
+                $tableName = $coreResource->getTableName($table);
+                $exists = (boolean) $coreResource->getConnection('core_write')
+                    ->showTableStatus($tableName);
+                if (!$exists) {
+                    $missing[] = $tableName;
+                    continue;
+                }
+                $messages[] = sprintf(FyndiqTranslation::get('Table `%s` is present.'), $tableName);
+            }
+
+            if ($missing) {
+                throw new Exception(sprintf(
+                    FyndiqTranslation::get('Required tables `%s` are missing.', implode(',', $missing))));
+            }
+            $this->response(implode('<br />', $messages));
+        } catch(Exception $e) {
+            $messages[] = $e->getMessage();
+            $this->responseError(
+                '',
+                implode('<br />', $messages)
+            );
+        }
+    }
+
+    protected function probe_module_integrity()
+    {
+        $messages = array();
+        $missing = array();
+        $checkClasses = array(
+            'FyndiqAPI',
+            'FyndiqAPICall',
+            'FyndiqCSVFeedWriter',
+            'FyndiqFeedWriter',
+            'FyndiqOutput',
+            'FyndiqPaginatedFetch',
+            'FyndiqTranslation',
+            'FyndiqUtils',
+        );
+        try {
+            foreach ($checkClasses as $className) {
+                if (class_exists($className)) {
+                    $messages[] = sprintf(FyndiqTranslation::get('Class `%s` is found.'), $className);
+                    continue;
+                }
+                $messages[] = sprintf(FyndiqTranslation::get('Class `%s` is NOT found.'), $className);
+            }
+            if ($missing) {
+                throw new Exception(sprintf(
+                    FyndiqTranslation::get('Required classes `%s` are missing.', implode(',', $missing))));
+            }
+            $this->response(implode('<br />', $messages));
+
+        } catch(Exception $e) {
+            $messages[] = $e->getMessage();
+            $this->responseError(
+                '',
+                implode('<br />', $messages)
+            );
+        }
+    }
+
+    protected function probe_connection()
+    {
+        $messages = array();
+        try {
+            try {
+                FmHelpers::callApi($storeId, 'GET', 'settings/');
+            } catch (Exception $e) {
+                if ($e instanceof FyndiqAPIAuthorizationFailed) {
+                    throw new Exception(FyndiqTranslation::get('Module is not authorized.'));
+                }
+            }
+            $messages[] = FyndiqTranslation::get('Connection to Fyndiq is nominal.');
+            $this->response(implode('<br />', $messages));
+        } catch(Exception $e) {
+            $messages[] = $e->getMessage();
+            $this->responseError(
+                '',
                 implode('<br />', $messages)
             );
         }

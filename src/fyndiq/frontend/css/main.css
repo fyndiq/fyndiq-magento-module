@@ -401,7 +401,7 @@
   padding-bottom: 20px; }
 
 .fm-probe-result {
-  margin-left: 3em;
+  margin: 0 0 1em 3em;
   padding: 1em; }
 
 .fm-probe-error .fm-probe-result {
