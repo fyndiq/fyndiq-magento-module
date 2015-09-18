@@ -497,7 +497,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     }
 
 
-    protected function probe_file_permissions() {
+    protected function probe_file_permissions()
+    {
         $messages = array();
         $storeId = $this->observer->getStoreId();
         $testMessage = time();
@@ -511,7 +512,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             if (dirname($tempFileName) !== dirname($fileName)) {
                 throw new Exception(sprintf(
                     FyndiqTranslation::get('Cannot create file, Please make sure that the server can create new files in `%s`'),
-                    dirname($fileName)));
+                    dirname($fileName)
+                ));
             }
             $messages[] = sprintf(FyndiqTranslation::get('Trying to create temporary file: `%s`'), $tempFileName);
             $file = fopen($tempFileName, 'w+');
@@ -527,7 +529,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             FyndiqUtils::deleteFile($tempFileName);
             $messages[] = sprintf(FyndiqTranslation::get('Successfully deleted temp file `%s`'), $tempFileName);
             $this->response(implode('<br />', $messages));
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $messages[] = $e->getMessage();
             $this->responseError(
                 '',
@@ -550,7 +552,6 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
             $coreResource = Mage::getSingleton('core/resource');
             foreach ($tables as $table) {
-
                 $tableName = $coreResource->getTableName($table);
                 $exists = (boolean) $coreResource->getConnection('core_write')
                     ->showTableStatus($tableName);
@@ -563,10 +564,11 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
             if ($missing) {
                 throw new Exception(sprintf(
-                    FyndiqTranslation::get('Required tables `%s` are missing.', implode(',', $missing))));
+                    FyndiqTranslation::get('Required tables `%s` are missing.', implode(',', $missing))
+                ));
             }
             $this->response(implode('<br />', $messages));
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $messages[] = $e->getMessage();
             $this->responseError(
                 '',
@@ -599,11 +601,12 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             }
             if ($missing) {
                 throw new Exception(sprintf(
-                    FyndiqTranslation::get('Required classes `%s` are missing.', implode(',', $missing))));
+                    FyndiqTranslation::get('Required classes `%s` are missing.', implode(',', $missing))
+                ));
             }
             $this->response(implode('<br />', $messages));
 
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $messages[] = $e->getMessage();
             $this->responseError(
                 '',
@@ -625,7 +628,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             }
             $messages[] = FyndiqTranslation::get('Connection to Fyndiq is nominal.');
             $this->response(implode('<br />', $messages));
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $messages[] = $e->getMessage();
             $this->responseError(
                 '',
