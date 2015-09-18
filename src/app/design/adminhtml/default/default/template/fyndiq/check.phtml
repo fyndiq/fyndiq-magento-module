@@ -40,24 +40,15 @@
 <script>
 (function($, serviceURL, formKey){
 
-    var probes = [
-        {
-            label: 'Test 1',
-            action: 'probe_one'
-        },
-        {
-            label: 'Test 2',
-            action: 'probe_two'
-        }
-    ];
+    var probes = <?php echo $this->getProbes(); ?>;
 
     function setupProbe($container, probe) {
         var $probeLine = $([
-                '<li class="fm-probe">',
+                '<li class="fm-probe fm-probe-' + probe.action +'">',
                 '<img class="trobber" src="<?php echo $this->getSharedPath() ?>frontend/images/update-loader.gif" /> ',
                 probe.label,
                 ': <span class="fm-probe-result"></span>',
-                '<li>'
+                '</li>'
             ].join(''));
         $element = $container.append($probeLine);
         $.ajax({
@@ -73,7 +64,7 @@
                 if (data.hasOwnProperty('fm-service-status')) {
                     if (data['fm-service-status'] === 'success') {
                         $probeLine.addClass('fm-probe-success');
-                        $probeLine.find('.fm-probe-result').html(data['message']);
+                        $probeLine.find('.fm-probe-result').html(data.data);
                         return;
                     }
                     errorMessage = data['message'];

@@ -131,4 +131,27 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
     {
         return FmConfig::DISABLE_UPDATE_CHECK;
     }
+
+    public function getProbes()
+    {
+        $probes = array(
+            array(
+                'label' => $this->getMessage('Checking file permissions'),
+                'action' => 'probe_file_permissions',
+            ),
+            array(
+                'label' => $this->getMessage('Checking database'),
+                'action' => 'probe_database',
+            ),
+            array(
+                'label' => $this->getMessage('Module integrity'),
+                'action' => 'probe_module_integrity',
+            ),
+            array(
+                'label' => $this->getMessage('Connection to Fyndiq'),
+                'action' => 'probe_connection',
+            ),
+        );
+        return json_encode($probes);
+    }
 }

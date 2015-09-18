@@ -495,4 +495,16 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $request = $taxCalculationModel->getRateRequest(null, null, null, $store);
         return $taxCalculationModel->getRate($request->setProductClassId($taxClassId));
     }
+
+
+    protected function probe_file_permissions() {
+        try {
+
+        } catch(Exception $e) {
+            $this->responseError(
+                FyndiqTranslation::get('unhandled-error-title'),
+                FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')'
+            );
+        }
+    }
 }
