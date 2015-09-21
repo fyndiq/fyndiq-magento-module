@@ -19,7 +19,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
                 return $this->$eventName();
             }
         }
-        $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
+        return $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
     }
 
     /**
@@ -44,12 +44,12 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
                     $orderModel->create($storeId, $fyndiqOrder);
                 }
             } catch (Exception $e) {
-                $this->getFyndiqOutput()->showError(500, 'Internal Server Error', 'Internal Server Error');
+                return $this->getFyndiqOutput()->showError(500, 'Internal Server Error', 'Internal Server Error');
             }
 
             return true;
         }
-        $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
+        return $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
     }
 
 
@@ -64,7 +64,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 
         $token = $this->getRequest()->getParam('token');
         if (is_null($token) || $token != $pingToken) {
-            $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
+            return $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
         }
 
         $this->getFyndiqOutput()->flushHeader('OK');
@@ -90,14 +90,13 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         $token = $this->getRequest()->getParam('token');
 
         if (is_null($token) || $token != $pingToken) {
-            $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
+            return $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
         }
 
         FyndiqUtils::debugStart();
         FyndiqUtils::debug('USER AGENT', FmConfig::getUserAgent());
         FyndiqUtils::debug('$storeId', $storeId);
         //Check if feed file exist and if it is too old
-        $filePath = FmConfig::getFeedPath($storeId);
         FyndiqUtils::debug('$filePath', $filePath);
         FyndiqUtils::debug('is_writable(' . $filePath . ')', is_writable($filePath));
 
