@@ -67,7 +67,7 @@ if [[ ! -f "/var/www/html/magento/index.php" ]]; then
     chmod -R 775 /var/www/html/magento/
 
     ## Link module
-    #cd /opt/fyndiq-magento-module/ && make dev MAGENTO_ROOT=/var/www/html/magento
+    cd /opt/fyndiq-magento-module/ && make dev MAGENTO_ROOT=/var/www/html/magento
 
     # Clean up downloaded file and extracted dir
     rm -rf /tmp/magento*
