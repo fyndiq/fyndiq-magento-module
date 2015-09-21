@@ -511,7 +511,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             $tempFileName = FyndiqUtils::getTempFilename(dirname($fileName));
             if (dirname($tempFileName) !== dirname($fileName)) {
                 throw new Exception(sprintf(
-                    FyndiqTranslation::get('Cannot create file, Please make sure that the server can create new files in `%s`'),
+                    FyndiqTranslation::get('Cannot create file. Please make sure that the server can create new files in `%s`'),
                     dirname($fileName)
                 ));
             }
