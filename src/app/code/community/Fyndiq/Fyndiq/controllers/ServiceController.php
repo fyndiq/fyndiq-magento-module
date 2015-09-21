@@ -627,7 +627,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                     throw new Exception(FyndiqTranslation::get('Module is not authorized.'));
                 }
             }
-            $messages[] = FyndiqTranslation::get('Connection to Fyndiq is nominal.');
+            $messages[] = FyndiqTranslation::get('Connection to Fyndiq successfully tested.');
             $this->response(implode('<br />', $messages));
         } catch (Exception $e) {
             $messages[] = $e->getMessage();
