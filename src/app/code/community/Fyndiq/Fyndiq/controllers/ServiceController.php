@@ -564,7 +564,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
             if ($missing) {
                 throw new Exception(sprintf(
-                    FyndiqTranslation::get('Required tables `%s` are missing.', implode(',', $missing))
+                    FyndiqTranslation::get('Required tables `%s` are missing.'), implode(',', $missing)
                 ));
             }
             $this->response(implode('<br />', $messages));
