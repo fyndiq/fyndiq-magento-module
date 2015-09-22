@@ -97,6 +97,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         FyndiqUtils::debug('USER AGENT', FmConfig::getUserAgent());
         FyndiqUtils::debug('$storeId', $storeId);
         //Check if feed file exist and if it is too old
+        $filePath = FmConfig::getFeedPath($storeId);
         FyndiqUtils::debug('$filePath', $filePath);
         FyndiqUtils::debug('is_writable(' . $filePath . ')', is_writable($filePath));
 
