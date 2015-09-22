@@ -285,8 +285,8 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         if ($order) {
             //$order->setState(Mage_Sales_Model_Order::STATE_PROCESSING, true);
             $order->setStatus($statusId, true);
-
-            return $order->save();
+            $order->save();
+            return true;
         }
 
         return false;
