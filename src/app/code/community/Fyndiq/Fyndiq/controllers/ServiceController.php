@@ -76,8 +76,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
         # call static function on self with name of the value provided in $action
         if (method_exists($this, $action)) {
-            return;
-            $this->$action($args);
+            return $this->$action($args);
         }
         return $this->responseError('Method not found', sprintf('Method `%s` not found.', $action));
     }
@@ -679,7 +678,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                     throw new Exception(FyndiqTranslation::get('Module is not authorized.'));
                 }
             }
-            $messages[] = FyndiqTranslation::get('Connection to Fyndiq successfully tested.');
+            $messages[] = FyndiqTranslation::get('Connection to Fyndiq successfully tested');
             $this->response(implode('<br />', $messages));
         } catch (Exception $e) {
             $messages[] = $e->getMessage();
