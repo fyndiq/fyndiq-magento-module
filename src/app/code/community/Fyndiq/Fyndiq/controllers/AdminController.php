@@ -80,7 +80,7 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
 
     }
 
-    function disconnectAction()
+    public function disconnectAction()
     {
         $config = new Mage_Core_Model_Config();
         $config->saveConfig('fyndiq/fyndiq_group/apikey', '', 'default', '');
@@ -95,7 +95,7 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
      * @param $template
      * @param null $data
      */
-    private function setupTemplate($template, $data = null)
+    protected function setupTemplate($template, $data = null)
     {
         $block = $this->getLayout()
             ->createBlock('Fyndiq_Fyndiq_Block_Admin', 'fyndiq.admin')
