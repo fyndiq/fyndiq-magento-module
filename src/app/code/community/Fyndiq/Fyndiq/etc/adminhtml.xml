@@ -9,6 +9,11 @@
                 <children>
                     <system>
                         <children>
+                            <fyndiq translate="title">
+                                <title>Fyndiq Export/Import</title>
+                                <sort_order>0</sort_order>
+                                <action>fyndiq/admin/index</action>
+                            </fyndiq>
                             <config>
                                 <children>
                                     <fyndiq translate="title">

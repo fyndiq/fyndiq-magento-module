@@ -130,4 +130,9 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
     {
         return FmConfig::get('apikey', $this->getRequest()->getParam('store'));
     }
+
+    protected function _isAllowed()
+    {
+        return Mage::getSingleton('admin/session')->isAllowed('system/fyndiq');
+    }
 }
