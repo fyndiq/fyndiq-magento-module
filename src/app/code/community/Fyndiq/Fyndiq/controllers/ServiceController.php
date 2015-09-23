@@ -16,10 +16,43 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
 class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 {
     const ALL_PRODUCTS_CATEGORY_ID = -1;
+
+
+    public function preDispatch()
+    {
+        Mage::getSingleton('core/session', array('name'=>'adminhtml'));
+        if (!Mage::getSingleton('admin/session')->isLoggedIn()) {
+            $this->redirect($this->getUrl('adminhtml/index/login'));
+            // Magento calls preDispatch twice and breaks the json, because of that die();
+            die();
+        }
+        parent::preDispatch();
+    }
+
     protected function _construct()
     {
+        parent::_construct();
         $this->observer = Mage::getModel('fyndiq/observer');
         FyndiqTranslation::init(Mage::app()->getLocale()->getLocaleCode());
+    }
+
+    /**
+     * Structure the response back to the client
+     *
+     * @param string $data
+     */
+    public function redirect($url = '')
+    {
+        $response = array(
+            'fm-service-status' => 'redirect',
+            'data' => $url
+        );
+        $json = json_encode($response);
+        $response = $this->getResponse();
+        $response->clearHeaders()->setHeader('Content-type', 'application/json', true);
+        $response->setBody($json);
+        $response->sendResponse();
+        return true;
     }
 
     /**
