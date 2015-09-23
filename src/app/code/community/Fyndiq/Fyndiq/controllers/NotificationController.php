@@ -9,6 +9,8 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
 class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Action
 {
 
+    private $fyndiqOutput = null;
+
     public function indexAction()
     {
         FyndiqTranslation::init(Mage::app()->getLocale()->getLocaleCode());
