@@ -9,6 +9,8 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
 class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Action
 {
 
+    private $fyndiqOutput = null;
+
     public function indexAction()
     {
         FyndiqTranslation::init(Mage::app()->getLocale()->getLocaleCode());
@@ -52,6 +54,18 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         return $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
     }
 
+    protected function isPingLocked()
+    {
+        $lastPing = FmConfig::get('ping_time', $storeId);
+        $lastPing = $lastPing ? unserialize($lastPing) : false;
+        return $lastPing && $lastPing > strtotime('15 minutes ago');
+    }
+
+    protected function isCorrectToken($token)
+    {
+        $pingToken = unserialize(FmConfig::get('ping_token', $storeId));
+        return !(is_null($token) || $token != $pingToken);
+    }
 
     /**
      * Generate feed
@@ -60,22 +74,13 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
     private function ping()
     {
         $storeId = $this->getRequest()->getParam('store');
-        $pingToken = unserialize(FmConfig::get('ping_token', $storeId));
-
-        $token = $this->getRequest()->getParam('token');
-        if (is_null($token) || $token != $pingToken) {
+        if (!$this->isCorrectToken($this->getRequest()->getParam('token'))) {
             return $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
         }
 
         $this->getFyndiqOutput()->flushHeader('OK');
 
-        $locked = false;
-        $lastPing = FmConfig::get('ping_time', $storeId);
-        $lastPing = $lastPing ? unserialize($lastPing) : false;
-        if ($lastPing && $lastPing > strtotime('15 minutes ago')) {
-            $locked = true;
-        }
-        if (!$locked) {
+        if (!$this->isPingLocked()) {
             FmConfig::set('ping_time', time());
             $this->pingObserver($storeId);
             $this->updateProductInfo($storeId);
