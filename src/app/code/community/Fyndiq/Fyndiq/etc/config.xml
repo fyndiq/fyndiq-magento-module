@@ -115,7 +115,11 @@
                 <title>Fyndiq Carrier</title>
                 <sort_order>10</sort_order>
                 <sallowspecific>0</sallowspecific>
+                <handling_type>F</handling_type>
                 <express_max_weight>1</express_max_weight>
+                <show_in_default>0</show_in_default>
+                <show_in_website>0</show_in_website>
+                <show_in_store>0</show_in_store>
             </fyndiq_fyndiq>
         </carriers>
         <payment>
