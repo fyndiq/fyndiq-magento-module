@@ -212,7 +212,6 @@ class Fyndiq_Fyndiq_Model_Observer
                     }
 
                     //Just get the products images and add them all to the product.
-                    $imageId = 1;
                     $product = $this->getProduct($magProduct, $productInfo[$parent_id], $store);
                     $this->getImages($magProduct->getId(), $magProduct, $productInfo[$parent_id]['id']);
 
