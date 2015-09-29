@@ -51,21 +51,10 @@ class FmHelpers
 
     public static function getProductPrice($objProduct)
     {
-        $price = $objProduct->getPrice();
-
-        // Added logic to consider special price in feed if it is available
-        $specialPrice = $objProduct->getSpecialPrice();
-        if ($specialPrice) {
-            $specialEndDate = $objProduct->getSpecialToDate();
-            $specialEndDateTime = is_null($specialEndDate) ? 0 : strtotime($specialEndDate);
-            if ($specialEndDateTime >= time()) {
-                // Special price expires in the future
-                $price = $specialPrice;
-            }
-        }
+        $price = $objProduct->getFinalPrice();
 
         $catalogRulePrice = Mage::getModel('catalogrule/rule')
-            ->calcProductPriceRule($objProduct, $objProduct->getFinalPrice());
+            ->calcProductPriceRule($objProduct, $price);
         if ($catalogRulePrice) {
             $price = $catalogRulePrice;
         }
