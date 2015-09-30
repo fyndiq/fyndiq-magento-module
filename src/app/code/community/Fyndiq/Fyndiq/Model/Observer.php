@@ -12,8 +12,6 @@ class Fyndiq_Fyndiq_Model_Observer
 {
     const BATCH_SIZE = 30;
 
-    const UNKNOWN = 'Unknown';
-
     private $productModel = null;
     private $categoryModel = null;
     private $taxCalculationModel = null;
@@ -419,7 +417,9 @@ class Fyndiq_Fyndiq_Model_Observer
         $feedProduct['product-currency'] = $store->getCurrentCurrencyCode();
 
         $brand = $magProduct->getAttributeText('manufacturer');
-        $feedProduct['product-brand-name'] = $brand ? $brand : self::UNKNOWN;
+        if ($brand) {
+            $feedProduct['product-brand-name'] = $brand;
+        }
 
         // Category
         $categoryIds = $magProduct->getCategoryIds();
@@ -436,8 +436,6 @@ class Fyndiq_Fyndiq_Model_Observer
             $qtyStock = $this->getQuantity($magProduct, $store);
 
             $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
-
-            $feedProduct['article-location'] = self::UNKNOWN;
             $feedProduct['article-sku'] = $magProduct->getSKU();
             $feedProduct['article-name'] = $magArray['name'];
 
@@ -491,8 +489,6 @@ class Fyndiq_Fyndiq_Model_Observer
         $qtyStock = $this->getQuantity($firstProduct, $store);
 
         $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
-
-        $feedProduct['article-location'] = self::UNKNOWN;
         $feedProduct['article-sku'] = $firstProduct->getSKU();
         $productAttrOptions = $magProduct->getTypeInstance()->getConfigurableAttributes();
         $attrId = 1;
