@@ -138,16 +138,16 @@ class Fyndiq_Fyndiq_Model_Observer
                 )->load();
 
             foreach ($productsToExport as $magProduct) {
-                $parent_id = $magProduct->getId();
+                $parentId = $magProduct->getId();
                 FyndiqUtils::debug('$magProduct->getTypeId()', $magProduct->getTypeId());
 
 
                 if ($magProduct->getTypeId() != 'simple') {
                     $articles = array();
                     $prices = array();
-                    $articles[] = $this->getProduct($magProduct, $productInfo[$parent_id], $store);
+                    $articles[] = $this->getProduct($magProduct, $productInfo[$parentId], $store);
 
-                    $this->getImages($parent_id, $magProduct, $productInfo[$parent_id]['id']);
+                    $this->getImages($parentId, $magProduct);
 
                     $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
                     $simpleCollection = $conf->getUsedProductCollection()
@@ -160,7 +160,7 @@ class Fyndiq_Fyndiq_Model_Observer
                             continue;
                         }
                         $prices[] = FmHelpers::getProductPrice($simpleProduct);
-                        $articles[] = $this->getProduct($simpleProduct, $productInfo[$parent_id], $store);
+                        $articles[] = $this->getProduct($simpleProduct, $productInfo[$parentId], $store);
                     }
                     $price = null;
                     $differentPrice = count(array_unique($prices)) > 1;
@@ -212,8 +212,8 @@ class Fyndiq_Fyndiq_Model_Observer
                     }
 
                     //Just get the products images and add them all to the product.
-                    $product = $this->getProduct($magProduct, $productInfo[$parent_id], $store);
-                    $this->getImages($magProduct->getId(), $magProduct, $productInfo[$parent_id]['id']);
+                    $product = $this->getProduct($magProduct, $productInfo[$parentId], $store);
+                    $this->getImages($parentId, $magProduct);
 
                     $images = $this->getImagesFromArray();
                     $product = array_merge($product, $images);
@@ -291,17 +291,17 @@ class Fyndiq_Fyndiq_Model_Observer
      *
      * @param  int $productId
      * @param  object $magProduct
-     * @param  object $productModel
      * @return array
      */
     protected function getImages($productId, $magProduct)
     {
-        $this->productImages = array();
-        $this->productImages['articles'] = array();
-        $urls = $this->getProductImages($productId, $magProduct);
-        $this->productImages['product'] = $urls;
-
-        $simpleCollection = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct)->getUsedProductCollection()
+        $this->productImages = array(
+            'articles' => array(),
+            'product' => $this->getProductImages($productId, $magProduct),
+        );
+        $simpleCollection = Mage::getModel('catalog/product_type_configurable')
+            ->setProduct($magProduct)
+            ->getUsedProductCollection()
             ->addAttributeToSelect('*')
             ->addFilterByRequiredOptions()
             ->getItems();
@@ -310,7 +310,6 @@ class Fyndiq_Fyndiq_Model_Observer
             $sku = $simpleProduct->getSKU();
             $this->productImages['articles'][$sku] = $urls;
         }
-
         FyndiqUtils::debug('images', $this->productImages);
     }
 
@@ -343,6 +342,20 @@ class Fyndiq_Fyndiq_Model_Observer
                 $urls[] = $url;
             }
         }
+        if (count($urls) > 0) {
+            return $urls;
+        }
+
+        // Fallbacks
+        $imageHelper = Mage::helper('catalog/image');
+        // Check for image or small image
+        foreach (array('image', 'small_image') as $imageKey) {
+            $image = (string)$imageHelper->init($product, $imageKey);
+            if ($image) {
+                return array($image);
+            }
+        }
+        // Give up
         return $urls;
     }
 
