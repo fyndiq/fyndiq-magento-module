@@ -54,7 +54,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         return $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
     }
 
-    protected function isPingLocked()
+    protected function isPingLocked($storeId)
     {
         $lastPing = FmConfig::get('ping_time', $storeId);
         $lastPing = $lastPing ? unserialize($lastPing) : false;
@@ -79,7 +79,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         }
 
         $this->getFyndiqOutput()->flushHeader('OK');
-        if (!$this->isPingLocked()) {
+        if (!$this->isPingLocked($storeId)) {
             FmConfig::set('ping_time', time());
             $this->pingObserver($storeId);
             $this->updateProductInfo($storeId);
