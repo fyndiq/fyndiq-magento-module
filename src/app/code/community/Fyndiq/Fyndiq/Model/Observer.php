@@ -366,6 +366,43 @@ class Fyndiq_Fyndiq_Model_Observer
     }
 
     /**
+     * getDescription returns product's long description string
+     *
+     * @param  object $magProduct
+     * @param  integer $storeId
+     * @return string
+     */
+    protected function getDescription($magProduct, $storeId)
+    {
+        $description = $magProduct->getDescription();
+        if (is_null($description)) {
+            $description = Mage::getResourceModel('catalog/product')
+                ->getAttributeRawValue($magProduct->getId(), 'description', $storeId);
+        }
+        return $description;
+    }
+
+    /**
+     * getProductDescription returns product description based on $descrType
+     * @param  object $magProduct
+     * @param  integer $descrType
+     * @param  integer $storeId
+     * @return string
+     */
+    protected function getProductDescription($magProduct, $descrType, $storeId)
+    {
+        switch ($descrType) {
+            case 1:
+                return $this->getDescription($magProduct, $storeId);
+            case 2:
+                return $magProduct->getShortDescription();
+            case 3:
+                return $magProduct->getShortDescription() . "\n\n" . $this->getDescription($magProduct, $storeId);
+        }
+        return $this->getDescription($magProduct, $storeId);
+    }
+
+    /**
      * Get product information
      *
      * @param array $magProduct
@@ -374,52 +411,36 @@ class Fyndiq_Fyndiq_Model_Observer
      */
     private function getProduct($magProduct, $productInfo, $store)
     {
+        $storeId = intval($store->getId());
+        $magArray = $magProduct->getData();
+
         FyndiqUtils::debug('$productInfo', $productInfo);
-        FyndiqUtils::debug('$magProduct', $magProduct->getData());
+        FyndiqUtils::debug('$magProduct', $magArray);
+
         //Initialize models here so it saves memory.
         if (!$this->categoryModel) {
             $this->categoryModel = Mage::getModel('catalog/category');
         }
 
         $feedProduct = array();
-        $magArray = $magProduct->getData();
-
 
         // Setting the data
         if (!isset($magArray['price'])) {
             FyndiqUtils::debug('No price is set');
-
             return $feedProduct;
         }
+
         if ($magProduct->getStatus() != Mage_Catalog_Model_Product_Status::STATUS_ENABLED) {
             FyndiqUtils::debug('product is not enabled');
-
             return $feedProduct;
         }
 
         $feedProduct['product-id'] = $productInfo['id'];
         $feedProduct['product-title'] = $magArray['name'];
 
-        $descriptionSetting = intval(FmConfig::get('description', $store));
-
-        switch ($descriptionSetting) {
-            case 1:
-                $description = $magProduct->getDescription();
-                break;
-            case 2:
-                $description = $magProduct->getShortDescription();
-                break;
-            case 3:
-                $description = $magProduct->getShortDescription() . "\n\n" . $description = $magProduct->getDescription();
-                break;
-            default:
-                $description = $magProduct->getDescription();
-                break;
-        }
-
         $magPrice = FmHelpers::getProductPrice($magProduct);
-
-        $feedProduct['product-description'] = $description;
+        $descrType = intval(FmConfig::get('description', $storeId));
+        $feedProduct['product-description'] = $this->getProductDescription($magProduct, $descrType, $storeId);
 
         $discount = $productInfo['exported_price_percentage'];
         $price = FyndiqUtils::getFyndiqPrice($magPrice, $discount);
