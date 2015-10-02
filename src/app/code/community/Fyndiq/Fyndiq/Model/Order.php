@@ -94,7 +94,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
 
     protected function getRegionHelper()
     {
-        if (!class_exists('FyndiqRegionHelper')) {
+        if (!class_exists('FyndiqRegionHelper', false)) {
             require_once dirname(dirname(__FILE__)).'/includes/FyndiqRegionHelper.php';
         }
     }
