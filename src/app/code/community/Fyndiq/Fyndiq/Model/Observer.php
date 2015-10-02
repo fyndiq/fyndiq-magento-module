@@ -116,7 +116,8 @@ class Fyndiq_Fyndiq_Model_Observer
             ->getItems();
         $productInfo = array();
         foreach ($products as $product) {
-            $productInfo[intval($productData['product_id'])] = $product->getData();
+            $productData = $product->getData();
+            $productInfo[intval($productData['product_id'])] = $productData;
         }
 
         FyndiqUtils::debug('$productInfo', $productInfo);
@@ -167,6 +168,7 @@ class Fyndiq_Fyndiq_Model_Observer
                     $articles[] = $this->getProduct($simpleProduct, $productInfo[$productId], $store);
                 }
                 $feedWriter->addCompleteProduct($product, $articles);
+                FyndiqUtils::debug('Any Validation Errors', $feedWriter->getLastProductErrors());
             }
             $productsToExport->clear();
         }
