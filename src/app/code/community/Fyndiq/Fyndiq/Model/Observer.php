@@ -111,20 +111,18 @@ class Fyndiq_Fyndiq_Model_Observer
 
         $this->productMediaConfig = Mage::getModel('catalog/product_media_config');
 
-        $products = Mage::getModel('fyndiq/product')->getCollection()->setOrder('id', 'DESC');
-        $products = $products->getItems();
-        $idsToExport = array();
+        $products = Mage::getModel('fyndiq/product')->getCollection()
+            ->setOrder('id', 'DESC')
+            ->getItems();
         $productInfo = array();
         foreach ($products as $product) {
-            $productData = $product->getData();
-            $idsToExport[] = intval($productData['product_id']);
-            $productInfo[$productData['product_id']] = $productData;
+            $productInfo[intval($productData['product_id'])] = $product->getData();
         }
 
-        FyndiqUtils::debug('$idsToExport', $idsToExport);
         FyndiqUtils::debug('$productInfo', $productInfo);
 
-        $batches = array_chunk($idsToExport, self::BATCH_SIZE);
+        $productIds = array_unique(array_keys($productInfo));
+        $batches = array_chunk($productIds, self::BATCH_SIZE);
         foreach ($batches as $batchIds) {
             FyndiqUtils::debug('MEMORY', memory_get_usage(true));
             $productsToExport = Mage::getModel('catalog/product')->getCollection()
@@ -136,91 +134,39 @@ class Fyndiq_Fyndiq_Model_Observer
                 )->load();
 
             foreach ($productsToExport as $magProduct) {
-                $parentId = $magProduct->getId();
-                FyndiqUtils::debug('$magProduct->getTypeId()', $magProduct->getTypeId());
+                $productId = $magProduct->getId();
+                $typeId = $magProduct->getTypeId();
+                FyndiqUtils::debug('$magProduct->getTypeId()', $typeId);
 
-
-                if ($magProduct->getTypeId() != 'simple') {
-                    $articles = array();
-                    $prices = array();
-                    $articles[] = $this->getProduct($magProduct, $productInfo[$parentId], $store);
-
-                    $this->getImages($parentId, $magProduct);
-
-                    $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
-                    $simpleCollection = $conf->getUsedProductCollection()
-                        ->addAttributeToSelect('*')
-                        ->addFilterByRequiredOptions()
-                        ->getItems();
-                    foreach ($simpleCollection as $simpleProduct) {
-                        if ($simpleProduct->getStockItem()->getMinSaleQty() > 1) {
-                            FyndiqUtils::debug('min sale qty is > 1, SKIPPING ARTICLE');
-                            continue;
-                        }
-                        $prices[] = FmHelpers::getProductPrice($simpleProduct);
-                        $articles[] = $this->getProduct($simpleProduct, $productInfo[$parentId], $store);
-                    }
-                    $price = null;
-                    $differentPrice = count(array_unique($prices)) > 1;
-
-                    FyndiqUtils::debug('differentPrice', $differentPrice);
-                    FyndiqUtils::debug('Product images', $this->productImages['product']);
-                    FyndiqUtils::debug('articles images', $this->productImages['articles']);
-
-                    //Need to remove the mainProduct so we won't get duplicates
-                    reset($articles);
-                    $articlekey = key($articles);
-                    unset($articles[$articlekey]);
-
-                    //If price is different, make all articles products and add specific images.
-                    if ($differentPrice == true) {
-                        //Make the rest of the articles look like products.
-                        foreach ($articles as $key => $article) {
-                            $imageId = 1;
-                            $id = $article['article-sku'];
-                            $article['product-id'] .= '-'.$key;
-
-                            //We want to just add article's and the main products images to articles if split.
-                            $images = $this->getImagesFromArray($id);
-                            $article = array_merge($article, $images);
-
-                            $articles[$key] = $article;
-                        }
-                    } else {
-                        reset($articles);
-                        //If the price is not differnet - add all images to product and articles.
-                        foreach ($articles as $key => $article) {
-                            $images = $this->getImagesFromArray();
-                            $article = array_merge($article, $images);
-                            $articles[$key] = $article;
-                        }
-                    }
-                    FyndiqUtils::debug('articles to feed', $articles);
-                    foreach ($articles as $article) {
-                        $feedWriter->addProduct($article);
-                        FyndiqUtils::debug('Any Validation Errors', $feedWriter->getLastProductErrors());
-                    }
-                } else {
-                    //No configurable products or anything, just a lonely product
-
+                if ($typeId != 'simple') {
                     //Check if minimumQuantity is > 1, if it is it will skip this product.
                     if ($magProduct->getStockItem()->getMinSaleQty() > 1) {
                         FyndiqUtils::debug('min sale qty is > 1, SKIPPING PRODUCT');
                         continue;
                     }
-
-                    //Just get the products images and add them all to the product.
-                    $product = $this->getProduct($magProduct, $productInfo[$parentId], $store);
-                    $this->getImages($parentId, $magProduct);
-
-                    $images = $this->getImagesFromArray();
-                    $product = array_merge($product, $images);
-
-                    FyndiqUtils::debug('simpleproduct images', $this->productImages);
-
-                    $feedWriter->addProduct($product);
+                    $product = $this->getProduct($magProduct, $productInfo[$productId], $store);
+                    FyndiqUtils::debug('simple product', $product);
+                    $feedWriter->addCompleteProduct($product);
                     FyndiqUtils::debug('Any Validation Errors', $feedWriter->getLastProductErrors());
+                    continue;
                 }
+
+                // Configurable product
+                $articles = array();
+                $product = $this->getProduct($magProduct, $productInfo[$productId], $store);
+                $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
+                $simpleCollection = $conf->getUsedProductCollection()
+                    ->addAttributeToSelect('*')
+                    ->addFilterByRequiredOptions()
+                    ->getItems();
+                foreach ($simpleCollection as $simpleProduct) {
+                    if ($simpleProduct->getStockItem()->getMinSaleQty() > 1) {
+                        FyndiqUtils::debug('min sale qty is > 1, SKIPPING ARTICLE');
+                        continue;
+                    }
+                    $articles[] = $this->getProduct($simpleProduct, $productInfo[$productId], $store);
+                }
+                $feedWriter->addCompleteProduct($product, $articles);
             }
             $productsToExport->clear();
         }
