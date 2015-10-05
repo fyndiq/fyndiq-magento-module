@@ -27,6 +27,8 @@ class Fyndiq_Fyndiq_FileController extends Mage_Core_Controller_Front_Action
         if ($lastModified) {
             $this->getResponse()->setHeader('Last-Modified', gmdate('D, d M Y H:i:s T', $lastModified));
         }
+        $this->getResponse()->setHeader('Content-Disposition', 'attachment; filename="feed.csv"');
+        $this->getResponse()->setHeader('Content-Transfer-Encoding', 'binary');
         //printing out the content from feed file to the visitor.
         $this->getResponse()->setBody($result);
     }
