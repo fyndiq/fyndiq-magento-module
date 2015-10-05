@@ -566,7 +566,6 @@ class Fyndiq_Fyndiq_Model_Observer
         if ($storeCode) {
             return Mage::getModel('core/store')->load($storeCode)->getId();
         }
-
         return 0;
     }
 }
