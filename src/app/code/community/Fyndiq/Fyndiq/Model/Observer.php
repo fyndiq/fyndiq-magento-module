@@ -152,7 +152,7 @@ class Fyndiq_Fyndiq_Model_Observer
                             FyndiqUtils::debug('min sale qty is > 1, SKIPPING PRODUCT');
                             continue;
                         }
-                        $product = $this->getProduct($store, $magProduct, $discount, $market, $currency);
+                        $product = $this->getProduct($store, $magProduct, $discount, $productId, $market, $currency);
                         FyndiqUtils::debug('simple product', $product);
                         $feedWriter->addCompleteProduct($product);
                         FyndiqUtils::debug('Any Validation Errors', $feedWriter->getLastProductErrors());
@@ -161,7 +161,7 @@ class Fyndiq_Fyndiq_Model_Observer
 
                     // Configurable product
                     $articles = array();
-                    $product = $this->getProduct($store, $magProduct, $discount, $market, $currency);
+                    $product = $this->getProduct($store, $magProduct, $discount, $productId, $market, $currency);
                     $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
                     $simpleCollection = $conf->getUsedProductCollection()
                         ->addAttributeToSelect('*')
@@ -172,7 +172,7 @@ class Fyndiq_Fyndiq_Model_Observer
                             FyndiqUtils::debug('min sale qty is > 1, SKIPPING ARTICLE');
                             continue;
                         }
-                        $articles[] = $this->getProduct($store, $simpleProduct, $discount, $market, $currency);
+                        $articles[] = $this->getProduct($store, $simpleProduct, $discount, $productId, $market, $currency);
                     }
                     FyndiqUtils::debug('$product, $articles', $product, $articles);
                     $feedWriter->addCompleteProduct($product, $articles);
@@ -183,47 +183,6 @@ class Fyndiq_Fyndiq_Model_Observer
 
         }
         return $feedWriter->write();
-    }
-
-
-    private function getImagesFromArray($articleId = null)
-    {
-        $product = array();
-        $urls = array();
-        //If we don't want to add a specific article, add all of them.
-        if (is_null($articleId)) {
-            foreach ($this->productImages['product'] as $url) {
-                if (!in_array($url, $urls)) {
-                    $urls[] = $url;
-                }
-            }
-            foreach ($this->productImages['articles'] as $article) {
-                foreach ($article as $url) {
-                    if (!in_array($url, $urls)) {
-                        $urls[] = $url;
-                    }
-                }
-            }
-        // If we want to add just the product images and the article's images - run this.
-        } else {
-            foreach ($this->productImages['articles'][$articleId] as $url) {
-                $urls[] = $url;
-            }
-
-            foreach ($this->productImages['product'] as $url) {
-                $urls[] = $url;
-            }
-        }
-        $imageId = 1;
-        foreach ($urls as $url) {
-            if ($imageId > FyndiqUtils::NUMBER_OF_ALLOWED_IMAGES) {
-                break;
-            }
-            $product['product-image-' . $imageId . '-url'] = $url;
-            $product['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
-            $imageId++;
-        }
-        return $product;
     }
 
     /**
@@ -242,40 +201,13 @@ class Fyndiq_Fyndiq_Model_Observer
         return $this->taxCalculationModel->getRate($request->setProductClassId($taxClassId));
     }
 
-    /**
-     * Get images columns for product
-     *
-     * @param  int $productId
-     * @param  object $magProduct
-     * @return array
-     */
-    protected function getImages($productId, $magProduct)
+    protected function getProductImages($productId, $product)
     {
-        $this->productImages = array(
-            'articles' => array(),
-            'product' => $this->getProductImages($productId, $magProduct),
-        );
-        $simpleCollection = Mage::getModel('catalog/product_type_configurable')
-            ->setProduct($magProduct)
-            ->getUsedProductCollection()
-            ->addAttributeToSelect('*')
-            ->addFilterByRequiredOptions()
-            ->getItems();
-        foreach ($simpleCollection as $simpleProduct) {
-            $urls = $this->getProductImages($simpleProduct->ID, $simpleProduct);
-            $sku = $simpleProduct->getSKU();
-            $this->productImages['articles'][$sku] = $urls;
-        }
-        FyndiqUtils::debug('images', $this->productImages);
-    }
-
-    private function getProductImages($productId, $product)
-    {
-        $images = Mage::getModel('catalog/product')->load($productId)->getMediaGalleryImages();
-        $hasRealImagesSet = ($product->getImage() != null && $product->getImage() != "no_selection");
         $urls = array();
         $positions = array();
         $newImages = array();
+        $images = Mage::getModel('catalog/product')->load($productId)->getMediaGalleryImages();
+        $hasRealImagesSet = ($product->getImage() != null && $product->getImage() != "no_selection");
         foreach ($images as $image) {
             $positions[] = $image->getPosition();
             $newImages[] = $image;
@@ -368,7 +300,7 @@ class Fyndiq_Fyndiq_Model_Observer
      * @param  string $market
      * @return array
      */
-    private function getProduct($store, $magProduct, $discount, $market, $currency)
+    private function getProduct($store, $magProduct, $discount, $parentProductId, $market, $currency)
     {
         $storeId = intval($store->getId());
         $magArray = $magProduct->getData();
@@ -393,7 +325,6 @@ class Fyndiq_Fyndiq_Model_Observer
 
         $productId = $magProduct->getId();
         $descrType = intval(FmConfig::get('description', $storeId));
-        $discount = $productInfo['exported_price_percentage'];
         $magPrice = FmHelpers::getProductPrice($magProduct);
         $price = FyndiqUtils::getFyndiqPrice($magPrice, $discount);
 
@@ -405,7 +336,7 @@ class Fyndiq_Fyndiq_Model_Observer
             FyndiqFeedWriter::PRICE => FyndiqUtils::formatPrice($price),
             FyndiqFeedWriter::OLDPRICE => FyndiqUtils::formatPrice($magPrice),
             FyndiqFeedWriter::PRODUCT_VAT_PERCENT => $this->getTaxRate($magProduct, $store),
-            FyndiqFeedWriter::PRODUCT_CURRENCY = $currency,
+            FyndiqFeedWriter::PRODUCT_CURRENCY => $currency,
             FyndiqFeedWriter::PRODUCT_MARKET => $market,
         );
 
@@ -430,79 +361,28 @@ class Fyndiq_Fyndiq_Model_Observer
             $feedProduct[FyndiqFeedWriter::QUANTITY] = $qtyStock < 0 ? 0 : $qtyStock;
             $feedProduct[FyndiqFeedWriter::SKU] = $magProduct->getSKU();
             $feedProduct[FyndiqFeedWriter::ARTICLE_NAME] = $magArray['name'];
+            $feedProduct[FyndiqFeedWriter::PROPERTIES] = array();
 
-
-
-            // FIXME::PROBABLY THIS MUST BE THE PARENT ID not the simple product id
-            $parentModel = Mage::getModel('catalog/product')->load($productId);
-            if (method_exists($parentModel->getTypeInstance(), 'getConfigurableAttributes')) {
-                $productAttrOptions = $parentModel->getTypeInstance()->getConfigurableAttributes();
-                $attrId = 1;
-                $tags = array();
+            $parentProduct = Mage::getModel('catalog/product')->load($parentProductId);
+            if (method_exists($parentProduct->getTypeInstance(), 'getConfigurableAttributes')) {
+                $productAttrOptions = $parentProduct->getTypeInstance()->getConfigurableAttributes();
                 foreach ($productAttrOptions as $productAttribute) {
-                    if ($attrId > FyndiqUtils::NUMBER_OF_ALLOWED_PROPERTIES) {
-                        break;
-                    }
-                    $attrValue = $parentModel->getResource()->getAttribute(
-                        $productAttribute->getProductAttribute()->getAttributeCode()
-                    )->getFrontend();
+                    $attrValue = $parentProduct->getResource()->getAttribute(
+                            $productAttribute->getProductAttribute()->getAttributeCode()
+                        )->getFrontend();
                     $attrLabel = $productAttribute->getProductAttribute()->getFrontendLabel();
                     $value = $attrValue->getValue($magProduct);
                     if (is_array($value)) {
                         $value = $value[0];
                     }
-                    $feedProduct['article-property-' . $attrId . '-name'] = $attrLabel;
-                    $feedProduct['article-property-' . $attrId . '-value'] = $value;
-                    $tags[] = $attrLabel . ': ' . $value;
-                    $attrId++;
+                    $feedProduct[FyndiqFeedWriter::PROPERTIES][] = array(
+                        FyndiqFeedWriter::PROPERTY_NAME => $attrLabel,
+                        FyndiqFeedWriter::PROPERTY_VALUE => $attrLabel,
+                    );
                 }
-                $feedProduct['article-name'] = implode(', ', $tags);
             }
-
-            // We're done
-            FyndiqUtils::debug('PRODUCT $feedProduct', $feedProduct);
-
-            return $feedProduct;
         }
-
-        //Get child articles
-        $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
-
-        $simpleCollection = $conf->getUsedProductCollection()->addAttributeToSelect('*')
-            ->addFilterByRequiredOptions()->getItems();
-        FyndiqUtils::debug('$simpleCollection', $simpleCollection);
-
-        //Get first article to the product.
-        $firstProduct = array_shift($simpleCollection);
-        if ($firstProduct == null) {
-            $firstProduct = $magProduct;
-        }
-
-        $qtyStock = $this->getQuantity($firstProduct, $store);
-
-        $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
-        $feedProduct['article-sku'] = $firstProduct->getSKU();
-        $productAttrOptions = $magProduct->getTypeInstance()->getConfigurableAttributes();
-        $attrId = 1;
-        $tags = array();
-        foreach ($productAttrOptions as $productAttribute) {
-            $attrValue = $magProduct->getResource()->getAttribute(
-                $productAttribute->getProductAttribute()->getAttributeCode()
-            )->getFrontend();
-            $attrLabel = $productAttribute->getProductAttribute()->getFrontendLabel();
-            $value = $attrValue->getValue($firstProduct);
-            if (is_array($value)) {
-                $value = $value[0];
-            }
-            $feedProduct['article-property-' . $attrId . '-name'] = $attrLabel;
-            $feedProduct['article-property-' . $attrId . '-value'] = $value;
-            $tags[] = $attrLabel . ': ' . $value;
-            $attrId++;
-        }
-        $feedProduct['article-name'] = substr(implode(', ', $tags), 0, 30);
-
-        FyndiqUtils::debug('COMBINATION $feedProduct', $feedProduct);
-
+        $feedProduct[FyndiqFeedWriter::IMAGES] = $this->getProductImages($productId, $magProduct);
         return $feedProduct;
     }
 
