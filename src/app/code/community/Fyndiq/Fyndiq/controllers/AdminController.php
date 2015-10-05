@@ -10,8 +10,6 @@
 class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
 {
 
-    private $allowedCurrencies = array('SEK', 'EUR');
-
     protected function _construct()
     {
         require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
@@ -25,7 +23,6 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
     public function indexAction()
     {
         $this->loadLayout(array('default'));
-
         return $this->setTemplate('fyndiq/exportproducts.phtml');
     }
 
@@ -71,7 +68,7 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
             return false;
         }
         $currency = Mage::app()->getStore()->getCurrentCurrencyCode();
-        if (!in_array($currency, $this->allowedCurrencies)) {
+        if (!in_array($currency, FyndiqUtils::$allowedCurrencies)) {
             $this->setupTemplate('fyndiq/currencyerror.phtml');
 
             return false;
