@@ -107,6 +107,7 @@ class Fyndiq_Fyndiq_Model_Observer
     private function exportingProducts($storeId, $feedWriter)
     {
         FyndiqUtils::debug('exportingProducts');
+
         $store = Mage::getModel('core/store')->load($storeId);
 
         $this->productMediaConfig = Mage::getModel('catalog/product_media_config');
@@ -114,6 +115,7 @@ class Fyndiq_Fyndiq_Model_Observer
         $products = Mage::getModel('fyndiq/product')->getCollection()
             ->setOrder('id', 'DESC')
             ->getItems();
+
         $productInfo = array();
         foreach ($products as $product) {
             $productData = $product->getData();
@@ -122,55 +124,63 @@ class Fyndiq_Fyndiq_Model_Observer
 
         FyndiqUtils::debug('$productInfo', $productInfo);
 
-        $productIds = array_unique(array_keys($productInfo));
-        $batches = array_chunk($productIds, self::BATCH_SIZE);
-        foreach ($batches as $batchIds) {
-            FyndiqUtils::debug('MEMORY', memory_get_usage(true));
-            $productsToExport = Mage::getModel('catalog/product')->getCollection()
-                ->addAttributeToSelect('*')
-                ->addStoreFilter($storeId)
-                ->addAttributeToFilter(
-                    'entity_id',
-                    array('in' => $batchIds)
-                )->load();
+        if ($productInfo) {
+            $market = Mage::getStoreConfig('general/country/default');
+            $currency = $store->getCurrentCurrencyCode();
 
-            foreach ($productsToExport as $magProduct) {
-                $productId = $magProduct->getId();
-                $typeId = $magProduct->getTypeId();
-                FyndiqUtils::debug('$magProduct->getTypeId()', $typeId);
-
-                if ($typeId != 'simple') {
-                    //Check if minimumQuantity is > 1, if it is it will skip this product.
-                    if ($magProduct->getStockItem()->getMinSaleQty() > 1) {
-                        FyndiqUtils::debug('min sale qty is > 1, SKIPPING PRODUCT');
-                        continue;
-                    }
-                    $product = $this->getProduct($magProduct, $productInfo[$productId], $store);
-                    FyndiqUtils::debug('simple product', $product);
-                    $feedWriter->addCompleteProduct($product);
-                    FyndiqUtils::debug('Any Validation Errors', $feedWriter->getLastProductErrors());
-                    continue;
-                }
-
-                // Configurable product
-                $articles = array();
-                $product = $this->getProduct($magProduct, $productInfo[$productId], $store);
-                $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
-                $simpleCollection = $conf->getUsedProductCollection()
+            $productIds = array_unique(array_keys($productInfo));
+            $batches = array_chunk($productIds, self::BATCH_SIZE);
+            foreach ($batches as $batchIds) {
+                FyndiqUtils::debug('MEMORY', memory_get_usage(true));
+                $productsToExport = Mage::getModel('catalog/product')->getCollection()
                     ->addAttributeToSelect('*')
-                    ->addFilterByRequiredOptions()
-                    ->getItems();
-                foreach ($simpleCollection as $simpleProduct) {
-                    if ($simpleProduct->getStockItem()->getMinSaleQty() > 1) {
-                        FyndiqUtils::debug('min sale qty is > 1, SKIPPING ARTICLE');
+                    ->addStoreFilter($storeId)
+                    ->addAttributeToFilter(
+                        'entity_id',
+                        array('in' => $batchIds)
+                    )->load();
+
+                foreach ($productsToExport as $magProduct) {
+                    $productId = $magProduct->getId();
+                    $typeId = $magProduct->getTypeId();
+                    FyndiqUtils::debug('$magProduct->getTypeId()', $typeId);
+                    $discount = intval($productInfo[$productId]['exported_price_percentage']);
+
+                    if ($typeId != 'simple') {
+                        //Check if minimumQuantity is > 1, if it is it will skip this product.
+                        if ($magProduct->getStockItem()->getMinSaleQty() > 1) {
+                            FyndiqUtils::debug('min sale qty is > 1, SKIPPING PRODUCT');
+                            continue;
+                        }
+                        $product = $this->getProduct($store, $magProduct, $discount, $market, $currency);
+                        FyndiqUtils::debug('simple product', $product);
+                        $feedWriter->addCompleteProduct($product);
+                        FyndiqUtils::debug('Any Validation Errors', $feedWriter->getLastProductErrors());
                         continue;
                     }
-                    $articles[] = $this->getProduct($simpleProduct, $productInfo[$productId], $store);
+
+                    // Configurable product
+                    $articles = array();
+                    $product = $this->getProduct($store, $magProduct, $discount, $market, $currency);
+                    $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
+                    $simpleCollection = $conf->getUsedProductCollection()
+                        ->addAttributeToSelect('*')
+                        ->addFilterByRequiredOptions()
+                        ->getItems();
+                    foreach ($simpleCollection as $simpleProduct) {
+                        if ($simpleProduct->getStockItem()->getMinSaleQty() > 1) {
+                            FyndiqUtils::debug('min sale qty is > 1, SKIPPING ARTICLE');
+                            continue;
+                        }
+                        $articles[] = $this->getProduct($store, $simpleProduct, $discount, $market, $currency);
+                    }
+                    FyndiqUtils::debug('$product, $articles', $product, $articles);
+                    $feedWriter->addCompleteProduct($product, $articles);
+                    FyndiqUtils::debug('Any Validation Errors', $feedWriter->getLastProductErrors());
                 }
-                $feedWriter->addCompleteProduct($product, $articles);
-                FyndiqUtils::debug('Any Validation Errors', $feedWriter->getLastProductErrors());
+                $productsToExport->clear();
             }
-            $productsToExport->clear();
+
         }
         return $feedWriter->write();
     }
@@ -352,17 +362,17 @@ class Fyndiq_Fyndiq_Model_Observer
 
     /**
      * Get product information
-     *
-     * @param array $magProduct
-     * @param array $productInfo
+     * @param  object $store
+     * @param  object $magProduct
+     * @param  int $discount
+     * @param  string $market
      * @return array
      */
-    private function getProduct($magProduct, $productInfo, $store)
+    private function getProduct($store, $magProduct, $discount, $market, $currency)
     {
         $storeId = intval($store->getId());
         $magArray = $magProduct->getData();
 
-        FyndiqUtils::debug('$productInfo', $productInfo);
         FyndiqUtils::debug('$magProduct', $magArray);
 
         //Initialize models here so it saves memory.
@@ -370,83 +380,83 @@ class Fyndiq_Fyndiq_Model_Observer
             $this->categoryModel = Mage::getModel('catalog/category');
         }
 
-        $feedProduct = array();
-
         // Setting the data
         if (!isset($magArray['price'])) {
             FyndiqUtils::debug('No price is set');
-            return $feedProduct;
+            return array();
         }
 
         if ($magProduct->getStatus() != Mage_Catalog_Model_Product_Status::STATUS_ENABLED) {
             FyndiqUtils::debug('product is not enabled');
-            return $feedProduct;
+            return array();
         }
 
-        $feedProduct['product-id'] = $productInfo['id'];
-        $feedProduct['product-title'] = $magArray['name'];
-
-        $magPrice = FmHelpers::getProductPrice($magProduct);
+        $productId = $magProduct->getId();
         $descrType = intval(FmConfig::get('description', $storeId));
-        $feedProduct['product-description'] = $this->getProductDescription($magProduct, $descrType, $storeId);
-
         $discount = $productInfo['exported_price_percentage'];
+        $magPrice = FmHelpers::getProductPrice($magProduct);
         $price = FyndiqUtils::getFyndiqPrice($magPrice, $discount);
-        $feedProduct['product-price'] = FyndiqUtils::formatPrice($price);
-        $feedProduct['product-vat-percent'] = $this->getTaxRate($magProduct, $store);
-        $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($magPrice);
-        $feedProduct['product-market'] = Mage::getStoreConfig('general/country/default');
-        $feedProduct['product-currency'] = $store->getCurrentCurrencyCode();
+
+        $feedProduct = array(
+            FyndiqFeedWriter::ID => $productId,
+            FyndiqFeedWriter::PRODUCT_TITLE => $magArray['name'],
+            FyndiqFeedWriter::PRODUCT_DESCRIPTION =>
+                $this->getProductDescription($magProduct, $descrType, $storeId),
+            FyndiqFeedWriter::PRICE => FyndiqUtils::formatPrice($price),
+            FyndiqFeedWriter::OLDPRICE => FyndiqUtils::formatPrice($magPrice),
+            FyndiqFeedWriter::PRODUCT_VAT_PERCENT => $this->getTaxRate($magProduct, $store),
+            FyndiqFeedWriter::PRODUCT_CURRENCY = $currency,
+            FyndiqFeedWriter::PRODUCT_MARKET => $market,
+        );
 
         $brand = $magProduct->getAttributeText('manufacturer');
         if ($brand) {
-            $feedProduct['product-brand-name'] = $brand;
+            $feedProduct[FyndiqFeedWriter::PRODUCT_BRAND_NAME] = $brand;
         }
 
         // Category
         $categoryIds = $magProduct->getCategoryIds();
-
         if (count($categoryIds) > 0) {
             $firstCategoryId = array_shift($categoryIds);
-            $firstCategory = $this->categoryModel->load($firstCategoryId);
+            $feedProduct[FyndiqFeedWriter::PRODUCT_CATEGORY_ID] = $firstCategoryId;
 
-            $feedProduct['product-category-name'] = $firstCategory->getName();
-            $feedProduct['product-category-id'] = $firstCategoryId;
+            $firstCategory = $this->categoryModel->load($firstCategoryId);
+            $feedProduct[FyndiqFeedWriter::PRODUCT_CATEGORY_NAME] = $firstCategory->getName();
         }
 
-        if ($magArray['type_id'] == 'simple') {
-            $qtyStock = $this->getQuantity($magProduct, $store);
+        if ($magArray['type_id'] === 'simple') {
+            $qtyStock = intval($this->getQuantity($magProduct, $store));
 
-            $feedProduct['article-quantity'] = intval($qtyStock) < 0 ? 0 : intval($qtyStock);
-            $feedProduct['article-sku'] = $magProduct->getSKU();
-            $feedProduct['article-name'] = $magArray['name'];
+            $feedProduct[FyndiqFeedWriter::QUANTITY] = $qtyStock < 0 ? 0 : $qtyStock;
+            $feedProduct[FyndiqFeedWriter::SKU] = $magProduct->getSKU();
+            $feedProduct[FyndiqFeedWriter::ARTICLE_NAME] = $magArray['name'];
 
-            $productParent = $productInfo['product_id'];
-            if ($productParent) {
-                $parentModel = Mage::getModel('catalog/product')->load($productParent);
-                if (method_exists($parentModel->getTypeInstance(), 'getConfigurableAttributes')) {
-                    $productAttrOptions = $parentModel->getTypeInstance()->getConfigurableAttributes();
-                    $attrId = 1;
-                    $tags = array();
-                    foreach ($productAttrOptions as $productAttribute) {
-                        if ($attrId > FyndiqUtils::NUMBER_OF_ALLOWED_PROPERTIES) {
-                            break;
-                        }
-                        $attrValue = $parentModel->getResource()->getAttribute(
-                            $productAttribute->getProductAttribute()->getAttributeCode()
-                        )->getFrontend();
-                        $attrLabel = $productAttribute->getProductAttribute()->getFrontendLabel();
-                        $value = $attrValue->getValue($magProduct);
-                        if (is_array($value)) {
-                            $value = $value[0];
-                        }
-                        $feedProduct['article-property-' . $attrId . '-name'] = $attrLabel;
-                        $feedProduct['article-property-' . $attrId . '-value'] = $value;
-                        $tags[] = $attrLabel . ': ' . $value;
-                        $attrId++;
+
+
+            // FIXME::PROBABLY THIS MUST BE THE PARENT ID not the simple product id
+            $parentModel = Mage::getModel('catalog/product')->load($productId);
+            if (method_exists($parentModel->getTypeInstance(), 'getConfigurableAttributes')) {
+                $productAttrOptions = $parentModel->getTypeInstance()->getConfigurableAttributes();
+                $attrId = 1;
+                $tags = array();
+                foreach ($productAttrOptions as $productAttribute) {
+                    if ($attrId > FyndiqUtils::NUMBER_OF_ALLOWED_PROPERTIES) {
+                        break;
                     }
-                    $feedProduct['article-name'] = implode(', ', $tags);
+                    $attrValue = $parentModel->getResource()->getAttribute(
+                        $productAttribute->getProductAttribute()->getAttributeCode()
+                    )->getFrontend();
+                    $attrLabel = $productAttribute->getProductAttribute()->getFrontendLabel();
+                    $value = $attrValue->getValue($magProduct);
+                    if (is_array($value)) {
+                        $value = $value[0];
+                    }
+                    $feedProduct['article-property-' . $attrId . '-name'] = $attrLabel;
+                    $feedProduct['article-property-' . $attrId . '-value'] = $value;
+                    $tags[] = $attrLabel . ': ' . $value;
+                    $attrId++;
                 }
+                $feedProduct['article-name'] = implode(', ', $tags);
             }
 
             // We're done
