@@ -94,7 +94,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
 
     protected function getRegionHelper()
     {
-        if (!class_exists('FyndiqRegionHelper')) {
+        if (!class_exists('FyndiqRegionHelper', false)) {
             require_once dirname(dirname(__FILE__)).'/includes/FyndiqRegionHelper.php';
         }
     }
@@ -118,27 +118,33 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         // Check if country region is required
         $isRequired = Mage::helper('directory')->isRegionRequired($fyndiqOrder->delivery_country_code);
         if ($isRequired) {
-            // Get and set Region
-            if ($fyndiqOrder->delivery_country_code != 'DE') {
-                throw new Exception(sprintf('Error, region is required for `%s`.', $fyndiqOrder->delivery_country_code));
-            }
+            switch ($fyndiqOrder->delivery_country_code) {
+                case 'DE':
+                    $this->getRegionHelper();
+                    $regionCode = FyndiqRegionHelper::codeToRegionCode($fyndiqOrder->delivery_postalcode, FyndiqRegionHelper::CODE_DE);
 
-            $this->getRegionHelper();
-            $regionCode = FyndiqRegionHelper::codeToRegionCodeDe($fyndiqOrder->delivery_postalcode);
-
-            // Try to deduce the region for Germany
-            $region = Mage::getModel('directory/region')->loadByCode($regionCode, $fyndiqOrder->delivery_country_code);
-            if (is_null($region)) {
-                throw new Exception(sprintf(
-                    'Error, could not find region `%s` for `%s.`',
-                    $regionCode,
-                    $fyndiqOrder->delivery_country
-                ));
+                    // Try to deduce the region for Germany
+                    $region = Mage::getModel('directory/region')->loadByCode($regionCode, $fyndiqOrder->delivery_country_code);
+                    if (is_null($region)) {
+                        throw new Exception(sprintf(
+                            'Error, could not find region `%s` for `%s.`',
+                            $regionCode,
+                            $fyndiqOrder->delivery_country
+                        ));
+                    }
+                    $shippingAddressArray['region_id'] = $region->getId();
+                    $shippingAddressArray['region'] = $region->getName();
+                    break;
+                case 'SE':
+                    $this->getRegionHelper();
+                    $regionCode = FyndiqRegionHelper::codeToRegionCode($fyndiqOrder->delivery_postalcode, FyndiqRegionHelper::CODE_SE);
+                    $regionName = FyndiqRegionHelper::getRegionName($regionCode, FyndiqRegionHelper::CODE_SE);
+                    $shippingAddressArray['region'] = $regionName;
+                    break;
+                default:
+                    throw new Exception(sprintf('Error, region is required for `%s`.', $fyndiqOrder->delivery_country_code));
             }
-            $shippingAddressArray['region_id'] = $region->getId();
-            $shippingAddressArray['region'] = $region->getName();
         }
-
         return $shippingAddressArray;
     }
 
