@@ -170,12 +170,14 @@ class Fyndiq_Fyndiq_Model_Observer
                         ->addAttributeToSelect('*')
                         ->addFilterByRequiredOptions()
                         ->getItems();
+                    $index = 1;
                     foreach ($simpleCollection as $simpleProduct) {
                         if ($simpleProduct->getStockItem()->getMinSaleQty() > 1) {
                             FyndiqUtils::debug('min sale qty is > 1, SKIPPING ARTICLE');
                             continue;
                         }
-                        $articles[] = $this->getArticle($store, $simpleProduct, $discount, $productId, $market, $currency);
+                        $articles[] = $this->getArticle($store, $simpleProduct, $discount, $productId, $index, $product);
+                        $index++;
                     }
                     FyndiqUtils::debug('$product, $articles', $product, $articles);
                     $feedWriter->addCompleteProduct($product, $articles);
@@ -388,7 +390,7 @@ class Fyndiq_Fyndiq_Model_Observer
         return $feedProduct;
     }
 
-    private function getArticle($store, $magProduct, $discount, $parentProductId, $market, $currency)
+    private function getArticle($store, $magProduct, $discount, $parentProductId, $index, $parentFeedProduct)
     {
         // Setting the data
         if (!$magProduct->getPrice()) {
@@ -404,9 +406,11 @@ class Fyndiq_Fyndiq_Model_Observer
         $magPrice = FmHelpers::getProductPrice($magProduct);
         $price = FyndiqUtils::getFyndiqPrice($magPrice, $discount);
         $feedProduct = array(
-            FyndiqFeedWriter::ID => $magProduct->getId(),
+            FyndiqFeedWriter::ID => $index,
             FyndiqFeedWriter::PRICE => FyndiqUtils::formatPrice($price),
             FyndiqFeedWriter::OLDPRICE => FyndiqUtils::formatPrice($magPrice),
+            FyndiqFeedWriter::PRODUCT_CATEGORY_ID => $parentFeedProduct[FyndiqFeedWriter::PRODUCT_CATEGORY_ID],
+            FyndiqFeedWriter::PRODUCT_CATEGORY_NAME => $parentFeedProduct[FyndiqFeedWriter::PRODUCT_CATEGORY_NAME],
         );
 
         if ($magProduct->getTypeId() === 'simple') {
