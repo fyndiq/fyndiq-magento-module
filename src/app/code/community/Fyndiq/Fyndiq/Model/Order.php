@@ -204,15 +204,18 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             $product = Mage::getModel('catalog/product')->load($id);
 
             //Set price minus VAT:
+            $price = $row->unit_price_amount;
             if (!Mage::helper('tax')->priceIncludesTax()) {
                 $price = $row->unit_price_amount / ((100+intval($row->vat_percent)) / 100);
-            } else {
-                $price = $row->unit_price_amount;
             }
 
             //add product to the cart
             $productInfo = array('qty' => $row->quantity);
-            $quote->addProduct($product, new Varien_Object($productInfo))->setOriginalCustomPrice($price);
+            $item = $quote->addProduct($product, new Varien_Object($productInfo));
+            if (!is_object($item)) {
+                throw new Exception($item);
+            }
+            $item->setOriginalCustomPrice($price);
         }
 
         $shippingAddressArray = $this->getShippingAddress($fyndiqOrder);
