@@ -176,7 +176,7 @@ class Fyndiq_Fyndiq_Model_Observer
                             FyndiqUtils::debug('min sale qty is > 1, SKIPPING ARTICLE');
                             continue;
                         }
-                        $articles[] = $this->getArticle($store, $simpleProduct, $discount, $productId, $index, $product);
+                        $articles[] = $this->getArticle($store, $simpleProduct, $discount, $productId, $index);
                         $index++;
                     }
                     FyndiqUtils::debug('$product, $articles', $product, $articles);
@@ -390,7 +390,7 @@ class Fyndiq_Fyndiq_Model_Observer
         return $feedProduct;
     }
 
-    private function getArticle($store, $magProduct, $discount, $parentProductId, $index, $parentFeedProduct)
+    private function getArticle($store, $magProduct, $discount, $parentProductId, $index)
     {
         // Setting the data
         if (!$magProduct->getPrice()) {
@@ -409,8 +409,6 @@ class Fyndiq_Fyndiq_Model_Observer
             FyndiqFeedWriter::ID => $index,
             FyndiqFeedWriter::PRICE => FyndiqUtils::formatPrice($price),
             FyndiqFeedWriter::OLDPRICE => FyndiqUtils::formatPrice($magPrice),
-            FyndiqFeedWriter::PRODUCT_CATEGORY_ID => $parentFeedProduct[FyndiqFeedWriter::PRODUCT_CATEGORY_ID],
-            FyndiqFeedWriter::PRODUCT_CATEGORY_NAME => $parentFeedProduct[FyndiqFeedWriter::PRODUCT_CATEGORY_NAME],
         );
 
         if ($magProduct->getTypeId() === 'simple') {
