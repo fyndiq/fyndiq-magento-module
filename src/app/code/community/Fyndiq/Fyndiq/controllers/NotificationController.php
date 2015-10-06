@@ -46,7 +46,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
                     $orderModel->create($storeId, $fyndiqOrder);
                 }
             } catch (Exception $e) {
-                return $this->getFyndiqOutput()->showError(500, 'Internal Server Error', 'Internal Server Error');
+                return $this->getFyndiqOutput()->showError(500, 'Internal Server Error', $e->getMessage());
             }
 
             return true;
