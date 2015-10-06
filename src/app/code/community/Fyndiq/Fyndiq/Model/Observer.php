@@ -176,6 +176,7 @@ class Fyndiq_Fyndiq_Model_Observer
                             FyndiqUtils::debug('min sale qty is > 1, SKIPPING ARTICLE');
                             continue;
                         }
+                        FyndiqUtils::debug('$simpleProduct', $simpleProduct);
                         $articles[] = $this->getArticle($store, $simpleProduct, $discount, $productId, $index);
                         $index++;
                     }
