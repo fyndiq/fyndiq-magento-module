@@ -245,7 +245,7 @@ class Fyndiq_Fyndiq_Model_Observer
         // Check for image or small image
         foreach (array('image', 'small_image') as $imageKey) {
             $image = (string)$imageHelper->init($product, $imageKey);
-            if ($image) {
+            if ($image && strpos($image, '/placeholder/') === false) {
                 return array($image);
             }
         }
