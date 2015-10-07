@@ -415,6 +415,7 @@ class Fyndiq_Fyndiq_Model_Observer
         if ($magProduct->getTypeId() === 'simple') {
             $qtyStock = intval($this->getQuantity($magProduct, $store));
 
+            $feedProduct[FyndiqFeedWriter::ARTICLE_NAME] = $magProduct->getName();
             $feedProduct[FyndiqFeedWriter::QUANTITY] = $qtyStock < 0 ? 0 : $qtyStock;
             $feedProduct[FyndiqFeedWriter::SKU] = $magProduct->getSKU();
             $feedProduct[FyndiqFeedWriter::PROPERTIES] = array();
