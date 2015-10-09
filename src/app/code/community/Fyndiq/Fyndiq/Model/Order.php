@@ -223,12 +223,18 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         //if we have a default billing address, try gathering its values into variables we need
         $billingAddressArray = $shippingAddressArray;
 
+        // Ignore billing address validation
+        $quote->getBillingAddress()->setShouldIgnoreValidation(true);
+
         // Add the address data to the billing address
         $quote->getBillingAddress()->addData($billingAddressArray);
 
         // Set the correct currency for order
         $quote->setBaseCurrencyCode($currency);
         $quote->setQuoteCurrencyCode($currency);
+
+        // Ignore shipping address validation
+        $quote->getShippingAddress()->setShouldIgnoreValidation(true);
 
         // Add the adress data to the shipping address
         $shippingAddress = $quote->getShippingAddress()->addData($shippingAddressArray);
