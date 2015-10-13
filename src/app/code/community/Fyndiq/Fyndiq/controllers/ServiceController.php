@@ -171,6 +171,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $products->load();
         $products = $products->getItems();
         $fyndiqPercentage = FmConfig::get('price_percentage', $this->getRequest()->getParam('store'));
+        $directoryCurrency = Mage::getModel('directory/currency');
 
         // get all the products
         foreach ($products as $prod) {
@@ -236,8 +237,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 'name' => $name,
                 'name_short' => $name_short,
                 'quantity' => intval($this->getProductQty($prod)),
-                //'price' => number_format((float)$magPrice, 2, '.', ''),
-                'price' => $magPrice,
+                'price' => $directoryCurrency->formatTxt($magPrice, array('display' => Zend_Currency::NO_SYMBOL)),
                 'fyndiq_percentage' => $fyndiqPercentage,
                 'fyndiq_exported' => $fyndiq,
                 'fyndiq_state' => $fyndiqState,

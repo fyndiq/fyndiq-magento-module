@@ -48,6 +48,14 @@ class FmHelpers
         );
     }
 
+    // Add Tax to the price if required
+    public static function includeTax($objProduct, $price)
+    {
+        if (!Mage::helper('tax')->priceIncludesTax()) {
+            return Mage::helper('tax')->getPrice($objProduct, $price);
+        }
+        return $price;
+    }
 
     public static function getProductPrice($objProduct)
     {
@@ -59,10 +67,6 @@ class FmHelpers
             $price = $catalogRulePrice;
         }
 
-        if (!Mage::helper('tax')->priceIncludesTax()) {
-            $price = Mage::helper('tax')->getPrice($objProduct, $price);
-        }
-
-        return number_format($price, 2, ".", "");
+        return self::includeTax($objProduct, $price);
     }
 }
