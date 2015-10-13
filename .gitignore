@@ -2,6 +2,8 @@
 .sass-cache
 *.csv
 main.css.map
+build/*
+build
 docs/*
 /coverage/
 /vendor

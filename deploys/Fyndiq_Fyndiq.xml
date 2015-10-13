@@ -5,8 +5,8 @@
    <version_ids>
       <version_ids>2</version_ids>
    </version_ids>
-   <summary>Import orders and export products to fyndiq marketplace</summary>
-   <description>Import orders and export products to fyndiq marketplace</description>
+   <summary>Import orders and export products to Fyndiq marketplace</summary>
+   <description>Import orders and export products to Fyndiq marketplace</description>
    <license>MIT</license>
    <license_uri/>
    <version>1.0.4</version>
