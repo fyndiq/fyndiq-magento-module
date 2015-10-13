@@ -13,7 +13,7 @@ You can find the latest version of this module and up to date documentation on t
 ### INSTALL
 You can just drag the app directory to your magento directory to make the files get added to right place.
 
-#### manual production installation
+#### Manual production installation
 For this you need to have a terminal and git installed.
 
 ##### Default packaging
