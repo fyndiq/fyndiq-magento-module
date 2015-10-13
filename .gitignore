@@ -3,8 +3,6 @@
 *.csv
 main.css.map
 docs/*
-build/*
-build
 /coverage/
 /vendor
 composer.lock
