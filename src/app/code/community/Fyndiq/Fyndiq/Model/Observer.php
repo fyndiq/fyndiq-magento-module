@@ -334,13 +334,16 @@ class Fyndiq_Fyndiq_Model_Observer
         $magPrice = FmHelpers::getProductPrice($magProduct);
         $price = FyndiqUtils::getFyndiqPrice($magPrice, $discount);
 
+        // Old price is always the product base price
+        $oldPrice = FmHelpers::includeTax($magProduct, $magProduct->getPrice());
+
         $feedProduct = array(
             FyndiqFeedWriter::ID => $ourProductId,
             FyndiqFeedWriter::PRODUCT_TITLE => $magArray['name'],
             FyndiqFeedWriter::PRODUCT_DESCRIPTION =>
                 $this->getProductDescription($magProduct, $descrType, $storeId),
             FyndiqFeedWriter::PRICE => FyndiqUtils::formatPrice($price),
-            FyndiqFeedWriter::OLDPRICE => FyndiqUtils::formatPrice($magPrice),
+            FyndiqFeedWriter::OLDPRICE => FyndiqUtils::formatPrice($oldPrice),
             FyndiqFeedWriter::PRODUCT_VAT_PERCENT => $this->getTaxRate($magProduct, $store),
             FyndiqFeedWriter::PRODUCT_CURRENCY => $currency,
             FyndiqFeedWriter::PRODUCT_MARKET => $market,
