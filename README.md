@@ -13,8 +13,10 @@ You can find the latest version of this module and up to date documentation on t
 ### INSTALL
 You can just drag the app directory to your magento directory to make the files get added to right place.
 
-### manual production installation
+#### Manual production installation
 For this you need to have a terminal and git installed.
+
+##### Default packaging
 
 1. Run `git clone https://github.com/fyndiq/fyndiq-magento-module.git`
 2. Cd to your module directory (`cd /path/to/your/module/repo/`)
@@ -28,6 +30,18 @@ For this you need to have a terminal and git installed.
 10. Make the fyndiq directory in magento root readable and writable. it is here the feed files will be.
 11. Go back to fyndiq page.
 12. It will now work!
+
+##### Magento Connect Packaging
+Use this to create a package for Magento Connect
+
+1. Move `build/Fyndiq_Fyndiq.xml` to `/var/www/html/magento/var/connect/Fyndiq_Fyndiq.xml` in your vagrant machine
+2. Go to admin and system > Magento Connect > Package Extensions
+3. Go to Load Local Package
+4. Double click on Fyndiq_Fyndiq to load default settings for our module
+5. Set correct version and note under Release Info
+6. Click on Save Data and Create Package
+7. Move `/var/www/html/magento/var/connect/Fyndiq_Fyndiq-[version number].tgz` to your opt module directory on your vagrant machine to access it.
+8. Now you can send the new package
 
 #### Development installation
 For this you need to have a terminal and git installed.
