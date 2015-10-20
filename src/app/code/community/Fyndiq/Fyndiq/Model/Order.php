@@ -2,7 +2,7 @@
 
 class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
 {
-    const FYNDIQ_ORDERS_EMAIL = 'info@fyndiq.se';
+    const FYNDIQ_ORDERS_EMAIL = 'orders_no_reply@fyndiq.com';
     const FYNDIQ_ORDERS_NAME_FIRST = 'Fyndiq';
     const FYNDIQ_ORDERS_NAME_LAST = 'Orders';
 
