@@ -106,6 +106,7 @@
                 <done_state>complete</done_state>
                 <country>SE</country>
                 <currency>SEK</currency>
+                <import_orders>1</import_orders>
             </fyndiq_group>
         </fyndiq>
         <carriers>
