@@ -306,7 +306,8 @@ class Fyndiq_Fyndiq_Model_Observer
      * @param  int $categoryId
      * @return string
      */
-    protected function getCategoryName($categoryId) {
+    protected function getCategoryName($categoryId)
+    {
         if (isset($this->categoryCache[$categoryId])) {
             return $this->categoryCache[$categoryId];
         }
@@ -317,7 +318,7 @@ class Fyndiq_Fyndiq_Model_Observer
             return $this->categoryCache[$categoryId];
         }
         $name = array();
-        foreach($pathIds as $id) {
+        foreach ($pathIds as $id) {
             $name[] = $this->categoryModel->load($id)->getName();
         }
         $this->categoryCache[$categoryId] = implode(self::CATEGORY_SEPARATOR, $name);
@@ -400,8 +401,8 @@ class Fyndiq_Fyndiq_Model_Observer
                 $productAttrOptions = $parentProduct->getTypeInstance()->getConfigurableAttributes();
                 foreach ($productAttrOptions as $productAttribute) {
                     $attrValue = $parentProduct->getResource()->getAttribute(
-                            $productAttribute->getProductAttribute()->getAttributeCode()
-                        )->getFrontend();
+                        $productAttribute->getProductAttribute()->getAttributeCode()
+                    )->getFrontend();
                     $attrLabel = $productAttribute->getProductAttribute()->getFrontendLabel();
                     $value = $attrValue->getValue($magProduct);
                     if (is_array($value)) {
@@ -452,8 +453,8 @@ class Fyndiq_Fyndiq_Model_Observer
                 $productAttrOptions = $parentProduct->getTypeInstance()->getConfigurableAttributes();
                 foreach ($productAttrOptions as $productAttribute) {
                     $attrValue = $parentProduct->getResource()->getAttribute(
-                            $productAttribute->getProductAttribute()->getAttributeCode()
-                        )->getFrontend();
+                        $productAttribute->getProductAttribute()->getAttributeCode()
+                    )->getFrontend();
                     $attrLabel = $productAttribute->getProductAttribute()->getFrontendLabel();
                     $value = $attrValue->getValue($magProduct);
                     if (is_array($value)) {
