@@ -11,6 +11,7 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
 class Fyndiq_Fyndiq_Model_Observer
 {
     const BATCH_SIZE = 30;
+    const CATEGORY_SEPARATOR = '/';
 
     private $productModel = null;
     private $categoryModel = null;
@@ -18,6 +19,7 @@ class Fyndiq_Fyndiq_Model_Observer
     private $imageHelper = null;
     private $productImages = array();
     private $productMediaConfig = null;
+    private $categoryCache = array();
 
     public function __construct()
     {
@@ -299,6 +301,30 @@ class Fyndiq_Fyndiq_Model_Observer
     }
 
     /**
+     * getCategoryName returns the full category path
+     *
+     * @param  int $categoryId
+     * @return string
+     */
+    protected function getCategoryName($categoryId) {
+        if (isset($this->categoryCache[$categoryId])) {
+            return $this->categoryCache[$categoryId];
+        }
+        $category = $this->categoryModel->load($categoryId);
+        $pathIds = explode('/', $category->getPath());
+        if (!$pathIds) {
+            $this->categoryCache[$categoryId] = $firstCategory->getName();
+            return $this->categoryCache[$categoryId];
+        }
+        $name = array();
+        foreach($pathIds as $id) {
+            $name[] = $this->categoryModel->load($id)->getName();
+        }
+        $this->categoryCache[$categoryId] = implode(self::CATEGORY_SEPARATOR, $name);
+        return $this->categoryCache[$categoryId];
+    }
+
+    /**
      * Get product information
      * @param  object $store
      * @param  object $magProduct
@@ -359,9 +385,7 @@ class Fyndiq_Fyndiq_Model_Observer
         if (count($categoryIds) > 0) {
             $firstCategoryId = array_shift($categoryIds);
             $feedProduct[FyndiqFeedWriter::PRODUCT_CATEGORY_ID] = $firstCategoryId;
-
-            $firstCategory = $this->categoryModel->load($firstCategoryId);
-            $feedProduct[FyndiqFeedWriter::PRODUCT_CATEGORY_NAME] = $firstCategory->getName();
+            $feedProduct[FyndiqFeedWriter::PRODUCT_CATEGORY_NAME] = $this->getCategoryName($firstCategoryId);
         }
 
         if ($magArray['type_id'] === 'simple') {
