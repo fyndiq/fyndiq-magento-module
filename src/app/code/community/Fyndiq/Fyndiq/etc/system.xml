@@ -31,7 +31,7 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </disconnect>
-                        <fyndiq_shipping_method>
+                        <fyndiq_shipment_method>
                             <label>Create orders with this shipping method</label>
                             <comment>
                                 <![CDATA[Choose which shipping method to create orders with]]>
@@ -42,7 +42,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </fyndiq_shipping_method>
+                        </fyndiq_shipment_method>
                         <fyndiq_payment_method>
                             <label>Create orders with this payment method</label>
                             <comment>
