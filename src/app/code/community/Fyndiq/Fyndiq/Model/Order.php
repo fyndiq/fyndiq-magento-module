@@ -246,11 +246,11 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $shipmentMethod = FmConfig::get('fyndiq_shipment_method', $storeId);
         $shipmentMethod = $shipmentMethod ? $shipmentMethod : self::DEFAULT_SHIPMENT_METHOD;
 
-        // Set the shipping method /////////// Here i set my own shipping method
+        // Set the shipping method
         $shippingAddress->setShippingMethod($shipmentMethod);
 
         $paymentMethod = FmConfig::get('fyndiq_payment_method', $storeId);
-        $paymentMethod = $shipmentMethod ? $shipmentMethod : self::DEFAULT_PAYMENT_METHOD;
+        $paymentMethod = $paymentMethod ? $paymentMethod : self::DEFAULT_PAYMENT_METHOD;
 
         // Set the payment method
         $shippingAddress->setPaymentMethod($paymentMethod);
