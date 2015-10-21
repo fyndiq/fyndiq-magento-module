@@ -155,7 +155,8 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
         return json_encode($probes);
     }
 
-    public function ordersEnabled($storeId) {
+    public function ordersEnabled($storeId)
+    {
         return FmConfig::get('import_orders_disabled', $storeId) != FmHelpers::ORDERS_DISABLED;
     }
 }
