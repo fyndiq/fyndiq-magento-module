@@ -236,7 +236,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         // Ignore shipping address validation
         $quote->getShippingAddress()->setShouldIgnoreValidation(true);
 
-        // Add the adress data to the shipping address
+        // Add the address data to the shipping address
         $shippingAddress = $quote->getShippingAddress()->addData($shippingAddressArray);
 
         // Collect the shipping rates

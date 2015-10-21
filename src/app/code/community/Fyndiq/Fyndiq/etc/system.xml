@@ -31,6 +31,30 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </disconnect>
+                        <fyndiq_shipping_method>
+                            <label>Create orders with this shipping method</label>
+                            <comment>
+                                <![CDATA[Choose which shipping method to create orders with]]>
+                            </comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>Fyndiq_Fyndiq_Model_System_Config_Source_Dropdown_ShippingMethods</source_model>
+                            <sort_order>16</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </fyndiq_shipping_method>
+                        <fyndiq_payment_method>
+                            <label>Create orders with this payment method</label>
+                            <comment>
+                                <![CDATA[Choose which payment method to create orders with]]>
+                            </comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>Fyndiq_Fyndiq_Model_System_Config_Source_Dropdown_PaymentMethods</source_model>
+                            <sort_order>17</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </fyndiq_payment_method>
                         <stockmin translate="label">
                             <label>Lowest quantity to send to Fyndiq</label>
                             <frontend_type>text</frontend_type>
