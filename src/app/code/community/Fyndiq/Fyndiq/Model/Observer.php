@@ -11,7 +11,7 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
 class Fyndiq_Fyndiq_Model_Observer
 {
     const BATCH_SIZE = 30;
-    const CATEGORY_SEPARATOR = '/';
+    const CATEGORY_SEPARATOR = ' / ';
 
     private $productModel = null;
     private $categoryModel = null;
