@@ -12,8 +12,10 @@
             <div class="navbar-right">
                 <a href="<?php echo $this->getAdminPath("fyndiq/admin/index"); ?>" class="btn btn-nav active"><i
                         class="menu-icon comp"></i> <?php echo $this->getMessage('Export Products'); ?></a>
+                <?php if ($this->ordersEnabled($this->getRequest()->getParam('store'))): ?>
                 <a href="<?php echo $this->getAdminPath("fyndiq/admin/orderlist"); ?>" class="btn btn-nav"><i
                         class="menu-icon boxes"></i> <?php echo $this->getMessage('Imported Orders'); ?></a>
+                <?php endif; ?>
                 <a href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>"
                    class="btn btn-nav"><i class="menu-icon cog"></i> <?php echo $this->getMessage('Settings'); ?></a>
             </div>

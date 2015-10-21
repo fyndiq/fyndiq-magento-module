@@ -91,8 +91,8 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </price_percentage>
-                        <import_orders translate="label">
-                            <label>Import orders from Fyndiq</label>
+                        <import_orders_disabled translate="label">
+                            <label>Disable order import from Fyndiq</label>
                             <comment>
                                 <![CDATA[If the checkbox is checked, orders will be automatically imported from Fyndiq]]>
                             </comment>
@@ -102,7 +102,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </import_orders>
+                        </import_orders_disabled>
                         <!-- New fields go here -->
                         <apikey translate="label">
                             <label>API token</label>

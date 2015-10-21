@@ -12,7 +12,8 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/FyndiqAPICall.php');
 
 class FmHelpers
 {
-    const ORDERS_ENABLED = 1;
+    const ORDERS_ENABLED = 0;
+    const ORDERS_DISABLED = 1;
 
     public static function apiConnectionExists()
     {

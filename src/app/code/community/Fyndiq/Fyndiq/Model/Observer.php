@@ -501,7 +501,7 @@ class Fyndiq_Fyndiq_Model_Observer
                         )
                 )
             );
-            if (FmConfig::get('import_orders', $storeId) == FmHelpers::ORDERS_ENABLED) {
+            if (FmConfig::get('import_orders_disabled', $storeId) != FmHelpers::ORDERS_DISABLED) {
                 $data[FyndiqUtils::NAME_NOTIFICATION_URL] = Mage::getUrl(
                     'fyndiq/notification/index/store/' . $storeId,
                     array(

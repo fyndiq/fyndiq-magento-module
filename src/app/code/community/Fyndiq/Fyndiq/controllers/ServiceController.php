@@ -456,6 +456,9 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     public function import_orders()
     {
         try {
+            if (FmConfig::get('import_orders_disabled', $storeId) == FmHelpers::ORDERS_DISABLED) {
+                throw new Exception('Orders are disabled');
+            }
             $storeId = $this->observer->getStoreId();
             $newTime = time();
             $this->observer->importOrdersForStore($storeId, $newTime);
