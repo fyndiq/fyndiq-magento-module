@@ -31,11 +31,14 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
      */
     function order_created()
     {
+        $storeId = $this->getRequest()->getParam('store');
+        if (FmConfig::get('import_orders_disabled', $storeId) == FmHelpers::ORDERS_DISABLED) {
+            return $this->getFyndiqOutput()->showError(403, 'Forbidden', 'Forbidden');
+        }
         $orderId = $this->getRequest()->getParam('order_id');
         $orderId = is_numeric($orderId) ? intval($orderId) : 0;
         if ($orderId > 0) {
             try {
-                $storeId = $this->getRequest()->getParam('store');
                 $response = FmHelpers::callApi($storeId, 'GET', 'orders/' . $orderId . '/');
                 $fyndiqOrder = $response['data'];
                 $orderModel = Mage::getModel('fyndiq/order');

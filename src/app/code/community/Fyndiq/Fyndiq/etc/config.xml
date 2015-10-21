@@ -106,6 +106,7 @@
                 <done_state>complete</done_state>
                 <country>SE</country>
                 <currency>SEK</currency>
+                <import_orders_disabled>0</import_orders_disabled>
             </fyndiq_group>
         </fyndiq>
         <carriers>
@@ -128,7 +129,7 @@
                 <visible_on_product>0</visible_on_product>
                 <payment_action>sale</payment_action>
                 <allowspecific>0</allowspecific>
-                <sort_order>1</sort_order>
+                <sort_order>100</sort_order>
             </fyndiq_fyndiq>
         </payment>
     </default>

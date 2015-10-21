@@ -26,7 +26,6 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
         return $this->setTemplate('fyndiq/exportproducts.phtml');
     }
 
-
     /**
      * Show order list
      */
