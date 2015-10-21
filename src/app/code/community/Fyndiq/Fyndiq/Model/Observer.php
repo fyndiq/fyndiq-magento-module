@@ -489,16 +489,6 @@ class Fyndiq_Fyndiq_Model_Observer
                             '_nosid' => true,
                         )
                 ),
-                FyndiqUtils::NAME_NOTIFICATION_URL => Mage::getUrl(
-                    'fyndiq/notification/index/store/' . $storeId,
-                    array(
-                            '_store' => $storeId,
-                            '_nosid' => true,
-                            '_query' => array(
-                                'event' => 'order_created',
-                            )
-                        )
-                ),
                 FyndiqUtils::NAME_PING_URL => Mage::getUrl(
                     'fyndiq/notification/index/store/' . $storeId,
                     array(
@@ -511,7 +501,18 @@ class Fyndiq_Fyndiq_Model_Observer
                         )
                 )
             );
-
+            if (FmConfig::get('import_orders', $storeId) == FmHelpers::ORDERS_ENABLED) {
+                $data[FyndiqUtils::NAME_NOTIFICATION_URL] = Mage::getUrl(
+                    'fyndiq/notification/index/store/' . $storeId,
+                    array(
+                            '_store' => $storeId,
+                            '_nosid' => true,
+                            '_query' => array(
+                                'event' => 'order_created',
+                            )
+                        )
+                );
+            }
             return FmHelpers::callApi($storeId, 'PATCH', 'settings/', $data);
         }
         throw new Exception(FyndiqTranslation::get('empty-username-token'));

@@ -12,6 +12,8 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/FyndiqAPICall.php');
 
 class FmHelpers
 {
+    const ORDERS_ENABLED = 1;
+
     public static function apiConnectionExists()
     {
         return FmConfig::getBool('username') && FmConfig::getBool('apikey');
