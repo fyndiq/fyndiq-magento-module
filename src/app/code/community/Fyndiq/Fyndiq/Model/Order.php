@@ -6,8 +6,8 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
     const FYNDIQ_ORDERS_NAME_FIRST = 'Fyndiq';
     const FYNDIQ_ORDERS_NAME_LAST = 'Orders';
 
-    const PAYMENT_METHOD = 'fyndiq_fyndiq';
-    const SHIPPING_METHOD = 'fyndiq_fyndiq';
+    const DEFAULT_PAYMENT_METHOD = 'fyndiq_fyndiq';
+    const DEFAULT_SHIPMENT_METHOD = 'fyndiq_fyndiq';
 
     public function _construct()
     {
@@ -236,20 +236,25 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         // Ignore shipping address validation
         $quote->getShippingAddress()->setShouldIgnoreValidation(true);
 
-        // Add the adress data to the shipping address
+        // Add the address data to the shipping address
         $shippingAddress = $quote->getShippingAddress()->addData($shippingAddressArray);
 
         // Collect the shipping rates
         $shippingAddress->setCollectShippingRates(true)->collectShippingRates();
 
-        // Set the shipping method /////////// Here i set my own shipping method
-        $shippingAddress->setShippingMethod(self::SHIPPING_METHOD);
+        $shipmentMethod = self::DEFAULT_SHIPMENT_METHOD;
+
+        // Set the shipping method
+        $shippingAddress->setShippingMethod($shipmentMethod);
+
+        $paymentMethod = FmConfig::get('fyndiq_payment_method', $storeId);
+        $paymentMethod = $paymentMethod ? $paymentMethod : self::DEFAULT_PAYMENT_METHOD;
 
         // Set the payment method
-        $shippingAddress->setPaymentMethod(self::PAYMENT_METHOD);
+        $shippingAddress->setPaymentMethod($paymentMethod);
 
         // Set the payment method
-        $quote->getPayment()->importData(array('method' => self::PAYMENT_METHOD));
+        $quote->getPayment()->importData(array('method' => $paymentMethod));
 
         // Feed quote object into sales model
         $service = Mage::getModel('sales/service_quote', $quote);
