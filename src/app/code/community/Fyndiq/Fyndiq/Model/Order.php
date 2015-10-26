@@ -7,7 +7,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
     const FYNDIQ_ORDERS_NAME_LAST = 'Orders';
 
     const DEFAULT_PAYMENT_METHOD = 'fyndiq_fyndiq';
-    const DEFAULT_SHIPMENT_METHOD = 'fyndiq_fyndiq';
+    const DEFAULT_SHIPMENT_METHOD = 'fyndiq_fyndiq_standard';
 
     public function _construct()
     {
@@ -242,7 +242,8 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         // Collect the shipping rates
         $shippingAddress->setCollectShippingRates(true)->collectShippingRates();
 
-        $shipmentMethod = self::DEFAULT_SHIPMENT_METHOD;
+        $shipmentMethod = trim(FmConfig::get('fyndiq_shipment_method', $storeId));
+        $shipmentMethod = $shipmentMethod ? $shipmentMethod : self::DEFAULT_SHIPMENT_METHOD;
 
         // Set the shipping method
         $shippingAddress->setShippingMethod($shipmentMethod);

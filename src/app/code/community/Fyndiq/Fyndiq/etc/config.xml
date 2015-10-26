@@ -108,7 +108,7 @@
                 <currency>SEK</currency>
                 <import_orders_disabled>0</import_orders_disabled>
                 <fyndiq_payment_method>fyndiq_fyndiq</fyndiq_payment_method>
-                <fyndiq_shipment_method>fyndiq_fyndiq</fyndiq_shipment_method>
+                <fyndiq_shipment_method>fyndiq_fyndiq_standard</fyndiq_shipment_method>
             </fyndiq_group>
         </fyndiq>
         <carriers>
