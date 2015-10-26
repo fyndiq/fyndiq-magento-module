@@ -31,6 +31,17 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </disconnect>
+                        <fyndiq_shipment_method>
+                            <label>Create orders with this shipping method code</label>
+                            <comment>
+                                <![CDATA[Leave the field empty for the default Fyndiq shipping method]]>
+                            </comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>17</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </fyndiq_shipment_method>
                         <fyndiq_payment_method>
                             <label>Create orders with this payment method</label>
                             <comment>

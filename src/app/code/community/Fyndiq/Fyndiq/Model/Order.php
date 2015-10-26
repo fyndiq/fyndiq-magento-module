@@ -242,7 +242,8 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         // Collect the shipping rates
         $shippingAddress->setCollectShippingRates(true)->collectShippingRates();
 
-        $shipmentMethod = self::DEFAULT_SHIPMENT_METHOD;
+        $shipmentMethod = trim(FmConfig::get('fyndiq_shipment_method', $storeId));
+        $shipmentMethod = $shipmentMethod ? $shipmentMethod : self::DEFAULT_SHIPMENT_METHOD;
 
         // Set the shipping method
         $shippingAddress->setShippingMethod($shipmentMethod);
