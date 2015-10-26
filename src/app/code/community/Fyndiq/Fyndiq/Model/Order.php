@@ -7,7 +7,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
     const FYNDIQ_ORDERS_NAME_LAST = 'Orders';
 
     const DEFAULT_PAYMENT_METHOD = 'fyndiq_fyndiq';
-    const DEFAULT_SHIPMENT_METHOD = 'fyndiq_fyndiq';
+    const DEFAULT_SHIPMENT_METHOD = 'fyndiq_fyndiq_standard';
 
     public function _construct()
     {
