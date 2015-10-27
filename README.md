@@ -34,7 +34,7 @@ For this you need to have a terminal and git installed.
 ##### Magento Connect Packaging
 Use this to create a package for Magento Connect
 
-1. run make build-connect
+1. run `make build-connect`
 2. Go to admin and system > Magento Connect > Package Extensions when the command ask for it.
 3. Go to Load Local Package
 4. Double click on Fyndiq_Fyndiq to load default settings for our module
