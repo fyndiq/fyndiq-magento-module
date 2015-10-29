@@ -28,6 +28,11 @@
                     </setting>
                 </entities>
             </fyndiq_resource>
+            <sales>
+                <rewrite>
+                    <quote_address>Fyndiq_Fyndiq_Model_Sales_Quote_Address</quote_address>
+                </rewrite>
+            </sales>
         </models>
         <resources>
             <fyndiqmodule_setup>
@@ -119,6 +124,9 @@
                 <sort_order>10</sort_order>
                 <sallowspecific>0</sallowspecific>
                 <express_max_weight>1</express_max_weight>
+                <show_in_default>0</show_in_default>
+                <show_in_website>0</show_in_website>
+                <show_in_store>0</show_in_store>
             </fyndiq_fyndiq>
         </carriers>
         <payment>
