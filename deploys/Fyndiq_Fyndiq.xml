@@ -1,17 +1,18 @@
 <_>
-   <form_key>W7FykseySJFlEJo1</form_key>
-   <name>Fyndiq_Fyndiq</name>
+   <form_key>5OSty8FjVp4ryJQl</form_key>
+   <_create/>
+   <name>Fyndiq</name>
    <channel>community</channel>
    <version_ids>
       <version_ids>2</version_ids>
    </version_ids>
    <summary>Import orders and export products to Fyndiq marketplace</summary>
    <description>Import orders and export products to Fyndiq marketplace</description>
-   <license>MIT</license>
+   <license>Copyright</license>
    <license_uri/>
-   <version>1.0.4</version>
+   <version>1.0.6</version>
    <stability>stable</stability>
-   <notes>Version 1.0.4
+   <notes>Version 1.0.6
 * Enhancement: Module page added to Magento Permissions page
 * Enhancement: Support for long description in Flat product table setup
 * Enhancement: Set Swedish region if marked as required, when importing orders
@@ -49,7 +50,7 @@
             <max/>
          </max>
          <files>
-            <files>  </files>
+            <files>             </files>
          </files>
       </package>
       <extension>
@@ -106,8 +107,4 @@
          <ignore>*/\.*</ignore>
       </ignore>
    </contents>
-   <page>1</page>
-   <limit>200</limit>
-   <folder/>
-   <package/>
 </_>
