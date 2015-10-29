@@ -23,7 +23,8 @@ build: clean
 	rm -r $(BUILD_DIR)/src
 
 build-connect:
-	cd vagrant && vagrant ssh -c 'mkdir -p /var/www/html/magento/var/connect && sudo chown vagrant:www-data /var/www/html/magento/var/connect && sudo chmod -R 777 /var/www/html/magento/var/connect && cp /opt/fyndiq-magento-module/deploys/Fyndiq_Fyndiq.xml /var/www/html/magento/var/connect/Fyndiq_Fyndiq.xml && cd /var/www/html/magento/ && echo "Setup correct version number and notes in Magento connect and click Save Data and Create Package. Then click Enter to continue here.." && read && mv /var/www/html/magento/var/connect/Fyndiq-*.tgz /opt/fyndiq-magento-module/build/Fyndiq-$(MODULE_VERSION).tgz && echo "You find the package in build directory now."'
+	cd vagrant && vagrant ssh -c 'mkdir -p /var/www/html/magento/var/connect && sudo chown vagrant:www-data /var/www/html/magento/var/connect && sudo chmod -R 775 /var/www/html/magento/var/connect'
+	cd vagrant && vagrant ssh -c 'cp /opt/fyndiq-magento-module/deploys/Fyndiq_Fyndiq.xml /var/www/html/magento/var/connect/Fyndiq_Fyndiq.xml && cd /var/www/html/magento/ && echo "Setup correct version number and notes in Magento connect and click Save Data and Create Package. Then click Enter to continue here.." && read && mv /var/www/html/magento/var/connect/Fyndiq-*.tgz /opt/fyndiq-magento-module/build/Fyndiq-$(MODULE_VERSION).tgz && echo "You find the package in build directory now."'
 
 clean:
 	rm -r $(BUILD_DIR)/*
