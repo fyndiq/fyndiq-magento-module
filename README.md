@@ -34,14 +34,15 @@ For this you need to have a terminal and git installed.
 ##### Magento Connect Packaging
 Use this to create a package for Magento Connect
 
-1. run make build-connect
-2. Go to admin and system > Magento Connect > Package Extensions when the command ask for it.
-3. Go to Load Local Package
-4. Double click on Fyndiq_Fyndiq to load default settings for our module
-5. Set correct version and note under Release Info
-6. Click on Save Data and Create Package
-7. Click enter to continue in terminal.
-8. you now have the package under build directory
+1. Be sure to have vagrant and latest module there. Change also the commit hash.
+2. run make build-connect
+3. Go to admin and system > Magento Connect > Package Extensions when the command ask for it.
+4. Go to Load Local Package
+5. Double click on Fyndiq_Fyndiq to load default settings for our module
+6. Set correct version and note under Release Info
+7. Click on Save Data and Create Package
+8. Click enter to continue in terminal.
+9. you now have the package under build directory
 
 #### Development installation
 For this you need to have a terminal and git installed.
