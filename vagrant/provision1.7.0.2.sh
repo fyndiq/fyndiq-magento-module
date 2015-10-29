@@ -42,8 +42,21 @@ fi
 if [[ ! -f "/var/www/html/magento/index.php" ]]; then
     cd /tmp
     echo "Downloading..."
-    wget --quiet http://www.magentocommerce.com/downloads/assets/${MAGE_VERSION}/magento-${MAGE_VERSION}.tar.gz
-    wget --quiet http://www.magentocommerce.com/downloads/assets/${DATA_VERSION}/magento-sample-data-${DATA_VERSION}.tar.gz
+    echo "Downloading Magento ${MAGE_VERSION} ..."
+    if [[ ! -f "/opt/fyndiq-magento-module/assets/magento-${MAGE_VERSION}.tar.gz" ]]; then
+        echo "Using local copy"
+        wget --quiet http://www.magentocommerce.com/downloads/assets/${MAGE_VERSION}/magento-${MAGE_VERSION}.tar.gz
+    else
+        cp /opt/fyndiq-magento-module/assets/magento-${MAGE_VERSION}.tar.gz .
+    fi
+    echo "Downloading Magento Sample files ${DATA_VERSION} ..."
+    if [[ ! -f "/opt/fyndiq-magento-module/assets/magento-sample-data-${DATA_VERSION}.tar.gz" ]]; then
+        echo "Using local copy"
+        wget --quiet http://www.magentocommerce.com/downloads/assets/${DATA_VERSION}/magento-sample-data-${DATA_VERSION}.tar.gz
+    else
+        cp /opt/fyndiq-magento-module/assets/magento-sample-data-${DATA_VERSION}.tar.gz .
+    fi
+
     tar -zxvf magento-${MAGE_VERSION}.tar.gz
     tar -zxvf magento-sample-data-${DATA_VERSION}.tar.gz
     cp -R magento-sample-data-${DATA_VERSION}/* magento

@@ -42,10 +42,20 @@ fi
 if [[ ! -f "/var/www/html/magento/index.php" ]]; then
     cd /tmp
     echo "Downloading Magento ${MAGE_VERSION} ..."
-    wget --quiet http://mirror.gunah.eu/magento/magento-${MAGE_VERSION}.tar.gz
+    if [[ ! -f "/opt/fyndiq-magento-module/assets/magento-${MAGE_VERSION}.tar.gz" ]]; then
+        echo "Using local copy"
+        wget --quiet http://pubfiles.nexcess.net/magento/ce-packages/magento-${MAGE_VERSION}.tar.gz
+    else
+        cp /opt/fyndiq-magento-module/assets/magento-${MAGE_VERSION}.tar.gz .
+    fi
     echo "Downloading Magento Sample files ${DATA_VERSION} ..."
-    wget --quiet http://mirror.gunah.eu/magento/sample-data/magento-sample-data-${DATA_VERSION}.tar.gz
-    tar -zxvf magento-${MAGE_VERSION}.tar.gz
+    if [[ ! -f "/opt/fyndiq-magento-module/assets/magento-sample-data-${DATA_VERSION}.tar.gz" ]]; then
+        echo "Using local copy"
+        wget --quiet http://mirror.gunah.eu/magento/sample-data/magento-sample-data-${DATA_VERSION}.tar.gz
+    else
+        cp /opt/fyndiq-magento-module/assets/magento-sample-data-${DATA_VERSION}.tar.gz .
+    fi
+
     tar -zxvf magento-sample-data-${DATA_VERSION}.tar.gz
     cp -R magento-sample-data-${DATA_VERSION}/* magento
 
