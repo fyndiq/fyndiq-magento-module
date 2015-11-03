@@ -231,6 +231,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
             $magPrice = FmHelpers::getProductPrice($prod);
             $producturl = Mage::helper('adminhtml')->getUrl('adminhtml/catalog_product/edit', array('id' => $prod->getId()));
+            $taxRate = $this->getTaxRate($prod, $storeId);
             $prodData = array(
                 'id' => $prod->getId(),
                 'url' => $prod->getUrl(),
@@ -250,8 +251,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 'fyndiq_check_on' => ($fyndiq && $fyndiqState == 'FOR_SALE'),
                 'currency' => $currency,
                 'fyndiq_check_pending' => ($fyndiq && $fyndiqState === null),
-                'vat_percent_zero' => ($this->getTaxRate($prod, $storeId) == 0),
-                'vat_percent_not_zero' => ($this->getTaxRate($prod, $storeId) > 0)
+                'vat_percent_zero' => ($taxRate == 0),
             );
 
             //trying to get image, if not image will be false
