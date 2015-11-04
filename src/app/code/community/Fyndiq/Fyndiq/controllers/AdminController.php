@@ -78,9 +78,10 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
 
     public function disconnectAction()
     {
-        $storeId = Mage::app()->getStore()->getStoreId();
-        FmConfig::set('apikey', '', $storeId);
-        FmConfig::set('apikey', '', $storeId);
+        $observer = new Fyndiq_Fyndiq_Model_Observer();
+        $storeId = $observer->getStoreId();
+        FmConfig::set('username', '', $storeId, false);
+        FmConfig::set('apikey', '', $storeId, false);
         FmConfig::reInit();
         $this->_redirect('fyndiq/admin/index');
     }

@@ -43,11 +43,12 @@ class FmConfig
         return (bool)Mage::getStoreConfigFlag(self::key($name));
     }
 
-    public static function set($name, $value, $storeId)
+    public static function set($name, $value, $storeId, $serialize = true)
     {
+        $value = $serialize ? serialize($value) : $value;
         return Mage::getConfig()->saveConfig(
             self::key($name),
-            serialize($value),
+            $value,
             self::getScope($storeId),
             $storeId
         );
