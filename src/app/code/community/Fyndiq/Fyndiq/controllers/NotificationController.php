@@ -56,14 +56,12 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
     protected function isPingLocked($storeId)
     {
         $lastPing = FmConfig::get('ping_time', $storeId);
-        $lastPing = $lastPing ? unserialize($lastPing) : false;
         return $lastPing && $lastPing > strtotime('15 minutes ago');
     }
 
     protected function isCorrectToken($token, $storeId)
     {
         $pingToken = FmConfig::get('ping_token', $storeId);
-        $pingToken = $pingToken ? unserialize($pingToken) : false;
         return !(is_null($token) || $token != $pingToken);
     }
 
@@ -91,10 +89,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
     {
         $storeId = Mage::app()->getRequest()->getParam('store');
 
-        $pingToken = unserialize(FmConfig::get('ping_token', $storeId));
-        $token = $this->getRequest()->getParam('token');
-
-        if (is_null($token) || $token != $pingToken) {
+        if (!$this->isCorrectToken($this->getRequest()->getParam('token'), $storeId)) {
             return $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
         }
 

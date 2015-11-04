@@ -35,7 +35,15 @@ class FmConfig
 
     public static function get($name, $storeId)
     {
-        return Mage::getStoreConfig(self::key($name), $storeId);
+        $result = Mage::getStoreConfig(self::key($name), $storeId);
+        // FIXME: Since prior versions use serialized values, we first try to unserialize the data
+        // if that fails return the naked value; At some point this should be removed when we're sure
+        // all data is stored as plain unserialized strings
+        $data = @unserialize($result);
+        if ($data !== false) {
+            return $data;
+        }
+        return $result;
     }
 
     public static function getBool($name)
@@ -43,9 +51,8 @@ class FmConfig
         return (bool)Mage::getStoreConfigFlag(self::key($name));
     }
 
-    public static function set($name, $value, $storeId, $serialize = true)
+    public static function set($name, $value, $storeId)
     {
-        $value = $serialize ? serialize($value) : $value;
         return Mage::getConfig()->saveConfig(
             self::key($name),
             $value,
