@@ -39,6 +39,8 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         $orderId = is_numeric($orderId) ? intval($orderId) : 0;
         if ($orderId > 0) {
             try {
+                // Set the area as backend so shipping method is not skipped
+                Mage::getDesign()->setArea(Mage_Core_Model_App_Area::AREA_ADMIN);
                 $response = FmHelpers::callApi($storeId, 'GET', 'orders/' . $orderId . '/');
                 $fyndiqOrder = $response['data'];
                 $orderModel = Mage::getModel('fyndiq/order');
