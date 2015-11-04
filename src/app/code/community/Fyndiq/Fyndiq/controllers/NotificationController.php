@@ -39,6 +39,8 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         $orderId = is_numeric($orderId) ? intval($orderId) : 0;
         if ($orderId > 0) {
             try {
+                // Set the area as backend so shipping method is not skipped
+                Mage::getDesign()->setArea(Mage_Core_Model_App_Area::AREA_ADMIN);
                 $response = FmHelpers::callApi($storeId, 'GET', 'orders/' . $orderId . '/');
                 $fyndiqOrder = $response['data'];
                 $orderModel = Mage::getModel('fyndiq/order');
@@ -56,13 +58,12 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
     protected function isPingLocked($storeId)
     {
         $lastPing = FmConfig::get('ping_time', $storeId);
-        $lastPing = $lastPing ? unserialize($lastPing) : false;
         return $lastPing && $lastPing > strtotime('15 minutes ago');
     }
 
     protected function isCorrectToken($token, $storeId)
     {
-        $pingToken = unserialize(FmConfig::get('ping_token', $storeId));
+        $pingToken = FmConfig::get('ping_token', $storeId);
         return !(is_null($token) || $token != $pingToken);
     }
 
@@ -79,7 +80,8 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 
         $this->getFyndiqOutput()->flushHeader('OK');
         if (!$this->isPingLocked($storeId)) {
-            FmConfig::set('ping_time', time());
+            FmConfig::set('ping_time', time(), $storeId);
+            FmConfig::reInit();
             $this->pingObserver($storeId);
             $this->updateProductInfo($storeId);
         }
@@ -89,10 +91,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
     {
         $storeId = Mage::app()->getRequest()->getParam('store');
 
-        $pingToken = unserialize(FmConfig::get('ping_token', $storeId));
-        $token = $this->getRequest()->getParam('token');
-
-        if (is_null($token) || $token != $pingToken) {
+        if (!$this->isCorrectToken($this->getRequest()->getParam('token'), $storeId)) {
             return $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
         }
 

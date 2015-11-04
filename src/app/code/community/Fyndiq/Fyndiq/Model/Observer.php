@@ -479,8 +479,8 @@ class Fyndiq_Fyndiq_Model_Observer
         ) {
             // Generate and save token
             $pingToken = Mage::helper('core')->uniqHash();
-            FmConfig::set('ping_token', $pingToken);
-
+            FmConfig::set('ping_token', $pingToken, $storeId);
+            FmConfig::reInit();
             $data = array(
                 FyndiqUtils::NAME_PRODUCT_FEED_URL => Mage::getUrl(
                     'fyndiq/file/index/store/' . $storeId,
