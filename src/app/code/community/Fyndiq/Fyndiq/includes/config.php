@@ -20,6 +20,14 @@ class FmConfig
         return self::CONFIG_NAME . '/' . $name;
     }
 
+    private static function getScope($storeId)
+    {
+        if ($storeId == 0) {
+            return 'default';
+        }
+        return 'stores';
+    }
+
     public static function delete($name)
     {
         return Mage::getConfig()->deleteConfig(self::key($name));
@@ -35,12 +43,20 @@ class FmConfig
         return (bool)Mage::getStoreConfigFlag(self::key($name));
     }
 
-    public static function set($name, $value)
+    public static function set($name, $value, $storeId)
     {
-        $result =  Mage::getConfig()->saveConfig(self::key($name), serialize($value));
+        return Mage::getConfig()->saveConfig(
+            self::key($name),
+            serialize($value),
+            self::getScope($storeId),
+            $storeId
+        );
+    }
+
+    public static function reInit()
+    {
         Mage::getConfig()->reinit();
         Mage::app()->reinitStores();
-        return $result;
     }
 
     public static function getVersion()

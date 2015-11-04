@@ -78,10 +78,10 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
 
     public function disconnectAction()
     {
-        $config = new Mage_Core_Model_Config();
-        $config->saveConfig('fyndiq/fyndiq_group/apikey', '', 'default', '');
-        $config->saveConfig('fyndiq/fyndiq_group/username', '', 'default', '');
-        $config->reinit();
+        $storeId = Mage::app()->getStore()->getStoreId();
+        FmConfig::set('apikey', '', $storeId);
+        FmConfig::set('apikey', '', $storeId);
+        FmConfig::reInit();
         $this->_redirect('fyndiq/admin/index');
     }
 

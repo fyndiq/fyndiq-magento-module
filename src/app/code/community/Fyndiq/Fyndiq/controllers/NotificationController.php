@@ -62,7 +62,8 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 
     protected function isCorrectToken($token, $storeId)
     {
-        $pingToken = unserialize(FmConfig::get('ping_token', $storeId));
+        $pingToken = FmConfig::get('ping_token', $storeId);
+        $pingToken = $pingToken ? unserialize($pingToken) : false;
         return !(is_null($token) || $token != $pingToken);
     }
 
@@ -79,7 +80,8 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 
         $this->getFyndiqOutput()->flushHeader('OK');
         if (!$this->isPingLocked($storeId)) {
-            FmConfig::set('ping_time', time());
+            FmConfig::set('ping_time', time(), $storeId);
+            FmConfig::reInit();
             $this->pingObserver($storeId);
             $this->updateProductInfo($storeId);
         }
