@@ -80,9 +80,16 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
     {
         $observer = new Fyndiq_Fyndiq_Model_Observer();
         $storeId = $observer->getStoreId();
-        FmConfig::set('username', '', $storeId, false);
-        FmConfig::set('apikey', '', $storeId, false);
-        FmConfig::reInit();
+        $data = array(
+            FyndiqUtils::NAME_PRODUCT_FEED_URL => '',
+            FyndiqUtils::NAME_PING_URL => '',
+            FyndiqUtils::NAME_NOTIFICATION_URL => '',
+        );
+        if (FmHelpers::callApi($storeId, 'PATCH', 'settings/', $data)) {
+            FmConfig::set('username', '', $storeId, false);
+            FmConfig::set('apikey', '', $storeId, false);
+            FmConfig::reInit();
+        }
         $this->_redirect('fyndiq/admin/index');
     }
 
