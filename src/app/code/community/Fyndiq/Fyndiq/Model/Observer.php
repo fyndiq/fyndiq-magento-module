@@ -136,6 +136,7 @@ class Fyndiq_Fyndiq_Model_Observer
                 FyndiqUtils::debug('MEMORY', memory_get_usage(true));
                 $productsToExport = Mage::getModel('catalog/product')->getCollection()
                     ->addAttributeToSelect('*')
+                    ->setStoreId($storeId)
                     ->addStoreFilter($storeId)
                     ->addAttributeToFilter(
                         'entity_id',
