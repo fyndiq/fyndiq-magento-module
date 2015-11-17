@@ -179,7 +179,10 @@ class Fyndiq_Fyndiq_Model_Observer
                             continue;
                         }
                         FyndiqUtils::debug('$simpleProduct', $simpleProduct);
-                        $articles[] = $this->getArticle($store, $simpleProduct, $discount, $productId, $index);
+                        $article = $this->getArticle($store, $simpleProduct, $discount, $productId, $index);
+                        if ($article) {
+                            $articles[] = $article;
+                        }
                         $index++;
                     }
                     FyndiqUtils::debug('$product, $articles', $product, $articles);
