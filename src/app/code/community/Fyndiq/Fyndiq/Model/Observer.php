@@ -116,13 +116,14 @@ class Fyndiq_Fyndiq_Model_Observer
 
         $products = Mage::getModel('fyndiq/product')->getCollection()
             ->setOrder('id', 'DESC')
-            ->getItems();
+            ->load();
 
         $productInfo = array();
         foreach ($products as $product) {
             $productData = $product->getData();
             $productInfo[intval($productData['product_id'])] = $productData;
         }
+        $products->clear();
 
         FyndiqUtils::debug('$productInfo', $productInfo);
 
@@ -172,7 +173,7 @@ class Fyndiq_Fyndiq_Model_Observer
                     $simpleCollection = $conf->getUsedProductCollection()
                         ->addAttributeToSelect('*')
                         ->addFilterByRequiredOptions()
-                        ->getItems();
+                        ->load();
                     $index = 1;
                     foreach ($simpleCollection as $simpleProduct) {
                         if ($simpleProduct->getStockItem()->getMinSaleQty() > 1) {
@@ -183,6 +184,7 @@ class Fyndiq_Fyndiq_Model_Observer
                         $articles[] = $this->getArticle($store, $simpleProduct, $discount, $productId, $index);
                         $index++;
                     }
+                    $simpleCollection->clear();
                     FyndiqUtils::debug('$product, $articles', $product, $articles);
                     $feedWriter->addCompleteProduct($product, $articles);
                     FyndiqUtils::debug('Any Validation Errors', $feedWriter->getLastProductErrors());
