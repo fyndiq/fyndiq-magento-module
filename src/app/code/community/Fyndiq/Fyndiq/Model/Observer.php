@@ -172,6 +172,7 @@ class Fyndiq_Fyndiq_Model_Observer
                     $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
                     $simpleCollection = $conf->getUsedProductCollection()
                         ->addAttributeToSelect('*')
+                        ->setStoreId($storeId)
                         ->addFilterByRequiredOptions()
                         ->load();
                     $index = 1;
@@ -427,7 +428,8 @@ class Fyndiq_Fyndiq_Model_Observer
             $feedProduct[FyndiqFeedWriter::SKU] = $magProduct->getSKU();
             $feedProduct[FyndiqFeedWriter::PROPERTIES] = array();
 
-            $parentProduct = Mage::getModel('catalog/product')->load($productId);
+            $parentProduct = Mage::getModel('catalog/product')
+                ->load($productId);
             if (method_exists($parentProduct->getTypeInstance(), 'getConfigurableAttributes')) {
                 $productAttrOptions = $parentProduct->getTypeInstance()->getConfigurableAttributes();
                 foreach ($productAttrOptions as $productAttribute) {
@@ -445,6 +447,7 @@ class Fyndiq_Fyndiq_Model_Observer
                     );
                 }
             }
+            $parentProduct->clear();
         }
         $feedProduct[FyndiqFeedWriter::IMAGES] = $this->getProductImages($productId, $magProduct);
         return $feedProduct;
@@ -463,42 +466,44 @@ class Fyndiq_Fyndiq_Model_Observer
             return array();
         }
 
+        if ($magProduct->getTypeId() !== 'simple') {
+            FyndiqUtils::debug('article is not simple product');
+            return array();
+        }
+
         $magPrice = $this->getProductPrice($magProduct);
         $price = FyndiqUtils::getFyndiqPrice($magPrice, $discount);
+        $qtyStock = intval($this->getQuantity($magProduct, $store));
+
         $feedProduct = array(
             FyndiqFeedWriter::ID => $index,
             FyndiqFeedWriter::PRICE => FyndiqUtils::formatPrice($price),
             FyndiqFeedWriter::OLDPRICE => FyndiqUtils::formatPrice($magPrice),
+            FyndiqFeedWriter::ARTICLE_NAME => $magProduct->getName(),
+            FyndiqFeedWriter::QUANTITY => $qtyStock < 0 ? 0 : $qtyStock,
+            FyndiqFeedWriter::SKU => $magProduct->getSKU(),
+            FyndiqFeedWriter::IMAGES => $this->getProductImages($magProduct->getId(), $magProduct),
+            FyndiqFeedWriter::PROPERTIES => array(),
         );
 
-        if ($magProduct->getTypeId() === 'simple') {
-            $qtyStock = intval($this->getQuantity($magProduct, $store));
-
-            $feedProduct[FyndiqFeedWriter::ARTICLE_NAME] = $magProduct->getName();
-            $feedProduct[FyndiqFeedWriter::QUANTITY] = $qtyStock < 0 ? 0 : $qtyStock;
-            $feedProduct[FyndiqFeedWriter::SKU] = $magProduct->getSKU();
-            $feedProduct[FyndiqFeedWriter::PROPERTIES] = array();
-
-            $parentProduct = Mage::getModel('catalog/product')->load($parentProductId);
-            if (method_exists($parentProduct->getTypeInstance(), 'getConfigurableAttributes')) {
-                $productAttrOptions = $parentProduct->getTypeInstance()->getConfigurableAttributes();
-                foreach ($productAttrOptions as $productAttribute) {
-                    $attrValue = $parentProduct->getResource()->getAttribute(
-                        $productAttribute->getProductAttribute()->getAttributeCode()
-                    )->getFrontend();
-                    $attrLabel = $productAttribute->getProductAttribute()->getFrontendLabel();
-                    $value = $attrValue->getValue($magProduct);
-                    if (is_array($value)) {
-                        $value = $value[0];
-                    }
-                    $feedProduct[FyndiqFeedWriter::PROPERTIES][] = array(
-                        FyndiqFeedWriter::PROPERTY_NAME => $attrLabel,
-                        FyndiqFeedWriter::PROPERTY_VALUE => $value,
-                    );
+        $parentProduct = Mage::getModel('catalog/product')->load($parentProductId);
+        if (method_exists($parentProduct->getTypeInstance(), 'getConfigurableAttributes')) {
+            $productAttrOptions = $parentProduct->getTypeInstance()->getConfigurableAttributes();
+            foreach ($productAttrOptions as $productAttribute) {
+                $attrValue = $parentProduct->getResource()->getAttribute(
+                    $productAttribute->getProductAttribute()->getAttributeCode()
+                )->getFrontend();
+                $attrLabel = $productAttribute->getProductAttribute()->getFrontendLabel();
+                $value = $attrValue->getValue($magProduct);
+                if (is_array($value)) {
+                    $value = $value[0];
                 }
+                $feedProduct[FyndiqFeedWriter::PROPERTIES][] = array(
+                    FyndiqFeedWriter::PROPERTY_NAME => $attrLabel,
+                    FyndiqFeedWriter::PROPERTY_VALUE => $value,
+                );
             }
         }
-        $feedProduct[FyndiqFeedWriter::IMAGES] = $this->getProductImages($magProduct->getId(), $magProduct);
         return $feedProduct;
     }
 
