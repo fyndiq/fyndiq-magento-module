@@ -454,7 +454,6 @@ class Fyndiq_Fyndiq_Model_Observer
                     );
                 }
             }
-            $parentProduct->clear();
         }
         $feedProduct[FyndiqFeedWriter::IMAGES] = $this->getProductImages($productId, $magProduct);
         return $feedProduct;
