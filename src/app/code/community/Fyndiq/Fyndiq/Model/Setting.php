@@ -40,7 +40,6 @@ class Fyndiq_Fyndiq_Model_Setting extends Mage_Core_Model_Abstract
                 array('eq' => $this->getKey($storeId, $key))
             )
         );
-        Mage::log((string)$collection->getSelect());
         if (count($collection) > 0) {
             $collection = $collection->getFirstItem();
             if ($collection->getId()) {
