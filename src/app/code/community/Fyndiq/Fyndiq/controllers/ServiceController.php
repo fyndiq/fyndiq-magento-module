@@ -229,7 +229,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 $name_short = FyndiqFeedWriter::sanitizeColumn("product-title", $name);
             }
 
-            $magPrice = FmHelpers::getProductPrice($prod);
+            $magPrice = $this->observer->getProductPrice($prod);
             $producturl = Mage::helper('adminhtml')->getUrl('adminhtml/catalog_product/edit', array('id' => $prod->getId()));
             $taxRate = $this->getTaxRate($prod, $storeId);
             $prodData = array(

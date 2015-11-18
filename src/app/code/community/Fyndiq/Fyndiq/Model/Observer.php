@@ -217,12 +217,16 @@ class Fyndiq_Fyndiq_Model_Observer
         $urls = array();
         $positions = array();
         $newImages = array();
-        $images = Mage::getModel('catalog/product')->load($productId)->getMediaGalleryImages();
+        $images = Mage::getModel('catalog/product')
+            ->load($productId)
+            ->getMediaGalleryImages();
         $hasRealImagesSet = ($product->getImage() != null && $product->getImage() != "no_selection");
         foreach ($images as $image) {
             $positions[] = $image->getPosition();
             $newImages[] = $image;
         }
+        $images->clear();
+
         if (count(array_unique($positions)) < count($images)) {
             usort($newImages, array("Fyndiq_Fyndiq_Model_Observer", "sortImages"));
         }
@@ -328,6 +332,30 @@ class Fyndiq_Fyndiq_Model_Observer
         return $this->categoryCache[$categoryId];
     }
 
+
+    // Add Tax to the price if required
+    protected function includeTax($objProduct, $price)
+    {
+        if (!Mage::helper('tax')->priceIncludesTax()) {
+            return Mage::helper('tax')->getPrice($objProduct, $price);
+        }
+        return $price;
+    }
+
+    public function getProductPrice($objProduct)
+    {
+        $price = $objProduct->getFinalPrice();
+
+        $catalogRulePrice = Mage::getModel('catalogrule/rule')
+            ->calcProductPriceRule($objProduct, $price);
+        if ($catalogRulePrice) {
+            $price = $catalogRulePrice;
+        }
+
+        return $this->includeTax($objProduct, $price);
+    }
+
+
     /**
      * Get product information
      * @param  object $store
@@ -361,11 +389,11 @@ class Fyndiq_Fyndiq_Model_Observer
 
         $productId = $magProduct->getId();
         $descrType = intval(FmConfig::get('description', $storeId));
-        $magPrice = FmHelpers::getProductPrice($magProduct);
+        $magPrice = $this->getProductPrice($magProduct);
         $price = FyndiqUtils::getFyndiqPrice($magPrice, $discount);
 
         // Old price is always the product base price
-        $oldPrice = FmHelpers::includeTax($magProduct, $magProduct->getPrice());
+        $oldPrice = $this->includeTax($magProduct, $magProduct->getPrice());
 
         $feedProduct = array(
             FyndiqFeedWriter::ID => $ourProductId,
@@ -435,7 +463,7 @@ class Fyndiq_Fyndiq_Model_Observer
             return array();
         }
 
-        $magPrice = FmHelpers::getProductPrice($magProduct);
+        $magPrice = $this->getProductPrice($magProduct);
         $price = FyndiqUtils::getFyndiqPrice($magPrice, $discount);
         $feedProduct = array(
             FyndiqFeedWriter::ID => $index,
