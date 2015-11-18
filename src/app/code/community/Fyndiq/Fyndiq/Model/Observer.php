@@ -115,6 +115,13 @@ class Fyndiq_Fyndiq_Model_Observer
         $this->productMediaConfig = Mage::getModel('catalog/product_media_config');
 
         $products = Mage::getModel('fyndiq/product')->getCollection()
+            ->addFieldToSelect(
+                array(
+                    'id',
+                    'product_id',
+                    'exported_price_percentage',
+                )
+            )
             ->setOrder('id', 'DESC')
             ->load();
 
@@ -152,7 +159,7 @@ class Fyndiq_Fyndiq_Model_Observer
                     FyndiqUtils::debug('$magProduct->getTypeId()', $typeId);
                     $discount = intval($productInfo[$productId]['exported_price_percentage']);
 
-                    if ($typeId == 'simple') {
+                    if ($typeId === 'simple') {
                         //Check if minimumQuantity is > 1, if it is it will skip this product.
                         if ($magProduct->getStockItem()->getMinSaleQty() > 1) {
                             FyndiqUtils::debug('min sale qty is > 1, SKIPPING PRODUCT');
