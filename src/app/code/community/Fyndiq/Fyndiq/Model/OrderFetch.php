@@ -30,12 +30,19 @@ class FmOrderFetch extends FyndiqPaginatedFetch
 
     function processData($data)
     {
+        $errors = array();
         foreach ($data as $order) {
             if (!Mage::getModel('fyndiq/order')->orderExists($order->id)) {
-                Mage::getModel('fyndiq/order')->create($this->storeId, $order);
+                try {
+                    Mage::getModel('fyndiq/order')->create($this->storeId, $order);
+                } catch (Exception $e) {
+                    $errors[] = $e->getMessage();
+                }
             }
         }
-
+        if ($errors) {
+            throw new Exception(implode("\n", $errors));
+        }
         return true;
     }
 
