@@ -20,6 +20,7 @@ class Fyndiq_Fyndiq_Model_Observer
     private $productImages = array();
     private $productMediaConfig = null;
     private $categoryCache = array();
+    private $productAttrOptions = null;
 
     public function __construct()
     {
@@ -100,6 +101,35 @@ class Fyndiq_Fyndiq_Model_Observer
         return false;
     }
 
+    protected function getExportedProductsCollection($entityIds, $storeId)
+    {
+        $productsModel = Mage::getModel('catalog/product')->getCollection()
+            ->addAttributeToSelect('*')
+            ->addAttributeToFilter(
+                'entity_id',
+                array('in' => $entityIds)
+            );
+        if ($storeId) {
+            $productsModel->setStoreId($storeId)
+                ->addStoreFilter($storeId);
+        }
+        return $productsModel->load();
+    }
+
+    protected function getConfigurableProductsCollection($product, $storeId)
+    {
+        $confModel = Mage::getModel('catalog/product_type_configurable')
+            ->setProduct($product)
+            ->getUsedProductCollection()
+            ->addAttributeToSelect('*')
+            ->addFilterByRequiredOptions();
+        if ($storeId) {
+            $confModel->setStoreId($storeId)
+            ->addStoreFilter($storeId);
+        }
+        return  $confModel->load();
+    }
+
     /**
      * Adding products added for export to the feed file
      *
@@ -139,20 +169,10 @@ class Fyndiq_Fyndiq_Model_Observer
 
             $productIds = array_unique(array_keys($productInfo));
             $batches = array_chunk($productIds, self::BATCH_SIZE);
-            foreach ($batches as $batchIds) {
+            foreach ($batches as $entityIds) {
                 FyndiqUtils::debug('MEMORY', memory_get_usage(true));
-                $productsModel = Mage::getModel('catalog/product')->getCollection()
-                    ->addAttributeToSelect('*')
-                    ->addAttributeToFilter(
-                        'entity_id',
-                        array('in' => $batchIds)
-                    );
-                if ($storeId) {
-                    $productsModel->setStoreId($storeId)
-                        ->addStoreFilter($storeId);
-                }
-                error_log($productsModel->getSelect());
-                $productsToExport = $productsModel->load();
+
+                $productsToExport = $this->getExportedProductsCollection($entityIds, $storeId);
 
                 foreach ($productsToExport as $magProduct) {
                     $productId = $magProduct->getId();
@@ -178,18 +198,8 @@ class Fyndiq_Fyndiq_Model_Observer
 
                     // Configurable product
                     $articles = array();
+                    $simpleCollection = $this->getConfigurableProductsCollection($magProduct, $storeId);
                     $product = $this->getProduct($store, $magProduct, $ourProductId, $discount, $market, $currency);
-                    $confModel = Mage::getModel('catalog/product_type_configurable')
-                        ->setProduct($magProduct)
-                        ->getUsedProductCollection()
-                        ->addAttributeToSelect('*')
-                        ->setStoreId($storeId)
-                        ->addFilterByRequiredOptions();
-                    if ($storeId) {
-                        $confModel->setStoreId($storeId)
-                        ->addStoreFilter($storeId);
-                    }
-                    $simpleCollection = $confModel->load();
                     $index = 1;
                     foreach ($simpleCollection as $simpleProduct) {
                         if ($simpleProduct->getStockItem()->getMinSaleQty() > 1) {
@@ -443,12 +453,12 @@ class Fyndiq_Fyndiq_Model_Observer
             $feedProduct[FyndiqFeedWriter::SKU] = $magProduct->getSKU();
             $feedProduct[FyndiqFeedWriter::PROPERTIES] = array();
 
-            $parentProduct = Mage::getModel('catalog/product')
-                ->load($productId);
-            if (method_exists($parentProduct->getTypeInstance(), 'getConfigurableAttributes')) {
-                $productAttrOptions = $parentProduct->getTypeInstance()->getConfigurableAttributes();
-                foreach ($productAttrOptions as $productAttribute) {
-                    $attrValue = $parentProduct->getResource()->getAttribute(
+            if (method_exists($magProduct->getTypeInstance(), 'getConfigurableAttributes')) {
+                if (!$this->productAttrOptions) {
+                    $this->productAttrOptions = $parentProduct->getTypeInstance()->getConfigurableAttributes();
+                }
+                foreach ($this->productAttrOptions as $productAttribute) {
+                    $attrValue = $magProduct->getResource()->getAttribute(
                         $productAttribute->getProductAttribute()->getAttributeCode()
                     )->getFrontend();
                     $attrLabel = $productAttribute->getProductAttribute()->getFrontendLabel();
@@ -502,8 +512,10 @@ class Fyndiq_Fyndiq_Model_Observer
 
         $parentProduct = Mage::getModel('catalog/product')->load($parentProductId);
         if (method_exists($parentProduct->getTypeInstance(), 'getConfigurableAttributes')) {
-            $productAttrOptions = $parentProduct->getTypeInstance()->getConfigurableAttributes();
-            foreach ($productAttrOptions as $productAttribute) {
+            if (!$this->productAttrOptions) {
+                $this->productAttrOptions = $parentProduct->getTypeInstance()->getConfigurableAttributes();
+            }
+            foreach ($this->productAttrOptions as $productAttribute) {
                 $attrValue = $parentProduct->getResource()->getAttribute(
                     $productAttribute->getProductAttribute()->getAttributeCode()
                 )->getFrontend();
@@ -517,6 +529,7 @@ class Fyndiq_Fyndiq_Model_Observer
                     FyndiqFeedWriter::PROPERTY_VALUE => $value,
                 );
             }
+            FyndiqUtils::debug('-+OPTIONS', $productAttrOptions);
         }
         return $feedProduct;
     }
