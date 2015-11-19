@@ -142,14 +142,18 @@ class Fyndiq_Fyndiq_Model_Observer
             $batches = array_chunk($productIds, self::BATCH_SIZE);
             foreach ($batches as $batchIds) {
                 FyndiqUtils::debug('MEMORY', memory_get_usage(true));
-                $productsToExport = Mage::getModel('catalog/product')->getCollection()
+                $productsModel = Mage::getModel('catalog/product')->getCollection()
                     ->addAttributeToSelect('*')
-                    ->setStoreId($storeId)
-                    ->addStoreFilter($storeId)
                     ->addAttributeToFilter(
                         'entity_id',
                         array('in' => $batchIds)
-                    )->load();
+                    );
+                if ($storeId) {
+                    $productsModel->setStoreId($storeId)
+                        ->addStoreFilter($storeId);
+                }
+                error_log($productsModel->getSelect());
+                $productsToExport = $productsModel->load();
 
                 foreach ($productsToExport as $magProduct) {
                     $productId = $magProduct->getId();
@@ -176,12 +180,17 @@ class Fyndiq_Fyndiq_Model_Observer
                     // Configurable product
                     $articles = array();
                     $product = $this->getProduct($store, $magProduct, $ourProductId, $discount, $market, $currency);
-                    $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($magProduct);
-                    $simpleCollection = $conf->getUsedProductCollection()
+                    $confModel = Mage::getModel('catalog/product_type_configurable')
+                        ->setProduct($magProduct)
+                        ->getUsedProductCollection()
                         ->addAttributeToSelect('*')
                         ->setStoreId($storeId)
-                        ->addFilterByRequiredOptions()
-                        ->load();
+                        ->addFilterByRequiredOptions();
+                    if ($storeId) {
+                        $confModel->setStoreId($storeId)
+                        ->addStoreFilter($storeId);
+                    }
+                    $simpleCollection = $confModel->load();
                     $index = 1;
                     foreach ($simpleCollection as $simpleProduct) {
                         if ($simpleProduct->getStockItem()->getMinSaleQty() > 1) {
