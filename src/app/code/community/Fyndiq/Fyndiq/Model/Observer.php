@@ -126,8 +126,7 @@ class Fyndiq_Fyndiq_Model_Observer
             ->load();
 
         $productInfo = array();
-        foreach ($products as $product) {
-            $productData = $product->getData();
+        foreach ($products->getData() as $productData) {
             $productInfo[intval($productData['product_id'])] = $productData;
         }
         $products->clear();
