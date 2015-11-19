@@ -50,26 +50,4 @@ class FmHelpers
             array('FyndiqAPI', 'call')
         );
     }
-
-    // Add Tax to the price if required
-    public static function includeTax($objProduct, $price)
-    {
-        if (!Mage::helper('tax')->priceIncludesTax()) {
-            return Mage::helper('tax')->getPrice($objProduct, $price);
-        }
-        return $price;
-    }
-
-    public static function getProductPrice($objProduct)
-    {
-        $price = $objProduct->getFinalPrice();
-
-        $catalogRulePrice = Mage::getModel('catalogrule/rule')
-            ->calcProductPriceRule($objProduct, $price);
-        if ($catalogRulePrice) {
-            $price = $catalogRulePrice;
-        }
-
-        return self::includeTax($objProduct, $price);
-    }
 }
