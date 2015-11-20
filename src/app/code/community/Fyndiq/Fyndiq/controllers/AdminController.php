@@ -32,7 +32,6 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
     public function orderlistAction()
     {
         $this->loadLayout(array('default'));
-
         return $this->setTemplate('fyndiq/orderlist.phtml');
     }
 

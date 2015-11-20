@@ -40,17 +40,25 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         if ($orderId > 0) {
             try {
                 // Set the area as backend so shipping method is not skipped
-                Mage::getDesign()->setArea(Mage_Core_Model_App_Area::AREA_ADMIN);
                 $response = FmHelpers::callApi($storeId, 'GET', 'orders/' . $orderId . '/');
                 $fyndiqOrder = $response['data'];
+
+                Mage::getDesign()->setArea(Mage_Core_Model_App_Area::AREA_ADMIN);
                 $orderModel = Mage::getModel('fyndiq/order');
                 if (!$orderModel->orderExists($fyndiqOrder->id)) {
-                    $orderModel->create($storeId, $fyndiqOrder);
+                    $reservationId = $orderModel->reserve(intval($fyndiqOrder->id));
+                    $orderModel->create($storeId, $fyndiqOrder, $reservationId);
                 }
             } catch (Exception $e) {
+                $orderModel->unreserve($reservationId);
+                // $inbox = Mage::getModel('Mage_AdminNotification_Model_Inbox');
+                // $inbox->addMinor(
+                //     sprintf('Fyndiq Order %s could not be imported', $orderId),
+                //     $e->getMessage()
+                // );
                 return $this->getFyndiqOutput()->showError(500, 'Internal Server Error', $e->getMessage());
             }
-            return true;
+            return $this->getFyndiqOutput()->output('OK');
         }
         return $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
     }

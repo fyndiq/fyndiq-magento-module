@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Fyndiq_Fyndiq>
-            <version>1.0.7</version>
+            <version>1.0.8</version>
         </Fyndiq_Fyndiq>
     </modules>
     <global>

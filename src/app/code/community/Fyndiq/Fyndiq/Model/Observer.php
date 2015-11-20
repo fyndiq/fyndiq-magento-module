@@ -44,6 +44,7 @@ class Fyndiq_Fyndiq_Model_Observer
         $newDate = date('Y-m-d H:i:s', $newTime);
         $settingExists = Mage::getModel('fyndiq/setting')->settingExist($storeId, 'order_lastdate');
 
+        Mage::getModel('fyndiq/order')->clearReservations();
         $orderFetch = new FmOrderFetch($storeId, $settingExists);
         $orderFetch->getAll();
 
