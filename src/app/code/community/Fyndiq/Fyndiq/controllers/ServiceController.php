@@ -182,7 +182,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             if ($prod->getTypeId() == 'simple') {
                 //Get parent
                 $parentIds = $groupedModel->getParentIdsByChild($prod->getId());
-                if (!$parentIds) { //Couldn't get parent, try configurable model instead
+                if (!$parentIds) {
+                    //Couldn't get parent, try configurable model instead
                     $parentIds = $configurableModel->getParentIdsByChild($prod->getId());
                 }
                 // set parent id if exist
@@ -224,7 +225,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
             //title length checks
             $name = $prod->getName();
-            $name_short = "";
+            $name_short = '';
             if (FyndiqFeedWriter::isColumnTooLong("product-title", $name)) {
                 $name_short = FyndiqFeedWriter::sanitizeColumn("product-title", $name);
             }
@@ -232,6 +233,15 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             $magPrice = $this->observer->getProductPrice($prod);
             $producturl = Mage::helper('adminhtml')->getUrl('adminhtml/catalog_product/edit', array('id' => $prod->getId()));
             $taxRate = $this->getTaxRate($prod, $storeId);
+            $fyndiqPercentage = $fyndiq ? $fyndiqData['exported_price_percentage'] : $fyndiqPercentage;
+
+            //trying to get image, if not image will be false
+            $image = false;
+            try {
+                $image = $prod->getImageUrl();
+            } catch (Exception $e) {
+            }
+
             $prodData = array(
                 'id' => $prod->getId(),
                 'url' => $prod->getUrl(),
@@ -252,27 +262,13 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 'currency' => $currency,
                 'fyndiq_check_pending' => ($fyndiq && $fyndiqState === null),
                 'vat_percent_zero' => ($taxRate == 0),
+                'image' => $image,
             );
 
-            //trying to get image, if not image will be false
-            try {
-                $prodData['image'] = $prod->getImageUrl();
-            } catch (Exception $e) {
-                $prodData['image'] = false;
-            }
-
-            // If added to fyndiq export table, get the settings from that table
-            if ($fyndiq) {
-                $prodData['fyndiq_percentage'] = $fyndiqData['exported_price_percentage'];
-                $prodData['$fyndiqState'] = $fyndiqData['state'];
-            }
-
             //Count expected price to Fyndiq
-            $prodData['expected_price'] = number_format(
+            $prodData['expected_price'] = $directoryCurrency->formatTxt(
                 FyndiqUtils::getFyndiqPrice($prodData['price'], $prodData['fyndiq_percentage']),
-                2,
-                '.',
-                ''
+                array('display' => Zend_Currency::NO_SYMBOL)
             );
 
             $data[] = $prodData;
