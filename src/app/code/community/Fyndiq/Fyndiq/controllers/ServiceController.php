@@ -341,7 +341,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             $status = $productModel->updateProduct(
                 $args['product'],
                 array(
-                    'exported_price_percentage' => $args['percentage']
+                    'exported_price_percentage' => $args['percentage'],
                 )
             );
             return $this->response($status);
@@ -364,13 +364,15 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             // Getting all data
             $productModel = Mage::getModel('fyndiq/product');
             $result = array();
+            $storeId = $this->observer->getStoreId();
             foreach ($args['products'] as $v) {
                 $product = $v['product'];
                 $fyndiqPercentage = $product['fyndiq_percentage'];
                 $fyndiqPercentage = $fyndiqPercentage > 100 ? 100 : $fyndiqPercentage;
                 $fyndiqPercentage = $fyndiqPercentage < 0 ? 0 : $fyndiqPercentage;
                 $data = array(
-                    'exported_price_percentage' => $fyndiqPercentage
+                    'exported_price_percentage' => $fyndiqPercentage,
+                    'store_id' => $storeId,
                 );
 
                 if ($productModel->getProductExportData($product['id']) != false) {
