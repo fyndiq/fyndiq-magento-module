@@ -63,7 +63,9 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
     public function getImportedOrders($page, $itemsPerPage)
     {
         $result = array();
-        $orders = $this->getCollection()->setOrder('id', 'DESC');
+        $orders = $this->getCollection()
+            ->addFieldToFilter('order_id', array('neq' => 0))
+            ->setOrder('id', 'DESC');
         if ($page != -1) {
             $orders->setCurPage($page);
             $orders->setPageSize($itemsPerPage);
@@ -156,7 +158,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
      *
      * @throws Exception
      */
-    public function create($storeId, $fyndiqOrder)
+    public function create($storeId, $fyndiqOrder, $reservationId = false)
     {
         //get customer by mail
         $customer = Mage::getModel('customer/customer');
@@ -289,6 +291,9 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $order->save();
 
         //add it to the table for check
+        if ($reservationId) {
+            $this->unreserve($reservationId);
+        }
         $this->addCheckData($fyndiqOrder->id, $order->getId());
     }
 
@@ -325,5 +330,33 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $status = Mage::getModel('sales/order_status')->loadDefaultByState($statusId);
 
         return $status->getStoreLabel();
+    }
+
+    public function reserve($fyndiqOrderId)
+    {
+        $data = array(
+            'fyndiq_orderid' => $fyndiqOrderId,
+            'order_id' => 0,
+        );
+        $model = $this->setData($data);
+        return $model->save()->getId();
+    }
+
+    public function unreserve($id)
+    {
+        $this->setId($id);
+        return $this->delete();
+    }
+
+    /**
+     * Clear all hanging reservations
+     */
+    public function clearReservations()
+    {
+        $orders = $this->getCollection()
+            ->addFilter('order_id', 0);
+        foreach ($orders as $order) {
+            $order->delete();
+        }
     }
 }
