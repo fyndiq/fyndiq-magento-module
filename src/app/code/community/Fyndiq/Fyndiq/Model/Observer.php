@@ -586,11 +586,13 @@ class Fyndiq_Fyndiq_Model_Observer
     public function getQuantity($product, $stockMin)
     {
         $qtyStock = 0;
-        $stock_item = Mage::getModel('cataloginventory/stock_item')->loadByProduct($product);
+        $stock_item = $magProduct->getStockItem();
         if ($product->getStatus() == 1 && $stock_item->getIsInStock() != 0) {
             $qtyStock = $stock_item->getQty();
         }
-        $qtyStock = intval($qtyStock - $stockMin);
+        // Reserved qty
+        $minQty = intval($stock_item->getMinQty());
+        $qtyStock = intval($qtyStock - $stockMin - $minQty);
         return $qtyStock < 0 ? 0 : $qtyStock;
     }
 
