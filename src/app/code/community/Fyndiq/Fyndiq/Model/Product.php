@@ -13,9 +13,9 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
      * @param int $productId
      * @return bool|array
      */
-    public function getProductExportData($productId)
+    public function getProductExportData($storeId, $productId)
     {
-        $collection = $this->getCollection()->addFieldToFilter('product_id', $productId)->getFirstItem();
+        $collection = $this->getCollection()->addFieldToFilter('product_id', $productId)->addFieldToFilter('store_id', $storeId)->getFirstItem();
         if ($collection->getId()) {
             return $collection->getData();
         }
@@ -76,9 +76,9 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
      * @param array $updateData
      * @return bool
      */
-    public function updateProduct($productId, $updateData)
+    public function updateProduct($storeId, $productId, $updateData)
     {
-        $collection = $this->getCollection()->addFieldToFilter('product_id', $productId)->getFirstItem();
+        $collection = $this->getCollection()->addFieldToFilter('product_id', $productId)->addFieldToFilter('store_id', $storeId)->getFirstItem();
         $model = $this->load($collection->getId())->addData($updateData);
         try {
             $model->setId($collection->getId())->save();
