@@ -593,7 +593,7 @@ class Fyndiq_Fyndiq_Model_Observer
         }
         // Reserved qty
         $minQty = intval($stockItem->getMinQty());
-        $qtyStock = intval($qtyStock - $stockMin - $minQty);
+        $qtyStock = intval($qtyStock - max(array($stockMin - $minQty)));
         return $qtyStock < 0 ? 0 : $qtyStock;
     }
 
