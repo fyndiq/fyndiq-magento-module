@@ -583,15 +583,16 @@ class Fyndiq_Fyndiq_Model_Observer
         throw new Exception(FyndiqTranslation::get('empty-username-token'));
     }
 
-    public function getQuantity($product, $stockMin)
+    public function getQuantity($magProduct, $stockMin)
     {
         $qtyStock = 0;
-        $stock_item = $magProduct->getStockItem();
-        if ($product->getStatus() == 1 && $stock_item->getIsInStock() != 0) {
-            $qtyStock = $stock_item->getQty();
+        $stockItem = Mage::getModel('cataloginventory/stock_item')
+            ->loadByProduct($magProduct);
+        if ($magProduct->getStatus() == 1 && $stockItem->getIsInStock() != 0) {
+            $qtyStock = $stockItem->getQty();
         }
         // Reserved qty
-        $minQty = intval($stock_item->getMinQty());
+        $minQty = intval($stockItem->getMinQty());
         $qtyStock = intval($qtyStock - $stockMin - $minQty);
         return $qtyStock < 0 ? 0 : $qtyStock;
     }
