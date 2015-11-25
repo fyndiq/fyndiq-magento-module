@@ -248,7 +248,6 @@ class Fyndiq_Fyndiq_Model_Observer
         $images = Mage::getModel('catalog/product')
             ->load($product->getId())
             ->getMediaGalleryImages();
-        $hasRealImagesSet = ($product->getImage() != null && $product->getImage() != "no_selection");
         $newImages = array();
         foreach ($images as $image) {
             $url = $this->productMediaConfig->getMediaUrl($image->getFile());
@@ -262,7 +261,7 @@ class Fyndiq_Fyndiq_Model_Observer
             return  array_values($newImages);
         }
         foreach (array($product->getImage(), $product->getSmallImage()) as $image) {
-            if ($image != null &&  $image != "no_selection") {
+            if ($image != null &&  $image != 'no_selection') {
                 // Fall-back to main image
                 $url = $this->productMediaConfig->getMediaUrl($image);
                 return array($url);
