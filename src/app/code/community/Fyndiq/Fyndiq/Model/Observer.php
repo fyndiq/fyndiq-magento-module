@@ -167,6 +167,7 @@ class Fyndiq_Fyndiq_Model_Observer
         if ($productInfo) {
             $market = Mage::getStoreConfig('general/country/default');
             $currency = $store->getCurrentCurrencyCode();
+            $stockMin = intval(FmConfig::get('stockmin', $storeId));
 
             $productIds = array_unique(array_keys($productInfo));
             $batches = array_chunk($productIds, self::BATCH_SIZE);
@@ -190,7 +191,7 @@ class Fyndiq_Fyndiq_Model_Observer
                             continue;
                         }
 
-                        $product = $this->getProduct($store, $magProduct, $ourProductId, $discount, $market, $currency);
+                        $product = $this->getProduct($store, $magProduct, $ourProductId, $discount, $market, $currency, $stockMin);
                         FyndiqUtils::debug('simple product', $product);
                         $feedWriter->addCompleteProduct($product);
                         FyndiqUtils::debug('Any Validation Errors', $feedWriter->getLastProductErrors());
@@ -208,7 +209,7 @@ class Fyndiq_Fyndiq_Model_Observer
                             continue;
                         }
                         FyndiqUtils::debug('$simpleProduct', $simpleProduct);
-                        $article = $this->getArticle($store, $simpleProduct, $discount, $productId, $index);
+                        $article = $this->getArticle($store, $simpleProduct, $discount, $productId, $index, $stockMin);
                         if ($article) {
                             $articles[] = $article;
                         }
@@ -394,7 +395,7 @@ class Fyndiq_Fyndiq_Model_Observer
      * @param  string $market
      * @return array
      */
-    private function getProduct($store, $magProduct, $ourProductId, $discount, $market, $currency)
+    private function getProduct($store, $magProduct, $ourProductId, $discount, $market, $currency, $stockMin)
     {
         $storeId = intval($store->getId());
         $magArray = $magProduct->getData();
@@ -451,9 +452,7 @@ class Fyndiq_Fyndiq_Model_Observer
         }
 
         if ($magArray['type_id'] === 'simple') {
-            $qtyStock = intval($this->getQuantity($magProduct, $store));
-
-            $feedProduct[FyndiqFeedWriter::QUANTITY] = $qtyStock < 0 ? 0 : $qtyStock;
+            $feedProduct[FyndiqFeedWriter::QUANTITY] = $this->getQuantity($magProduct, $stockMin);
             $feedProduct[FyndiqFeedWriter::SKU] = $magProduct->getSKU();
             $feedProduct[FyndiqFeedWriter::PROPERTIES] = array();
 
@@ -481,7 +480,7 @@ class Fyndiq_Fyndiq_Model_Observer
         return $feedProduct;
     }
 
-    private function getArticle($store, $magProduct, $discount, $parentProductId, $index)
+    private function getArticle($store, $magProduct, $discount, $parentProductId, $index, $stockMin)
     {
         // Setting the data
         if (!$magProduct->getPrice()) {
@@ -501,14 +500,13 @@ class Fyndiq_Fyndiq_Model_Observer
 
         $magPrice = $this->getProductPrice($magProduct);
         $price = FyndiqUtils::getFyndiqPrice($magPrice, $discount);
-        $qtyStock = intval($this->getQuantity($magProduct, $store));
 
         $feedProduct = array(
             FyndiqFeedWriter::ID => $index,
             FyndiqFeedWriter::PRICE => FyndiqUtils::formatPrice($price),
             FyndiqFeedWriter::OLDPRICE => FyndiqUtils::formatPrice($magPrice),
             FyndiqFeedWriter::ARTICLE_NAME => $magProduct->getName(),
-            FyndiqFeedWriter::QUANTITY => $qtyStock < 0 ? 0 : $qtyStock,
+            FyndiqFeedWriter::QUANTITY => $this->getQuantity($magProduct, $stockMin),
             FyndiqFeedWriter::SKU => $magProduct->getSKU(),
             FyndiqFeedWriter::IMAGES => $this->getProductImages($magProduct->getId(), $magProduct),
             FyndiqFeedWriter::PROPERTIES => array(),
@@ -585,21 +583,18 @@ class Fyndiq_Fyndiq_Model_Observer
         throw new Exception(FyndiqTranslation::get('empty-username-token'));
     }
 
-    public function getQuantity($product, $store)
+    public function getQuantity($magProduct, $stockMin)
     {
         $qtyStock = 0;
-        $stock_item = Mage::getModel('cataloginventory/stock_item')->loadByProduct($product);
-        if ($product->getStatus() == 1 && $stock_item->getIsInStock() != 0) {
-            $qtyStock = $stock_item->getQty();
+        $stockItem = Mage::getModel('cataloginventory/stock_item')
+            ->loadByProduct($magProduct);
+        if ($magProduct->getStatus() == 1 && $stockItem->getIsInStock() != 0) {
+            $qtyStock = $stockItem->getQty();
         }
-
-        //Remove the minstock from quantity.
-        $stockmin = FmConfig::get('stockmin', $store);
-        if (isset($stockmin)) {
-            $qtyStock = $qtyStock - $stockmin;
-        }
-
-        return $qtyStock;
+        // Reserved qty
+        $minQty = intval($stockItem->getMinQty());
+        $qtyStock = intval($qtyStock - max(array($stockMin - $minQty)));
+        return $qtyStock < 0 ? 0 : $qtyStock;
     }
 
     public function getStoreId()
