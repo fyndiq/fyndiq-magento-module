@@ -267,7 +267,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
             //Count expected price to Fyndiq
             $prodData['expected_price'] = $directoryCurrency->formatTxt(
-                FyndiqUtils::getFyndiqPrice($prodData['price'], $prodData['fyndiq_percentage']),
+                FyndiqUtils::getFyndiqPrice($magPrice, $prodData['fyndiq_percentage']),
                 array('display' => Zend_Currency::NO_SYMBOL)
             );
 
