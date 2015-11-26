@@ -19,6 +19,18 @@
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <fields>
+                        <ping_token>
+                            <frontend_type>text</frontend_type>
+                            <show_in_default>0</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </ping_token>
+                        <ping_time>
+                            <frontend_type>text</frontend_type>
+                            <show_in_default>0</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </ping_time>
                         <disconnect translate="label">
                             <label>Disconnect your account</label>
                             <frontend_type>button</frontend_type>
@@ -31,8 +43,32 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </disconnect>
+                        <fyndiq_shipment_method>
+                            <label>Create orders with this shipping method code</label>
+                            <comment>
+                                <![CDATA[Leave the field empty for the default Fyndiq shipping method]]>
+                            </comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_shipping_allmethods</source_model>
+                            <sort_order>17</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </fyndiq_shipment_method>
+                        <fyndiq_payment_method>
+                            <label>Create orders with this payment method</label>
+                            <comment>
+                                <![CDATA[Choose which payment method to create orders with]]>
+                            </comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>Fyndiq_Fyndiq_Model_System_Config_Source_Dropdown_PaymentMethods</source_model>
+                            <sort_order>16</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </fyndiq_payment_method>
                         <stockmin translate="label">
-                            <label>Lowest quantity to send to fyndiq</label>
+                            <label>Lowest quantity to send to Fyndiq</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>14</sort_order>
                             <comment>
@@ -91,6 +127,18 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </price_percentage>
+                        <import_orders_disabled translate="label">
+                            <label>Disable order import from Fyndiq</label>
+                            <comment>
+                                <![CDATA[If the checkbox is checked, orders will be automatically imported from Fyndiq]]>
+                            </comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>Fyndiq_Fyndiq_Model_System_Config_Source_Dropdown_Yesno</source_model>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </import_orders_disabled>
                         <!-- New fields go here -->
                         <apikey translate="label">
                             <label>API token</label>

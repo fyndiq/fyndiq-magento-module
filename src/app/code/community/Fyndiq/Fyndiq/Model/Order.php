@@ -2,12 +2,12 @@
 
 class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
 {
-    const FYNDIQ_ORDERS_EMAIL = 'info@fyndiq.se';
+    const FYNDIQ_ORDERS_EMAIL = 'orders_no_reply@fyndiq.com';
     const FYNDIQ_ORDERS_NAME_FIRST = 'Fyndiq';
     const FYNDIQ_ORDERS_NAME_LAST = 'Orders';
 
-    const PAYMENT_METHOD = 'fyndiq_fyndiq';
-    const SHIPPING_METHOD = 'fyndiq_fyndiq';
+    const DEFAULT_PAYMENT_METHOD = 'fyndiq_fyndiq';
+    const DEFAULT_SHIPMENT_METHOD = 'fyndiq_fyndiq_standard';
 
     public function _construct()
     {
@@ -63,7 +63,9 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
     public function getImportedOrders($page, $itemsPerPage)
     {
         $result = array();
-        $orders = $this->getCollection()->setOrder('id', 'DESC');
+        $orders = $this->getCollection()
+            ->addFieldToFilter('order_id', array('neq' => 0))
+            ->setOrder('id', 'DESC');
         if ($page != -1) {
             $orders->setCurPage($page);
             $orders->setPageSize($itemsPerPage);
@@ -94,7 +96,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
 
     protected function getRegionHelper()
     {
-        if (!class_exists('FyndiqRegionHelper')) {
+        if (!class_exists('FyndiqRegionHelper', false)) {
             require_once dirname(dirname(__FILE__)).'/includes/FyndiqRegionHelper.php';
         }
     }
@@ -118,27 +120,33 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         // Check if country region is required
         $isRequired = Mage::helper('directory')->isRegionRequired($fyndiqOrder->delivery_country_code);
         if ($isRequired) {
-            // Get and set Region
-            if ($fyndiqOrder->delivery_country_code != 'DE') {
-                throw new Exception(sprintf('Error, region is required for `%s`.', $fyndiqOrder->delivery_country_code));
-            }
+            switch ($fyndiqOrder->delivery_country_code) {
+                case 'DE':
+                    $this->getRegionHelper();
+                    $regionCode = FyndiqRegionHelper::codeToRegionCode($fyndiqOrder->delivery_postalcode, FyndiqRegionHelper::CODE_DE);
 
-            $this->getRegionHelper();
-            $regionCode = FyndiqRegionHelper::codeToRegionCodeDe($fyndiqOrder->delivery_postalcode);
-
-            // Try to deduce the region for Germany
-            $region = Mage::getModel('directory/region')->loadByCode($regionCode, $fyndiqOrder->delivery_country_code);
-            if (is_null($region)) {
-                throw new Exception(sprintf(
-                    'Error, could not find region `%s` for `%s.`',
-                    $regionCode,
-                    $fyndiqOrder->delivery_country
-                ));
+                    // Try to deduce the region for Germany
+                    $region = Mage::getModel('directory/region')->loadByCode($regionCode, $fyndiqOrder->delivery_country_code);
+                    if (is_null($region)) {
+                        throw new Exception(sprintf(
+                            'Error, could not find region `%s` for `%s.`',
+                            $regionCode,
+                            $fyndiqOrder->delivery_country
+                        ));
+                    }
+                    $shippingAddressArray['region_id'] = $region->getId();
+                    $shippingAddressArray['region'] = $region->getName();
+                    break;
+                case 'SE':
+                    $this->getRegionHelper();
+                    $regionCode = FyndiqRegionHelper::codeToRegionCode($fyndiqOrder->delivery_postalcode, FyndiqRegionHelper::CODE_SE);
+                    $regionName = FyndiqRegionHelper::getRegionName($regionCode, FyndiqRegionHelper::CODE_SE);
+                    $shippingAddressArray['region'] = $regionName;
+                    break;
+                default:
+                    throw new Exception(sprintf('Error, region is required for `%s`.', $fyndiqOrder->delivery_country_code));
             }
-            $shippingAddressArray['region_id'] = $region->getId();
-            $shippingAddressArray['region'] = $region->getName();
         }
-
         return $shippingAddressArray;
     }
 
@@ -150,7 +158,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
      *
      * @throws Exception
      */
-    public function create($storeId, $fyndiqOrder)
+    public function create($storeId, $fyndiqOrder, $reservationId = false)
     {
         //get customer by mail
         $customer = Mage::getModel('customer/customer');
@@ -198,21 +206,27 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             $product = Mage::getModel('catalog/product')->load($id);
 
             //Set price minus VAT:
+            $price = $row->unit_price_amount;
             if (!Mage::helper('tax')->priceIncludesTax()) {
                 $price = $row->unit_price_amount / ((100+intval($row->vat_percent)) / 100);
-            } else {
-                $price = $row->unit_price_amount;
             }
 
             //add product to the cart
             $productInfo = array('qty' => $row->quantity);
-            $quote->addProduct($product, new Varien_Object($productInfo))->setOriginalCustomPrice($price);
+            $item = $quote->addProduct($product, new Varien_Object($productInfo));
+            if (!is_object($item)) {
+                throw new Exception($item);
+            }
+            $item->setOriginalCustomPrice($price);
         }
 
         $shippingAddressArray = $this->getShippingAddress($fyndiqOrder);
 
         //if we have a default billing address, try gathering its values into variables we need
         $billingAddressArray = $shippingAddressArray;
+
+        // Ignore billing address validation
+        $quote->getBillingAddress()->setShouldIgnoreValidation(true);
 
         // Add the address data to the billing address
         $quote->getBillingAddress()->addData($billingAddressArray);
@@ -221,20 +235,29 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $quote->setBaseCurrencyCode($currency);
         $quote->setQuoteCurrencyCode($currency);
 
-        // Add the adress data to the shipping address
+        // Ignore shipping address validation
+        $quote->getShippingAddress()->setShouldIgnoreValidation(true);
+
+        // Add the address data to the shipping address
         $shippingAddress = $quote->getShippingAddress()->addData($shippingAddressArray);
 
         // Collect the shipping rates
         $shippingAddress->setCollectShippingRates(true)->collectShippingRates();
 
-        // Set the shipping method /////////// Here i set my own shipping method
-        $shippingAddress->setShippingMethod(self::SHIPPING_METHOD);
+        $shipmentMethod = trim(FmConfig::get('fyndiq_shipment_method', $storeId));
+        $shipmentMethod = $shipmentMethod ? $shipmentMethod : self::DEFAULT_SHIPMENT_METHOD;
+
+        // Set the shipping method
+        $shippingAddress->setShippingMethod($shipmentMethod);
+
+        $paymentMethod = FmConfig::get('fyndiq_payment_method', $storeId);
+        $paymentMethod = $paymentMethod ? $paymentMethod : self::DEFAULT_PAYMENT_METHOD;
 
         // Set the payment method
-        $shippingAddress->setPaymentMethod(self::PAYMENT_METHOD);
+        $shippingAddress->setPaymentMethod($paymentMethod);
 
         // Set the payment method
-        $quote->getPayment()->importData(array('method' => self::PAYMENT_METHOD));
+        $quote->getPayment()->importData(array('method' => $paymentMethod));
 
         // Feed quote object into sales model
         $service = Mage::getModel('sales/service_quote', $quote);
@@ -268,6 +291,9 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $order->save();
 
         //add it to the table for check
+        if ($reservationId) {
+            $this->unreserve($reservationId);
+        }
         $this->addCheckData($fyndiqOrder->id, $order->getId());
     }
 
@@ -285,8 +311,8 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         if ($order) {
             //$order->setState(Mage_Sales_Model_Order::STATE_PROCESSING, true);
             $order->setStatus($statusId, true);
-
-            return $order->save();
+            $order->save();
+            return true;
         }
 
         return false;
@@ -304,5 +330,33 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $status = Mage::getModel('sales/order_status')->loadDefaultByState($statusId);
 
         return $status->getStoreLabel();
+    }
+
+    public function reserve($fyndiqOrderId)
+    {
+        $data = array(
+            'fyndiq_orderid' => $fyndiqOrderId,
+            'order_id' => 0,
+        );
+        $model = $this->setData($data);
+        return $model->save()->getId();
+    }
+
+    public function unreserve($id)
+    {
+        $this->setId($id);
+        return $this->delete();
+    }
+
+    /**
+     * Clear all hanging reservations
+     */
+    public function clearReservations()
+    {
+        $orders = $this->getCollection()
+            ->addFilter('order_id', 0);
+        foreach ($orders as $order) {
+            $order->delete();
+        }
     }
 }

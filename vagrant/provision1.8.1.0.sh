@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-MAGE_VERSION="1.9.2.1"
-DATA_VERSION="1.9.1.0"
+MAGE_VERSION="1.8.1.0"
+DATA_VERSION="1.6.1.0"
 
 apt-get update
 apt-get install -y build-essential vim-nox git
@@ -43,7 +43,6 @@ fi
 
 if [[ ! -f "/var/www/html/magento/index.php" ]]; then
     cd /tmp
-    echo "Downloading Magento ${MAGE_VERSION} ..."
     if [[ ! -f "/opt/fyndiq-magento-module/assets/magento-${MAGE_VERSION}.tar.gz" ]]; then
         echo "Using local copy"
         wget --quiet http://pubfiles.nexcess.net/magento/ce-packages/magento-${MAGE_VERSION}.tar.gz

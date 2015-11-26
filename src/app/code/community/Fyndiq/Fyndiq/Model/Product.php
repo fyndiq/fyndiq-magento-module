@@ -27,7 +27,7 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
     {
         $collection = Mage::getResourceModel('catalog/product_collection')
             ->joinTable(
-                'catalog_product_super_link',
+                array('product_super_link' => 'catalog/product_super_link'),
                 'product_id=entity_id',
                 array('parent_id' => 'parent_id'),
                 null,
@@ -40,7 +40,7 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
         }
 
         $collection->getSelect()->where(
-            "((`e`.`type_id` = 'configurable') OR ((`e`.`type_id` = 'simple') AND (catalog_product_super_link.parent_id is null)))"
+            '((`e`.`type_id` = "configurable") OR ((`e`.`type_id` = "simple") AND (product_super_link.parent_id is null)))'
         );
 
         $collection->addAttributeToFilter('status', array('eq' => Mage_Catalog_Model_Product_Status::STATUS_ENABLED));
@@ -55,7 +55,6 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
                 (FyndiqUtils::PAGINATION_ITEMS_PER_PAGE * ($page - 1))
             );
         }
-
         return $collection;
     }
 
@@ -68,7 +67,6 @@ class Fyndiq_Fyndiq_Model_Product extends Mage_Core_Model_Abstract
     public function addProduct($insertData)
     {
         $model = $this->setData($insertData);
-
         return $model->save()->getId();
     }
 

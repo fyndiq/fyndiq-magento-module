@@ -1,0 +1,129 @@
+<?php require('common.phtml'); ?>
+
+<div class="fm-container">
+
+    <div class="fm-header">
+        <div class="fm-header-wrapper">
+            <img class="navbar-brand" src="<?php echo $this->getSharedPath(); ?>frontend/images/logo.png"
+                 alt="<?php echo $this->getMessage('Fyndiq logotype'); ?>">
+
+            <div class="navbar-right">
+                <a href="<?php echo $this->getAdminPath("fyndiq/admin/index"); ?>" class="btn btn-nav"><i
+                        class="menu-icon comp"></i> <?php echo $this->getMessage('Export Products'); ?></a>
+                <?php if ($this->ordersEnabled($this->getRequest()->getParam('store'))): ?>
+                <a href="<?php echo $this->getAdminPath("fyndiq/admin/orderlist"); ?>" class="btn btn-nav"><i
+                        class="menu-icon boxes"></i> <?php echo $this->getMessage('Imported Orders'); ?></a>
+                <?php endif; ?>
+                <a href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>"
+                   class="btn btn-nav"><i class="menu-icon cog"></i> <?php echo $this->getMessage('Settings'); ?></a>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="fm-content-wrapper">
+        <div class="fm-update-message-container"></div>
+        <div class="fm-panel">
+            <div class="fm-panel-header"><?php echo $this->getMessage('Module setup check'); ?></div>
+            <div class="fm-panel-body">
+                <ul class="fm-module-check"></ul>
+                <p class="text-right">
+                    <a class="fm-button red fm-reinstall-module" type="submit" href="#" rel="nofollow">
+                        <?php echo $this->getMessage('Reinstall module'); ?>
+                    </a>
+                </p>
+            </div>
+        </div>
+        <br class="clear" />
+        <div class="fm-content-wrapper fm-footer muted text-right">
+            <a href="<?php echo $this->getAdminPath("fyndiq/admin/check"); ?>"><?php echo $this->getMessage('Check module'); ?></a>
+            <img class="fm-update-check" style="display:none" src="<?php echo $this->getSharedPath() ?>frontend/images/update-loader.gif" />
+            <?php echo $this->getVersion(); ?>
+        </div>
+    </div>
+</div>
+
+<script>
+(function($, window, serviceURL, formKey){
+
+    var probes = <?php echo $this->getProbes(); ?>;
+
+    function setupProbe($container, probe) {
+        var $probeLine = $([
+                '<li class="fm-probe fm-probe-' + probe.action +'">',
+                '<h3>',
+                '<img class="trobber" src="<?php echo $this->getSharedPath() ?>frontend/images/update-loader.gif" /> ',
+                probe.label,
+                '</h3>',
+                '<div class="fm-probe-result"></div>',
+                '</li>'
+            ].join(''));
+        $element = $container.append($probeLine);
+        $.ajax({
+            url: serviceURL,
+            method: 'POST',
+            data: {
+                form_key: formKey,
+                action : probe.action
+            }
+        })
+            .done(function(data) {
+                var errorMessage = data;
+                if (data.hasOwnProperty('fm-service-status')) {
+                    if (data['fm-service-status'] === 'success') {
+                        $probeLine.addClass('fm-probe-success');
+                        $probeLine.find('.fm-probe-result').html(data.data);
+                        return;
+                    }
+                    errorMessage = data.message;
+                }
+                // Failure show the result
+                $probeLine.addClass('fm-probe-error');
+                $probeLine.find('.fm-probe-result').html(errorMessage);
+            })
+            .fail(function(jqXHR, textStatus) {
+                $probeLine.addClass('fm-probe-error');
+                $probeLine.find('.fm-probe-result').html(textStatus);
+            })
+            .always(function() {
+                $probeLine.find('img').remove();
+            });
+    }
+
+    $('document').ready(function() {
+
+        var $moduleCheckList = $('.fm-module-check');
+
+        probes.forEach(function(probe, i){
+            setTimeout(function() {
+                setupProbe($moduleCheckList, probe);
+            }, i * 500);
+        });
+
+        $('.fm-reinstall-module').click(function(event) {
+            event.preventDefault();
+            var resp = confirm(window.messages['Are you sure you want to reinstall the module?']);
+            if (resp === true) {
+                $.ajax({
+                    url: serviceURL,
+                    method: 'POST',
+                    data: {
+                        form_key: formKey,
+                        action : 'action_reinstall_module'
+                    }
+                })
+                    .done(function(data) {
+                        if (data.hasOwnProperty('fm-service-status') && data['fm-service-status'] === 'success') {
+                            alert(data.data);
+                            return;
+                        }
+                        alert(data.message);
+                    })
+                    .fail(function(jqXHR, textStatus) {
+                        alert(textStatus);
+                    });
+            }
+        });
+    });
+})(window.jQuery, window, window.FmPaths.service, window.FORM_KEY);
+</script>

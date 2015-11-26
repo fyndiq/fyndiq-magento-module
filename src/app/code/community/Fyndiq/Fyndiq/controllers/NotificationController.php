@@ -9,6 +9,8 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
 class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Action
 {
 
+    private $fyndiqOutput = null;
+
     public function indexAction()
     {
         FyndiqTranslation::init(Mage::app()->getLocale()->getLocaleCode());
@@ -19,7 +21,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
                 return $this->$eventName();
             }
         }
-        $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
+        return $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
     }
 
     /**
@@ -29,29 +31,49 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
      */
     function order_created()
     {
+        $storeId = $this->getRequest()->getParam('store');
+        if (FmConfig::get('import_orders_disabled', $storeId) == FmHelpers::ORDERS_DISABLED) {
+            return $this->getFyndiqOutput()->showError(403, 'Forbidden', 'Forbidden');
+        }
         $orderId = $this->getRequest()->getParam('order_id');
         $orderId = is_numeric($orderId) ? intval($orderId) : 0;
         if ($orderId > 0) {
             try {
-                $storeId = Mage::app()->getStore()->getStoreId();
-                $ret = FmHelpers::callApi($storeId, 'GET', 'orders/' . $orderId . '/');
+                // Set the area as backend so shipping method is not skipped
+                $response = FmHelpers::callApi($storeId, 'GET', 'orders/' . $orderId . '/');
+                $fyndiqOrder = $response['data'];
 
-                $fyndiqOrder = $ret['data'];
-
+                Mage::getDesign()->setArea(Mage_Core_Model_App_Area::AREA_ADMIN);
                 $orderModel = Mage::getModel('fyndiq/order');
-
                 if (!$orderModel->orderExists($fyndiqOrder->id)) {
-                    $orderModel->create($storeId, $fyndiqOrder);
+                    $reservationId = $orderModel->reserve(intval($fyndiqOrder->id));
+                    $orderModel->create($storeId, $fyndiqOrder, $reservationId);
                 }
             } catch (Exception $e) {
-                $this->getFyndiqOutput()->showError(500, 'Internal Server Error', 'Internal Server Error');
+                $orderModel->unreserve($reservationId);
+                // $inbox = Mage::getModel('Mage_AdminNotification_Model_Inbox');
+                // $inbox->addMinor(
+                //     sprintf('Fyndiq Order %s could not be imported', $orderId),
+                //     $e->getMessage()
+                // );
+                return $this->getFyndiqOutput()->showError(500, 'Internal Server Error', $e->getMessage());
             }
-
-            return true;
+            return $this->getFyndiqOutput()->output('OK');
         }
-        $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
+        return $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
     }
 
+    protected function isPingLocked($storeId)
+    {
+        $lastPing = FmConfig::get('ping_time', $storeId);
+        return $lastPing && $lastPing > strtotime('15 minutes ago');
+    }
+
+    protected function isCorrectToken($token, $storeId)
+    {
+        $pingToken = FmConfig::get('ping_token', $storeId);
+        return !(is_null($token) || $token != $pingToken);
+    }
 
     /**
      * Generate feed
@@ -60,23 +82,14 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
     private function ping()
     {
         $storeId = $this->getRequest()->getParam('store');
-        $pingToken = unserialize(FmConfig::get('ping_token', $storeId));
-
-        $token = $this->getRequest()->getParam('token');
-        if (is_null($token) || $token != $pingToken) {
-            $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
+        if (!$this->isCorrectToken($this->getRequest()->getParam('token'), $storeId)) {
+            return $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
         }
 
         $this->getFyndiqOutput()->flushHeader('OK');
-
-        $locked = false;
-        $lastPing = FmConfig::get('ping_time', $storeId);
-        $lastPing = $lastPing ? unserialize($lastPing) : false;
-        if ($lastPing && $lastPing > strtotime('15 minutes ago')) {
-            $locked = true;
-        }
-        if (!$locked) {
-            FmConfig::set('ping_time', time());
+        if (!$this->isPingLocked($storeId)) {
+            FmConfig::set('ping_time', time(), $storeId);
+            FmConfig::reInit();
             $this->pingObserver($storeId);
             $this->updateProductInfo($storeId);
         }
@@ -86,11 +99,8 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
     {
         $storeId = Mage::app()->getRequest()->getParam('store');
 
-        $pingToken = unserialize(FmConfig::get('ping_token', $storeId));
-        $token = $this->getRequest()->getParam('token');
-
-        if (is_null($token) || $token != $pingToken) {
-            $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
+        if (!$this->isCorrectToken($this->getRequest()->getParam('token'), $storeId)) {
+            return $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
         }
 
         FyndiqUtils::debugStart();

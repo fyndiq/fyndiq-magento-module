@@ -10,8 +10,6 @@
 class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
 {
 
-    private $allowedCurrencies = array('SEK', 'EUR');
-
     protected function _construct()
     {
         require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
@@ -25,10 +23,8 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
     public function indexAction()
     {
         $this->loadLayout(array('default'));
-
         return $this->setTemplate('fyndiq/exportproducts.phtml');
     }
-
 
     /**
      * Show order list
@@ -36,14 +32,25 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
     public function orderlistAction()
     {
         $this->loadLayout(array('default'));
-
         return $this->setTemplate('fyndiq/orderlist.phtml');
     }
 
-    function setTemplate($template)
+    public function checkAction()
+    {
+        $this->loadLayout(array('default'));
+        // We skip all checks for check
+        return $this->setupTemplate('fyndiq/check.phtml');
+    }
+
+
+    protected function setTemplate($template)
     {
         $isAuthorized = true;
         $message = '';
+        if ($this->getAPIToken() == '' || $this->getUsername() == '') {
+            $this->setupTemplate('fyndiq/needapiinfo.phtml');
+            return false;
+        }
         try {
             $storeId = $this->getRequest()->getParam('store');
             $this->callAPI($storeId);
@@ -58,28 +65,31 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
 
             return false;
         }
-        if ($this->getAPIToken() == '' || $this->getUsername() == '') {
-            $this->setupTemplate('fyndiq/needapiinfo.phtml');
-
-            return false;
-        }
         $currency = Mage::app()->getStore()->getCurrentCurrencyCode();
-        if (!in_array($currency, $this->allowedCurrencies)) {
+        if (!in_array($currency, FyndiqUtils::$allowedCurrencies)) {
             $this->setupTemplate('fyndiq/currencyerror.phtml');
 
             return false;
         }
-
         return $this->setupTemplate($template);
 
     }
 
-    function disconnectAction()
+    public function disconnectAction()
     {
-        $config = new Mage_Core_Model_Config();
-        $config->saveConfig('fyndiq/fyndiq_group/apikey', "", 'default', "");
-        $config->saveConfig('fyndiq/fyndiq_group/username', "", 'default', "");
-        $this->_redirect("fyndiq/admin/index");
+        $observer = new Fyndiq_Fyndiq_Model_Observer();
+        $storeId = $observer->getStoreId();
+        $data = array(
+            FyndiqUtils::NAME_PRODUCT_FEED_URL => '',
+            FyndiqUtils::NAME_PING_URL => '',
+            FyndiqUtils::NAME_NOTIFICATION_URL => '',
+        );
+        if (FmHelpers::callApi($storeId, 'PATCH', 'settings/', $data)) {
+            FmConfig::set('username', '', $storeId, false);
+            FmConfig::set('apikey', '', $storeId, false);
+            FmConfig::reInit();
+        }
+        $this->_redirect('fyndiq/admin/index');
     }
 
     /**
@@ -88,7 +98,7 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
      * @param $template
      * @param null $data
      */
-    private function setupTemplate($template, $data = null)
+    protected function setupTemplate($template, $data = null)
     {
         $block = $this->getLayout()
             ->createBlock('Fyndiq_Fyndiq_Block_Admin', 'fyndiq.admin')
@@ -122,5 +132,10 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
     public function getAPIToken()
     {
         return FmConfig::get('apikey', $this->getRequest()->getParam('store'));
+    }
+
+    protected function _isAllowed()
+    {
+        return Mage::getSingleton('admin/session')->isAllowed('system/fyndiq');
     }
 }

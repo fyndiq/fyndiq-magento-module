@@ -16,10 +16,43 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
 class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 {
     const ALL_PRODUCTS_CATEGORY_ID = -1;
+
+
+    public function preDispatch()
+    {
+        Mage::getSingleton('core/session', array('name'=>'adminhtml'));
+        if (!Mage::getSingleton('admin/session')->isLoggedIn()) {
+            $this->redirect($this->getUrl('adminhtml/index/login'));
+            // Magento calls preDispatch twice and breaks the json, because of that die();
+            die();
+        }
+        parent::preDispatch();
+    }
+
     protected function _construct()
     {
+        parent::_construct();
         $this->observer = Mage::getModel('fyndiq/observer');
         FyndiqTranslation::init(Mage::app()->getLocale()->getLocaleCode());
+    }
+
+    /**
+     * Structure the response back to the client
+     *
+     * @param string $data
+     */
+    public function redirect($url = '')
+    {
+        $response = array(
+            'fm-service-status' => 'redirect',
+            'data' => $url
+        );
+        $json = json_encode($response);
+        $response = $this->getResponse();
+        $response->clearHeaders()->setHeader('Content-type', 'application/json', true);
+        $response->setBody($json);
+        $response->sendResponse();
+        return true;
     }
 
     /**
@@ -42,6 +75,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         }
         $this->getResponse()->clearHeaders()->setHeader('Content-type', 'application/json', true);
         $this->getResponse()->setBody($json);
+        return true;
     }
 
 
@@ -61,6 +95,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $json = json_encode($response);
         $this->getResponse()->clearHeaders()->setHeader('Content-type', 'application/json', true);
         $this->getResponse()->setBody($json);
+        return true;
     }
 
     /**
@@ -74,8 +109,9 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
         # call static function on self with name of the value provided in $action
         if (method_exists($this, $action)) {
-            $this->$action($args);
+            return $this->$action($args);
         }
+        return $this->responseError('Method not found', sprintf('Method `%s` not found.', $action));
     }
 
     /**
@@ -85,9 +121,16 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     public function get_categories($args)
     {
-        $storeId = $this->observer->getStoreId();
-        $categories = FmCategory::getSubCategories(intval($args['category_id']), $storeId);
-        $this->response($categories);
+        try {
+            $storeId = $this->observer->getStoreId();
+            $categories = FmCategory::getSubCategories(intval($args['category_id']), $storeId);
+            return $this->response($categories);
+        } catch (Exception $e) {
+            return $this->responseError(
+                FyndiqTranslation::get('unhandled-error-title'),
+                FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')'
+            );
+        }
     }
 
     private function getProductQty($product)
@@ -128,6 +171,7 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $products->load();
         $products = $products->getItems();
         $fyndiqPercentage = FmConfig::get('price_percentage', $this->getRequest()->getParam('store'));
+        $directoryCurrency = Mage::getModel('directory/currency');
 
         // get all the products
         foreach ($products as $prod) {
@@ -138,7 +182,8 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             if ($prod->getTypeId() == 'simple') {
                 //Get parent
                 $parentIds = $groupedModel->getParentIdsByChild($prod->getId());
-                if (!$parentIds) { //Couldn't get parent, try configurable model instead
+                if (!$parentIds) {
+                    //Couldn't get parent, try configurable model instead
                     $parentIds = $configurableModel->getParentIdsByChild($prod->getId());
                 }
                 // set parent id if exist
@@ -180,21 +225,30 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
             //title length checks
             $name = $prod->getName();
-            $name_short = "";
+            $name_short = '';
             if (FyndiqFeedWriter::isColumnTooLong("product-title", $name)) {
                 $name_short = FyndiqFeedWriter::sanitizeColumn("product-title", $name);
             }
 
-            $magPrice = FmHelpers::getProductPrice($prod);
+            $magPrice = $this->observer->getProductPrice($prod);
             $producturl = Mage::helper('adminhtml')->getUrl('adminhtml/catalog_product/edit', array('id' => $prod->getId()));
+            $taxRate = $this->getTaxRate($prod, $storeId);
+            $fyndiqPercentage = $fyndiq ? $fyndiqData['exported_price_percentage'] : $fyndiqPercentage;
+
+            //trying to get image, if not image will be false
+            $image = false;
+            try {
+                $image = $prod->getImageUrl();
+            } catch (Exception $e) {
+            }
+
             $prodData = array(
                 'id' => $prod->getId(),
                 'url' => $prod->getUrl(),
                 'name' => $name,
                 'name_short' => $name_short,
                 'quantity' => intval($this->getProductQty($prod)),
-                //'price' => number_format((float)$magPrice, 2, '.', ''),
-                'price' => $magPrice,
+                'price' => $directoryCurrency->formatTxt($magPrice, array('display' => Zend_Currency::NO_SYMBOL)),
                 'fyndiq_percentage' => $fyndiqPercentage,
                 'fyndiq_exported' => $fyndiq,
                 'fyndiq_state' => $fyndiqState,
@@ -207,29 +261,14 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 'fyndiq_check_on' => ($fyndiq && $fyndiqState == 'FOR_SALE'),
                 'currency' => $currency,
                 'fyndiq_check_pending' => ($fyndiq && $fyndiqState === null),
-                'vat_percent_zero' => ($this->getTaxRate($prod, $storeId) == 0),
-                'vat_percent_not_zero' => ($this->getTaxRate($prod, $storeId) > 0)
+                'vat_percent_zero' => ($taxRate == 0),
+                'image' => $image,
             );
 
-            //trying to get image, if not image will be false
-            try {
-                $prodData['image'] = $prod->getImageUrl();
-            } catch (Exception $e) {
-                $prodData['image'] = false;
-            }
-
-            // If added to fyndiq export table, get the settings from that table
-            if ($fyndiq) {
-                $prodData['fyndiq_percentage'] = $fyndiqData['exported_price_percentage'];
-                $prodData['$fyndiqState'] = $fyndiqData['state'];
-            }
-
             //Count expected price to Fyndiq
-            $prodData['expected_price'] = number_format(
-                FyndiqUtils::getFyndiqPrice($prodData['price'], $prodData['fyndiq_percentage']),
-                2,
-                '.',
-                ''
+            $prodData['expected_price'] = $directoryCurrency->formatTxt(
+                FyndiqUtils::getFyndiqPrice($magPrice, $prodData['fyndiq_percentage']),
+                array('display' => Zend_Currency::NO_SYMBOL)
             );
 
             $data[] = $prodData;
@@ -264,40 +303,54 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     public function get_products($args)
     {
-        $page = (isset($args['page']) && is_numeric($args['page']) && $args['page'] != -1) ? intval($args['page']) : 1;
-        $response = array(
-            'products' => array(),
-            'pagination' => ''
-        );
-        if (!empty($args['category'])) {
-            $category = null;
-            if (intval($args['category']) != self::ALL_PRODUCTS_CATEGORY_ID) {
-                $category = Mage::getModel('catalog/category')->load($args['category']);
+        try {
+            $page = (isset($args['page']) && is_numeric($args['page']) && $args['page'] != -1) ? intval($args['page']) : 1;
+            $response = array(
+                'products' => array(),
+                'pagination' => ''
+            );
+            if (!empty($args['category'])) {
+                $category = null;
+                if (intval($args['category']) != self::ALL_PRODUCTS_CATEGORY_ID) {
+                    $category = Mage::getModel('catalog/category')->load($args['category']);
+                }
+                $storeId = $this->observer->getStoreId();
+                $total = $this->getTotalProducts($storeId, $category);
+                $response['products'] = $this->getAllProducts($storeId, $category, $page);
+                $response['pagination'] = FyndiqUtils::getPaginationHTML(
+                    $total,
+                    $page,
+                    FyndiqUtils::PAGINATION_ITEMS_PER_PAGE,
+                    FyndiqUtils::PAGINATION_PAGE_FRAME
+                );
             }
-            $storeId = $this->observer->getStoreId();
-            $total = $this->getTotalProducts($storeId, $category);
-            $response['products'] = $this->getAllProducts($storeId, $category, $page);
-            $response['pagination'] = FyndiqUtils::getPaginationHTML(
-                $total,
-                $page,
-                FyndiqUtils::PAGINATION_ITEMS_PER_PAGE,
-                FyndiqUtils::PAGINATION_PAGE_FRAME
+            return $this->response($response);
+        } catch (Exception $e) {
+            return $this->responseError(
+                FyndiqTranslation::get('unhandled-error-title'),
+                FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')'
             );
         }
-        $this->response($response);
     }
 
 
     public function update_product($args)
     {
-        $productModel = Mage::getModel('fyndiq/product');
-        $status = $productModel->updateProduct(
-            $args['product'],
-            array(
-                'exported_price_percentage' => $args['percentage']
-            )
-        );
-        $this->response($status);
+        try {
+            $productModel = Mage::getModel('fyndiq/product');
+            $status = $productModel->updateProduct(
+                $args['product'],
+                array(
+                    'exported_price_percentage' => $args['percentage'],
+                )
+            );
+            return $this->response($status);
+        } catch (Exception $e) {
+            return $this->responseError(
+                FyndiqTranslation::get('unhandled-error-title'),
+                FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')'
+            );
+        }
     }
 
     /**
@@ -307,40 +360,55 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     public function export_products($args)
     {
-        // Getting all data
-        $productModel = Mage::getModel('fyndiq/product');
-        $result = array();
-        foreach ($args['products'] as $v) {
-            $product = $v['product'];
-            $fyndiqPercentage = $product['fyndiq_percentage'];
-            $fyndiqPercentage = $fyndiqPercentage > 100 ? 100 : $fyndiqPercentage;
-            $fyndiqPercentage = $fyndiqPercentage < 0 ? 0 : $fyndiqPercentage;
-            $data = array(
-                'exported_price_percentage' => $fyndiqPercentage
-            );
+        try {
+            // Getting all data
+            $productModel = Mage::getModel('fyndiq/product');
+            $result = array();
+            $storeId = $this->observer->getStoreId();
+            foreach ($args['products'] as $v) {
+                $product = $v['product'];
+                $fyndiqPercentage = $product['fyndiq_percentage'];
+                $fyndiqPercentage = $fyndiqPercentage > 100 ? 100 : $fyndiqPercentage;
+                $fyndiqPercentage = $fyndiqPercentage < 0 ? 0 : $fyndiqPercentage;
+                $data = array(
+                    'exported_price_percentage' => $fyndiqPercentage,
+                    'store_id' => $storeId,
+                );
 
-            if ($productModel->getProductExportData($product['id']) != false) {
-                $result[] = $productModel->updateProduct($product['id'], $data);
-                continue;
+                if ($productModel->getProductExportData($product['id']) != false) {
+                    $result[] = $productModel->updateProduct($product['id'], $data);
+                    continue;
+                }
+                $data['product_id'] = $product['id'];
+                $result[] = $productModel->addProduct($data);
             }
-            $data['product_id'] = $product['id'];
-            $result[] = $productModel->addProduct($data);
+            return $this->response($result);
+        } catch (Exception $e) {
+            return $this->responseError(
+                FyndiqTranslation::get('unhandled-error-title'),
+                FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')'
+            );
         }
-
-        return $this->response($result);
     }
 
     public function delete_exported_products($args)
     {
-        foreach ($args['products'] as $v) {
-            $product = $v['product'];
-            $productModel = Mage::getModel('fyndiq/product')->getCollection()->addFieldToFilter(
-                'product_id',
-                $product['id']
-            )->getFirstItem();
-            $productModel->delete();
+        try {
+            foreach ($args['products'] as $v) {
+                $product = $v['product'];
+                $productModel = Mage::getModel('fyndiq/product')->getCollection()->addFieldToFilter(
+                    'product_id',
+                    $product['id']
+                )->getFirstItem();
+                $productModel->delete();
+            }
+            return $this->response();
+        } catch (Exception $e) {
+            return $this->responseError(
+                FyndiqTranslation::get('unhandled-error-title'),
+                FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')'
+            );
         }
-        $this->response();
     }
 
     /**
@@ -350,25 +418,32 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     public function load_orders($args)
     {
-        $total = 0;
-        $collection = Mage::getModel('fyndiq/order')->getCollection();
-        if ($collection != 'null') {
-            $total = $collection->count();
-        }
-        $page = (isset($args['page']) && is_numeric($args['page']) && $args['page'] != -1) ? intval($args['page']) : 1;
+        try {
+            $total = 0;
+            $collection = Mage::getModel('fyndiq/order')->getCollection();
+            if ($collection != 'null') {
+                $total = $collection->count();
+            }
+            $page = (isset($args['page']) && is_numeric($args['page']) && $args['page'] != -1) ? intval($args['page']) : 1;
 
-        $object = new stdClass();
-        $object->orders = Mage::getModel('fyndiq/order')->getImportedOrders(
-            $page,
-            FyndiqUtils::PAGINATION_ITEMS_PER_PAGE
-        );
-        $object->pagination = FyndiqUtils::getPaginationHTML(
-            $total,
-            $page,
-            FyndiqUtils::PAGINATION_ITEMS_PER_PAGE,
-            FyndiqUtils::PAGINATION_PAGE_FRAME
-        );
-        $this->response($object);
+            $object = new stdClass();
+            $object->orders = Mage::getModel('fyndiq/order')->getImportedOrders(
+                $page,
+                FyndiqUtils::PAGINATION_ITEMS_PER_PAGE
+            );
+            $object->pagination = FyndiqUtils::getPaginationHTML(
+                $total,
+                $page,
+                FyndiqUtils::PAGINATION_ITEMS_PER_PAGE,
+                FyndiqUtils::PAGINATION_PAGE_FRAME
+            );
+            return $this->response($object);
+        } catch (Exception $e) {
+            return $this->responseError(
+                FyndiqTranslation::get('unhandled-error-title'),
+                FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')'
+            );
+        }
     }
 
     /**
@@ -378,14 +453,17 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
      */
     public function import_orders()
     {
-        $storeId = $this->observer->getStoreId();
         try {
+            $storeId = $this->observer->getStoreId();
+            if (FmConfig::get('import_orders_disabled', $storeId) == FmHelpers::ORDERS_DISABLED) {
+                throw new Exception('Orders are disabled');
+            }
             $newTime = time();
             $this->observer->importOrdersForStore($storeId, $newTime);
             $time = date('G:i:s', $newTime);
-            self::response($time);
+            return $this->response($time);
         } catch (Exception $e) {
-            self::responseError(
+            return $this->responseError(
                 FyndiqTranslation::get('unhandled-error-title'),
                 FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')'
             );
@@ -429,9 +507,9 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 die();
             }
 
-            $this->response(true);
+            return $this->response(true);
         } catch (Exception $e) {
-            $this->responseError(
+            return $this->responseError(
                 FyndiqTranslation::get('unhandled-error-title'),
                 FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')'
             );
@@ -440,34 +518,43 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
 
     public function disconnect_account()
     {
-        $config = new Mage_Core_Model_Config();
-        $config->saveConfig('fyndiq/fyndiq_group/apikey', '', 'default', '');
-        $config->saveConfig('fyndiq/fyndiq_group/username', '', 'default', '');
-        $this->response(true);
+        try {
+            $config = new Mage_Core_Model_Config();
+            $config->saveConfig('fyndiq/fyndiq_group/apikey', '', 'default', '');
+            $config->saveConfig('fyndiq/fyndiq_group/username', '', 'default', '');
+            return $this->response(true);
+        } catch (Exception $e) {
+            return $this->responseError(
+                FyndiqTranslation::get('unhandled-error-title'),
+                FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')'
+            );
+        }
     }
 
     public function update_order_status($args)
     {
-        if (isset($args['orders']) && is_array($args['orders'])) {
-            $success = true;
-            $newStatusId = FmConfig::get('done_state', $this->getRequest()->getParam('store'));
-            $orderModel = Mage::getModel('fyndiq/order');
-            foreach ($args['orders'] as $orderId) {
-                if (is_numeric($orderId)) {
-                    $success &= $orderModel->updateOrderStatuses($orderId, $newStatusId);
+        try {
+            if (isset($args['orders']) && is_array($args['orders'])) {
+                $success = true;
+                $newStatusId = FmConfig::get('done_state', $this->getRequest()->getParam('store'));
+                $orderModel = Mage::getModel('fyndiq/order');
+                foreach ($args['orders'] as $orderId) {
+                    if (is_numeric($orderId)) {
+                        $success &= $orderModel->updateOrderStatuses($orderId, $newStatusId);
+                    }
+                }
+                if ($success) {
+                    $status = $orderModel->getStatusName($newStatusId);
+                    return $this->response($status);
                 }
             }
-            if ($success) {
-                $status = $orderModel->getStatusName($newStatusId);
-                $this->response($status);
-
-                return;
-            }
+        } catch (Exception $e) {
+            return $this->responseError(
+                FyndiqTranslation::get('unhandled-error-title'),
+                FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')'
+            );
         }
-        self::responseError(
-            FyndiqTranslation::get('unhandled-error-title'),
-            FyndiqTranslation::get('unhandled-error-message')
-        );
+
     }
 
     public function update_product_status()
@@ -476,9 +563,9 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
             $storeId = $this->observer->getStoreId();
             $pi = new FmProductInfo($storeId);
             $result = $pi->getAll();
-            $this->response($result);
+            return $this->response($result);
         } catch (Exception $e) {
-            $this->responseError(
+            return $this->responseError(
                 FyndiqTranslation::get('unhandled-error-title'),
                 FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')'
             );
@@ -492,5 +579,168 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         $store = Mage::app()->getStore($storeId);
         $request = $taxCalculationModel->getRateRequest(null, null, null, $store);
         return $taxCalculationModel->getRate($request->setProductClassId($taxClassId));
+    }
+
+
+    protected function probe_file_permissions()
+    {
+        $messages = array();
+        $storeId = $this->observer->getStoreId();
+        $testMessage = time();
+        try {
+            $fileName = FmConfig::getFeedPath($storeId);
+            $exists =  file_exists($fileName) ?
+                FyndiqTranslation::get('exists') :
+                FyndiqTranslation::get('does not exist');
+            $messages[] = sprintf(FyndiqTranslation::get('Feed file name: `%s` (%s)'), $fileName, $exists);
+            $tempFileName = FyndiqUtils::getTempFilename(dirname($fileName));
+            if (dirname($tempFileName) !== dirname($fileName)) {
+                throw new Exception(sprintf(
+                    FyndiqTranslation::get('Cannot create file. Please make sure that the server can create new files in `%s`'),
+                    dirname($fileName)
+                ));
+            }
+            $messages[] = sprintf(FyndiqTranslation::get('Trying to create temporary file: `%s`'), $tempFileName);
+            $file = fopen($tempFileName, 'w+');
+            if (!$file) {
+                throw new Exception(sprintf(FyndiqTranslation::get('Cannot create file: `%s`'), $tempFileName));
+            }
+            fwrite($file, $testMessage);
+            fclose($file);
+            $content = file_get_contents($tempFileName);
+            if ($testMessage == file_get_contents($tempFileName)) {
+                $messages[] = sprintf(FyndiqTranslation::get('File `%s` successfully read.'), $tempFileName);
+            }
+            FyndiqUtils::deleteFile($tempFileName);
+            $messages[] = sprintf(FyndiqTranslation::get('Successfully deleted temp file `%s`'), $tempFileName);
+            return $this->response(implode('<br />', $messages));
+        } catch (Exception $e) {
+            $messages[] = $e->getMessage();
+            return $this->responseError(
+                '',
+                implode('<br />', $messages)
+            );
+        }
+    }
+
+    protected function probe_database()
+    {
+        $messages = array();
+        try {
+            $tables = array(
+                'fyndiq/product',
+                'fyndiq/order',
+                'fyndiq/setting',
+            );
+
+            $missing = array();
+
+            $coreResource = Mage::getSingleton('core/resource');
+            foreach ($tables as $table) {
+                $tableName = $coreResource->getTableName($table);
+                $exists = (boolean) $coreResource->getConnection('core_write')
+                    ->showTableStatus($tableName);
+                if (!$exists) {
+                    $missing[] = $tableName;
+                    continue;
+                }
+                $messages[] = sprintf(FyndiqTranslation::get('Table `%s` is present.'), $tableName);
+            }
+
+            if ($missing) {
+                throw new Exception(sprintf(
+                    FyndiqTranslation::get('Required tables `%s` are missing.'),
+                    implode(', ', $missing)
+                ));
+            }
+            return $this->response(implode('<br />', $messages));
+        } catch (Exception $e) {
+            $messages[] = $e->getMessage();
+            return $this->responseError(
+                '',
+                implode('<br />', $messages)
+            );
+        }
+    }
+
+    protected function probe_module_integrity()
+    {
+        $messages = array();
+        $missing = array();
+        $checkClasses = array(
+            'FyndiqAPI',
+            'FyndiqAPICall',
+            'FyndiqCSVFeedWriter',
+            'FyndiqFeedWriter',
+            'FyndiqOutput',
+            'FyndiqPaginatedFetch',
+            'FyndiqTranslation',
+            'FyndiqUtils',
+        );
+        try {
+            foreach ($checkClasses as $className) {
+                if (class_exists($className)) {
+                    $messages[] = sprintf(FyndiqTranslation::get('Class `%s` is found.'), $className);
+                    continue;
+                }
+                $messages[] = sprintf(FyndiqTranslation::get('Class `%s` is NOT found.'), $className);
+            }
+            if ($missing) {
+                throw new Exception(sprintf(
+                    FyndiqTranslation::get('Required classes `%s` are missing.', implode(',', $missing))
+                ));
+            }
+            return $this->response(implode('<br />', $messages));
+        } catch (Exception $e) {
+            $messages[] = $e->getMessage();
+            return $this->responseError(
+                '',
+                implode('<br />', $messages)
+            );
+        }
+    }
+
+    protected function probe_connection()
+    {
+        $messages = array();
+        try {
+            try {
+                $storeId = $this->observer->getStoreId();
+                FmHelpers::callApi($storeId, 'GET', 'settings/');
+            } catch (Exception $e) {
+                if ($e instanceof FyndiqAPIAuthorizationFailed) {
+                    throw new Exception(FyndiqTranslation::get('Module is not authorized.'));
+                }
+            }
+            $messages[] = FyndiqTranslation::get('Connection to Fyndiq successfully tested');
+            return $this->response(implode('<br />', $messages));
+        } catch (Exception $e) {
+            $messages[] = $e->getMessage();
+            return $this->responseError(
+                '',
+                implode('<br />', $messages)
+            );
+        }
+    }
+
+    protected function action_reinstall_module()
+    {
+        $moduleName = 'fyndiqmodule_setup';
+        $sql = 'DELETE FROM core_resource WHERE code = "' . $moduleName . '";';
+        $connection = Mage::getSingleton('core/resource')->getConnection('core_write');
+        try {
+            $connection->query($sql);
+            return $this->response(FyndiqTranslation::get('Please flush the Magento Cache on System -> Cache management to reinstall the module'));
+        } catch (Exception $e) {
+            return$this->responseError(
+                '',
+                $e->getMessage()
+            );
+        }
+    }
+
+    protected function _isAllowed()
+    {
+        return Mage::getSingleton('admin/session')->isAllowed('system/fyndiq');
     }
 }

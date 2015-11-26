@@ -1,25 +1,4 @@
-@import '../../shared/frontend/css/const';
-@import '../../shared/frontend/css/colors';
-@import '../../shared/frontend/css/typography';
-@import '../../shared/frontend/css/mixins';
-@import '../../shared/frontend/css/helpers';
-
-// Layouts
-@import '../../shared/frontend/css/header';
-
-// Components
-@import '../../shared/frontend/css/button';
-@import '../../shared/frontend/css/panel';
-@import '../../shared/frontend/css/form';
-@import '../../shared/frontend/css/table';
-@import '../../shared/frontend/css/overlay';
-@import '../../shared/frontend/css/pagination';
-
-// Pages
-@import '../../shared/frontend/css/products';
-@import '../../shared/frontend/css/orders';
-
-@import '../../shared/frontend/css/layout';
+@import '../../shared/frontend/css/main';
 
 // Magento
 @import 'magento';

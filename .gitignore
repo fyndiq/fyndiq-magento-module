@@ -2,12 +2,13 @@
 .sass-cache
 *.csv
 main.css.map
-docs/*
 build/*
 build
+docs/*
 /coverage/
 /vendor
 composer.lock
 *.sublime-project
 *.sublime-workspace
 .vagrant/
+assets/*

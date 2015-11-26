@@ -1,6 +1,9 @@
 .text-right {
   text-align: right; }
 
+.text-left {
+  text-align: left; }
+
 .text-center,
 .center {
   text-align: center; }
@@ -364,6 +367,19 @@
 .fm-orders-list a {
   color: #f08c48;
   text-decoration: underline; }
+
+.fm-module-check {
+  list-style: none; }
+
+.fm-probe-result {
+  margin: 0 0 1em 3em;
+  padding: 1em; }
+
+.fm-probe-error .fm-probe-result {
+  background: rgba(255, 0, 0, 0.1); }
+
+.fm-probe-success .fm-probe-result {
+  background: rgba(0, 255, 0, 0.1); }
 
 .fm-container {
   background-color: #e7eef4;

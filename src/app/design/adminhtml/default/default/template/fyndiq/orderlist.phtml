@@ -12,8 +12,10 @@
             <div class="navbar-right">
                 <a href="<?php echo $this->getAdminPath("fyndiq/admin/index"); ?>" class="btn btn-nav"><i
                         class="menu-icon comp"></i> <?php echo $this->getMessage('Export Products'); ?></a>
-                <a href="<?php echo $this->getAdminPath("fyndiq/admin/orderlist"); ?>" class="btn btn-nav active"><i
+                <?php if ($this->ordersEnabled($this->getRequest()->getParam('store'))): ?>
+                <a href="<?php echo $this->getAdminPath("fyndiq/admin/orderlist"); ?>" class="btn btn-nav"><i
                         class="menu-icon boxes"></i> <?php echo $this->getMessage('Imported Orders'); ?></a>
+                <?php endif; ?>
                 <a href="<?php echo $this->getAdminPath("adminhtml/system_config/edit/section/fyndiq"); ?>"
                    class="btn btn-nav"><i class="menu-icon cog"></i> <?php echo $this->getMessage('Settings'); ?></a>
             </div>
@@ -82,6 +84,7 @@
         </div>
         <br class="clear" />
         <div class="fm-content-wrapper fm-footer muted text-right">
+            <a href="<?php echo $this->getAdminPath("fyndiq/admin/check"); ?>"><?php echo $this->getMessage('Check module'); ?></a>
             <img class="fm-update-check" style="display:none" src="<?php echo $this->getSharedPath() ?>frontend/images/update-loader.gif" />
             <?php echo $this->getVersion(); ?>
         </div>

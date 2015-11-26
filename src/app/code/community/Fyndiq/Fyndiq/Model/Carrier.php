@@ -2,7 +2,9 @@
 
 class Fyndiq_Fyndiq_Model_Carrier extends Mage_Shipping_Model_Carrier_Abstract implements Mage_Shipping_Model_Carrier_Interface
 {
-    protected $_code = 'fyndiq';
+    const METHOD_TITLE = 'Standard';
+
+    protected $_code = 'fyndiq_fyndiq';
 
     /**
      * Get rates of the shipping method
@@ -37,8 +39,8 @@ class Fyndiq_Fyndiq_Model_Carrier extends Mage_Shipping_Model_Carrier_Abstract i
          */
         $rate->setCarrierTitle($this->getConfigData('title'));
 
-        $rate->setMethod('fyndiq');
-        $rate->setMethodTitle('fyndiq');
+        $rate->setMethod('standard');
+        $rate->setMethodTitle(self::METHOD_TITLE);
 
         $rate->setPrice(0);
         $rate->setCost(0);
@@ -54,7 +56,7 @@ class Fyndiq_Fyndiq_Model_Carrier extends Mage_Shipping_Model_Carrier_Abstract i
     public function getAllowedMethods()
     {
         return array(
-            'standard' => 'Standard',
+            'standard' => self::METHOD_TITLE,
         );
     }
 }
