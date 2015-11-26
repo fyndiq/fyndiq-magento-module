@@ -155,9 +155,10 @@ class Fyndiq_Fyndiq_Model_Observer
             ->addAttributeToFilter(
                 'fyndiq_exported',
                 array('eq' => "Exported")
-            )->getAllIds();
+            )->setOrder('id', 'DESC')
+            ->load();
 
-        FyndiqUtils::debug('$idsToExport', $idsToExport);
+        FyndiqUtils::debug('$idsToExport', $products);
 
         $productInfo = array();
         foreach ($products->getData() as $productData) {
