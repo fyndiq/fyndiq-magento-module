@@ -365,27 +365,19 @@ class Fyndiq_Fyndiq_Model_Observer
 
 
     // Add Tax to the price if required
-    protected function includeTax($objProduct, $price)
+    protected function includeTax($product, $price)
     {
         if (!Mage::helper('tax')->priceIncludesTax()) {
-            return Mage::helper('tax')->getPrice($objProduct, $price);
+            return Mage::helper('tax')->getPrice($product, $price);
         }
         return $price;
     }
 
-    public function getProductPrice($objProduct)
+    public function getProductPrice($product)
     {
-        $price = $objProduct->getFinalPrice();
-
-        $catalogRulePrice = Mage::getModel('catalogrule/rule')
-            ->calcProductPriceRule($objProduct, $price);
-        if ($catalogRulePrice) {
-            $price = $catalogRulePrice;
-        }
-
-        return $this->includeTax($objProduct, $price);
+        $price = $product->getFinalPrice();
+        return $this->includeTax($product, $price);
     }
-
 
     /**
      * Get product information
