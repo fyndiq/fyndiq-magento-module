@@ -95,4 +95,23 @@ foreach($productCollection as $product)
             ->saveAttribute($product, $attrCode);
 }
 
+// Add fyndiq_order_id
+
+$installer2->addAttribute(
+    'order',
+    'fyndiq_order_id',
+    array(
+        'type'          => 'int',
+        'label'         => 'Fyndiq Order ID',
+        'required'      => false,
+        'global'        => Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_STORE,
+        'searchable'    => true,
+        'filterable'    => true,
+        'comparable'    => true,
+        'is_visible'    => 1,
+        'visible'       => true,
+        'default'       => null,
+    )
+);
+
 $installer2->endSetup();

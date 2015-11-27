@@ -149,4 +149,11 @@
             </fyndiq_fyndiq>
         </payment>
     </default>
+    <fieldsets>
+        <sales_convert_quote>
+            <fyndiq_order_id>
+                <to_order>*</to_order>
+            </fyndiq_order_id>
+        </sales_convert_quote>
+    </fieldsets>
 </config>
