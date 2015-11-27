@@ -337,8 +337,10 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
     public function update_product($args)
     {
         try {
+            $storeId = $this->observer->getStoreId();
             $productModel = Mage::getModel('fyndiq/product');
             $status = $productModel->updateProduct(
+                $storeId,
                 $args['product'],
                 array(
                     'exported_price_percentage' => $args['percentage'],
@@ -376,10 +378,11 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
                 );
 
                 if ($productModel->getProductExportData($product['id']) != false) {
-                    $result[] = $productModel->updateProduct($product['id'], $data);
+                    $result[] = $productModel->updateProduct($storeId, $product['id'], $data);
                     continue;
                 }
                 $data['product_id'] = $product['id'];
+                $data['store_id'] = $storeId;
                 $result[] = $productModel->addProduct($data);
             }
             return $this->response($result);
