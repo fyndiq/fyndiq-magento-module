@@ -65,6 +65,13 @@
                 </observers>
             </admin_system_config_changed_section_fyndiq>
         </events>
+        <fieldsets>
+            <sales_convert_quote>
+                <fyndiq_order_id>
+                    <to_order>*</to_order>
+                </fyndiq_order_id>
+            </sales_convert_quote>
+        </fieldsets>
     </global>
     <admin>
         <routers>
@@ -149,11 +156,4 @@
             </fyndiq_fyndiq>
         </payment>
     </default>
-    <fieldsets>
-        <sales_convert_quote>
-            <fyndiq_order_id>
-                <to_order>*</to_order>
-            </fyndiq_order_id>
-        </sales_convert_quote>
-    </fieldsets>
 </config>

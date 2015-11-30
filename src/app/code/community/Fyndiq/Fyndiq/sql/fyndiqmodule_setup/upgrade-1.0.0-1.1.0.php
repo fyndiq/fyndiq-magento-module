@@ -95,10 +95,17 @@ foreach($productCollection as $product)
             ->saveAttribute($product, $attrCode);
 }
 
-// Add fyndiq_order_id
+$installer2->endSetup();
 
-$installer2->addAttribute(
-    'order',
+
+// Add fyndiq_order_id
+require_once('app/Mage.php');
+Mage::app()->setCurrentStore(Mage::getModel('core/store')->load(Mage_Core_Model_App::ADMIN_STORE_ID));
+
+$installerOrder = new Mage_Sales_Model_Mysql4_Setup;
+$installerOrder->startSetup();
+$installerOrder->addAttribute(
+    Mage_Sales_Model_Order::ENTITY,
     'fyndiq_order_id',
     array(
         'type'          => 'int',
@@ -114,4 +121,4 @@ $installer2->addAttribute(
     )
 );
 
-$installer2->endSetup();
+$installerOrder->endSetup();
