@@ -86,8 +86,7 @@ $installer2->addAttribute(
 
 $productCollection = Mage::getModel('catalog/product')->getCollection();
 
-foreach($productCollection as $product)
-{
+foreach ($productCollection as $product) {
     $product = Mage::getModel('catalog/product')
                    ->load($product->getEntityId());
     $product->setData($attrCode, 0)
@@ -96,3 +95,28 @@ foreach($productCollection as $product)
 }
 
 $installer2->endSetup();
+
+// Add fyndiq_order_id
+require_once('app/Mage.php');
+Mage::app()->setCurrentStore(Mage::getModel('core/store')->load(Mage_Core_Model_App::ADMIN_STORE_ID));
+
+$installerOrder = new Mage_Sales_Model_Mysql4_Setup;
+$installerOrder->startSetup();
+$installerOrder->addAttribute(
+    Mage_Sales_Model_Order::ENTITY,
+    'fyndiq_order_id',
+    array(
+        'type'          => 'int',
+        'label'         => 'Fyndiq Order ID',
+        'required'      => false,
+        'global'        => Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_STORE,
+        'searchable'    => true,
+        'filterable'    => true,
+        'comparable'    => true,
+        'is_visible'    => 1,
+        'visible'       => true,
+        'default'       => null,
+    )
+);
+
+$installerOrder->endSetup();

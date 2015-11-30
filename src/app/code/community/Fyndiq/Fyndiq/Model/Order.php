@@ -22,35 +22,12 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
      *
      * @return bool
      */
-    public function orderExists($fyndiqOrder)
+    public function orderExists($fyndiqOrderId)
     {
-        $collection = $this->getCollection()
-            ->addFieldToFilter('fyndiq_orderid', $fyndiqOrder)
-            ->getFirstItem();
-        if ($collection->getId()) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Add to check table to check if order already exists.
-     *
-     * @param int $fyndiqOrderId
-     * @param int $orderId
-     *
-     * @return mixed
-     */
-    public function addCheckData($fyndiqOrderId, $orderId)
-    {
-        $data = array(
-            'fyndiq_orderid' => $fyndiqOrderId,
-            'order_id' => $orderId,
-        );
-        $model = $this->setData($data);
-
-        return $model->save()->getId();
+        $collection = Mage::getModel('sales/order')
+            ->getCollection()
+            ->addFieldToFilter('fyndiq_order_id', $fyndiqOrderId);
+        return $collection->getSize() > 0;
     }
 
     /**
@@ -63,34 +40,34 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
     public function getImportedOrders($page, $itemsPerPage)
     {
         $result = array();
-        $orders = $this->getCollection()
-            ->addFieldToFilter('order_id', array('neq' => 0))
-            ->setOrder('id', 'DESC');
+        $orders = Mage::getModel('sales/order')
+            ->getCollection()
+            ->addFieldToFilter('fyndiq_order_id', array('neq' => 'NULL'));
         if ($page != -1) {
             $orders->setCurPage($page);
             $orders->setPageSize($itemsPerPage);
         }
-        foreach ($orders->load()->getItems() as $order) {
-            $orderArray = array();
-            $order = $order->getData();
-            $magOrder = Mage::getModel('sales/order')->load($order['order_id']);
-            $magArray = $magOrder->getData();
-            $url = Mage::helper('adminhtml')->getUrl(
-                'adminhtml/sales_order/view',
-                array('order_id' => $order['order_id'])
+        $orders->load();
+        $directoryCurrency = Mage::getModel('directory/currency');
+        foreach ($orders as $order) {
+            $result[] = array(
+                'order_id' => $order->getId(),
+                'entity_id' => $order->getId(),
+                'fyndiq_orderid' => $order->getData('fyndiq_order_id'),
+                'price' => $directoryCurrency->formatTxt(
+                    $order->getBaseGrandTotal(),
+                    array('display' => Zend_Currency::NO_SYMBOL)
+                ),
+                'total_products' => intval($order->getTotalQtyOrdered()),
+                'state' => $order->getStatus(),
+                'created_at' => date('Y-m-d', strtotime($order->getCreatedAt())),
+                'created_at_time' => date('G:i:s', strtotime($order->getCreatedAt())),
+                'link' => Mage::helper('adminhtml')->getUrl(
+                    'adminhtml/sales_order/view',
+                    array('order_id' => $order->getId())
+                )
             );
-            $orderArray['order_id'] = $magArray['entity_id'];
-            $orderArray['fyndiq_orderid'] = $order['fyndiq_orderid'];
-            $orderArray['entity_id'] = $magArray['entity_id'];
-            $orderArray['price'] = number_format((float) $magArray['base_grand_total'], 2, '.', '');
-            $orderArray['total_products'] = intval($magArray['total_qty_ordered']);
-            $orderArray['state'] = $magArray['status'];
-            $orderArray['created_at'] = date('Y-m-d', strtotime($magArray['created_at']));
-            $orderArray['created_at_time'] = date('G:i:s', strtotime($magArray['created_at']));
-            $orderArray['link'] = $url;
-            $result[] = $orderArray;
         }
-
         return $result;
     }
 
@@ -286,6 +263,8 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             'Copy the URL and paste it in the browser to download the delivery note.'
         );
         $order->addStatusHistoryComment($comment);
+
+        $order->setData('fyndiq_order_id', $fyndiqOrder->id);
 
         //Finally we save our order after setting it's status to complete.
         $order->save();

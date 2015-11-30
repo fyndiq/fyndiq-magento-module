@@ -66,17 +66,21 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Catalog_Product_Grid extends Mage_Adminhtml_
     protected function _prepareMassaction()
     {
 
-        $this->getMassactionBlock()->addItem('export',
-        array(
+        $this->getMassactionBlock()->addItem(
+            'export',
+            array(
             'label'=> __('Export to Fyndiq'),
             'url'  => Mage::helper('adminhtml')->getUrl('fyndiq/service/export/'),
-        ));
+            )
+        );
 
-        $this->getMassactionBlock()->addItem('remove',
-        array(
+        $this->getMassactionBlock()->addItem(
+            'remove',
+            array(
             'label'=> __('Remove from Fyndiq'),
             'url'  => Mage::helper('adminhtml')->getUrl('fyndiq/service/remove/'),
-        ));
+            )
+        );
 
         return parent::_prepareMassaction();
     }

@@ -4,13 +4,13 @@ require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
 
 class FmOrderFetch extends FyndiqPaginatedFetch
 {
-    function __construct($storeId, $settingExists)
+    public function __construct($storeId, $settingExists)
     {
         $this->storeId = $storeId;
         $this->settingExists = $settingExists;
     }
 
-    function getInitialPath()
+    public function getInitialPath()
     {
         $date = false;
         if ($this->settingExists) {
@@ -21,20 +21,21 @@ class FmOrderFetch extends FyndiqPaginatedFetch
         return $url;
     }
 
-    function getPageData($path)
+    public function getPageData($path)
     {
         $ret = FmHelpers::callApi($this->storeId, 'GET', $path);
 
         return $ret['data'];
     }
 
-    function processData($data)
+    public function processData($data)
     {
         $errors = array();
+        $orderModel = Mage::getModel('fyndiq/order');
         foreach ($data as $order) {
-            if (!Mage::getModel('fyndiq/order')->orderExists($order->id)) {
+            if (!$orderModel->orderExists(intval($order->id))) {
                 try {
-                    Mage::getModel('fyndiq/order')->create($this->storeId, $order);
+                    $orderModel->create($this->storeId, $order);
                 } catch (Exception $e) {
                     $errors[] = $e->getMessage();
                 }
@@ -46,7 +47,7 @@ class FmOrderFetch extends FyndiqPaginatedFetch
         return true;
     }
 
-    function getSleepIntervalSeconds()
+    public function getSleepIntervalSeconds()
     {
         return 1 / self::THROTTLE_ORDER_RPS;
     }

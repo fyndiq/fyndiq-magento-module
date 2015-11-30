@@ -1,8 +1,8 @@
 <?php
 class Fyndiq_Fyndiq_Model_Attribute_Exported extends Mage_Eav_Model_Entity_Attribute_Source_Abstract
 {
-	const MAIN = 0;
-	const OTHER = 1;
+    const MAIN = 0;
+    const OTHER = 1;
 
     public function getAllOptions()
     {
