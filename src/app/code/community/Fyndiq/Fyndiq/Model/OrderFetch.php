@@ -14,7 +14,7 @@ class FmOrderFetch extends FyndiqPaginatedFetch
     {
         $date = false;
         if ($this->settingExists) {
-            //$date = Mage::getModel('fyndiq/setting')->getSetting($this->storeId, 'order_lastdate');
+            $date = Mage::getModel('fyndiq/setting')->getSetting($this->storeId, 'order_lastdate');
         }
         $url = 'orders/' . (empty($date) ? '' : '?min_date=' . urlencode($date['value']));
 

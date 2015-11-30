@@ -1,9 +1,9 @@
 <?php
 class Fyndiq_Fyndiq_Model_Attribute_State extends Mage_Eav_Model_Entity_Attribute_Source_Abstract
 {
-	const MAIN = 0;
-	const PENDING = 1;
-	const FOR_SALE = 2;
+    const MAIN = 0;
+    const PENDING = 1;
+    const FOR_SALE = 2;
 
     public function getAllOptions()
     {
@@ -17,7 +17,7 @@ class Fyndiq_Fyndiq_Model_Attribute_State extends Mage_Eav_Model_Entity_Attribut
                     'label' => __('Pending'),
                     'value' =>  self::PENDING
                 ),
-				array(
+                array(
                     'label' => __('For Sale'),
                     'value' =>  self::FOR_SALE
                 ),

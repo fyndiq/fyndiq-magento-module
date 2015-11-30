@@ -86,8 +86,7 @@ $installer2->addAttribute(
 
 $productCollection = Mage::getModel('catalog/product')->getCollection();
 
-foreach($productCollection as $product)
-{
+foreach ($productCollection as $product) {
     $product = Mage::getModel('catalog/product')
                    ->load($product->getEntityId());
     $product->setData($attrCode, 0)
@@ -96,7 +95,6 @@ foreach($productCollection as $product)
 }
 
 $installer2->endSetup();
-
 
 // Add fyndiq_order_id
 require_once('app/Mage.php');
