@@ -42,7 +42,7 @@ class FmOrderFetch extends FyndiqPaginatedFetch
             }
         }
         if ($errors) {
-            throw new Exception(implode("\n", $errors));
+            throw new Exception(implode("<br/>\n", $errors));
         }
         return true;
     }

@@ -14,6 +14,7 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
     {
         require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
         require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
+        require_once(dirname(dirname(__FILE__)) . '/Model/OrderFetch.php');
         FyndiqTranslation::init(Mage::app()->getLocale()->getLocaleCode());
     }
 
@@ -137,5 +138,22 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
     protected function _isAllowed()
     {
         return Mage::getSingleton('admin/session')->isAllowed('system/fyndiq');
+    }
+
+    public function importFyndiqOrdersAction() {
+        try {
+            $observer = Mage::getModel('fyndiq/observer');
+            $storeId = $observer->getStoreId();
+            if (FmConfig::get('import_orders_disabled', $storeId) == FmHelpers::ORDERS_DISABLED) {
+                throw new Exception('Orders are disabled');
+            }
+            $newTime = time();
+            $observer->importOrdersForStore($storeId, $newTime);
+            $time = date('G:i:s', $newTime);
+            $this->_getSession()->addSuccess(FyndiqTranslation::get('Fyndiq Orders were imported'));
+        } catch (Exception $e) {
+            $this->_getSession()->addError(FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')');
+        }
+        $this->_redirect('adminhtml/sales_order/index');
     }
 }
