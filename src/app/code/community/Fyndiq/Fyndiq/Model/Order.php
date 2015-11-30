@@ -48,24 +48,26 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             $orders->setPageSize($itemsPerPage);
         }
         $orders->load();
+        $directoryCurrency = Mage::getModel('directory/currency');
         foreach ($orders as $order) {
-            $orderArray = array();
-            $url = Mage::helper('adminhtml')->getUrl(
-                'adminhtml/sales_order/view',
-                array('order_id' => $order->getId())
+            $result[] = array(
+                'order_id' => $order->getId(),
+                'entity_id' => $order->getId(),
+                'fyndiq_orderid' => $order->getData('fyndiq_order_id'),
+                'price' => $directoryCurrency->formatTxt(
+                    $order->getBaseGrandTotal(),
+                    array('display' => Zend_Currency::NO_SYMBOL)
+                ),
+                'total_products' => intval($order->getTotalQtyOrdered()),
+                'state' => $order->getStatus(),
+                'created_at' => date('Y-m-d', strtotime($order->getCreatedAt())),
+                'created_at_time' => date('G:i:s', strtotime($order->getCreatedAt())),
+                'link' => Mage::helper('adminhtml')->getUrl(
+                    'adminhtml/sales_order/view',
+                    array('order_id' => $order->getId())
+                )
             );
-            $orderArray['order_id'] = $order->getId();
-            $orderArray['fyndiq_orderid'] = $order->getData('fyndiq_order_id');
-            $orderArray['entity_id'] = $order->getId();
-            $orderArray['price'] = number_format((float) $order->getBaseGrandTotal(), 2, '.', '');
-            $orderArray['total_products'] = intval($order->getTotalQtyOrdered());
-            $orderArray['state'] = $order->getStatus();
-            $orderArray['created_at'] = date('Y-m-d', strtotime($order->getCreatedAt()));
-            $orderArray['created_at_time'] = date('G:i:s', strtotime($order->getCreatedAt()));
-            $orderArray['link'] = $url;
-            $result[] = $orderArray;
         }
-
         return $result;
     }
 
