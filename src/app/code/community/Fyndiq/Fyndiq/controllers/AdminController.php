@@ -140,7 +140,8 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
         return Mage::getSingleton('admin/session')->isAllowed('system/fyndiq');
     }
 
-    public function importFyndiqOrdersAction() {
+    public function importFyndiqOrdersAction()
+    {
         try {
             $observer = Mage::getModel('fyndiq/observer');
             $storeId = $observer->getStoreId();
