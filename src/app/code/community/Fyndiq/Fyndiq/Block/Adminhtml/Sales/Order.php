@@ -16,7 +16,6 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Sales_Order extends Mage_Adminhtml_Block_Sal
     public function getImportFyndiqOrdersURL()
     {
         return $this->getUrl('fyndiq/admin/importFyndiqOrders');
-        return $this->getUrl('*/*/importFyndiqOrders');
     }
 
 }
