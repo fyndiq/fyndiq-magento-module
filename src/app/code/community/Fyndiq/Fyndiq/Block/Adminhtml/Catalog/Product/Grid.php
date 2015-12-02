@@ -19,7 +19,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Catalog_Product_Grid extends Mage_Adminhtml_
         /* @var $collection Mage_Catalog_Model_Resource_Product_Collection */
 
         $store = $this->_getStore();
-
+        $collection->addStoreFilter($store->getId());
         if ($store->getId() && !isset($this->_joinAttributes['fyndiq_exported'])) {
             $collection->joinAttribute(
                 'fyndiq_exported',
@@ -46,6 +46,8 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Catalog_Product_Grid extends Mage_Adminhtml_
                 'type' => 'options',
                 'index' => 'fyndiq_exported',
                 'sortable' => true,
+                'align'   => 'right',
+                'width' => '80px',
                 'options' => $this->_getAttributeOptions('fyndiq_exported'),
             )
         );
@@ -70,7 +72,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Catalog_Product_Grid extends Mage_Adminhtml_
             'export',
             array(
             'label'=> __('Export to Fyndiq'),
-            'url'  => Mage::helper('adminhtml')->getUrl('fyndiq/service/export/'),
+            'url'  => $this->getUrl('fyndiq/admin/exportProducts')
             )
         );
 
@@ -78,7 +80,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Catalog_Product_Grid extends Mage_Adminhtml_
             'remove',
             array(
             'label'=> __('Remove from Fyndiq'),
-            'url'  => Mage::helper('adminhtml')->getUrl('fyndiq/service/remove/'),
+            'url'  => $this->getUrl('fyndiq/admin/removeProducts')
             )
         );
 
