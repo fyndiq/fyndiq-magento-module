@@ -52,6 +52,7 @@
                <rewrite>
                    <catalog_product_grid>Fyndiq_Fyndiq_Block_Adminhtml_Catalog_Product_Grid</catalog_product_grid>
                    <sales_order>Fyndiq_Fyndiq_Block_Adminhtml_Sales_Order</sales_order>
+                   <sales_order_grid>Fyndiq_Fyndiq_Block_Adminhtml_Sales_Order_Grid</sales_order_grid>
                </rewrite>
             </adminhtml>
         </blocks>
