@@ -200,5 +200,53 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
             $this->_redirect('adminhtml/sales_order/index');
         }
     }
+    /**
+    * Export products from Magento
+    */
+    public function exportProductsAction()
+    {
+        try {
+            $observer = Mage::getModel('fyndiq/observer');
+            $storeId = $observer->getStoreId();
+            $productPost = $this->getRequest()->getPost();
+            if ($productPost) {
+                $productsId = $productPost['product'];
+                foreach ($productsId as $productid) {
+                    $product = Mage::getModel('catalog/product')
+                                ->setCurrentStore($storeId)
+                                ->load($productid);
+                    $product->setData('fyndiq_exported', 1)->getResource()->saveAttribute($product, 'fyndiq_exported');
+                }
+                $this->_getSession()->addSuccess(FyndiqTranslation::get('products-exported-message'));
+            }
+        } catch (Exception $e) {
+            $this->_getSession()->addError(FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')');
+        }
+        $this->_redirect('adminhtml/catalog_product/index');
+    }
 
+    /**
+    * Remove products from Fyndiq export
+    */
+    public function removeProductsAction()
+    {
+        try {
+            $observer = Mage::getModel('fyndiq/observer');
+            $storeId = $observer->getStoreId();
+            $productPost = $this->getRequest()->getPost();
+            if ($productPost) {
+                $productsId = $productPost['product'];
+                foreach ($productsId as $productid) {
+                    $product = Mage::getModel('catalog/product')
+                                ->setCurrentStore($storeId)
+                                ->load($productid);
+                    $product->setData('fyndiq_exported', 0)->getResource()->saveAttribute($product, 'fyndiq_exported');
+                }
+                $this->_getSession()->addSuccess(FyndiqTranslation::get('products-deleted-message'));
+            }
+        } catch (Exception $e) {
+            $this->_getSession()->addError(FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')');
+        }
+        $this->_redirect('adminhtml/catalog_product/index');
+    }
 }

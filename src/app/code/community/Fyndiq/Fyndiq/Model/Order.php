@@ -348,10 +348,9 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             ->addFieldToFilter('fyndiq_order_id', array('neq' => 'NULL'));
         $data =  $collection->getData();
         $result = array();
-        foreach($data as $row) {
+        foreach ($data as $row) {
             $result[] = $row['fyndiq_order_id'];
         }
         return $result;
     }
-
 }
