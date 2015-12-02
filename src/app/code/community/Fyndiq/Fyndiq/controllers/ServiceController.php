@@ -470,52 +470,6 @@ class Fyndiq_Fyndiq_ServiceController extends Mage_Adminhtml_Controller_Action
         }
     }
 
-    /**
-     * Getting a pdf of orders.
-     *
-     * @param $args
-     */
-    public function get_delivery_notes($args)
-    {
-        try {
-            $orders = array(
-                'orders' => array()
-            );
-            if (!isset($args['orders'])) {
-                throw new Exception('Pick at least one order');
-            }
-            foreach ($args['orders'] as $order) {
-                $orders['orders'][] = array('order' => intval($order));
-            }
-            $storeId = $this->observer->getStoreId();
-            $ret = FmHelpers::callApi($storeId, 'POST', 'delivery_notes/', $orders, true);
-
-            if ($ret['status'] == 200) {
-                $fileName = 'delivery_notes-' . implode('-', $args['orders']) . '.pdf';
-
-                header('Content-Type: application/pdf');
-                header('Content-Disposition: attachment; filename="' . $fileName . '"');
-                header('Content-Transfer-Encoding: binary');
-                header('Content-Length: ' . strlen($ret['data']));
-                header('Expires: 0');
-                $handler = fopen('php://temp', 'wb+');
-                // Saving data to file
-                fputs($handler, $ret['data']);
-                rewind($handler);
-                fpassthru($handler);
-                fclose($handler);
-                die();
-            }
-
-            return $this->response(true);
-        } catch (Exception $e) {
-            return $this->responseError(
-                FyndiqTranslation::get('unhandled-error-title'),
-                FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')'
-            );
-        }
-    }
-
     public function disconnect_account()
     {
         try {

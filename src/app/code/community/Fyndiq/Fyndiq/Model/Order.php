@@ -338,4 +338,20 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             $order->delete();
         }
     }
+
+    public function getFydniqOrderIds($orderIds)
+    {
+        $collection = Mage::getModel('sales/order')
+            ->getCollection()
+            ->addFieldToSelect('fyndiq_order_id')
+            ->addFieldToFilter('entity_id', array('in' => $orderIds))
+            ->addFieldToFilter('fyndiq_order_id', array('neq' => 'NULL'));
+        $data =  $collection->getData();
+        $result = array();
+        foreach($data as $row) {
+            $result[] = $row['fyndiq_order_id'];
+        }
+        return $result;
+    }
+
 }
