@@ -142,19 +142,42 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
 
     public function importFyndiqOrdersAction()
     {
-        try {
-            $observer = Mage::getModel('fyndiq/observer');
-            $storeId = $observer->getStoreId();
-            if (FmConfig::get('import_orders_disabled', $storeId) == FmHelpers::ORDERS_DISABLED) {
-                throw new Exception('Orders are disabled');
+
+        foreach (Mage::app()->getWebsites() as $website) {
+            foreach ($website->getGroups() as $group) {
+                $stores = $group->getStores();
+                foreach ($stores as $store) {
+                    try {
+                        $observer = Mage::getModel('fyndiq/observer');
+                        $storeId = $store->getId();
+                        if (FmConfig::get('apikey', $storeId)) {
+                            if (FmConfig::get('import_orders_disabled', $storeId) == FmHelpers::ORDERS_DISABLED) {
+                            $this->_getSession()->addError(
+                                sprintf(
+                                    FyndiqTranslation::get('Order import is disabled for store `%s`'),
+                                    $store->getName()
+                                )
+                            );
+
+                                continue;
+                            }
+                            $newTime = time();
+                            $observer->importOrdersForStore($storeId, $newTime);
+                            $time = date('G:i:s', $newTime);
+                            $this->_getSession()->addSuccess(
+                                sprintf(
+                                    FyndiqTranslation::get('Fyndiq Orders were imported for store `%s`'),
+                                    $store->getName()
+                                )
+                            );
+                        }
+                    } catch (Exception $e) {
+                        $this->_getSession()->addError(FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')');
+                    }
+                }
             }
-            $newTime = time();
-            $observer->importOrdersForStore($storeId, $newTime);
-            $time = date('G:i:s', $newTime);
-            $this->_getSession()->addSuccess(FyndiqTranslation::get('Fyndiq Orders were imported'));
-        } catch (Exception $e) {
-            $this->_getSession()->addError(FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')');
         }
+
         $this->_redirect('adminhtml/sales_order/index');
     }
 

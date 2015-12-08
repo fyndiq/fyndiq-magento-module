@@ -273,7 +273,6 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         if ($reservationId) {
             $this->unreserve($reservationId);
         }
-        $this->addCheckData($fyndiqOrder->id, $order->getId());
     }
 
     /**
