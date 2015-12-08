@@ -40,7 +40,7 @@ $productIds = Mage::getResourceModel('catalog/product_collection')
     ->getAllIds();
 
 //Now create an array of attribute_code => values
-$attributeData = array($attrCode =>0);
+$attributeData = array($attrCode => 0);
 
 //Set the store to affect. I used admin to change all default values
 $storeId = Mage_Core_Model_App::ADMIN_STORE_ID;
