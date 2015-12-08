@@ -85,27 +85,7 @@
                 </args>
             </Fyndiq>
         </routers>
-        <layout>
-            <updates>
-                <Fyndiq>
-                    <file>fyndiqadmin.xml</file>
-                </Fyndiq>
-            </updates>
-        </layout>
     </admin>
-    <adminhtml>
-        <menu>
-            <system>
-                <children>
-                    <fyndiq>
-                        <title>Fyndiq Export/Import</title>
-                        <sort_order>0</sort_order>
-                        <action>fyndiq/admin/index</action>
-                    </fyndiq>
-                </children>
-            </system>
-        </menu>
-    </adminhtml>
     <frontend>
         <routers>
             <Fyndiq>
