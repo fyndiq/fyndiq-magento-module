@@ -152,12 +152,12 @@ class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
                         $storeId = $store->getId();
                         if (FmConfig::get('apikey', $storeId)) {
                             if (FmConfig::get('import_orders_disabled', $storeId) == FmHelpers::ORDERS_DISABLED) {
-                            $this->_getSession()->addError(
-                                sprintf(
-                                    FyndiqTranslation::get('Order import is disabled for store `%s`'),
-                                    $store->getName()
-                                )
-                            );
+                                $this->_getSession()->addError(
+                                    sprintf(
+                                        FyndiqTranslation::get('Order import is disabled for store `%s`'),
+                                        $store->getName()
+                                    )
+                                );
 
                                 continue;
                             }
