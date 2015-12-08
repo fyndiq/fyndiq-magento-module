@@ -247,62 +247,31 @@ class Fyndiq_Fyndiq_Model_Observer
         return $this->taxCalculationModel->getRate($request->setProductClassId($taxClassId));
     }
 
-    protected function getProductImages($productId, $product)
+    protected function getProductImages($product)
     {
-        $urls = array();
-        $positions = array();
-        $newImages = array();
         $images = Mage::getModel('catalog/product')
-            ->load($productId)
+            ->load($product->getId())
             ->getMediaGalleryImages();
-        $hasRealImagesSet = ($product->getImage() != null && $product->getImage() != "no_selection");
+        $newImages = array();
         foreach ($images as $image) {
-            $positions[] = $image->getPosition();
-            $newImages[] = $image;
+            $url = $this->productMediaConfig->getMediaUrl($image->getFile());
+            if (!in_array($url, $newImages)) {
+                $newImages[$image->getPosition()] = $url;
+            }
         }
         $images->clear();
-
-        if (count(array_unique($positions)) < count($images)) {
-            usort($newImages, array("Fyndiq_Fyndiq_Model_Observer", "sortImages"));
-        }
         if (count($newImages)) {
-            // Get gallery
-            foreach ($newImages as $image) {
-                $url = $this->productMediaConfig->getMediaUrl($image->getFile());
-                if (!in_array($url, $urls)) {
-                    $urls[] = $url;
-                }
-            }
-        } elseif ($hasRealImagesSet) {
-            // Fallback to main image
-            $url = $this->productMediaConfig->getMediaUrl($product->getImage());
-            if (!in_array($url, $urls)) {
-                $urls[] = $url;
+            ksort($newImages);
+            return  array_values($newImages);
+        }
+        foreach (array($product->getImage(), $product->getSmallImage()) as $image) {
+            if ($image != null &&  $image != 'no_selection') {
+                // Fall-back to main image
+                $url = $this->productMediaConfig->getMediaUrl($image);
+                return array($url);
             }
         }
-        if (count($urls) > 0) {
-            return $urls;
-        }
-
-        // Fallbacks
-        $imageHelper = Mage::helper('catalog/image');
-        // Check for image or small image
-        foreach (array('image', 'small_image') as $imageKey) {
-            $image = (string)$imageHelper->init($product, $imageKey);
-            if ($image && strpos($image, '/placeholder/') === false) {
-                return array($image);
-            }
-        }
-        // Give up
-        return $urls;
-    }
-
-    private function sortImages($a, $b)
-    {
-        if ($a->getId() == $b->getId()) {
-            return 0;
-        }
-        return ($a->getId() < $b->getId()) ? -1 : 1;
+        return array();
     }
 
     /**
@@ -369,27 +338,19 @@ class Fyndiq_Fyndiq_Model_Observer
 
 
     // Add Tax to the price if required
-    protected function includeTax($objProduct, $price)
+    protected function includeTax($product, $price)
     {
         if (!Mage::helper('tax')->priceIncludesTax()) {
-            return Mage::helper('tax')->getPrice($objProduct, $price);
+            return Mage::helper('tax')->getPrice($product, $price);
         }
         return $price;
     }
 
-    public function getProductPrice($objProduct)
+    public function getProductPrice($product)
     {
-        $price = $objProduct->getFinalPrice();
-
-        $catalogRulePrice = Mage::getModel('catalogrule/rule')
-            ->calcProductPriceRule($objProduct, $price);
-        if ($catalogRulePrice) {
-            $price = $catalogRulePrice;
-        }
-
-        return $this->includeTax($objProduct, $price);
+        $price = $product->getFinalPrice();
+        return $this->includeTax($product, $price);
     }
-
 
     /**
      * Get product information
@@ -480,7 +441,7 @@ class Fyndiq_Fyndiq_Model_Observer
                 }
             }
         }
-        $feedProduct[FyndiqFeedWriter::IMAGES] = $this->getProductImages($productId, $magProduct);
+        $feedProduct[FyndiqFeedWriter::IMAGES] = $this->getProductImages($magProduct);
         return $feedProduct;
     }
 
@@ -512,7 +473,7 @@ class Fyndiq_Fyndiq_Model_Observer
             FyndiqFeedWriter::ARTICLE_NAME => $magProduct->getName(),
             FyndiqFeedWriter::QUANTITY => $this->getQuantity($magProduct, $stockMin),
             FyndiqFeedWriter::SKU => $magProduct->getSKU(),
-            FyndiqFeedWriter::IMAGES => $this->getProductImages($magProduct->getId(), $magProduct),
+            FyndiqFeedWriter::IMAGES => $this->getProductImages($magProduct),
             FyndiqFeedWriter::PROPERTIES => array(),
         );
 
