@@ -39,7 +39,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Catalog_Product_Grid extends Mage_Adminhtml_
     protected function _prepareColumns()
     {
         $store = $this->_getStore();
-        $this->addColumn(
+        $this->addColumnAfter(
             'fyndiq_status',
             array(
                 'header'=> Mage::helper('catalog')->__('Fyndiq Exported'),
@@ -49,7 +49,8 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Catalog_Product_Grid extends Mage_Adminhtml_
                 'align'   => 'right',
                 'width' => '80px',
                 'options' => $this->_getAttributeOptions('fyndiq_exported'),
-            )
+            ),
+            'status'
         );
 
         return parent::_prepareColumns();
