@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Fyndiq_Fyndiq>
-            <version>1.0.8</version>
+            <version>1.1.0</version>
         </Fyndiq_Fyndiq>
     </modules>
     <global>
@@ -38,6 +38,7 @@
             <fyndiqmodule_setup>
                 <setup>
                     <module>Fyndiq_Fyndiq</module>
+                    <class>Mage_Eav_Model_Entity_Setup</class>
                 </setup>
             </fyndiqmodule_setup>
         </resources>
@@ -47,6 +48,13 @@
                     <exportproducts>Fyndiq_Fyndiq_Block_Exportproducts</exportproducts>
                 </rewrite>
             </Fyndiq>
+            <adminhtml>
+               <rewrite>
+                   <catalog_product_grid>Fyndiq_Fyndiq_Block_Adminhtml_Catalog_Product_Grid</catalog_product_grid>
+                   <sales_order>Fyndiq_Fyndiq_Block_Adminhtml_Sales_Order</sales_order>
+                   <sales_order_grid>Fyndiq_Fyndiq_Block_Adminhtml_Sales_Order_Grid</sales_order_grid>
+               </rewrite>
+            </adminhtml>
         </blocks>
         <events>
             <admin_system_config_changed_section_fyndiq>
@@ -59,6 +67,13 @@
                 </observers>
             </admin_system_config_changed_section_fyndiq>
         </events>
+        <fieldsets>
+            <sales_convert_quote>
+                <fyndiq_order_id>
+                    <to_order>*</to_order>
+                </fyndiq_order_id>
+            </sales_convert_quote>
+        </fieldsets>
     </global>
     <admin>
         <routers>
@@ -70,27 +85,7 @@
                 </args>
             </Fyndiq>
         </routers>
-        <layout>
-            <updates>
-                <Fyndiq>
-                    <file>fyndiqadmin.xml</file>
-                </Fyndiq>
-            </updates>
-        </layout>
     </admin>
-    <adminhtml>
-        <menu>
-            <system>
-                <children>
-                    <fyndiq>
-                        <title>Fyndiq Export/Import</title>
-                        <sort_order>0</sort_order>
-                        <action>fyndiq/admin/index</action>
-                    </fyndiq>
-                </children>
-            </system>
-        </menu>
-    </adminhtml>
     <frontend>
         <routers>
             <Fyndiq>
