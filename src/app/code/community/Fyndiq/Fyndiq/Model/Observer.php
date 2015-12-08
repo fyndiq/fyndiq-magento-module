@@ -145,16 +145,20 @@ class Fyndiq_Fyndiq_Model_Observer
 
         $this->productMediaConfig = Mage::getModel('catalog/product_media_config');
 
-        $products = Mage::getModel('fyndiq/product')->getCollection()
-            ->addFieldToSelect(
-                array(
-                    'id',
-                    'product_id',
-                    'exported_price_percentage',
-                )
-            )
-            ->setOrder('id', 'DESC')
+        $fyndiq_exported = Mage::getResourceModel('catalog/product')->getAttributeRawValue(403, 'fyndiq_exported', $storeId);
+
+        FyndiqUtils::debug('$fyndiq_exported', $fyndiq_exported);
+
+        $products = Mage::getModel('catalog/product')->getCollection()
+            ->addAttributeToSelect('*')
+            ->addStoreFilter($storeId)
+            ->addAttributeToFilter(
+                'fyndiq_exported',
+                array('eq' => "Exported")
+            )->setOrder('id', 'DESC')
             ->load();
+
+        FyndiqUtils::debug('$idsToExport', $products);
 
         $productInfo = array();
         foreach ($products->getData() as $productData) {
