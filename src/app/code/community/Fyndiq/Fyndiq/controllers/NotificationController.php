@@ -91,7 +91,6 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
             FmConfig::set('ping_time', time(), $storeId);
             FmConfig::reInit();
             $this->pingObserver($storeId);
-            $this->updateProductInfo($storeId);
         }
     }
 
@@ -117,12 +116,6 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         $result = file_get_contents($filePath);
         FyndiqUtils::debug('$result', $result, true);
         FyndiqUtils::debugStop();
-    }
-
-    protected function updateProductInfo($storeId)
-    {
-        $pi = new FmProductInfo($storeId);
-        $pi->getAll();
     }
 
     protected function pingObserver($storeId)
