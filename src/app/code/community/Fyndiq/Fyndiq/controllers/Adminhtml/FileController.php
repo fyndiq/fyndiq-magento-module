@@ -2,7 +2,7 @@
 require_once(dirname(dirname(__FILE__)) . '/Model/Observer.php');
 require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
 
-class Fyndiq_Fyndiq_FileController extends Mage_Core_Controller_Front_Action
+class Fyndiq_Fyndiq_Adminhtml_FileController extends Mage_Core_Controller_Front_Action
 {
 
     function indexAction()

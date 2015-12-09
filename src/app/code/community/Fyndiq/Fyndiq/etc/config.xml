@@ -100,7 +100,7 @@
                     <fyndiq>
                         <title>Fyndiq Export/Import</title>
                         <sort_order>0</sort_order>
-                        <action>fyndiq/admin/index</action>
+                        <action>adminhtml/admin/fyndiq/index</action>
                     </fyndiq>
                 </children>
             </system>

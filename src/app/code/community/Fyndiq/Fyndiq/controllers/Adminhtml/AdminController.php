@@ -1,13 +1,6 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: confact
- * Date: 18/08/14
- * Time: 09:50
- */
-
-class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
+class Fyndiq_Fyndiq_Adminhtml_AdminController extends Mage_Adminhtml_Controller_Action
 {
 
     protected function _construct()
