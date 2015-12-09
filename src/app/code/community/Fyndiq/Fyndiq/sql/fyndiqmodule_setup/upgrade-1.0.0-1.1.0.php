@@ -2,6 +2,8 @@
 
 $installer2 = Mage::getResourceModel('catalog/setup', 'catalog_setup');
 
+$resource = Mage::getSingleton('core/resource');
+
 $installer2->startSetup();
 
 
@@ -108,13 +110,39 @@ foreach ($productCollection as $product) {
             ->saveAttribute($product, $attrCode);
 }
 
+
+// Migrate products
+$fyndiqProductsTable = $resource->getTableName('fyndiq/product');
+$readConnection = $resource->getConnection('core_read');
+$query = 'SELECT * FROM ' . $fyndiqProductsTable;
+$products = $readConnection->fetchAll($query);
+$productModel = Mage::getModel('catalog/product');
+foreach($products as $productRow) {
+    if (isset($productRow['store_id']) && $productRow['store_id'] != 0) {
+        $product = $productModel
+            ->setCurrentStore($productRow['store_id'])
+            ->load($productRow['product_id']);
+    } else {
+        $product = $productModel
+            ->load($productRow['product_id']);
+    }
+    if ($product) {
+        $product->setData('fyndiq_exported', 1)
+            ->getResource()
+            ->saveAttribute($product, 'fyndiq_exported');
+    }
+}
+$sql = 'DROP TABLE IF EXISTS ' . $fyndiqProductsTable;
+$installer2->run($sql);
+
+
 $installer2->endSetup();
 
 // Add fyndiq_order_id
 require_once('app/Mage.php');
 Mage::app()->setCurrentStore(Mage::getModel('core/store')->load(Mage_Core_Model_App::ADMIN_STORE_ID));
 
-$installerOrder = new Mage_Sales_Model_Mysql4_Setup();
+$installerOrder = new Mage_Sales_Model_Mysql4_Setup('sales_setup');
 $installerOrder->startSetup();
 $installerOrder->addAttribute(
     Mage_Sales_Model_Order::ENTITY,
@@ -136,7 +164,6 @@ $installerOrder->addAttribute(
 
 // Migrate orders
 $fyndiqOrdersTable = $resource->getTableName('fyndiq/order');
-$resource = Mage::getSingleton('core/resource');
 $readConnection = $resource->getConnection('core_read');
 $query = 'SELECT * FROM ' . $fyndiqOrdersTable;
 $orders = $readConnection->fetchAll($query);
@@ -144,7 +171,7 @@ $orderModel = Mage::getModel('sales/order');
 foreach($orders as $orderRow) {
     $order = $orderModel->load($orderRow['order_id']);
     if ($order) {
-        $order->setData('fyndiq_order_id', $fyndiqOrder->id);
+        $order->setData('fyndiq_order_id', $orderRow['fyndiq_orderid']);
         $order->save();
     }
 }
