@@ -4,6 +4,7 @@ $installer2 = Mage::getResourceModel('catalog/setup', 'catalog_setup');
 
 $installer2->startSetup();
 
+$installer2->run("DROP TABLE IF EXISTS {$this->getTable('fyndiq/product')};");
 
 // Add new Attribute group
 $attrGroupName = 'Fyndiq';
