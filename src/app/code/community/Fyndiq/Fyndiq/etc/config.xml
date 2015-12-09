@@ -77,13 +77,13 @@
     </global>
     <admin>
         <routers>
-            <Fyndiq>
-                <use>admin</use>
+            <adminhtml>
                 <args>
-                    <module>Fyndiq_Fyndiq</module>
-                    <frontName>fyndiq</frontName>
+                    <modules>
+                        <Fyndiq before="Mage_Adminhtml">Fyndiq_Fyndiq_Adminhtml</Fyndiq>
+                    </modules>
                 </args>
-            </Fyndiq>
+            </adminhtml>
         </routers>
     </admin>
     <frontend>

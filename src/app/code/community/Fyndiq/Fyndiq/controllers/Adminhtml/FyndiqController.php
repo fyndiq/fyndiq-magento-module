@@ -1,20 +1,13 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: confact
- * Date: 18/08/14
- * Time: 09:50
- */
-
-class Fyndiq_Fyndiq_AdminController extends Mage_Adminhtml_Controller_Action
+class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller_Action
 {
 
     protected function _construct()
     {
         require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
-        require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
-        require_once(dirname(dirname(__FILE__)) . '/Model/OrderFetch.php');
+        require_once(dirname(dirname(dirname(__FILE__))) . '/includes/helpers.php');
+        require_once(dirname(dirname(dirname(__FILE__))) . '/Model/OrderFetch.php');
         FyndiqTranslation::init(Mage::app()->getLocale()->getLocaleCode());
     }
 

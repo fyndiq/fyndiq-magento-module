@@ -73,7 +73,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Catalog_Product_Grid extends Mage_Adminhtml_
             'export',
             array(
             'label'=> __('Export to Fyndiq'),
-            'url'  => $this->getUrl('fyndiq/admin/exportProducts')
+            'url'  => $this->getUrl('adminhtml/fyndiq/exportProducts')
             )
         );
 
@@ -81,7 +81,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Catalog_Product_Grid extends Mage_Adminhtml_
             'remove',
             array(
             'label'=> __('Remove from Fyndiq'),
-            'url'  => $this->getUrl('fyndiq/admin/removeProducts')
+            'url'  => $this->getUrl('adminhtml/fyndiq/removeProducts')
             )
         );
 

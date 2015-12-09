@@ -29,7 +29,7 @@ build-connect:
 clean:
 	rm -r $(BUILD_DIR)/*
 
-dev: css
+dev:
 	cp -svr --remove-destination $(SRC_DIR)/* $(MAGENTO_ROOT)/
 
 css:

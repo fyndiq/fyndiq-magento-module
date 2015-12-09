@@ -77,7 +77,7 @@ $installer2->endSetup();
 require_once('app/Mage.php');
 Mage::app()->setCurrentStore(Mage::getModel('core/store')->load(Mage_Core_Model_App::ADMIN_STORE_ID));
 
-$installerOrder = new Mage_Sales_Model_Mysql4_Setup;
+$installerOrder = new Mage_Sales_Model_Mysql4_Setup();
 $installerOrder->startSetup();
 $installerOrder->addAttribute(
     Mage_Sales_Model_Order::ENTITY,
