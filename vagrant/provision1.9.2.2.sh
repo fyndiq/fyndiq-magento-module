@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MAGE_VERSION="1.9.2.1"
+MAGE_VERSION="1.9.2.2"
 DATA_VERSION="1.9.1.0"
 
 apt-get update
@@ -20,9 +20,6 @@ apt-get install -y apache2 php5 php5-mysql php5-gd php5-mcrypt php5-curl
 apt-get remove -y puppet chef
 
 php5enmod mcrypt
-
-# Install scss
-sudo gem install sass
 
 ###########################################################
 # COMPOSER
@@ -45,16 +42,16 @@ if [[ ! -f "/var/www/html/magento/index.php" ]]; then
     cd /tmp
     echo "Downloading Magento ${MAGE_VERSION} ..."
     if [[ ! -f "/opt/fyndiq-magento-module/assets/magento-${MAGE_VERSION}.tar.gz" ]]; then
-        echo "Using local copy"
         wget --quiet http://pubfiles.nexcess.net/magento/ce-packages/magento-${MAGE_VERSION}.tar.gz
     else
+        echo "Using local copy"
         cp /opt/fyndiq-magento-module/assets/magento-${MAGE_VERSION}.tar.gz .
     fi
     echo "Downloading Magento Sample files ${DATA_VERSION} ..."
     if [[ ! -f "/opt/fyndiq-magento-module/assets/magento-sample-data-${DATA_VERSION}.tar.gz" ]]; then
-        echo "Using local copy"
         wget --quiet http://mirror.gunah.eu/magento/sample-data/magento-sample-data-${DATA_VERSION}.tar.gz
     else
+        echo "Using local copy"
         cp /opt/fyndiq-magento-module/assets/magento-sample-data-${DATA_VERSION}.tar.gz .
     fi
     tar -zxvf magento-${MAGE_VERSION}.tar.gz
