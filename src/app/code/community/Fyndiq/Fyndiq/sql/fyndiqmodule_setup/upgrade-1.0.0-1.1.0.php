@@ -114,7 +114,7 @@ $installer2->endSetup();
 require_once('app/Mage.php');
 Mage::app()->setCurrentStore(Mage::getModel('core/store')->load(Mage_Core_Model_App::ADMIN_STORE_ID));
 
-$installerOrder = new Mage_Sales_Model_Mysql4_Setup;
+$installerOrder = new Mage_Sales_Model_Mysql4_Setup();
 $installerOrder->startSetup();
 $installerOrder->addAttribute(
     Mage_Sales_Model_Order::ENTITY,
@@ -132,5 +132,23 @@ $installerOrder->addAttribute(
         'default'       => null,
     )
 );
+
+
+// Migrate orders
+$fyndiqOrdersTable = $resource->getTableName('fyndiq/order');
+$resource = Mage::getSingleton('core/resource');
+$readConnection = $resource->getConnection('core_read');
+$query = 'SELECT * FROM ' . $fyndiqOrdersTable;
+$orders = $readConnection->fetchAll($query);
+$orderModel = Mage::getModel('sales/order');
+foreach($orders as $orderRow) {
+    $order = $orderModel->load($orderRow['order_id']);
+    if ($order) {
+        $order->setData('fyndiq_order_id', $fyndiqOrder->id);
+        $order->save();
+    }
+}
+$sql = 'DROP TABLE IF EXISTS ' . $fyndiqOrdersTable;
+$installerOrder->run($sql);
 
 $installerOrder->endSetup();
