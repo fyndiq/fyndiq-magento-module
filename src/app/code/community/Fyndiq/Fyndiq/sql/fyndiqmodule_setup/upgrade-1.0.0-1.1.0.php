@@ -117,7 +117,7 @@ $readConnection = $resource->getConnection('core_read');
 $query = 'SELECT * FROM ' . $fyndiqProductsTable;
 $products = $readConnection->fetchAll($query);
 $productModel = Mage::getModel('catalog/product');
-foreach($products as $productRow) {
+foreach ($products as $productRow) {
     if (isset($productRow['store_id']) && $productRow['store_id'] != 0) {
         $product = $productModel
             ->setCurrentStore($productRow['store_id'])
@@ -134,7 +134,6 @@ foreach($products as $productRow) {
 }
 $sql = 'DROP TABLE IF EXISTS ' . $fyndiqProductsTable;
 $installer2->run($sql);
-
 
 $installer2->endSetup();
 
@@ -168,7 +167,7 @@ $readConnection = $resource->getConnection('core_read');
 $query = 'SELECT * FROM ' . $fyndiqOrdersTable;
 $orders = $readConnection->fetchAll($query);
 $orderModel = Mage::getModel('sales/order');
-foreach($orders as $orderRow) {
+foreach ($orders as $orderRow) {
     $order = $orderModel->load($orderRow['order_id']);
     if ($order) {
         $order->setData('fyndiq_order_id', $orderRow['fyndiq_orderid']);
