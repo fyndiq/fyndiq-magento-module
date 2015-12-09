@@ -71,44 +71,6 @@ $installer2->addAttribute(
     )
 );
 
-$attrCode3 = 'fyndiq_state';
-
-$attrLabel3 = 'Fyndiq State';
-$attrNote = 'What is the status of the product';
-
-$installer2->addAttribute(
-    'catalog_product',
-    $attrCode3,
-    array(
-    'type'          => 'int',
-    'input'         => 'select',
-    'label'         => $attrLabel3,
-    'group'         => $attrGroupName,
-    'required'      => false,
-    'global'        => Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_STORE,
-    'searchable'    => true,
-    'source'        => 'fyndiq/attribute_state',
-    'filterable_in_search' => false,
-    'visible_on_front' => false,
-    'visible_in_advanced_search'  => false,
-    'is_html_allowed_on_front' => false,
-    'is_visible'    => 0,
-    'visible'       => false,
-    'sort_order'    => 1, // Place just below SKU (4)
-    'default'       => '0'
-    )
-);
-
-$productCollection = Mage::getModel('catalog/product')->getCollection();
-
-foreach ($productCollection as $product) {
-    $product = Mage::getModel('catalog/product')
-                   ->load($product->getEntityId());
-    $product->setData($attrCode, 0)
-            ->getResource()
-            ->saveAttribute($product, $attrCode);
-}
-
 $installer2->endSetup();
 
 // Add fyndiq_order_id
