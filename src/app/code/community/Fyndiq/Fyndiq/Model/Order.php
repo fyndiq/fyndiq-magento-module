@@ -96,7 +96,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         // Check if country region is required
         $isRequired = Mage::helper('directory')->isRegionRequired($fyndiqOrder->delivery_country_code);
         if ($isRequired) {
-            $regionHelper = Mage::getHelper('fyndiq/region');
+            $regionHelper = Mage::helper('fyndiq/region');
             switch ($fyndiqOrder->delivery_country_code) {
                 case 'DE':
                     $regionCode = $regionHelper->codeToRegionCode(
@@ -105,7 +105,10 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
                     );
 
                     // Try to deduce the region for Germany
-                    $region = Mage::getModel('directory/region')->loadByCode($regionCode, $fyndiqOrder->delivery_country_code);
+                    $region = Mage::getModel('directory/region')->loadByCode(
+                        $regionCode,
+                        $fyndiqOrder->delivery_country_code
+                    );
                     if (is_null($region)) {
                         throw new Exception(sprintf(
                             'Error, could not find region `%s` for `%s.`',

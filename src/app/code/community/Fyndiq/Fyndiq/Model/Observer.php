@@ -3,12 +3,6 @@
 // require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
 require_once(Mage::getModuleDir('', 'Fyndiq_Fyndiq') . '/lib/shared/src/init.php');
 
-
-/**
- * Taking care of cron jobs for product feed.
- *
- * @author Håkan Nylén <hakan.nylen@fyndiq.se>
- */
 class Fyndiq_Fyndiq_Model_Observer
 {
     const BATCH_SIZE = 30;
@@ -44,20 +38,12 @@ class Fyndiq_Fyndiq_Model_Observer
 
     public function importOrdersForStore($storeId, $newTime)
     {
-        $newDate = date('Y-m-d H:i:s', $newTime);
-        $settingExists = Mage::getModel('fyndiq/setting')->settingExist($storeId, 'order_lastdate');
-
-        Mage::getModel('fyndiq/order')->clearReservations();
-        $orderFetch = new FmOrderFetch($storeId, $settingExists);
+        $lastUpdate = $this->configModel->get('order_lastdate', $storeId);
+        $orderFetchModel = Mage::getModel('fyndiq/orderfetch');
+        $orderFetch = $orderFetchModel->init($storeId, $lastUpdate);
         $orderFetch->getAll();
-
-        if ($settingExists) {
-            return Mage::getModel('fyndiq/setting')->updateSetting($storeId, 'order_lastdate', $newDate);
-        }
-
-        return Mage::getModel('fyndiq/setting')->saveSetting($storeId, 'order_lastdate', $newDate);
+        return $this->configModel->set('order_lastdate', time(), $storeId);
     }
-
 
     /**
      * Saving products to the file.

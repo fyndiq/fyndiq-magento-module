@@ -139,4 +139,9 @@ foreach ($orders as $orderRow) {
 $sql = 'DROP TABLE IF EXISTS ' . $fyndiqOrdersTable;
 $installerOrder->run($sql);
 
+$settingsTable = $installer->getTable('fyndiq/setting');
+$sql = 'DROP TABLE IF EXISTS ' . $settingsTable;
+$installerOrder->run($sql);
+
+
 $installerOrder->endSetup();

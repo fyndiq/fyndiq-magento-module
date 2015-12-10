@@ -1,8 +1,7 @@
 <?php
 
-require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
-require_once(dirname(dirname(dirname(__FILE__))) . '/includes/helpers.php');
-require_once(dirname(dirname(dirname(__FILE__))) . '/Model/OrderFetch.php');
+require_once(Mage::getModuleDir('', 'Fyndiq_Fyndiq') . '/lib/shared/src/init.php');
+
 
 class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller_Action
 {
@@ -38,6 +37,16 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         return Mage::getSingleton('admin/session')->isAllowed('system/fyndiq');
     }
 
+
+    protected function importOrdersForStore($storeId, $newTime)
+    {
+        $lastUpdate = $this->configModel->get('order_lastdate', $storeId);
+        $orderFetchModel = Mage::getModel('fyndiq/orderFetch');
+        $orderFetchModel->init($storeId, $lastUpdate);
+        $orderFetchModel->getAll();
+        return $this->configModel->set('order_lastdate', time(), $storeId);
+    }
+
     public function importFyndiqOrdersAction()
     {
 
@@ -56,12 +65,9 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                                         $store->getName()
                                     )
                                 );
-
                                 continue;
                             }
-                            $newTime = time();
-                            $observer->importOrdersForStore($storeId, $newTime);
-                            $time = date('G:i:s', $newTime);
+                            $this->importOrdersForStore($storeId, time());
                             $this->_getSession()->addSuccess(
                                 sprintf(
                                     FyndiqTranslation::get('Fyndiq Orders were imported for store `%s`'),
@@ -97,7 +103,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                 $orders['orders'][] = array('order' => intval($order));
             }
             $storeId = $observer->getStoreId();
-            $ret = Mage::getHelper('api')->callApi($this->configModel, $storeId, 'POST', 'delivery_notes/', $orders, true);
+            $ret = Mage::helper('api')->callApi($this->configModel, $storeId, 'POST', 'delivery_notes/', $orders, true);
 
             if ($ret['status'] == 200) {
                 $fileName = 'delivery_notes-' . implode('-', $fyndiqOrderIds) . '.pdf';

@@ -61,16 +61,6 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
         return FyndiqUtils::getVersionLabel(Mage::getModel('fyndiq/config')->getVersion(), Fyndiq_Fyndiq_Model_Config::COMMIT);
     }
 
-    public function getLastUpdatedDate($storeId)
-    {
-        $date = Mage::getModel('fyndiq/setting')->getSetting($storeId, 'order_lastdate');
-        if ($date != false) {
-            return $date['value'];
-        }
-
-        return false;
-    }
-
     public function getStoreSelectOptions()
     {
         $switcher = new Mage_Adminhtml_Block_System_Config_Switcher();

@@ -115,8 +115,7 @@
                 <quantity_percentage>10</quantity_percentage>
                 <import_state>processing</import_state>
                 <done_state>complete</done_state>
-                <country>SE</country>
-                <currency>SEK</currency>
+                <stockmin>0</stockmin>
                 <import_orders_disabled>0</import_orders_disabled>
                 <fyndiq_payment_method>fyndiq_fyndiq</fyndiq_payment_method>
                 <fyndiq_shipment_method>fyndiq_fyndiq_standard</fyndiq_shipment_method>
@@ -137,8 +136,8 @@
         </carriers>
         <payment>
             <fyndiq_fyndiq>
-                <model>fyndiq/payment</model>
                 <active>1</active>
+                <model>fyndiq/payment</model>
                 <order_status>pending</order_status>
                 <title>Fyndiq</title>
                 <visible_on_cart>0</visible_on_cart>
