@@ -74,6 +74,11 @@
                 </fyndiq_order_id>
             </sales_convert_quote>
         </fieldsets>
+        <helpers>
+            <api>
+                <class>Fyndiq_Fyndiq_Helper_Api</class>
+            </api>
+        </helpers>
     </global>
     <admin>
         <routers>
