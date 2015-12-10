@@ -14,6 +14,9 @@
             <observer>
                 <class>Fyndiq_Fyndiq_Model_Observer</class>
             </observer>
+            <config>
+                <class>Fyndiq_Fyndiq_Model_Config</class>
+            </config>
             <fyndiq_resource>
                 <class>Fyndiq_Fyndiq_Model_Resource</class>
                 <entities>

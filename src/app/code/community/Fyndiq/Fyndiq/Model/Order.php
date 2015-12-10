@@ -9,10 +9,16 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
     const DEFAULT_PAYMENT_METHOD = 'fyndiq_fyndiq';
     const DEFAULT_SHIPMENT_METHOD = 'fyndiq_fyndiq_standard';
 
+    const ORDERS_ENABLED = 0;
+    const ORDERS_DISABLED = 1;
+
+    private $configModel = null;
+
     public function _construct()
     {
         parent::_construct();
         $this->_init('fyndiq/order');
+        $this->configModel = Mage::getModel('fyndiq/config');
     }
 
     /**
@@ -221,13 +227,13 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         // Collect the shipping rates
         $shippingAddress->setCollectShippingRates(true)->collectShippingRates();
 
-        $shipmentMethod = trim(FmConfig::get('fyndiq_shipment_method', $storeId));
+        $shipmentMethod = trim($this->configModel->get('fyndiq_shipment_method', $storeId));
         $shipmentMethod = $shipmentMethod ? $shipmentMethod : self::DEFAULT_SHIPMENT_METHOD;
 
         // Set the shipping method
         $shippingAddress->setShippingMethod($shipmentMethod);
 
-        $paymentMethod = FmConfig::get('fyndiq_payment_method', $storeId);
+        $paymentMethod = $this->configModel->get('fyndiq_payment_method', $storeId);
         $paymentMethod = $paymentMethod ? $paymentMethod : self::DEFAULT_PAYMENT_METHOD;
 
         // Set the payment method
@@ -246,7 +252,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $order = $service->getOrder();
 
         // Now set newly entered order's status to complete so customers can enjoy their goods.
-        $importStatus = FmConfig::get('import_state', $storeId);
+        $importStatus = $this->configModel->get('import_state', $storeId);
         $order->setStatus($importStatus);
 
         // Add fyndiqOrder id as comment

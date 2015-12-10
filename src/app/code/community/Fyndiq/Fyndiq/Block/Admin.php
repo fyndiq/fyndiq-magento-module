@@ -46,16 +46,6 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
         return $this->getRequest()->getParam('store');
     }
 
-    public function getPercentage()
-    {
-        return FmConfig::get('percentage', $this->getStoreId());
-    }
-
-    public function getUsername()
-    {
-        return FmConfig::get('username', $this->getStoreId());
-    }
-
     public function getMessage($key)
     {
         return FyndiqTranslation::get($key);
@@ -68,7 +58,7 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
 
     public function getVersion()
     {
-        return FyndiqUtils::getVersionLabel(FmConfig::getVersion(), FmConfig::COMMIT);
+        return FyndiqUtils::getVersionLabel(Mage::getModel('fyndiq/config')->getVersion(), Fyndiq_Fyndiq_Model_Config::COMMIT);
     }
 
     public function getLastUpdatedDate($storeId)
@@ -90,17 +80,17 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
 
     public function getRepositoryPath()
     {
-        return FmConfig::REPOSITORY_PATH;
+        return Fyndiq_Fyndiq_Model_Config::REPOSITORY_PATH;
     }
 
     public function getModuleVersion()
     {
-        return FmConfig::getVersion();
+        return Mage::getModel('fyndiq/config')->getVersion();
     }
 
     public function getDisableUpdateCheck()
     {
-        return FmConfig::DISABLE_UPDATE_CHECK;
+        return Fyndiq_Fyndiq_Model_Config::DISABLE_UPDATE_CHECK;
     }
 
     public function getProbes()
@@ -128,6 +118,6 @@ class Fyndiq_Fyndiq_Block_Admin extends Mage_Core_Block_Template
 
     public function ordersEnabled($storeId)
     {
-        return FmConfig::get('import_orders_disabled', $storeId) != FmHelpers::ORDERS_DISABLED;
+        return Mage::getModel('fyndiq/config')->get('import_orders_disabled', $storeId) != Fyndiq_Fyndiq_Model_Order::ORDERS_DISABLED;
     }
 }

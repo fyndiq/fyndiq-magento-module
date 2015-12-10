@@ -9,12 +9,13 @@ class Fyndiq_Fyndiq_FileController extends Mage_Core_Controller_Front_Action
     {
         $result = '';
         $lastModified = 0;
+        $configModel = Mage::getModel('fyndiq/config');
         //Setting content type to csv.
         $this->getResponse()->setHeader('Content-type', 'text/csv');
         $storeId = Mage::app()->getRequest()->getParam('store');
-        if ($this->getUsername($storeId) != '' && $this->getAPIToken($storeId) != '') {
+        if ($this->getUsername($configModel, $storeId) != '' && $this->getAPIToken($configModel, $storeId) != '') {
             //Check if feed file exist and if it is too old
-            $filePath = FmConfig::getFeedPath($storeId);
+            $filePath = $configModel->getFeedPath($storeId);
             if (FyndiqUtils::mustRegenerateFile($filePath)) {
                 $fyndiqCron = new Fyndiq_Fyndiq_Model_Observer();
                 $fyndiqCron->exportProducts($storeId, false);
@@ -39,9 +40,9 @@ class Fyndiq_Fyndiq_FileController extends Mage_Core_Controller_Front_Action
      * @param $storeId
      * @return mixed
      */
-    private function getUsername($storeId)
+    private function getUsername($configModel, $storeId)
     {
-        return FmConfig::get('username', $storeId);
+        return $configModel->get('username', $storeId);
     }
 
     /**
@@ -50,8 +51,8 @@ class Fyndiq_Fyndiq_FileController extends Mage_Core_Controller_Front_Action
      * @param $storeId
      * @return mixed
      */
-    private function getAPIToken($storeId)
+    private function getAPIToken($configModel, $storeId)
     {
-        return FmConfig::get('username', $storeId);
+        return $configModel->get('username', $storeId);
     }
 }

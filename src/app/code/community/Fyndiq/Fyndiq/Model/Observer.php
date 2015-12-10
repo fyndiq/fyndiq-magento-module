@@ -1,7 +1,8 @@
 <?php
-require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
-require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
-require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
+// require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
+// require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
+require_once(Mage::getModuleDir('', 'Fyndiq_Fyndiq') . '/lib/shared/src/init.php');
+
 
 /**
  * Taking care of cron jobs for product feed.
@@ -21,10 +22,12 @@ class Fyndiq_Fyndiq_Model_Observer
     private $productMediaConfig = null;
     private $categoryCache = array();
     private $productAttrOptions = null;
+    private $configModel = null;
 
     public function __construct()
     {
         FyndiqTranslation::init(Mage::app()->getLocale()->getLocaleCode());
+        $this->configModel = Mage::getModel('fyndiq/config');
     }
 
     public function importOrders()
@@ -68,7 +71,7 @@ class Fyndiq_Fyndiq_Model_Observer
             print 'Fyndiq :: Saving feed file' . PHP_EOL;
         }
         try {
-            $fileName = FmConfig::getFeedPath($storeId);
+            $fileName = $this->configModel->getFeedPath($storeId);
             $tempFileName = FyndiqUtils::getTempFilename(dirname($fileName));
 
             FyndiqUtils::debug('$fileName', $fileName);
@@ -171,7 +174,7 @@ class Fyndiq_Fyndiq_Model_Observer
         if ($productInfo) {
             $market = Mage::getStoreConfig('general/country/default');
             $currency = $store->getCurrentCurrencyCode();
-            $stockMin = intval(FmConfig::get('stockmin', $storeId));
+            $stockMin = intval($this->configModel->get('stockmin', $storeId));
 
             $productIds = array_unique(array_keys($productInfo));
             $batches = array_chunk($productIds, self::BATCH_SIZE);
@@ -384,7 +387,7 @@ class Fyndiq_Fyndiq_Model_Observer
         }
 
         $productId = $magProduct->getId();
-        $descrType = intval(FmConfig::get('description', $storeId));
+        $descrType = intval($this->configModel->get('description', $storeId));
         $magPrice = $this->getProductPrice($magProduct);
         $price = FyndiqUtils::getFyndiqPrice($magPrice, $discount);
 
@@ -504,13 +507,13 @@ class Fyndiq_Fyndiq_Model_Observer
     public function handle_fyndiqConfigChangedSection()
     {
         $storeId = $this->getStoreId();
-        if (FmConfig::get('username', $storeId) !== ''
-            && FmConfig::get('apikey', $storeId) !== ''
+        if ($this->configModel->get('username', $storeId) !== ''
+            && $this->configModel->get('apikey', $storeId) !== ''
         ) {
             // Generate and save token
             $pingToken = Mage::helper('core')->uniqHash();
-            FmConfig::set('ping_token', $pingToken, $storeId);
-            FmConfig::reInit();
+            $this->configModel->set('ping_token', $pingToken, $storeId);
+            $this->configModel->reInit();
             $data = array(
                 FyndiqUtils::NAME_PRODUCT_FEED_URL => Mage::getUrl(
                     'fyndiq/file/index/store/' . $storeId,
@@ -531,7 +534,7 @@ class Fyndiq_Fyndiq_Model_Observer
                         )
                 )
             );
-            if (FmConfig::get('import_orders_disabled', $storeId) != FmHelpers::ORDERS_DISABLED) {
+            if ($this->configModel->get('import_orders_disabled', $storeId) != Fyndiq_Fyndiq_Model_Order::ORDERS_DISABLED) {
                 $data[FyndiqUtils::NAME_NOTIFICATION_URL] = Mage::getUrl(
                     'fyndiq/notification/index/store/' . $storeId,
                     array(
@@ -543,7 +546,7 @@ class Fyndiq_Fyndiq_Model_Observer
                         )
                 );
             }
-            return FmHelpers::callApi($storeId, 'PATCH', 'settings/', $data);
+            return Mage::helper('api')->callApi($this->configModel, $storeId, 'PATCH', 'settings/', $data);
         }
         throw new Exception(FyndiqTranslation::get('empty-username-token'));
     }

@@ -10,6 +10,12 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 {
 
     private $fyndiqOutput = null;
+    private $configModel = null;
+
+    protected function _construct()
+    {
+        $this->configModel = Mage::getModel('fyndiq/config');
+    }
 
     public function indexAction()
     {
@@ -32,7 +38,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
     function order_created()
     {
         $storeId = $this->getRequest()->getParam('store');
-        if (FmConfig::get('import_orders_disabled', $storeId) == FmHelpers::ORDERS_DISABLED) {
+        if ($this->configModel->get('import_orders_disabled', $storeId) == Fyndiq_Fyndiq_Model_Order::ORDERS_DISABLED) {
             return $this->getFyndiqOutput()->showError(403, 'Forbidden', 'Forbidden');
         }
         $orderId = $this->getRequest()->getParam('order_id');
@@ -40,7 +46,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         if ($orderId > 0) {
             try {
                 // Set the area as backend so shipping method is not skipped
-                $response = FmHelpers::callApi($storeId, 'GET', 'orders/' . $orderId . '/');
+                $response = Mage::getHelper('api')->callApi($this->configModel, $storeId, 'GET', 'orders/' . $orderId . '/');
                 $fyndiqOrder = $response['data'];
 
                 Mage::getDesign()->setArea(Mage_Core_Model_App_Area::AREA_ADMIN);
@@ -65,13 +71,13 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 
     protected function isPingLocked($storeId)
     {
-        $lastPing = FmConfig::get('ping_time', $storeId);
+        $lastPing = $this->configModel->get('ping_time', $storeId);
         return $lastPing && $lastPing > strtotime('15 minutes ago');
     }
 
     protected function isCorrectToken($token, $storeId)
     {
-        $pingToken = FmConfig::get('ping_token', $storeId);
+        $pingToken = $this->configModel->get('ping_token', $storeId);
         return !(is_null($token) || $token != $pingToken);
     }
 
@@ -88,8 +94,8 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 
         $this->getFyndiqOutput()->flushHeader('OK');
         if (!$this->isPingLocked($storeId)) {
-            FmConfig::set('ping_time', time(), $storeId);
-            FmConfig::reInit();
+            $this->configModel->set('ping_time', time(), $storeId);
+            $this->configModel->reInit();
             $this->pingObserver($storeId);
         }
     }
@@ -103,10 +109,9 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         }
 
         FyndiqUtils::debugStart();
-        FyndiqUtils::debug('USER AGENT', FmConfig::getUserAgent());
+        FyndiqUtils::debug('USER AGENT', $this->configModel->getUserAgent());
         FyndiqUtils::debug('$storeId', $storeId);
-        //Check if feed file exist and if it is too old
-        $filePath = FmConfig::getFeedPath($storeId);
+        $filePath = $this->configModel->getFeedPath($storeId);
         FyndiqUtils::debug('$filePath', $filePath);
         FyndiqUtils::debug('is_writable(' . $filePath . ')', is_writable($filePath));
 

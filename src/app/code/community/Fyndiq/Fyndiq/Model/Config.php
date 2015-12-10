@@ -1,13 +1,6 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: confact
- * Date: 03/09/14
- * Time: 10:35
- */
-class FmConfig
-{
+class Fyndiq_Fyndiq_Model_Config {
 
     const COMMIT = 'XXXXXX';
     const REPOSITORY_PATH = 'fyndiq/fyndiq-magento-module/';
@@ -15,12 +8,12 @@ class FmConfig
 
     const CONFIG_NAME = 'fyndiq/fyndiq_group';
 
-    private static function key($name)
+    private function key($name)
     {
         return self::CONFIG_NAME . '/' . $name;
     }
 
-    private static function getScope($storeId)
+    private function getScope($storeId)
     {
         if ($storeId == 0) {
             return 'default';
@@ -28,12 +21,12 @@ class FmConfig
         return 'stores';
     }
 
-    public static function delete($name)
+    public function delete($name)
     {
         return Mage::getConfig()->deleteConfig(self::key($name));
     }
 
-    public static function get($name, $storeId)
+    public function get($name, $storeId)
     {
         $result = Mage::getStoreConfig(self::key($name), $storeId);
         // FIXME: Since prior versions use serialized values, we first try to unserialize the data
@@ -46,12 +39,12 @@ class FmConfig
         return $result;
     }
 
-    public static function getBool($name)
+    public function getBool($name)
     {
         return (bool)Mage::getStoreConfigFlag(self::key($name));
     }
 
-    public static function set($name, $value, $storeId)
+    public function set($name, $value, $storeId)
     {
         return Mage::getConfig()->saveConfig(
             self::key($name),
@@ -61,23 +54,23 @@ class FmConfig
         );
     }
 
-    public static function reInit()
+    public function reInit()
     {
         Mage::getConfig()->reinit();
         Mage::app()->reinitStores();
     }
 
-    public static function getVersion()
+    public function getVersion()
     {
         return (string)Mage::getConfig()->getNode()->modules->Fyndiq_Fyndiq->version;
     }
 
-    public static function getUserAgent()
+    public function getUserAgent()
     {
-        return FyndiqUtils::getUserAgentString("Magento", Mage::getVersion(), "module", FmConfig::getVersion(), FmConfig::COMMIT);
+        return FyndiqUtils::getUserAgentString("Magento", Mage::getVersion(), "module", $this->getVersion(), self::COMMIT);
     }
 
-    public static function getFeedPath($storeId)
+    public function getFeedPath($storeId)
     {
         return Mage::getBaseDir('cache') . '/feed-' . $storeId . '.csv';
     }

@@ -23,7 +23,12 @@ class FmOrderFetch extends FyndiqPaginatedFetch
 
     public function getPageData($path)
     {
-        $ret = FmHelpers::callApi($this->storeId, 'GET', $path);
+        $ret = Mage::getHelper('api')->callApi(
+            Mage::getModel('fyndiq/config')
+            $this->storeId,
+            'GET',
+            $path
+        );
 
         return $ret['data'];
     }
