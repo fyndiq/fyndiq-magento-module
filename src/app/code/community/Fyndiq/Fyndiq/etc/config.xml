@@ -81,6 +81,9 @@
             <api>
                 <class>Fyndiq_Fyndiq_Helper_Api</class>
             </api>
+            <region>
+                <class>Fyndiq_Fyndiq_Helper_Region</class>
+            </region>
         </helpers>
     </global>
     <admin>

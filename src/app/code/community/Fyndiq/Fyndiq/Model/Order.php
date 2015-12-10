@@ -77,13 +77,6 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         return $result;
     }
 
-    protected function getRegionHelper()
-    {
-        if (!class_exists('FyndiqRegionHelper', false)) {
-            require_once dirname(dirname(__FILE__)).'/includes/FyndiqRegionHelper.php';
-        }
-    }
-
     private function getShippingAddress($fyndiqOrder)
     {
         //Shipping / Billing information gather
@@ -103,10 +96,13 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         // Check if country region is required
         $isRequired = Mage::helper('directory')->isRegionRequired($fyndiqOrder->delivery_country_code);
         if ($isRequired) {
+            $regionHelper = Mage::getHelper('fyndiq/region');
             switch ($fyndiqOrder->delivery_country_code) {
                 case 'DE':
-                    $this->getRegionHelper();
-                    $regionCode = FyndiqRegionHelper::codeToRegionCode($fyndiqOrder->delivery_postalcode, FyndiqRegionHelper::CODE_DE);
+                    $regionCode = $regionHelper->codeToRegionCode(
+                        $fyndiqOrder->delivery_postalcode,
+                        Fyndiq_Fyndiq_Helper_Region_Data::CODE_DE
+                    );
 
                     // Try to deduce the region for Germany
                     $region = Mage::getModel('directory/region')->loadByCode($regionCode, $fyndiqOrder->delivery_country_code);
@@ -121,9 +117,14 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
                     $shippingAddressArray['region'] = $region->getName();
                     break;
                 case 'SE':
-                    $this->getRegionHelper();
-                    $regionCode = FyndiqRegionHelper::codeToRegionCode($fyndiqOrder->delivery_postalcode, FyndiqRegionHelper::CODE_SE);
-                    $regionName = FyndiqRegionHelper::getRegionName($regionCode, FyndiqRegionHelper::CODE_SE);
+                    $regionCode = $regionHelper->codeToRegionCode(
+                        $fyndiqOrder->delivery_postalcode,
+                        Fyndiq_Fyndiq_Helper_Region_Data::CODE_SE
+                    );
+                    $regionName = $regionHelper->getRegionName(
+                        $regionCode,
+                        Fyndiq_Fyndiq_Helper_Region_Data::CODE_SE
+                    );
                     $shippingAddressArray['region'] = $regionName;
                     break;
                 default:
