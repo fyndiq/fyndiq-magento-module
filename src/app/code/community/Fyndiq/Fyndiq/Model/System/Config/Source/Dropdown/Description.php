@@ -1,6 +1,6 @@
 <?php
 
-class Fyndiq_Fyndiq_Model_System_Config_Source_Dropdown_Values
+class Fyndiq_Fyndiq_Model_System_Config_Source_Dropdown_Description
 {
     public function toOptionArray()
     {
