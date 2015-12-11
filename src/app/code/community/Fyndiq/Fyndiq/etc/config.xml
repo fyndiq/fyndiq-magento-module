@@ -17,6 +17,9 @@
             <config>
                 <class>Fyndiq_Fyndiq_Model_Config</class>
             </config>
+            <export>
+                <class>Fyndiq_Fyndiq_Model_Export</class>
+            </export>
             <fyndiq_resource>
                 <class>Fyndiq_Fyndiq_Model_Resource</class>
                 <entities>

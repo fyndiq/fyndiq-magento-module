@@ -33,7 +33,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Sales_Order_Grid extends Mage_Adminhtml_Bloc
         $this->addColumnAfter(
             'fyndiq_order_id',
             array(
-                'header'=> Mage::helper('catalog')->__('Fyndiq'),
+                'header'=> __('Fyndiq'),
                 'type' => 'text',
                 'index' => 'fyndiq_order_id',
                 'sortable' => true,

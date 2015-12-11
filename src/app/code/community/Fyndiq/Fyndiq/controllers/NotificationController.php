@@ -1,10 +1,6 @@
 <?php
 
-require_once(dirname(dirname(__FILE__)) . '/Model/Order.php');
-require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
-require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
-require_once(dirname(dirname(__FILE__)) . '/Model/Product_info.php');
-require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
+require_once(Mage::getModuleDir('', 'Fyndiq_Fyndiq') . '/lib/shared/src/init.php');
 
 class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Action
 {
@@ -96,7 +92,11 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         if (!$this->isPingLocked($storeId)) {
             $this->configModel->set('ping_time', time(), $storeId);
             $this->configModel->reInit();
-            $this->pingObserver($storeId);
+            $exportModel = Mage::getModel('fyndiq/export');
+            try {
+                $exportModel->generateFeed($storeId);
+            } catch (Exception $e) {
+            }
         }
     }
 
@@ -114,10 +114,15 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         $filePath = $this->configModel->getFeedPath($storeId);
         FyndiqUtils::debug('$filePath', $filePath);
         FyndiqUtils::debug('is_writable(' . $filePath . ')', is_writable($filePath));
+        FyndiqUtils::debug('mustRegenerate', FyndiqUtils::mustRegenerateFile($filePath));
 
-        $fileExistsAndFresh = file_exists($filePath) && filemtime($filePath) > strtotime('-1 hour');
-        FyndiqUtils::debug('$fileExistsAndFresh', $fileExistsAndFresh);
-        $this->pingObserver($storeId);
+        $exportModel = Mage::getModel('fyndiq/export');
+        try {
+            $exportModel->generateFeed($storeId);
+        } catch (Exception $e) {
+            FyndiqUtils::debug('UNHANDLED ERROR', $e->getMessage());
+        }
+
         $result = file_get_contents($filePath);
         FyndiqUtils::debug('$result', $result, true);
         FyndiqUtils::debugStop();
@@ -126,7 +131,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
     protected function pingObserver($storeId)
     {
         $fyndiqCron = new Fyndiq_Fyndiq_Model_Observer();
-        $fyndiqCron->exportProducts($storeId, false);
+        $fyndiqCron->generateFeed($storeId);
     }
 
     protected function getFyndiqOutput()

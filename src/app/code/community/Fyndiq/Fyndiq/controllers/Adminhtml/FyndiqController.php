@@ -2,7 +2,6 @@
 
 require_once(Mage::getModuleDir('', 'Fyndiq_Fyndiq') . '/lib/shared/src/init.php');
 
-
 class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller_Action
 {
 
@@ -10,10 +9,13 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
 
     protected function _construct()
     {
-        FyndiqTranslation::init(Mage::app()->getLocale()->getLocaleCode());
         $this->configModel = Mage::getModel('fyndiq/config');
     }
 
+    protected function _isAllowed()
+    {
+        return Mage::getSingleton('admin/session')->isAllowed('system/fyndiq');
+    }
 
     public function disconnectAction()
     {
@@ -31,12 +33,6 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         }
         $this->_redirect('fyndiq/admin/index');
     }
-
-    protected function _isAllowed()
-    {
-        return Mage::getSingleton('admin/session')->isAllowed('system/fyndiq');
-    }
-
 
     protected function importOrdersForStore($storeId, $newTime)
     {
@@ -61,7 +57,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                             if ($this->configModel->get('import_orders_disabled', $storeId) == Fyndiq_Fyndiq_Model_Order::ORDERS_DISABLED) {
                                 $this->_getSession()->addError(
                                     sprintf(
-                                        FyndiqTranslation::get('Order import is disabled for store `%s`'),
+                                        __('Order import is disabled for store `%s`'),
                                         $store->getName()
                                     )
                                 );
@@ -70,25 +66,23 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                             $this->importOrdersForStore($storeId, time());
                             $this->_getSession()->addSuccess(
                                 sprintf(
-                                    FyndiqTranslation::get('Fyndiq Orders were imported for store `%s`'),
+                                    __('Fyndiq Orders were imported for store `%s`'),
                                     $store->getName()
                                 )
                             );
                         }
                     } catch (Exception $e) {
-                        $this->_getSession()->addError(FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')');
+                        $this->_getSession()->addError(__('unhandled-error-message') . ' (' . $e->getMessage() . ')');
                     }
                 }
             }
         }
-
         $this->_redirect('adminhtml/sales_order/index');
     }
 
     /**
-     * Getting a pdf of orders.
+     * Getting a PDF of orders.
      *
-     * @param $args
      */
     public function getDeliveryNotesAction()
     {
@@ -123,7 +117,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
             }
             return $this->response(true);
         } catch (Exception $e) {
-            $this->_getSession()->addError(FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')');
+            $this->_getSession()->addError(__('unhandled-error-message') . ' (' . $e->getMessage() . ')');
             $this->_redirect('adminhtml/sales_order/index');
         }
     }
@@ -142,12 +136,14 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                     $product = Mage::getModel('catalog/product')
                                 ->setCurrentStore($storeId)
                                 ->load($productid);
-                    $product->setData('fyndiq_exported', 1)->getResource()->saveAttribute($product, 'fyndiq_exported');
+                    $product->setData('fyndiq_exported', Fyndiq_Fyndiq_Model_Attribute_Exported::PRODUCT_EXPORTED)
+                        ->getResource()
+                        ->saveAttribute($product, 'fyndiq_exported');
                 }
-                $this->_getSession()->addSuccess(FyndiqTranslation::get('products-exported-message'));
+                $this->_getSession()->addSuccess(__('products-exported-message'));
             }
         } catch (Exception $e) {
-            $this->_getSession()->addError(FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')');
+            $this->_getSession()->addError(__('unhandled-error-message') . ' (' . $e->getMessage() . ')');
         }
         $this->_redirect('adminhtml/catalog_product/index');
     }
@@ -167,12 +163,14 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                     $product = Mage::getModel('catalog/product')
                                 ->setCurrentStore($storeId)
                                 ->load($productid);
-                    $product->setData('fyndiq_exported', 0)->getResource()->saveAttribute($product, 'fyndiq_exported');
+                    $product->setData('fyndiq_exported', Fyndiq_Fyndiq_Model_Attribute_Exported::PRODUCT_NOT_EXPORTED)
+                        ->getResource()
+                        ->saveAttribute($product, 'fyndiq_exported');
                 }
-                $this->_getSession()->addSuccess(FyndiqTranslation::get('products-deleted-message'));
+                $this->_getSession()->addSuccess(__('products-deleted-message'));
             }
         } catch (Exception $e) {
-            $this->_getSession()->addError(FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')');
+            $this->_getSession()->addError(__('unhandled-error-message') . ' (' . $e->getMessage() . ')');
         }
         $this->_redirect('adminhtml/catalog_product/index');
     }
