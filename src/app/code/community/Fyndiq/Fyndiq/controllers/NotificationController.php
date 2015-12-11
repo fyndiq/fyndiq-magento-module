@@ -128,12 +128,6 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         FyndiqUtils::debugStop();
     }
 
-    protected function pingObserver($storeId)
-    {
-        $fyndiqCron = new Fyndiq_Fyndiq_Model_Observer();
-        $fyndiqCron->generateFeed($storeId);
-    }
-
     protected function getFyndiqOutput()
     {
         if (!$this->fyndiqOutput) {

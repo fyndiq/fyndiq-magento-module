@@ -14,6 +14,15 @@ class Fyndiq_Fyndiq_Model_Observer
         $this->configModel = Mage::getModel('fyndiq/config');
     }
 
+    public function getStoreId()
+    {
+        $storeCode = Mage::app()->getRequest()->getParam('store');
+        if ($storeCode) {
+            return Mage::getModel('core/store')->load($storeCode)->getId();
+        }
+        return 0;
+    }
+
     public function handle_fyndiqConfigChangedSection()
     {
         $storeId = $this->getStoreId();
@@ -30,6 +39,9 @@ class Fyndiq_Fyndiq_Model_Observer
                     array(
                             '_store' => $storeId,
                             '_nosid' => true,
+                            '_query' => array(
+                                'token' => $pingToken,
+                            ),
                         )
                 ),
                 FyndiqUtils::NAME_PING_URL => Mage::getUrl(
@@ -59,14 +71,5 @@ class Fyndiq_Fyndiq_Model_Observer
             return Mage::helper('api')->callApi($this->configModel, $storeId, 'PATCH', 'settings/', $data);
         }
         throw new Exception(FyndiqTranslation::get('empty-username-token'));
-    }
-
-    public function getStoreId()
-    {
-        $storeCode = Mage::app()->getRequest()->getParam('store');
-        if ($storeCode) {
-            return Mage::getModel('core/store')->load($storeCode)->getId();
-        }
-        return 0;
     }
 }

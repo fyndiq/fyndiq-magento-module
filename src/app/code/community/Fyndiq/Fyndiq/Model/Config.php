@@ -1,6 +1,7 @@
 <?php
 
-class Fyndiq_Fyndiq_Model_Config {
+class Fyndiq_Fyndiq_Model_Config
+{
 
     const COMMIT = 'XXXXXX';
     const REPOSITORY_PATH = 'fyndiq/fyndiq-magento-module/';

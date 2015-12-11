@@ -466,5 +466,4 @@ class Fyndiq_Fyndiq_Model_Export
         $qtyStock = intval($qtyStock - max(array($stockMin - $minQty)));
         return $qtyStock < 0 ? 0 : $qtyStock;
     }
-
 }
