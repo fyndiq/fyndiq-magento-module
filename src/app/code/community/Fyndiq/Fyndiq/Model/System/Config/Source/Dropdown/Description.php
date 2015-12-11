@@ -6,17 +6,27 @@ class Fyndiq_Fyndiq_Model_System_Config_Source_Dropdown_Description
     {
         return array(
             array(
-                'value' => '1',
-                'label' => 'Description',
+                'value' => 1,
+                'label' => Mage::helper('adminhtml')->__('Description'),
             ),
             array(
-                'value' => '2',
-                'label' => 'Short Description',
+                'value' => 2,
+                'label' => Mage::helper('adminhtml')->__('Short Description'),
             ),
             array(
-                'value' => '3',
-                'label' => 'Short and Long Description',
+                'value' => 3,
+                'label' => Mage::helper('adminhtml')->__('Short and Long Description'),
             ),
         );
     }
+
+    public function toArray()
+    {
+        return array(
+            1 => Mage::helper('adminhtml')->__('Description'),
+            2 => Mage::helper('adminhtml')->__('Short Description'),
+            3 => Mage::helper('adminhtml')->__('Short and Long Description'),
+        );
+    }
+
 }
