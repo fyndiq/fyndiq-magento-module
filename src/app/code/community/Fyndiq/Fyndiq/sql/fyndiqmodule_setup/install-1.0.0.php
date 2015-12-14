@@ -5,7 +5,7 @@ $installer->startSetup();
 $connection = $installer->getConnection();
 
 // fyndiq_product
-$tableName = $installer->getTable('fyndiq/product');
+$tableName = Mage::getConfig()->getTablePrefix()."fyndiq_products";
 if (!$installer->tableExists($tableName)) {
     $productsTable = $connection->newTable($tableName)
         ->addColumn(
@@ -52,7 +52,7 @@ if (!$installer->tableExists($tableName)) {
 }
 
 // fyndiq_order
-$tableName = $installer->getTable('fyndiq/order');
+$tableName = Mage::getConfig()->getTablePrefix()."fyndiq_orders";
 if (!$installer->tableExists($tableName)) {
     $table = $connection->newTable($tableName)
         ->addColumn(
@@ -90,7 +90,7 @@ if (!$installer->tableExists($tableName)) {
 }
 
 // fyndiq_setting
-$tableName = $installer->getTable('fyndiq/setting');
+$tableName = Mage::getConfig()->getTablePrefix()."fyndiq_settings";
 if (!$installer->tableExists($tableName)) {
     $table = $connection->newTable($tableName)
         ->addColumn(
