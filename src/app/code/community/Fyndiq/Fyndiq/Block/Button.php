@@ -20,7 +20,7 @@ class Fyndiq_Fyndiq_Block_Button extends Mage_Adminhtml_Block_System_Config_Form
         $html = $this->getLayout()->createBlock('adminhtml/widget_button')
             ->setType('button')
             ->setClass('scalable')
-            ->setLabel('Disconnect')
+            ->setLabel(Mage::helper('fyndiq_fyndiq')->__('Disconnect'))
             ->setOnClick("setLocation('$url')")
             ->toHtml();
 

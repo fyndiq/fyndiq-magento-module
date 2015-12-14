@@ -1,72 +1,20 @@
 <?php
 
+require_once(Mage::getModuleDir('', 'Fyndiq_Fyndiq') . '/lib/shared/src/init.php');
+
 class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller_Action
 {
 
+    private $configModel = null;
+
     protected function _construct()
     {
-        require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
-        require_once(dirname(dirname(dirname(__FILE__))) . '/includes/helpers.php');
-        require_once(dirname(dirname(dirname(__FILE__))) . '/Model/OrderFetch.php');
-        FyndiqTranslation::init(Mage::app()->getLocale()->getLocaleCode());
+        $this->configModel = Mage::getModel('fyndiq/config');
     }
 
-    /**
-     * The page where everything happens.
-     */
-    public function indexAction()
+    protected function _isAllowed()
     {
-        $this->loadLayout(array('default'));
-        return $this->setTemplate('fyndiq/exportproducts.phtml');
-    }
-
-    /**
-     * Show order list
-     */
-    public function orderlistAction()
-    {
-        $this->loadLayout(array('default'));
-        return $this->setTemplate('fyndiq/orderlist.phtml');
-    }
-
-    public function checkAction()
-    {
-        $this->loadLayout(array('default'));
-        // We skip all checks for check
-        return $this->setupTemplate('fyndiq/check.phtml');
-    }
-
-
-    protected function setTemplate($template)
-    {
-        $isAuthorized = true;
-        $message = '';
-        if ($this->getAPIToken() == '' || $this->getUsername() == '') {
-            $this->setupTemplate('fyndiq/needapiinfo.phtml');
-            return false;
-        }
-        try {
-            $storeId = $this->getRequest()->getParam('store');
-            $this->callAPI($storeId);
-        } catch (Exception $e) {
-            if ($e instanceof FyndiqAPIAuthorizationFailed) {
-                $isAuthorized = false;
-            }
-            $message = $e->getMessage();
-        }
-        if ($message && !$isAuthorized) {
-            $this->setupTemplate('fyndiq/apierror.phtml', array('message' => $message));
-
-            return false;
-        }
-        $currency = Mage::app()->getStore()->getCurrentCurrencyCode();
-        if (!in_array($currency, FyndiqUtils::$allowedCurrencies)) {
-            $this->setupTemplate('fyndiq/currencyerror.phtml');
-
-            return false;
-        }
-        return $this->setupTemplate($template);
-
+        return Mage::getSingleton('admin/session')->isAllowed('system/fyndiq');
     }
 
     public function disconnectAction()
@@ -78,59 +26,21 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
             FyndiqUtils::NAME_PING_URL => '',
             FyndiqUtils::NAME_NOTIFICATION_URL => '',
         );
-        if (FmHelpers::callApi($storeId, 'PATCH', 'settings/', $data)) {
-            FmConfig::set('username', '', $storeId, false);
-            FmConfig::set('apikey', '', $storeId, false);
-            FmConfig::reInit();
+        if (Mage::getModel('fyndiq/config')->callApi($this->configModel, $storeId, 'PATCH', 'settings/', $data)) {
+            $this->configModel->set('username', '', $storeId, false);
+            $this->configModel->set('apikey', '', $storeId, false);
+            $this->configModel->reInit();
         }
         $this->_redirect('fyndiq/admin/index');
     }
 
-    /**
-     * Setting up the template with correct block and everything.
-     *
-     * @param $template
-     * @param null $data
-     */
-    protected function setupTemplate($template, $data = null)
+    protected function importOrdersForStore($storeId, $newTime)
     {
-        $block = $this->getLayout()
-            ->createBlock('Fyndiq_Fyndiq_Block_Admin', 'fyndiq.admin')
-            ->setTemplate($template);
-
-        $block->setData('data', $data);
-        $this->getLayout()->getBlock('content')->append($block);
-
-        return $this->renderLayout();
-    }
-
-    /**
-     * Get the username from config
-     *
-     * @return mixed
-     */
-    public function callAPI($storeId)
-    {
-        FmHelpers::callApi($storeId, 'GET', 'settings/');
-    }
-    public function getUsername()
-    {
-        return FmConfig::get('username', $this->getRequest()->getParam('store'));
-    }
-
-    /**
-     * Get APItoken from config
-     *
-     * @return mixed
-     */
-    public function getAPIToken()
-    {
-        return FmConfig::get('apikey', $this->getRequest()->getParam('store'));
-    }
-
-    protected function _isAllowed()
-    {
-        return Mage::getSingleton('admin/session')->isAllowed('system/fyndiq');
+        $lastUpdate = $this->configModel->get('order_lastdate', $storeId);
+        $orderFetchModel = Mage::getModel('fyndiq/orderFetch');
+        $orderFetchModel->init($storeId, $lastUpdate);
+        $orderFetchModel->getAll();
+        return $this->configModel->set('order_lastdate', time(), $storeId);
     }
 
     public function importFyndiqOrdersAction()
@@ -143,41 +53,39 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                     try {
                         $observer = Mage::getModel('fyndiq/observer');
                         $storeId = $store->getId();
-                        if (FmConfig::get('apikey', $storeId)) {
-                            if (FmConfig::get('import_orders_disabled', $storeId) == FmHelpers::ORDERS_DISABLED) {
+                        if ($this->configModel->get('apikey', $storeId)) {
+                            if ($this->configModel->get('import_orders_disabled', $storeId) == Fyndiq_Fyndiq_Model_Order::ORDERS_DISABLED) {
                                 $this->_getSession()->addError(
                                     sprintf(
-                                        FyndiqTranslation::get('Order import is disabled for store `%s`'),
+                                        Mage::helper('fyndiq_fyndiq')->__('Order import is disabled for store `%s`'),
                                         $store->getName()
                                     )
                                 );
-
                                 continue;
                             }
-                            $newTime = time();
-                            $observer->importOrdersForStore($storeId, $newTime);
-                            $time = date('G:i:s', $newTime);
+                            $this->importOrdersForStore($storeId, time());
                             $this->_getSession()->addSuccess(
                                 sprintf(
-                                    FyndiqTranslation::get('Fyndiq Orders were imported for store `%s`'),
+                                    Mage::helper('fyndiq_fyndiq')->__('Fyndiq Orders were imported for store `%s`'),
                                     $store->getName()
                                 )
                             );
                         }
                     } catch (Exception $e) {
-                        $this->_getSession()->addError(FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')');
+                        $this->_getSession()->addError(
+                            Mage::helper('fyndiq_fyndiq')->
+                            __('An unhandled error occurred. If this persists, please contact Fyndiq integration support.') . ' (' . $e->getMessage() . ')'
+                        );
                     }
                 }
             }
         }
-
         $this->_redirect('adminhtml/sales_order/index');
     }
 
     /**
-     * Getting a pdf of orders.
+     * Getting a PDF of orders.
      *
-     * @param $args
      */
     public function getDeliveryNotesAction()
     {
@@ -192,7 +100,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                 $orders['orders'][] = array('order' => intval($order));
             }
             $storeId = $observer->getStoreId();
-            $ret = FmHelpers::callApi($storeId, 'POST', 'delivery_notes/', $orders, true);
+            $ret = Mage::helper('api')->callApi($this->configModel, $storeId, 'POST', 'delivery_notes/', $orders, true);
 
             if ($ret['status'] == 200) {
                 $fileName = 'delivery_notes-' . implode('-', $fyndiqOrderIds) . '.pdf';
@@ -212,7 +120,10 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
             }
             return $this->response(true);
         } catch (Exception $e) {
-            $this->_getSession()->addError(FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')');
+            $this->_getSession()->addError(
+                Mage::helper('fyndiq_fyndiq')->
+                __('An unhandled error occurred. If this persists, please contact Fyndiq integration support.') . ' (' . $e->getMessage() . ')'
+            );
             $this->_redirect('adminhtml/sales_order/index');
         }
     }
@@ -231,12 +142,17 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                     $product = Mage::getModel('catalog/product')
                                 ->setCurrentStore($storeId)
                                 ->load($productid);
-                    $product->setData('fyndiq_exported', 1)->getResource()->saveAttribute($product, 'fyndiq_exported');
+                    $product->setData('fyndiq_exported', Fyndiq_Fyndiq_Model_Attribute_Exported::PRODUCT_EXPORTED)
+                        ->getResource()
+                        ->saveAttribute($product, 'fyndiq_exported');
                 }
-                $this->_getSession()->addSuccess(FyndiqTranslation::get('products-exported-message'));
+                $this->_getSession()->addSuccess(__('products-exported-message'));
             }
         } catch (Exception $e) {
-            $this->_getSession()->addError(FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')');
+            $this->_getSession()->addError(
+                Mage::helper('fyndiq_fyndiq')->
+                __('An unhandled error occurred. If this persists, please contact Fyndiq integration support.') . ' (' . $e->getMessage() . ')'
+            );
         }
         $this->_redirect('adminhtml/catalog_product/index');
     }
@@ -256,12 +172,17 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                     $product = Mage::getModel('catalog/product')
                                 ->setCurrentStore($storeId)
                                 ->load($productid);
-                    $product->setData('fyndiq_exported', 0)->getResource()->saveAttribute($product, 'fyndiq_exported');
+                    $product->setData('fyndiq_exported', Fyndiq_Fyndiq_Model_Attribute_Exported::PRODUCT_NOT_EXPORTED)
+                        ->getResource()
+                        ->saveAttribute($product, 'fyndiq_exported');
                 }
-                $this->_getSession()->addSuccess(FyndiqTranslation::get('products-deleted-message'));
+                $this->_getSession()->addSuccess(__('products-deleted-message'));
             }
         } catch (Exception $e) {
-            $this->_getSession()->addError(FyndiqTranslation::get('unhandled-error-message') . ' (' . $e->getMessage() . ')');
+            $this->_getSession()->addError(
+                Mage::helper('fyndiq_fyndiq')->
+                __('An unhandled error occurred. If this persists, please contact Fyndiq integration support.') . ' (' . $e->getMessage() . ')'
+            );
         }
         $this->_redirect('adminhtml/catalog_product/index');
     }

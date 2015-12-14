@@ -9,7 +9,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Sales_Order_Grid extends Mage_Adminhtml_Bloc
         $this->getMassactionBlock()->addItem(
             'export',
             array(
-                'label'=> __('Download Fyndiq Delivery Notes'),
+                'label'=> Mage::helper('fyndiq_fyndiq')->__('Download Fyndiq Delivery Notes'),
                 'url'  => $this->getUrl('adminhtml/fyndiq/getDeliveryNotes')
             )
         );
@@ -19,9 +19,13 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Sales_Order_Grid extends Mage_Adminhtml_Bloc
     public function setCollection($collection)
     {
         $collection->getSelect()->join(
-            array('order_item' => 'sales_flat_order'),
+            array(
+                'order_item' => 'sales_flat_order'
+            ),
             'order_item.entity_id = main_table.entity_id',
-            array('fyndiq_order_id' => 'fyndiq_order_id'),
+            array(
+                'fyndiq_order_id' => 'fyndiq_order_id'
+            ),
             null,
             'left'
         );
@@ -33,7 +37,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Sales_Order_Grid extends Mage_Adminhtml_Bloc
         $this->addColumnAfter(
             'fyndiq_order_id',
             array(
-                'header'=> Mage::helper('catalog')->__('Fyndiq'),
+                'header'=> Mage::helper('fyndiq_fyndiq')->__('Fyndiq'),
                 'type' => 'text',
                 'index' => 'fyndiq_order_id',
                 'sortable' => true,
