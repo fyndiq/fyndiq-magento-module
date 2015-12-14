@@ -15,7 +15,7 @@ MODULE_VERSION=$(shell perl -nle"print $$& if m{(?<=<version>)[^<]+}" src/app/co
 build: clean
 	rsync -a --exclude='.*' $(SRC_DIR) $(BUILD_DIR)
 	# replace COMMIT hash
-	sed -i'' 's/XXXXXX/$(COMMIT)/g' $(BUILD_DIR)/src/app/code/community/Fyndiq/Fyndiq/includes/config.php;
+	sed -i'' 's/XXXXXX/$(COMMIT)/g' $(BUILD_DIR)/src/app/code/community/Fyndiq/Fyndiq/Model/Config.php;
 	# mkdir -p $(BUILD_DIR)/src/docs
 	# cp $(DOCS_DIR)/* $(BUILD_DIR)/src/docs
 	cp $(BASE)/LICENSE $(BUILD_DIR)/src/fyndiq/
@@ -29,7 +29,7 @@ build-connect:
 clean:
 	rm -r $(BUILD_DIR)/*
 
-dev: css
+dev:
 	cp -svr --remove-destination $(SRC_DIR)/* $(MAGENTO_ROOT)/
 
 css:

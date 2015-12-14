@@ -1,57 +1,59 @@
 <?php
-require_once(dirname(dirname(__FILE__)) . '/Model/Observer.php');
-require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
+
+require_once(Mage::getModuleDir('', 'Fyndiq_Fyndiq') . '/lib/shared/src/init.php');
 
 class Fyndiq_Fyndiq_FileController extends Mage_Core_Controller_Front_Action
 {
 
-    function indexAction()
+    public function indexAction()
     {
         $result = '';
         $lastModified = 0;
-        //Setting content type to csv.
-        $this->getResponse()->setHeader('Content-type', 'text/csv');
+        $configModel = Mage::getModel('fyndiq/config');
         $storeId = Mage::app()->getRequest()->getParam('store');
-        if ($this->getUsername($storeId) != '' && $this->getAPIToken($storeId) != '') {
-            //Check if feed file exist and if it is too old
-            $filePath = FmConfig::getFeedPath($storeId);
-            if (FyndiqUtils::mustRegenerateFile($filePath)) {
-                $fyndiqCron = new Fyndiq_Fyndiq_Model_Observer();
-                $fyndiqCron->exportProducts($storeId, false);
-            }
-            if (file_exists($filePath)) {
-                $lastModified = filemtime($filePath);
-            }
-            $result = file_get_contents($filePath);
-        }
-        if ($lastModified) {
-            $this->getResponse()->setHeader('Last-Modified', gmdate('D, d M Y H:i:s T', $lastModified));
-        }
-        $this->getResponse()->setHeader('Content-Disposition', 'attachment; filename="feed.csv"');
-        $this->getResponse()->setHeader('Content-Transfer-Encoding', 'binary');
-        //printing out the content from feed file to the visitor.
-        $this->getResponse()->setBody($result);
-    }
 
-    /**
-     * Get the username from config
-     *
-     * @param $storeId
-     * @return mixed
-     */
-    private function getUsername($storeId)
-    {
-        return FmConfig::get('username', $storeId);
-    }
+        if ($configModel->get('username', $storeId) == '' ||
+            $configModel->get('apikey', $storeId) == ''
+        ) {
+            $this->getResponse()->setBody('Module is not set up');
+            $this->getResponse()->setHttpResponseCode(500);
+            return;
+        }
 
-    /**
-     * Get APItoken from config
-     *
-     * @param $storeId
-     * @return mixed
-     */
-    private function getAPIToken($storeId)
-    {
-        return FmConfig::get('username', $storeId);
+        $filePath = $configModel->getFeedPath($storeId);
+
+        //Check if feed file exist and if it is too old
+        if (FyndiqUtils::mustRegenerateFile($filePath)) {
+            $exportModel = Mage::getModel('fyndiq/export');
+            try {
+                $exportModel->generateFeed($storeId);
+            } catch (Exception $e) {
+            }
+        }
+        if (!file_exists($filePath)) {
+            $this->getResponse()->setBody('Feed could not be generated');
+            $this->getResponse()->setHttpResponseCode(500);
+            return;
+        }
+        $lastModified = filemtime($filePath);
+
+        $response = $this->getResponse()
+            ->setHttpResponseCode(200)
+            ->setHeader('Content-type', 'text/csv', true)
+            ->setHeader('Content-Disposition', 'attachment; filename="feed.csv"', true)
+            ->setHeader('Content-Transfer-Encoding', 'binary', true)
+            ->setHeader('Last-Modified', gmdate('r', $lastModified), true);
+
+        $response->clearBody();
+        $response->sendHeaders();
+
+        $ioAdapter = new Varien_Io_File();
+        $ioAdapter->open(array('path' => $ioAdapter->dirname($filePath)));
+        $ioAdapter->streamOpen($filePath, 'r');
+        while ($buffer = $ioAdapter->streamRead()) {
+            print $buffer;
+        }
+        $ioAdapter->streamClose();
+        exit(0);
     }
 }
