@@ -6,8 +6,6 @@ $resource = Mage::getSingleton('core/resource');
 
 $installer2->startSetup();
 
-$installer2->run("DROP TABLE IF EXISTS {$this->getTable('fyndiq/product')};");
-
 // Add new Attribute group
 $attrGroupName = 'Fyndiq';
 $entityTypeId = $installer2->getEntityTypeId('catalog_product');
@@ -74,29 +72,30 @@ $installer2->addAttribute(
 );
 
 // Migrate products
-$fyndiqProductsTable = $resource->getTableName('fyndiq/product');
-$readConnection = $resource->getConnection('core_read');
-$query = 'SELECT * FROM ' . $fyndiqProductsTable;
-$products = $readConnection->fetchAll($query);
-$productModel = Mage::getModel('catalog/product');
-foreach ($products as $productRow) {
-    if (isset($productRow['store_id']) && $productRow['store_id'] != 0) {
-        $product = $productModel
-            ->setCurrentStore($productRow['store_id'])
-            ->load($productRow['product_id']);
-    } else {
-        $product = $productModel
-            ->load($productRow['product_id']);
+$productTableName = Mage::getConfig()->getTablePrefix()."fyndiq_products";
+if($installer->tableExists($productTableName)) {
+    $readConnection = $resource->getConnection('core_read');
+    $query = 'SELECT * FROM ' . $productTableName;
+    $products = $readConnection->fetchAll($query);
+    $productModel = Mage::getModel('catalog/product');
+    foreach ($products as $productRow) {
+        if (isset($productRow['store_id']) && $productRow['store_id'] != 0) {
+            $product = $productModel
+                ->setCurrentStore($productRow['store_id'])
+                ->load($productRow['product_id']);
+        } else {
+            $product = $productModel
+                ->load($productRow['product_id']);
+        }
+        if ($product) {
+            $product->setData('fyndiq_exported', 1)
+                ->getResource()
+                ->saveAttribute($product, 'fyndiq_exported');
+        }
     }
-    if ($product) {
-        $product->setData('fyndiq_exported', 1)
-            ->getResource()
-            ->saveAttribute($product, 'fyndiq_exported');
-    }
+    $sql = 'DROP TABLE IF EXISTS ' . $productTableName;
+    $installer2->run($sql);
 }
-$sql = 'DROP TABLE IF EXISTS ' . $fyndiqProductsTable;
-$installer2->run($sql);
-
 $installer2->endSetup();
 
 // Add fyndiq_order_id
@@ -124,24 +123,20 @@ $installerOrder->addAttribute(
 
 
 // Migrate orders
-$fyndiqOrdersTable = $resource->getTableName('fyndiq/order');
-$readConnection = $resource->getConnection('core_read');
-$query = 'SELECT * FROM ' . $fyndiqOrdersTable;
-$orders = $readConnection->fetchAll($query);
-$orderModel = Mage::getModel('sales/order');
-foreach ($orders as $orderRow) {
-    $order = $orderModel->load($orderRow['order_id']);
-    if ($order) {
-        $order->setData('fyndiq_order_id', $orderRow['fyndiq_orderid']);
-        $order->save();
+$orderTableName = Mage::getConfig()->getTablePrefix()."fyndiq_orders";
+if($installer->tableExists($orderTableName)) {
+    $readConnection = $resource->getConnection('core_read');
+    $query = 'SELECT * FROM ' . $orderTableName;
+    $orders = $readConnection->fetchAll($query);
+    $orderModel = Mage::getModel('sales/order');
+    foreach ($orders as $orderRow) {
+        $order = $orderModel->load($orderRow['order_id']);
+        if ($order) {
+            $order->setData('fyndiq_order_id', $orderRow['fyndiq_orderid']);
+            $order->save();
+        }
     }
+    $sql = 'DROP TABLE IF EXISTS ' . $orderTableName;
+    $installerOrder->run($sql);
 }
-$sql = 'DROP TABLE IF EXISTS ' . $fyndiqOrdersTable;
-$installerOrder->run($sql);
-
-$settingsTable = $installer->getTable('fyndiq/setting');
-$sql = 'DROP TABLE IF EXISTS ' . $settingsTable;
-$installerOrder->run($sql);
-
-
 $installerOrder->endSetup();
