@@ -72,6 +72,9 @@
             <region>
                 <class>Fyndiq_Fyndiq_Helper_Region</class>
             </region>
+            <fyndiq_fyndiq>
+                <class>Fyndiq_Fyndiq_Helper</class>
+            </fyndiq_fyndiq>
         </helpers>
     </global>
     <admin>
@@ -110,7 +113,7 @@
             </fyndiq_group>
         </fyndiq>
         <carriers>
-            <fyndiq_fyndiq>
+            <fyndiq_fyndiq translate="title" module="fyndiq_fyndiq">
                 <active>1</active>
                 <model>fyndiq/carrier</model>
                 <title>Fyndiq Carrier</title>
@@ -123,7 +126,7 @@
             </fyndiq_fyndiq>
         </carriers>
         <payment>
-            <fyndiq_fyndiq>
+            <fyndiq_fyndiq  translate="title" module="fyndiq_fyndiq">
                 <active>1</active>
                 <model>fyndiq/payment</model>
                 <order_status>pending</order_status>

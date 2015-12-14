@@ -61,14 +61,14 @@ class Fyndiq_Fyndiq_Model_Config
         Mage::app()->reinitStores();
     }
 
-    public function getVersion()
+    public function getModuleVersion()
     {
         return (string)Mage::getConfig()->getNode()->modules->Fyndiq_Fyndiq->version;
     }
 
     public function getUserAgent()
     {
-        return FyndiqUtils::getUserAgentString("Magento", Mage::getVersion(), "module", $this->getVersion(), self::COMMIT);
+        return FyndiqUtils::getUserAgentString("Magento", Mage::getVersion(), "module", $this->getModuleVersion(), self::COMMIT);
     }
 
     public function getFeedPath($storeId)

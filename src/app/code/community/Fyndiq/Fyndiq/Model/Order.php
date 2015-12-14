@@ -1,6 +1,6 @@
 <?php
 
-class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
+class Fyndiq_Fyndiq_Model_Order
 {
     const FYNDIQ_ORDERS_EMAIL = 'orders_no_reply@fyndiq.com';
     const FYNDIQ_ORDERS_NAME_FIRST = 'Fyndiq';
@@ -16,8 +16,6 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
 
     public function _construct()
     {
-        parent::_construct();
-        $this->_init('fyndiq/order');
         $this->configModel = Mage::getModel('fyndiq/config');
     }
 
@@ -111,7 +109,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
                     );
                     if (is_null($region)) {
                         throw new Exception(sprintf(
-                            'Error, could not find region `%s` for `%s.`',
+                            Mage::helper('fyndiq_fyndiq')->__('Error, could not find region `%s` for `%s.`'),
                             $regionCode,
                             $fyndiqOrder->delivery_country
                         ));
@@ -131,14 +129,17 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
                     $shippingAddressArray['region'] = $regionName;
                     break;
                 default:
-                    throw new Exception(sprintf('Error, region is required for `%s`.', $fyndiqOrder->delivery_country_code));
+                    throw new Exception(sprintf(
+                        Mage::helper('fyndiq_fyndiq')->__('Error, region is required for `%s`.'),
+                        $fyndiqOrder->delivery_country_code
+                    ));
             }
         }
         return $shippingAddressArray;
     }
 
     /**
-     * Create a order in magento based on Fyndiq Order.
+     * Create a order in Magento based on Fyndiq Order.
      *
      * @param int   $storeId
      * @param array $fyndiqOrder
@@ -161,9 +162,12 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
                 $customer->setConfirmation(null);
                 $customer->save();
             } catch (Exception $e) {
-                throw new Exception('Error, creating Fyndiq customer: '.$e->getMessage());
+                throw new Exception(
+                    Mage::helper('fyndiq_fyndiq')->__('Error, creating Fyndiq customer:') .' '.$e->getMessage()
+                );
             }
         }
+
         //Start a new order quote and assign current customer to it.
         $quote = Mage::getModel('sales/quote')->setStoreId($storeId);
         $quote->assignCustomer($customer);
@@ -184,7 +188,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             if (!$id) {
                 throw new Exception(
                     sprintf(
-                        FyndiqTranslation::get('error-import-product-not-found'),
+                        Mage::helper('fyndiq_fyndiq')->__('Product with SKU "%s", from order #%d cannot be found.'),
                         $sku,
                         $fyndiqOrder->id
                     )
@@ -261,15 +265,18 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
 
         // Add fyndiqOrder id as comment
         $comment = sprintf(
-            FyndiqTranslation::get('Fyndiq order id: %s'),
+            Mage::helper('fyndiq_fyndiq')->__('Fyndiq order id: %s'),
             $fyndiqOrder->id
         );
         $order->addStatusHistoryComment($comment);
 
         // Add delivery note as comment
-        $comment = sprintf(FyndiqTranslation::get('Fyndiq delivery note: %s'), $fyndiqOrder->delivery_note);
+        $comment = sprintf(
+            Mage::helper('fyndiq_fyndiq')->__('Fyndiq delivery note: %s'),
+            $fyndiqOrder->delivery_note
+        );
         $comment .= PHP_EOL;
-        $comment .= FyndiqTranslation::get(
+        $comment .= Mage::helper('fyndiq_fyndiq')->__(
             'Copy the URL and paste it in the browser to download the delivery note.'
         );
         $order->addStatusHistoryComment($comment);
@@ -278,88 +285,5 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
 
         //Finally we save our order after setting it's status to complete.
         $order->save();
-
-        //add it to the table for check
-        if ($reservationId) {
-            $this->unreserve($reservationId);
-        }
-    }
-
-    /**
-     * Try to update the order state.
-     *
-     * @param int    $orderId
-     * @param string $statusId
-     *
-     * @return bool
-     */
-    public function updateOrderStatuses($orderId, $statusId)
-    {
-        $order = Mage::getModel('sales/order')->load(intval($orderId));
-        if ($order) {
-            //$order->setState(Mage_Sales_Model_Order::STATE_PROCESSING, true);
-            $order->setStatus($statusId, true);
-            $order->save();
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Get Order state name.
-     *
-     * @param $statusId
-     *
-     * @return mixed
-     */
-    public function getStatusName($statusId)
-    {
-        $status = Mage::getModel('sales/order_status')->loadDefaultByState($statusId);
-
-        return $status->getStoreLabel();
-    }
-
-    public function reserve($fyndiqOrderId)
-    {
-        $data = array(
-            'fyndiq_orderid' => $fyndiqOrderId,
-            'order_id' => 0,
-        );
-        $model = $this->setData($data);
-        return $model->save()->getId();
-    }
-
-    public function unreserve($id)
-    {
-        $this->setId($id);
-        return $this->delete();
-    }
-
-    /**
-     * Clear all hanging reservations
-     */
-    public function clearReservations()
-    {
-        $orders = $this->getCollection()
-            ->addFilter('order_id', 0);
-        foreach ($orders as $order) {
-            $order->delete();
-        }
-    }
-
-    public function getFydniqOrderIds($orderIds)
-    {
-        $collection = Mage::getModel('sales/order')
-            ->getCollection()
-            ->addFieldToSelect('fyndiq_order_id')
-            ->addFieldToFilter('entity_id', array('in' => $orderIds))
-            ->addFieldToFilter('fyndiq_order_id', array('neq' => 'NULL'));
-        $data =  $collection->getData();
-        $result = array();
-        foreach ($data as $row) {
-            $result[] = $row['fyndiq_order_id'];
-        }
-        return $result;
     }
 }

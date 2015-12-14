@@ -9,11 +9,11 @@ class Fyndiq_Fyndiq_Model_Attribute_Exported extends Mage_Eav_Model_Entity_Attri
         if (is_null($this->_options)) {
             $this->_options = array(
                 array(
-                    'label' => __('Not Exported'),
+                    'label' => Mage::helper('fyndiq_fyndiq')->__('Not Exported'),
                     'value' =>  self::PRODUCT_NOT_EXPORTED,
                 ),
                 array(
-                    'label' => __('Exported'),
+                    'label' => Mage::helper('fyndiq_fyndiq')->__('Exported'),
                     'value' =>  self::PRODUCT_EXPORTED,
                 ),
             );

@@ -125,8 +125,9 @@ class Fyndiq_Fyndiq_Model_Export
 
                         $product = $this->getProduct($store, $magProduct, $productId, $discount, $market, $currency, $stockMin);
                         FyndiqUtils::debug('simple product', $product);
-                        $feedWriter->addCompleteProduct($product);
-                        FyndiqUtils::debug('Any Validation Errors', $feedWriter->getLastProductErrors());
+                        if (!$feedWriter->addCompleteProduct($product)) {
+                            FyndiqUtils::debug('Validation Errors', $feedWriter->getLastProductErrors());
+                        }
                         continue;
                     }
 
@@ -149,8 +150,9 @@ class Fyndiq_Fyndiq_Model_Export
                     }
                     $simpleCollection->clear();
                     FyndiqUtils::debug('$product, $articles', $product, $articles);
-                    $feedWriter->addCompleteProduct($product, $articles);
-                    FyndiqUtils::debug('Any Validation Errors', $feedWriter->getLastProductErrors());
+                    if (!$feedWriter->addCompleteProduct($product, $articles)) {
+                        FyndiqUtils::debug('Validation Errors', $feedWriter->getLastProductErrors());
+                    }
                 }
                 $productsToExport->clear();
             }

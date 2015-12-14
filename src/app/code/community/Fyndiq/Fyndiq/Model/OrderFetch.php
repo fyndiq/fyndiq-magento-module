@@ -1,7 +1,5 @@
 <?php
 
-//require_once(Mage::getModuleDir('', 'Fyndiq_Fyndiq') . '/lib/shared/src/init.php');
-
 class Fyndiq_Fyndiq_Model_OrderFetch extends FyndiqPaginatedFetch
 {
     private $storeId = 0;

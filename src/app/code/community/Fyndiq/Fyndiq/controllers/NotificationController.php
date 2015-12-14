@@ -15,7 +15,6 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 
     public function indexAction()
     {
-        FyndiqTranslation::init(Mage::app()->getLocale()->getLocaleCode());
         $event = $this->getRequest()->getParam('event');
         $eventName = $event ? $event : false;
         if ($eventName) {
@@ -79,7 +78,6 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 
     /**
      * Generate feed
-     *
      */
     private function ping()
     {

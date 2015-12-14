@@ -10,7 +10,6 @@ class Fyndiq_Fyndiq_Model_Observer
 
     public function __construct()
     {
-        FyndiqTranslation::init(Mage::app()->getLocale()->getLocaleCode());
         $this->configModel = Mage::getModel('fyndiq/config');
     }
 
@@ -70,6 +69,6 @@ class Fyndiq_Fyndiq_Model_Observer
             }
             return Mage::helper('api')->callApi($this->configModel, $storeId, 'PATCH', 'settings/', $data);
         }
-        throw new Exception(FyndiqTranslation::get('empty-username-token'));
+        throw new Exception(Mage::helper('fyndiq_fyndiq')->__('Please specify a Username and API token.'));
     }
 }
