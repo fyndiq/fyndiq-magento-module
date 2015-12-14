@@ -73,7 +73,7 @@ class Fyndiq_Fyndiq_Model_Observer
                 throw new Exception(
                     sprintf(
                         Mage::helper('fyndiq_fyndiq')->
-                            __('Error setting the configuration on Fyndiq. Possible reason: Access to https://api.fyndiq.com is restricted: (%s)'),
+                            __('Error setting the configuration on Fyndiq. Possible reason: Access to https://api.fyndiq.com is restricted (%s)'),
                         $e->getMessage()
                     )
                 );
