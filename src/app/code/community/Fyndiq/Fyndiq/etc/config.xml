@@ -105,7 +105,6 @@
                 <price_percentage>10</price_percentage>
                 <quantity_percentage>10</quantity_percentage>
                 <import_state>processing</import_state>
-                <done_state>complete</done_state>
                 <stockmin>0</stockmin>
                 <import_orders_disabled>0</import_orders_disabled>
                 <fyndiq_payment_method>fyndiq_fyndiq</fyndiq_payment_method>

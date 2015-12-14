@@ -90,16 +90,6 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </import_state>
-                        <done_state translate="label comment" module="fyndiq_fyndiq">
-                            <label>Done order status</label>
-                            <comment><![CDATA[When orders are marked as done, they will be switched to this status]]></comment>
-                            <source_model>Mage_Adminhtml_Model_System_Config_Source_Order_Status</source_model>
-                            <frontend_type>select</frontend_type>
-                            <sort_order>11</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </done_state>
                         <price_percentage  translate="label comment" module="fyndiq_fyndiq">
                             <label>Global percentage of price</label>
                             <comment><![CDATA[The percentage that will be removed from the price when sending to Fyndiq. Can be 0 if the price should be the same as in your shop.]]></comment>
