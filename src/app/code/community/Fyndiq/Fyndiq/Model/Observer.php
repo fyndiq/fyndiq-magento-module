@@ -67,7 +67,17 @@ class Fyndiq_Fyndiq_Model_Observer
                         )
                 );
             }
-            return Mage::helper('api')->callApi($this->configModel, $storeId, 'PATCH', 'settings/', $data);
+            try{
+                return Mage::helper('api')->callApi($this->configModel, $storeId, 'PATCH', 'settings/', $data);
+            } catch (Exception $e) {
+                throw new Exception(
+                    sprintf(
+                        Mage::helper('fyndiq_fyndiq')->
+                            __('Error setting the configuration on Fyndiq. Possible reason: Access to https://api.fyndiq.com is restricted: (%s)'),
+                        $e->getMessage()
+                    )
+                );
+            }
         }
         throw new Exception(Mage::helper('fyndiq_fyndiq')->__('Please specify a Username and API token.'));
     }
