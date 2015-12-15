@@ -14,8 +14,8 @@ class Fyndiq_Fyndiq_Model_Carrier extends Mage_Shipping_Model_Carrier_Abstract i
      */
     public function collectRates(Mage_Shipping_Model_Rate_Request $request)
     {
-        $result = Mage::getModel('shipping/rate_result');
         /* @var $result Mage_Shipping_Model_Rate_Result */
+        $result = Mage::getModel('shipping/rate_result');
 
         $result->append($this->_getStandardShippingRate());
 
@@ -29,8 +29,8 @@ class Fyndiq_Fyndiq_Model_Carrier extends Mage_Shipping_Model_Carrier_Abstract i
      */
     protected function _getStandardShippingRate()
     {
-        $rate = Mage::getModel('shipping/rate_result_method');
         /* @var $rate Mage_Shipping_Model_Rate_Result_Method */
+        $rate = Mage::getModel('shipping/rate_result_method');
 
         $rate->setCarrier($this->_code);
         /**

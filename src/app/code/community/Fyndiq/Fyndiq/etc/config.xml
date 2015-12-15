@@ -2,32 +2,23 @@
 <config>
     <modules>
         <Fyndiq_Fyndiq>
-            <version>1.0.8</version>
+            <version>1.1.0</version>
         </Fyndiq_Fyndiq>
     </modules>
     <global>
         <models>
             <fyndiq>
                 <class>Fyndiq_Fyndiq_Model</class>
-                <resourceModel>fyndiq_resource</resourceModel>
             </fyndiq>
             <observer>
                 <class>Fyndiq_Fyndiq_Model_Observer</class>
             </observer>
-            <fyndiq_resource>
-                <class>Fyndiq_Fyndiq_Model_Resource</class>
-                <entities>
-                    <product>
-                        <table>fyndiq_products</table>
-                    </product>
-                    <order>
-                        <table>fyndiq_orders</table>
-                    </order>
-                    <setting>
-                        <table>fyndiq_settings</table>
-                    </setting>
-                </entities>
-            </fyndiq_resource>
+            <config>
+                <class>Fyndiq_Fyndiq_Model_Config</class>
+            </config>
+            <export>
+                <class>Fyndiq_Fyndiq_Model_Export</class>
+            </export>
             <sales>
                 <rewrite>
                     <quote_address>Fyndiq_Fyndiq_Model_Sales_Quote_Address</quote_address>
@@ -38,6 +29,7 @@
             <fyndiqmodule_setup>
                 <setup>
                     <module>Fyndiq_Fyndiq</module>
+                    <class>Mage_Eav_Model_Entity_Setup</class>
                 </setup>
             </fyndiqmodule_setup>
         </resources>
@@ -47,6 +39,13 @@
                     <exportproducts>Fyndiq_Fyndiq_Block_Exportproducts</exportproducts>
                 </rewrite>
             </Fyndiq>
+            <adminhtml>
+               <rewrite>
+                   <catalog_product_grid>Fyndiq_Fyndiq_Block_Adminhtml_Catalog_Product_Grid</catalog_product_grid>
+                   <sales_order>Fyndiq_Fyndiq_Block_Adminhtml_Sales_Order</sales_order>
+                   <sales_order_grid>Fyndiq_Fyndiq_Block_Adminhtml_Sales_Order_Grid</sales_order_grid>
+               </rewrite>
+            </adminhtml>
         </blocks>
         <events>
             <admin_system_config_changed_section_fyndiq>
@@ -59,38 +58,36 @@
                 </observers>
             </admin_system_config_changed_section_fyndiq>
         </events>
+        <fieldsets>
+            <sales_convert_quote>
+                <fyndiq_order_id>
+                    <to_order>*</to_order>
+                </fyndiq_order_id>
+            </sales_convert_quote>
+        </fieldsets>
+        <helpers>
+            <api>
+                <class>Fyndiq_Fyndiq_Helper_Api</class>
+            </api>
+            <region>
+                <class>Fyndiq_Fyndiq_Helper_Region</class>
+            </region>
+            <fyndiq_fyndiq>
+                <class>Fyndiq_Fyndiq_Helper</class>
+            </fyndiq_fyndiq>
+        </helpers>
     </global>
     <admin>
         <routers>
-            <Fyndiq>
-                <use>admin</use>
+            <adminhtml>
                 <args>
-                    <module>Fyndiq_Fyndiq</module>
-                    <frontName>fyndiq</frontName>
+                    <modules>
+                        <Fyndiq before="Mage_Adminhtml">Fyndiq_Fyndiq_Adminhtml</Fyndiq>
+                    </modules>
                 </args>
-            </Fyndiq>
+            </adminhtml>
         </routers>
-        <layout>
-            <updates>
-                <Fyndiq>
-                    <file>fyndiqadmin.xml</file>
-                </Fyndiq>
-            </updates>
-        </layout>
     </admin>
-    <adminhtml>
-        <menu>
-            <system>
-                <children>
-                    <fyndiq>
-                        <title>Fyndiq Export/Import</title>
-                        <sort_order>0</sort_order>
-                        <action>fyndiq/admin/index</action>
-                    </fyndiq>
-                </children>
-            </system>
-        </menu>
-    </adminhtml>
     <frontend>
         <routers>
             <Fyndiq>
@@ -108,16 +105,14 @@
                 <price_percentage>10</price_percentage>
                 <quantity_percentage>10</quantity_percentage>
                 <import_state>processing</import_state>
-                <done_state>complete</done_state>
-                <country>SE</country>
-                <currency>SEK</currency>
+                <stockmin>0</stockmin>
                 <import_orders_disabled>0</import_orders_disabled>
                 <fyndiq_payment_method>fyndiq_fyndiq</fyndiq_payment_method>
                 <fyndiq_shipment_method>fyndiq_fyndiq_standard</fyndiq_shipment_method>
             </fyndiq_group>
         </fyndiq>
         <carriers>
-            <fyndiq_fyndiq>
+            <fyndiq_fyndiq translate="title" module="fyndiq_fyndiq">
                 <active>1</active>
                 <model>fyndiq/carrier</model>
                 <title>Fyndiq Carrier</title>
@@ -130,9 +125,9 @@
             </fyndiq_fyndiq>
         </carriers>
         <payment>
-            <fyndiq_fyndiq>
-                <model>fyndiq/payment</model>
+            <fyndiq_fyndiq  translate="title" module="fyndiq_fyndiq">
                 <active>1</active>
+                <model>fyndiq/payment</model>
                 <order_status>pending</order_status>
                 <title>Fyndiq</title>
                 <visible_on_cart>0</visible_on_cart>
