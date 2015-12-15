@@ -1,6 +1,6 @@
 <?php
 
-class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
+class Fyndiq_Fyndiq_Model_Order
 {
     const FYNDIQ_ORDERS_EMAIL = 'orders_no_reply@fyndiq.com';
     const FYNDIQ_ORDERS_NAME_FIRST = 'Fyndiq';
@@ -9,10 +9,14 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
     const DEFAULT_PAYMENT_METHOD = 'fyndiq_fyndiq';
     const DEFAULT_SHIPMENT_METHOD = 'fyndiq_fyndiq_standard';
 
+    const ORDERS_ENABLED = 0;
+    const ORDERS_DISABLED = 1;
+
+    private $configModel = null;
+
     public function _construct()
     {
-        parent::_construct();
-        $this->_init('fyndiq/order');
+        $this->configModel = Mage::getModel('fyndiq/config');
     }
 
     /**
@@ -22,35 +26,12 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
      *
      * @return bool
      */
-    public function orderExists($fyndiqOrder)
+    public function orderExists($fyndiqOrderId)
     {
-        $collection = $this->getCollection()
-            ->addFieldToFilter('fyndiq_orderid', $fyndiqOrder)
-            ->getFirstItem();
-        if ($collection->getId()) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Add to check table to check if order already exists.
-     *
-     * @param int $fyndiqOrderId
-     * @param int $orderId
-     *
-     * @return mixed
-     */
-    public function addCheckData($fyndiqOrderId, $orderId)
-    {
-        $data = array(
-            'fyndiq_orderid' => $fyndiqOrderId,
-            'order_id' => $orderId,
-        );
-        $model = $this->setData($data);
-
-        return $model->save()->getId();
+        $collection = Mage::getModel('sales/order')
+            ->getCollection()
+            ->addFieldToFilter('fyndiq_order_id', $fyndiqOrderId);
+        return $collection->getSize() > 0;
     }
 
     /**
@@ -63,42 +44,35 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
     public function getImportedOrders($page, $itemsPerPage)
     {
         $result = array();
-        $orders = $this->getCollection()
-            ->addFieldToFilter('order_id', array('neq' => 0))
-            ->setOrder('id', 'DESC');
+        $orders = Mage::getModel('sales/order')
+            ->getCollection()
+            ->addFieldToFilter('fyndiq_order_id', array('neq' => 'NULL'));
         if ($page != -1) {
             $orders->setCurPage($page);
             $orders->setPageSize($itemsPerPage);
         }
-        foreach ($orders->load()->getItems() as $order) {
-            $orderArray = array();
-            $order = $order->getData();
-            $magOrder = Mage::getModel('sales/order')->load($order['order_id']);
-            $magArray = $magOrder->getData();
-            $url = Mage::helper('adminhtml')->getUrl(
-                'adminhtml/sales_order/view',
-                array('order_id' => $order['order_id'])
+        $orders->load();
+        $directoryCurrency = Mage::getModel('directory/currency');
+        foreach ($orders as $order) {
+            $result[] = array(
+                'order_id' => $order->getId(),
+                'entity_id' => $order->getId(),
+                'fyndiq_orderid' => $order->getData('fyndiq_order_id'),
+                'price' => $directoryCurrency->formatTxt(
+                    $order->getBaseGrandTotal(),
+                    array('display' => Zend_Currency::NO_SYMBOL)
+                ),
+                'total_products' => intval($order->getTotalQtyOrdered()),
+                'state' => $order->getStatus(),
+                'created_at' => date('Y-m-d', strtotime($order->getCreatedAt())),
+                'created_at_time' => date('G:i:s', strtotime($order->getCreatedAt())),
+                'link' => Mage::helper('adminhtml')->getUrl(
+                    'adminhtml/sales_order/view',
+                    array('order_id' => $order->getId())
+                )
             );
-            $orderArray['order_id'] = $magArray['entity_id'];
-            $orderArray['fyndiq_orderid'] = $order['fyndiq_orderid'];
-            $orderArray['entity_id'] = $magArray['entity_id'];
-            $orderArray['price'] = number_format((float) $magArray['base_grand_total'], 2, '.', '');
-            $orderArray['total_products'] = intval($magArray['total_qty_ordered']);
-            $orderArray['state'] = $magArray['status'];
-            $orderArray['created_at'] = date('Y-m-d', strtotime($magArray['created_at']));
-            $orderArray['created_at_time'] = date('G:i:s', strtotime($magArray['created_at']));
-            $orderArray['link'] = $url;
-            $result[] = $orderArray;
         }
-
         return $result;
-    }
-
-    protected function getRegionHelper()
-    {
-        if (!class_exists('FyndiqRegionHelper', false)) {
-            require_once dirname(dirname(__FILE__)).'/includes/FyndiqRegionHelper.php';
-        }
     }
 
     private function getShippingAddress($fyndiqOrder)
@@ -120,16 +94,22 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         // Check if country region is required
         $isRequired = Mage::helper('directory')->isRegionRequired($fyndiqOrder->delivery_country_code);
         if ($isRequired) {
+            $regionHelper = Mage::helper('fyndiq/region');
             switch ($fyndiqOrder->delivery_country_code) {
                 case 'DE':
-                    $this->getRegionHelper();
-                    $regionCode = FyndiqRegionHelper::codeToRegionCode($fyndiqOrder->delivery_postalcode, FyndiqRegionHelper::CODE_DE);
+                    $regionCode = $regionHelper->codeToRegionCode(
+                        $fyndiqOrder->delivery_postalcode,
+                        Fyndiq_Fyndiq_Helper_Region_Data::CODE_DE
+                    );
 
                     // Try to deduce the region for Germany
-                    $region = Mage::getModel('directory/region')->loadByCode($regionCode, $fyndiqOrder->delivery_country_code);
+                    $region = Mage::getModel('directory/region')->loadByCode(
+                        $regionCode,
+                        $fyndiqOrder->delivery_country_code
+                    );
                     if (is_null($region)) {
                         throw new Exception(sprintf(
-                            'Error, could not find region `%s` for `%s.`',
+                            Mage::helper('fyndiq_fyndiq')->__('Error, could not find region `%s` for `%s.`'),
                             $regionCode,
                             $fyndiqOrder->delivery_country
                         ));
@@ -138,20 +118,28 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
                     $shippingAddressArray['region'] = $region->getName();
                     break;
                 case 'SE':
-                    $this->getRegionHelper();
-                    $regionCode = FyndiqRegionHelper::codeToRegionCode($fyndiqOrder->delivery_postalcode, FyndiqRegionHelper::CODE_SE);
-                    $regionName = FyndiqRegionHelper::getRegionName($regionCode, FyndiqRegionHelper::CODE_SE);
+                    $regionCode = $regionHelper->codeToRegionCode(
+                        $fyndiqOrder->delivery_postalcode,
+                        Fyndiq_Fyndiq_Helper_Region_Data::CODE_SE
+                    );
+                    $regionName = $regionHelper->getRegionName(
+                        $regionCode,
+                        Fyndiq_Fyndiq_Helper_Region_Data::CODE_SE
+                    );
                     $shippingAddressArray['region'] = $regionName;
                     break;
                 default:
-                    throw new Exception(sprintf('Error, region is required for `%s`.', $fyndiqOrder->delivery_country_code));
+                    throw new Exception(sprintf(
+                        Mage::helper('fyndiq_fyndiq')->__('Error, region is required for `%s`.'),
+                        $fyndiqOrder->delivery_country_code
+                    ));
             }
         }
         return $shippingAddressArray;
     }
 
     /**
-     * Create a order in magento based on Fyndiq Order.
+     * Create a order in Magento based on Fyndiq Order.
      *
      * @param int   $storeId
      * @param array $fyndiqOrder
@@ -174,9 +162,12 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
                 $customer->setConfirmation(null);
                 $customer->save();
             } catch (Exception $e) {
-                throw new Exception('Error, creating Fyndiq customer: '.$e->getMessage());
+                throw new Exception(
+                    Mage::helper('fyndiq_fyndiq')->__('Error, creating Fyndiq customer:') .' '.$e->getMessage()
+                );
             }
         }
+
         //Start a new order quote and assign current customer to it.
         $quote = Mage::getModel('sales/quote')->setStoreId($storeId);
         $quote->assignCustomer($customer);
@@ -197,7 +188,7 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
             if (!$id) {
                 throw new Exception(
                     sprintf(
-                        FyndiqTranslation::get('error-import-product-not-found'),
+                        Mage::helper('fyndiq_fyndiq')->__('Product with SKU "%s", from order #%d cannot be found.'),
                         $sku,
                         $fyndiqOrder->id
                     )
@@ -244,13 +235,13 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         // Collect the shipping rates
         $shippingAddress->setCollectShippingRates(true)->collectShippingRates();
 
-        $shipmentMethod = trim(FmConfig::get('fyndiq_shipment_method', $storeId));
+        $shipmentMethod = trim($this->configModel->get('fyndiq_shipment_method', $storeId));
         $shipmentMethod = $shipmentMethod ? $shipmentMethod : self::DEFAULT_SHIPMENT_METHOD;
 
         // Set the shipping method
         $shippingAddress->setShippingMethod($shipmentMethod);
 
-        $paymentMethod = FmConfig::get('fyndiq_payment_method', $storeId);
+        $paymentMethod = $this->configModel->get('fyndiq_payment_method', $storeId);
         $paymentMethod = $paymentMethod ? $paymentMethod : self::DEFAULT_PAYMENT_METHOD;
 
         // Set the payment method
@@ -269,94 +260,30 @@ class Fyndiq_Fyndiq_Model_Order extends Mage_Core_Model_Abstract
         $order = $service->getOrder();
 
         // Now set newly entered order's status to complete so customers can enjoy their goods.
-        $importStatus = FmConfig::get('import_state', $storeId);
+        $importStatus = $this->configModel->get('import_state', $storeId);
         $order->setStatus($importStatus);
 
         // Add fyndiqOrder id as comment
         $comment = sprintf(
-            FyndiqTranslation::get('Fyndiq order id: %s'),
+            Mage::helper('fyndiq_fyndiq')->__('Fyndiq order id: %s'),
             $fyndiqOrder->id
         );
         $order->addStatusHistoryComment($comment);
 
         // Add delivery note as comment
-        $comment = sprintf(FyndiqTranslation::get('Fyndiq delivery note: %s'), $fyndiqOrder->delivery_note);
+        $comment = sprintf(
+            Mage::helper('fyndiq_fyndiq')->__('Fyndiq delivery note: %s'),
+            $fyndiqOrder->delivery_note
+        );
         $comment .= PHP_EOL;
-        $comment .= FyndiqTranslation::get(
+        $comment .= Mage::helper('fyndiq_fyndiq')->__(
             'Copy the URL and paste it in the browser to download the delivery note.'
         );
         $order->addStatusHistoryComment($comment);
 
+        $order->setData('fyndiq_order_id', $fyndiqOrder->id);
+
         //Finally we save our order after setting it's status to complete.
         $order->save();
-
-        //add it to the table for check
-        if ($reservationId) {
-            $this->unreserve($reservationId);
-        }
-        $this->addCheckData($fyndiqOrder->id, $order->getId());
-    }
-
-    /**
-     * Try to update the order state.
-     *
-     * @param int    $orderId
-     * @param string $statusId
-     *
-     * @return bool
-     */
-    public function updateOrderStatuses($orderId, $statusId)
-    {
-        $order = Mage::getModel('sales/order')->load(intval($orderId));
-        if ($order) {
-            //$order->setState(Mage_Sales_Model_Order::STATE_PROCESSING, true);
-            $order->setStatus($statusId, true);
-            $order->save();
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Get Order state name.
-     *
-     * @param $statusId
-     *
-     * @return mixed
-     */
-    public function getStatusName($statusId)
-    {
-        $status = Mage::getModel('sales/order_status')->loadDefaultByState($statusId);
-
-        return $status->getStoreLabel();
-    }
-
-    public function reserve($fyndiqOrderId)
-    {
-        $data = array(
-            'fyndiq_orderid' => $fyndiqOrderId,
-            'order_id' => 0,
-        );
-        $model = $this->setData($data);
-        return $model->save()->getId();
-    }
-
-    public function unreserve($id)
-    {
-        $this->setId($id);
-        return $this->delete();
-    }
-
-    /**
-     * Clear all hanging reservations
-     */
-    public function clearReservations()
-    {
-        $orders = $this->getCollection()
-            ->addFilter('order_id', 0);
-        foreach ($orders as $order) {
-            $order->delete();
-        }
     }
 }
