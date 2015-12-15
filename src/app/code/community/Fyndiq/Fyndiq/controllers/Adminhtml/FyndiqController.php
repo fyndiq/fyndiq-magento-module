@@ -146,7 +146,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                         ->getResource()
                         ->saveAttribute($product, 'fyndiq_exported');
                 }
-                $this->_getSession()->addSuccess(__('products-exported-message'));
+                $this->_getSession()->addSuccess(Mage::helper('fyndiq_fyndiq')->__('products-exported-message'));
             }
         } catch (Exception $e) {
             $this->_getSession()->addError(
@@ -176,7 +176,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                         ->getResource()
                         ->saveAttribute($product, 'fyndiq_exported');
                 }
-                $this->_getSession()->addSuccess(__('products-deleted-message'));
+                $this->_getSession()->addSuccess(Mage::helper('fyndiq_fyndiq')->__('products-deleted-message'));
             }
         } catch (Exception $e) {
             $this->_getSession()->addError(
