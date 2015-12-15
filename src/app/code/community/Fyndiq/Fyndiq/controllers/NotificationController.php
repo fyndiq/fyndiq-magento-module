@@ -1,19 +1,20 @@
 <?php
 
-require_once(dirname(dirname(__FILE__)) . '/Model/Order.php');
-require_once(dirname(dirname(__FILE__)) . '/includes/config.php');
-require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
-require_once(dirname(dirname(__FILE__)) . '/Model/Product_info.php');
-require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
+require_once(Mage::getModuleDir('', 'Fyndiq_Fyndiq') . '/lib/shared/src/init.php');
 
 class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Action
 {
 
     private $fyndiqOutput = null;
+    private $configModel = null;
+
+    protected function _construct()
+    {
+        $this->configModel = Mage::getModel('fyndiq/config');
+    }
 
     public function indexAction()
     {
-        FyndiqTranslation::init(Mage::app()->getLocale()->getLocaleCode());
         $event = $this->getRequest()->getParam('event');
         $eventName = $event ? $event : false;
         if ($eventName) {
@@ -32,7 +33,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
     function order_created()
     {
         $storeId = $this->getRequest()->getParam('store');
-        if (FmConfig::get('import_orders_disabled', $storeId) == FmHelpers::ORDERS_DISABLED) {
+        if ($this->configModel->get('import_orders_disabled', $storeId) == Fyndiq_Fyndiq_Model_Order::ORDERS_DISABLED) {
             return $this->getFyndiqOutput()->showError(403, 'Forbidden', 'Forbidden');
         }
         $orderId = $this->getRequest()->getParam('order_id');
@@ -40,7 +41,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         if ($orderId > 0) {
             try {
                 // Set the area as backend so shipping method is not skipped
-                $response = FmHelpers::callApi($storeId, 'GET', 'orders/' . $orderId . '/');
+                $response = Mage::helper('api')->callApi($this->configModel, $storeId, 'GET', 'orders/' . $orderId . '/');
                 $fyndiqOrder = $response['data'];
 
                 Mage::getDesign()->setArea(Mage_Core_Model_App_Area::AREA_ADMIN);
@@ -65,19 +66,18 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 
     protected function isPingLocked($storeId)
     {
-        $lastPing = FmConfig::get('ping_time', $storeId);
+        $lastPing = $this->configModel->get('ping_time', $storeId);
         return $lastPing && $lastPing > strtotime('15 minutes ago');
     }
 
     protected function isCorrectToken($token, $storeId)
     {
-        $pingToken = FmConfig::get('ping_token', $storeId);
+        $pingToken = $this->configModel->get('ping_token', $storeId);
         return !(is_null($token) || $token != $pingToken);
     }
 
     /**
      * Generate feed
-     *
      */
     private function ping()
     {
@@ -88,10 +88,13 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 
         $this->getFyndiqOutput()->flushHeader('OK');
         if (!$this->isPingLocked($storeId)) {
-            FmConfig::set('ping_time', time(), $storeId);
-            FmConfig::reInit();
-            $this->pingObserver($storeId);
-            $this->updateProductInfo($storeId);
+            $this->configModel->set('ping_time', time(), $storeId);
+            $this->configModel->reInit();
+            $exportModel = Mage::getModel('fyndiq/export');
+            try {
+                $exportModel->generateFeed($storeId);
+            } catch (Exception $e) {
+            }
         }
     }
 
@@ -104,31 +107,23 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         }
 
         FyndiqUtils::debugStart();
-        FyndiqUtils::debug('USER AGENT', FmConfig::getUserAgent());
+        FyndiqUtils::debug('USER AGENT', $this->configModel->getUserAgent());
         FyndiqUtils::debug('$storeId', $storeId);
-        //Check if feed file exist and if it is too old
-        $filePath = FmConfig::getFeedPath($storeId);
+        $filePath = $this->configModel->getFeedPath($storeId);
         FyndiqUtils::debug('$filePath', $filePath);
         FyndiqUtils::debug('is_writable(' . $filePath . ')', is_writable($filePath));
+        FyndiqUtils::debug('mustRegenerate', FyndiqUtils::mustRegenerateFile($filePath));
 
-        $fileExistsAndFresh = file_exists($filePath) && filemtime($filePath) > strtotime('-1 hour');
-        FyndiqUtils::debug('$fileExistsAndFresh', $fileExistsAndFresh);
-        $this->pingObserver($storeId);
+        $exportModel = Mage::getModel('fyndiq/export');
+        try {
+            $exportModel->generateFeed($storeId);
+        } catch (Exception $e) {
+            FyndiqUtils::debug('UNHANDLED ERROR', $e->getMessage());
+        }
+
         $result = file_get_contents($filePath);
         FyndiqUtils::debug('$result', $result, true);
         FyndiqUtils::debugStop();
-    }
-
-    protected function updateProductInfo($storeId)
-    {
-        $pi = new FmProductInfo($storeId);
-        $pi->getAll();
-    }
-
-    protected function pingObserver($storeId)
-    {
-        $fyndiqCron = new Fyndiq_Fyndiq_Model_Observer();
-        $fyndiqCron->exportProducts($storeId, false);
     }
 
     protected function getFyndiqOutput()

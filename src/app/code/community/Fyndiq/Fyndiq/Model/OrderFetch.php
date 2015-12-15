@@ -1,52 +1,53 @@
 <?php
-require_once(dirname(dirname(__FILE__)) . '/includes/helpers.php');
-require_once(MAGENTO_ROOT . '/fyndiq/shared/src/init.php');
 
-class FmOrderFetch extends FyndiqPaginatedFetch
+class Fyndiq_Fyndiq_Model_OrderFetch extends FyndiqPaginatedFetch
 {
-    function __construct($storeId, $settingExists)
+    private $storeId = 0;
+    private $lastUpdate = null;
+
+    public function init($storeId, $lastUpdate)
     {
         $this->storeId = $storeId;
-        $this->settingExists = $settingExists;
+        $this->lastUpdate = $lastUpdate;
     }
 
-    function getInitialPath()
+    public function getInitialPath()
     {
-        $date = false;
-        if ($this->settingExists) {
-            $date = Mage::getModel('fyndiq/setting')->getSetting($this->storeId, 'order_lastdate');
-        }
-        $url = 'orders/' . (empty($date) ? '' : '?min_date=' . urlencode($date['value']));
-
-        return $url;
+        return 'orders/' . (empty($this->lastUpdate) ? '' : '?min_date=' . urlencode(date('Y-m-d H:i:s', $this->lastUpdate)));
     }
 
-    function getPageData($path)
+    public function getPageData($path)
     {
-        $ret = FmHelpers::callApi($this->storeId, 'GET', $path);
+        $ret = Mage::helper('api')->callApi(
+            Mage::getModel('fyndiq/config'),
+            $this->storeId,
+            'GET',
+            $path
+        );
 
         return $ret['data'];
     }
 
-    function processData($data)
+    public function processData($data)
     {
         $errors = array();
+        $orderModel = Mage::getModel('fyndiq/order');
         foreach ($data as $order) {
-            if (!Mage::getModel('fyndiq/order')->orderExists($order->id)) {
+            if (!$orderModel->orderExists(intval($order->id))) {
                 try {
-                    Mage::getModel('fyndiq/order')->create($this->storeId, $order);
+                    $orderModel->create($this->storeId, $order);
                 } catch (Exception $e) {
                     $errors[] = $e->getMessage();
                 }
             }
         }
         if ($errors) {
-            throw new Exception(implode("\n", $errors));
+            throw new Exception(implode(PHP_EOL, $errors));
         }
         return true;
     }
 
-    function getSleepIntervalSeconds()
+    public function getSleepIntervalSeconds()
     {
         return 1 / self::THROTTLE_ORDER_RPS;
     }

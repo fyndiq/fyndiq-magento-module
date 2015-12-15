@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <config>
     <sections>
-        <fyndiq translate="label">
+        <fyndiq translate="label" module="fyndiq_fyndiq">
             <label>Fyndiq Settings</label>
             <tab>general</tab>
             <frontend_type>text</frontend_type>
@@ -11,7 +11,7 @@
             <show_in_store>1</show_in_store>
             <groups>
                 <!-- New groups go here -->
-                <fyndiq_group translate="label">
+                <fyndiq_group translate="label" module="fyndiq_fyndiq">
                     <label>Settings</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>100</sort_order>
@@ -31,71 +31,58 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                         </ping_time>
-                        <disconnect translate="label">
+                        <disconnect translate="label comment" module="fyndiq_fyndiq">
                             <label>Disconnect your account</label>
+                            <comment><![CDATA[Disconnect your account means to reset your api-token and username, no warning will come up when clicking so click with caution!]]></comment>
                             <frontend_type>button</frontend_type>
                             <frontend_model>Fyndiq_Fyndiq_Block_Button</frontend_model>
                             <sort_order>20</sort_order>
-                            <comment>
-                                <![CDATA[Disconnect your account means to reset your api-token and username, no warning will come up when clicking so click with caution!]]>
-                            </comment>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </disconnect>
-                        <fyndiq_shipment_method>
+                        <fyndiq_shipment_method  translate="label comment" module="fyndiq_fyndiq">
                             <label>Create orders with this shipping method code</label>
-                            <comment>
-                                <![CDATA[Leave the field empty for the default Fyndiq shipping method]]>
-                            </comment>
+                            <comment><![CDATA[Leave the field empty for the default Fyndiq shipping method]]></comment>
                             <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_shipping_allmethods</source_model>
+                            <source_model>adminhtml/system_config_source_shipping_allowedmethods</source_model>
                             <sort_order>17</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </fyndiq_shipment_method>
-                        <fyndiq_payment_method>
+                        <fyndiq_payment_method translate="label comment" module="fyndiq_fyndiq">
                             <label>Create orders with this payment method</label>
-                            <comment>
-                                <![CDATA[Choose which payment method to create orders with]]>
-                            </comment>
+                            <comment><![CDATA[Choose which payment method to create orders with]]></comment>
                             <frontend_type>select</frontend_type>
-                            <source_model>Fyndiq_Fyndiq_Model_System_Config_Source_Dropdown_PaymentMethods</source_model>
+                            <source_model>adminhtml/system_config_source_payment_allowedmethods</source_model>
                             <sort_order>16</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </fyndiq_payment_method>
-                        <stockmin translate="label">
+                        <stockmin translate="label comment" module="fyndiq_fyndiq">
                             <label>Lowest quantity to send to Fyndiq</label>
+                            <comment><![CDATA[Set this to a number which will be the lowest Fyndiq can go to, If set to ten, the module will send the quantity amount minus 10 to Fyndiq, if the quantity minus 10 becomes 0 or below 0 it will be sent as 0.]]></comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>14</sort_order>
-                            <comment>
-                                <![CDATA[Set this to a number which will be the lowest Fyndiq can go to, If set to ten, the module will send the quantity amount minus 10 to Fyndiq, if the quantity minus 10 becomes 0 or below 0 it will be sent as 0.]]>
-                            </comment>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </stockmin>
-                        <description translate="label">
+                        <description translate="label comment" module="fyndiq_fyndiq">
                             <label>Description to use</label>
+                            <comment><![CDATA[This Description will be used, when sending the product to Fyndiq.]]></comment>
                             <frontend_type>select</frontend_type>
-                            <source_model>fyndiq/system_config_source_dropdown_values</source_model>
+                            <source_model>fyndiq/system_config_source_dropdown_description</source_model>
                             <sort_order>15</sort_order>
-                            <comment>
-                                <![CDATA[This Description will be used, when sending the product to Fyndiq.]]>
-                            </comment>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </description>
-                        <!-- New fields go here -->
-                        <import_state translate="label">
+                        <import_state  translate="label comment" module="fyndiq_fyndiq">
                             <label>Import order status</label>
-                            <comment>
-                                <![CDATA[Orders, imported from Fyndiq will be created with this orders status]]>
-                            </comment>
+                            <comment><![CDATA[Orders, imported from Fyndiq will be created with this orders status]]></comment>
                             <source_model>Mage_Adminhtml_Model_System_Config_Source_Order_Status</source_model>
                             <frontend_type>select</frontend_type>
                             <sort_order>10</sort_order>
@@ -103,18 +90,6 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </import_state>
-                        <done_state translate="label">
-                            <label>Done order status</label>
-                            <comment>
-                                <![CDATA[When orders are marked as done, they will be switched to this status]]>
-                            </comment>
-                            <source_model>Mage_Adminhtml_Model_System_Config_Source_Order_Status</source_model>
-                            <frontend_type>select</frontend_type>
-                            <sort_order>11</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </done_state>
                         <price_group  translate="label comment" module="fyndiq_fyndiq">
                             <label>Customer Price Fyndiq will use</label>
                             <comment><![CDATA[Customer price group products will use to set price for fyndiq]]></comment>
@@ -127,45 +102,35 @@
                         </price_group>
                         <price_percentage  translate="label comment" module="fyndiq_fyndiq">
                             <label>Global percentage of price</label>
-                            <comment>
-                                <![CDATA[The percentage that will be removed from the price when sending to fyndiq.
-                            Can be 0 if the price should be the same as in your shop.]]>
-                            </comment>
+                            <comment><![CDATA[The percentage that will be removed from the price when sending to Fyndiq. Can be 0 if the price should be the same as in your shop.]]></comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>7</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </price_percentage>
-                        <import_orders_disabled translate="label">
+                        <import_orders_disabled translate="label comment" module="fyndiq_fyndiq">
                             <label>Disable order import from Fyndiq</label>
-                            <comment>
-                                <![CDATA[If the checkbox is checked, orders will be automatically imported from Fyndiq]]>
-                            </comment>
+                            <comment><![CDATA[If the checkbox is checked, orders will be automatically imported from Fyndiq]]></comment>
                             <frontend_type>select</frontend_type>
-                            <source_model>Fyndiq_Fyndiq_Model_System_Config_Source_Dropdown_Yesno</source_model>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>3</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </import_orders_disabled>
-                        <!-- New fields go here -->
-                        <apikey translate="label">
+                        <apikey translate="label comment" module="fyndiq_fyndiq">
                             <label>API token</label>
+                            <comment><![CDATA[The API key that is long randomly generated string you got from Fyndiq.]]></comment>
                             <frontend_type>text</frontend_type>
-                            <comment>
-                                <![CDATA[The api-key that is long randomly generated string you got from Fyndiq.]]>
-                            </comment>
                             <sort_order>2</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </apikey>
-                        <username translate="label">
+                        <username translate="label comment" module="fyndiq_fyndiq">
                             <label>Username</label>
-                            <comment>
-                                <![CDATA[Your login username to the merchant page.]]>
-                            </comment>
+                            <comment><![CDATA[Your login username to the merchant page.]]></comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>1</sort_order>
                             <show_in_default>1</show_in_default>
@@ -178,7 +143,7 @@
         </fyndiq>
         <payment>
             <groups>
-                <fyndiq_fyndiq translate="label comment">
+                <fyndiq_fyndiq  translate="label" module="fyndiq_fyndiq">
                     <label>Fyndiq</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>9999</sort_order>
