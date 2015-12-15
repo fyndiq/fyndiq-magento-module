@@ -204,7 +204,7 @@ class Fyndiq_Fyndiq_Model_Export
 
         $productId = $magProduct->getId();
         $descrType = intval($this->configModel->get('description', $storeId));
-        $magPrice = $this->getProductPrice($magProduct);
+        $magPrice = $this->getProductPrice($magProduct, $storeId);
         $price = FyndiqUtils::getFyndiqPrice($magPrice, $discount);
 
         // Old price is always the product base price
@@ -273,8 +273,10 @@ class Fyndiq_Fyndiq_Model_Export
         return $price;
     }
 
-    public function getProductPrice($product)
+    public function getProductPrice($product, $storeId)
     {
+        $price_group = intval($this->configModel->get('price_group', $storeId));
+        $product->setCustomerGroupId($price_group);
         $price = $product->getFinalPrice();
         return $this->includeTax($product, $price);
     }
@@ -360,7 +362,7 @@ class Fyndiq_Fyndiq_Model_Export
             return array();
         }
 
-        $magPrice = $this->getProductPrice($magProduct);
+        $magPrice = $this->getProductPrice($magProduct, $store);
         $price = FyndiqUtils::getFyndiqPrice($magPrice, $discount);
 
         $feedProduct = array(
