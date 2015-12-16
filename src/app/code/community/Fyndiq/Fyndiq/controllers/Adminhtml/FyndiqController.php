@@ -137,16 +137,46 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
             $storeId = $observer->getStoreId();
             $productPost = $this->getRequest()->getPost();
             if ($productPost) {
-                $productsId = $productPost['product'];
-                foreach ($productsId as $productid) {
+                $productIds = $productPost['product'];
+                $productsToExport = count($productIds);
+                $productsExported = 0;
+                foreach ($productIds as $productId) {
                     $product = Mage::getModel('catalog/product')
                                 ->setCurrentStore($storeId)
-                                ->load($productid);
-                    $product->setData('fyndiq_exported', Fyndiq_Fyndiq_Model_Attribute_Exported::PRODUCT_EXPORTED)
-                        ->getResource()
-                        ->saveAttribute($product, 'fyndiq_exported');
+                                ->load($productId);
+                    if ($product) {
+                        $productTypeId = $product->getTypeId();
+                        if (
+                            $productTypeId == Mage_Catalog_Model_Product_Type::TYPE_CONFIGURABLE ||
+                            (
+                                $productTypeId == Mage_Catalog_Model_Product_Type::TYPE_SIMPLE &&
+                                empty(Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild($product->getId()))
+                            )
+                        ) {
+                            $product->setData('fyndiq_exported', Fyndiq_Fyndiq_Model_Attribute_Exported::PRODUCT_EXPORTED)
+                                ->getResource()
+                                ->saveAttribute($product, 'fyndiq_exported');
+                            $productsExported++;
+                        }
+                    }
                 }
-                $this->_getSession()->addSuccess(__('products-exported-message'));
+                if ($productsToExport == $productsExported) {
+                    $this->_getSession()->addSuccess(
+                        Mage::helper('fyndiq_fyndiq')->__('The products you selected have been exported to Fyndiq.')
+                    );
+                } elseif ($productsToExport > 0  && $productsExported == 0) {
+                    $this->_getSession()->addNotice(
+                        Mage::helper('fyndiq_fyndiq')->__('None of the selected products could be exported.')
+                    );
+                } else if ($productsToExport > $productsExported) {
+                    $this->_getSession()->addNotice(
+                        sprintf(
+                            Mage::helper('fyndiq_fyndiq')->__('%d products exported, %d products could not be exported.'),
+                            $productsExported,
+                            $productsToExport - $productsExported
+                        )
+                    );
+                }
             }
         } catch (Exception $e) {
             $this->_getSession()->addError(
@@ -176,7 +206,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                         ->getResource()
                         ->saveAttribute($product, 'fyndiq_exported');
                 }
-                $this->_getSession()->addSuccess(__('products-deleted-message'));
+                $this->_getSession()->addSuccess(Mage::helper('fyndiq_fyndiq')->__('The products you selected have been removed from the feed.'));
             }
         } catch (Exception $e) {
             $this->_getSession()->addError(
