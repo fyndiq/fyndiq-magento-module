@@ -1,12 +1,17 @@
 <?php
 class Fyndiq_Fyndiq_Model_Attribute_Exported extends Mage_Eav_Model_Entity_Attribute_Source_Abstract
 {
+    const PRODUCT_NOT_EXPORTED = 0;
     const PRODUCT_EXPORTED = 1;
 
     public function getAllOptions()
     {
         if (is_null($this->_options)) {
             $this->_options = array(
+                array(
+                    'label' => Mage::helper('fyndiq_fyndiq')->__('Not Exported'),
+                    'value' =>  self::PRODUCT_NOT_EXPORTED,
+                ),
                 array(
                     'label' => Mage::helper('fyndiq_fyndiq')->__('Exported'),
                     'value' =>  self::PRODUCT_EXPORTED,
@@ -64,7 +69,7 @@ class Fyndiq_Fyndiq_Model_Attribute_Exported extends Mage_Eav_Model_Entity_Attri
                 'type'      => 'int',
                 'unsigned'  => false,
                 'is_null'   => false,
-                'default'   => self::PRODUCT_EXPORTED,
+                'default'   => self::PRODUCT_NOT_EXPORTED,
                 'extra'     => null,
             )
         );
