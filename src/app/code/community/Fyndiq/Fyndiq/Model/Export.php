@@ -178,6 +178,12 @@ class Fyndiq_Fyndiq_Model_Export
         return $productsModel->load();
     }
 
+    protected function getCOmparsonUnit($product) {
+        $attribute = Mage::getModel('eav/entity_attribute')->loadByCode('catalog_product', 'base_price_unit');
+        $unit = $attribute->getFrontend()->getValue($product);
+
+    }
+
     /**
      * Get product information
      * @param  object $store
@@ -211,6 +217,14 @@ class Fyndiq_Fyndiq_Model_Export
 
         // Old price is always the product base price
         $oldPrice = $this->includeTax($magProduct, $magProduct->getPrice());
+
+        if (isset($magArray['base_price_amount']) && $magArray['base_price_amount']) {
+            $comparisonUnit = $this->getComparisonUnit($magProduct);
+            if ($comparisonUnit) {
+                FyndiqFeedWriter::PRODUCT_PORTION = number_format((float)$magArray['base_price_amount'], 2, '.', '');
+                FyndiqFeedWriter::PRODUCT_COMPARISON_UNIT = $comparisonUnit;
+            }
+        }
 
         $feedProduct = array(
             FyndiqFeedWriter::ID => $ourProductId,
