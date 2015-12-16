@@ -100,6 +100,7 @@ class Fyndiq_Fyndiq_Model_Export
             $currency = $store->getCurrentCurrencyCode();
             $stockMin = intval($this->configModel->get('stockmin', $storeId));
             $priceGroup = intval($this->configModel->get('price_group', $storeId));
+            $discountPrice = intval($this->configModel->get('price_absolute', $storeId));
 
             $productIds = array_unique(array_keys($productInfo));
             $batches = array_chunk($productIds, self::BATCH_SIZE);
@@ -124,7 +125,7 @@ class Fyndiq_Fyndiq_Model_Export
                             continue;
                         }
 
-                        $product = $this->getProduct($store, $magProduct, $productId, $discount, $market, $currency, $stockMin, $priceGroup);
+                        $product = $this->getProduct($store, $magProduct, $productId, $discount, $market, $currency, $stockMin, $priceGroup, $discountPrice);
                         FyndiqUtils::debug('simple product', $product);
                         if (!$feedWriter->addCompleteProduct($product)) {
                             FyndiqUtils::debug('Validation Errors', $feedWriter->getLastProductErrors());
@@ -135,7 +136,7 @@ class Fyndiq_Fyndiq_Model_Export
                     // Configurable product
                     $articles = array();
                     $simpleCollection = $this->getConfigurableProductsCollection($magProduct, $storeId);
-                    $product = $this->getProduct($store, $magProduct, $productId, $discount, $market, $currency, $stockMin, $priceGroup);
+                    $product = $this->getProduct($store, $magProduct, $productId, $discount, $market, $currency, $stockMin, $priceGroup, $discountPrice);
                     $index = 1;
                     foreach ($simpleCollection as $simpleProduct) {
                         if ($simpleProduct->getStockItem()->getMinSaleQty() > 1) {
@@ -143,7 +144,7 @@ class Fyndiq_Fyndiq_Model_Export
                             continue;
                         }
                         FyndiqUtils::debug('$simpleProduct', $simpleProduct);
-                        $article = $this->getArticle($store, $simpleProduct, $discount, $productId, $index, $stockMin, $priceGroup);
+                        $article = $this->getArticle($store, $simpleProduct, $discount, $productId, $index, $stockMin, $priceGroup, $discountPrice);
                         if ($article) {
                             $articles[] = $article;
                         }
@@ -185,7 +186,7 @@ class Fyndiq_Fyndiq_Model_Export
      * @param  string $market
      * @return array
      */
-    private function getProduct($store, $magProduct, $ourProductId, $discount, $market, $currency, $stockMin, $priceGroup)
+    private function getProduct($store, $magProduct, $ourProductId, $discount, $market, $currency, $stockMin, $priceGroup, $discountPrice)
     {
         $storeId = intval($store->getId());
         $magArray = $magProduct->getData();
@@ -206,7 +207,7 @@ class Fyndiq_Fyndiq_Model_Export
         $productId = $magProduct->getId();
         $descrType = intval($this->configModel->get('description', $storeId));
         $magPrice = $this->getProductPrice($magProduct, $priceGroup);
-        $price = FyndiqUtils::getFyndiqPrice($magPrice, $discount);
+        $price = FyndiqUtils::getFyndiqPrice($magPrice, $discount, $discountPrice);
 
         // Old price is always the product base price
         $oldPrice = $this->includeTax($magProduct, $magProduct->getPrice());
@@ -363,7 +364,7 @@ class Fyndiq_Fyndiq_Model_Export
         }
 
         $magPrice = $this->getProductPrice($magProduct, $priceGroup);
-        $price = FyndiqUtils::getFyndiqPrice($magPrice, $discount);
+        $price = FyndiqUtils::getFyndiqPrice($magPrice, $discount, $discountPrice);
 
         $feedProduct = array(
             FyndiqFeedWriter::ID => $index,
