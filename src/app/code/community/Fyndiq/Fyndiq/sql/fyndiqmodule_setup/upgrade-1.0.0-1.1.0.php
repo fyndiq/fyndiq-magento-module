@@ -50,27 +50,6 @@ $storeId = Mage_Core_Model_App::ADMIN_STORE_ID;
 Mage::getSingleton('catalog/product_action')
     ->updateAttributes($productIds, $attributeData, $storeId);
 
-
-$attrCode2 = 'fyndiq_price';
-$attrLabel2 = 'Fyndiq Price';
-
-$installer2->addAttribute(
-    'catalog_product',
-    $attrCode2,
-    array(
-    'type'          => 'int',
-    'input'         => 'price',
-    'label'         => $attrLabel2,
-    'group'         => $attrGroupName,
-    'required'      => false,
-    'global'        => Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_STORE,
-    'searchable'    => true,
-    'filterable_in_search' => true,
-    'sort_order'    => 2, // Place just below SKU (4)
-    'default'       => '0'
-    )
-);
-
 // Migrate products
 $productTableName = Mage::getConfig()->getTablePrefix()."fyndiq_products";
 if($installer->tableExists($productTableName)) {
