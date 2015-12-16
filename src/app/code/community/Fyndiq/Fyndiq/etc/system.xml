@@ -109,6 +109,15 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </price_percentage>
+                        <price_absolute  translate="label comment" module="fyndiq_fyndiq">
+                            <label>Absolute price discount</label>
+                            <comment><![CDATA[The price that will be removed from product price when exported to Fyndiq]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>7</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </price_absolute>
                         <import_orders_disabled translate="label comment" module="fyndiq_fyndiq">
                             <label>Disable order import from Fyndiq</label>
                             <comment><![CDATA[If the checkbox is checked, orders will be automatically imported from Fyndiq]]></comment>
