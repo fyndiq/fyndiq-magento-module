@@ -7,8 +7,10 @@ class Fyndiq_Fyndiq_Helper_Data extends Mage_Core_Helper_Abstract
 {
     private $loaded = false;
 
-    public function __($string)
+    public function __()
     {
+        $args = func_get_args();
+        $string = array_shift($args);
         if (!$string) {
             return '';
         }
