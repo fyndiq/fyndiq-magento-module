@@ -178,6 +178,18 @@ class Fyndiq_Fyndiq_Model_Export
         return $productsModel->load();
     }
 
+    protected function getComparisonUnit($product) {
+        $attribute = Mage::getModel('eav/entity_attribute')->loadByCode('catalog_product', 'base_price_unit');
+        $unit = $attribute->getFrontend()->getValue($product);
+        if ($unit) {
+            $unit = strtolower(trim($unit));
+            if (in_array($unit, FyndiqFeedWriter::$validContent[FyndiqFeedWriter::PRODUCT_COMPARISON_UNIT])) {
+                return $unit;
+            }
+        }
+        return false;
+    }
+
     /**
      * Get product information
      * @param  object $store
@@ -223,6 +235,15 @@ class Fyndiq_Fyndiq_Model_Export
             FyndiqFeedWriter::PRODUCT_CURRENCY => $currency,
             FyndiqFeedWriter::PRODUCT_MARKET => $market,
         );
+
+        if (isset($magArray['base_price_amount']) && $magArray['base_price_amount']) {
+            $comparisonUnit = $this->getComparisonUnit($magProduct);
+            if ($comparisonUnit) {
+                $feedProduct[FyndiqFeedWriter::PRODUCT_PORTION] =
+                    number_format((float)$magArray['base_price_amount'], 2, '.', '');
+                $feedProduct[FyndiqFeedWriter::PRODUCT_COMPARISON_UNIT] = $comparisonUnit;
+            }
+        }
 
         $brand = $magProduct->getAttributeText('manufacturer');
         if ($brand) {
@@ -281,7 +302,6 @@ class Fyndiq_Fyndiq_Model_Export
         $price = $product->getFinalPrice();
         return $this->includeTax($product, $price);
     }
-
 
     /**
      * getDescription returns product's long description string
@@ -345,7 +365,7 @@ class Fyndiq_Fyndiq_Model_Export
         return $this->categoryCache[$categoryId];
     }
 
-    private function getArticle($store, $magProduct, $discount, $parentProductId, $index, $stockMin, $priceGroup)
+    private function getArticle($store, $magProduct, $discount, $parentProductId, $index, $stockMin, $priceGroup, $discountPrice)
     {
         // Setting the data
         if (!$magProduct->getPrice()) {
@@ -377,6 +397,15 @@ class Fyndiq_Fyndiq_Model_Export
             FyndiqFeedWriter::PROPERTIES => array(),
         );
 
+        if (isset($magArray['base_price_amount']) && $magArray['base_price_amount']) {
+            $comparisonUnit = $this->getComparisonUnit($magProduct);
+            if ($comparisonUnit) {
+                $feedProduct[FyndiqFeedWriter::PRODUCT_PORTION] =
+                    number_format((float)$magArray['base_price_amount'], 2, '.', '');
+                $feedProduct[FyndiqFeedWriter::PRODUCT_COMPARISON_UNIT] = $comparisonUnit;
+            }
+        }
+
         $parentProduct = Mage::getModel('catalog/product')->load($parentProductId);
         if (method_exists($parentProduct->getTypeInstance(), 'getConfigurableAttributes')) {
             if (!$this->productAttrOptions) {
@@ -396,7 +425,6 @@ class Fyndiq_Fyndiq_Model_Export
                     FyndiqFeedWriter::PROPERTY_VALUE => $value,
                 );
             }
-            FyndiqUtils::debug('-+OPTIONS', $productAttrOptions);
         }
         return $feedProduct;
     }
