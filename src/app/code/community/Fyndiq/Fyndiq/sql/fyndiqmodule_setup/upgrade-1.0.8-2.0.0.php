@@ -51,8 +51,8 @@ $installer2->addAttribute(
         'group'         => $attrGroupName,
         'required'      => false,
         'global'        => Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_STORE,
-        'searchable'    => true,
-        'filterable_in_search' => true,
+        'searchable'    => false,
+        'filterable_in_search' => false,
         'sort_order'    => 1, // Place just below SKU (4)
         'default'       => '0'
     )
@@ -72,8 +72,8 @@ $installer2->addAttribute(
         'group'         => $attrGroupName,
         'required'      => false,
         'global'        => Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_STORE,
-        'searchable'    => true,
-        'filterable_in_search' => true,
+        'searchable'    => false,
+        'filterable_in_search' => false,
         'sort_order'    => 2, // Place just below SKU (4)
         'default'       => '0'
     )
