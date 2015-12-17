@@ -23,17 +23,59 @@ $installer2->addAttribute(
     'catalog_product',
     $attrCode,
     array(
-    'type'          => 'int',
-    'input'         => 'select',
-    'label'         => $attrLabel,
-    'group'         => $attrGroupName,
-    'required'      => false,
-    'global'        => Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_STORE,
-    'searchable'    => true,
-    'source'        => 'fyndiq/attribute_exported',
-    'filterable_in_search' => true,
-    'sort_order'    => 1, // Place just below SKU (4)
-    'default'       => '0'
+        'type'          => 'int',
+        'input'         => 'select',
+        'label'         => $attrLabel,
+        'group'         => $attrGroupName,
+        'required'      => false,
+        'global'        => Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_STORE,
+        'searchable'    => true,
+        'source'        => 'fyndiq/attribute_exported',
+        'filterable_in_search' => true,
+        'sort_order'    => 3, // Place last in fyndiq tab
+        'default'       => '0'
+    )
+);
+
+$attrCode = 'fyndiq_title';
+$attrLabel = 'Fyndiq Product Title';
+$attrNote = 'Set specific Fyndiq product title';
+
+$installer2->addAttribute(
+    'catalog_product',
+    $attrCode,
+    array(
+        'type'          => 'text',
+        'input'         => 'text',
+        'label'         => $attrLabel,
+        'group'         => $attrGroupName,
+        'required'      => false,
+        'global'        => Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_STORE,
+        'searchable'    => false,
+        'filterable_in_search' => false,
+        'sort_order'    => 1, // Place first in fyndiq tab
+        'default'       => '0'
+    )
+);
+
+$attrCode = 'fyndiq_description';
+$attrLabel = 'Fyndiq Product Description';
+$attrNote = 'Set specific Fyndiq product description';
+
+$installer2->addAttribute(
+    'catalog_product',
+    $attrCode,
+    array(
+        'type'          => 'text',
+        'input'         => 'textarea',
+        'label'         => $attrLabel,
+        'group'         => $attrGroupName,
+        'required'      => false,
+        'global'        => Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_STORE,
+        'searchable'    => false,
+        'filterable_in_search' => false,
+        'sort_order'    => 2, // Place after title in fyndiq tab
+        'default'       => '0'
     )
 );
 
@@ -52,7 +94,7 @@ Mage::getSingleton('catalog/product_action')
 
 // Migrate products
 $productTableName = Mage::getConfig()->getTablePrefix()."fyndiq_products";
-if($installer->tableExists($productTableName)) {
+if ($installer2->tableExists($productTableName)) {
     $readConnection = $resource->getConnection('core_read');
     $query = 'SELECT * FROM ' . $productTableName;
     $products = $readConnection->fetchAll($query);
@@ -103,7 +145,7 @@ $installerOrder->addAttribute(
 
 // Migrate orders
 $orderTableName = Mage::getConfig()->getTablePrefix()."fyndiq_orders";
-if($installer->tableExists($orderTableName)) {
+if ($installer2->tableExists($orderTableName)) {
     $readConnection = $resource->getConnection('core_read');
     $query = 'SELECT * FROM ' . $orderTableName;
     $orders = $readConnection->fetchAll($query);
