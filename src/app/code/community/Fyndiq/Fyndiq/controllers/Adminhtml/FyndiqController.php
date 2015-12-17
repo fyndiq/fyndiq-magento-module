@@ -138,19 +138,22 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
             $productPost = $this->getRequest()->getPost();
             if ($productPost) {
                 $productIds = $productPost['product'];
+                $productModel = Mage::getModel('catalog/product');
+                $productConfigurableModel = Mage::getModel('catalog/product_type_configurable');
                 $productsToExport = count($productIds);
                 $productsExported = 0;
+
                 foreach ($productIds as $productId) {
-                    $product = Mage::getModel('catalog/product')
-                                ->setCurrentStore($storeId)
-                                ->load($productId);
+                    $product = $productModel
+                        ->setCurrentStore($storeId)
+                        ->load($productId);
                     if ($product) {
                         $productTypeId = $product->getTypeId();
                         if (
                             $productTypeId == Mage_Catalog_Model_Product_Type::TYPE_CONFIGURABLE ||
                             (
                                 $productTypeId == Mage_Catalog_Model_Product_Type::TYPE_SIMPLE &&
-                                empty(Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild($product->getId()))
+                                empty($productConfigurableModel->getParentIdsByChild($product->getId()))
                             )
                         ) {
                             $product->setData('fyndiq_exported', Fyndiq_Fyndiq_Model_Attribute_Exported::PRODUCT_EXPORTED)
@@ -159,6 +162,8 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                             $productsExported++;
                         }
                     }
+
+                    unset($product);
                 }
                 if ($productsToExport == $productsExported) {
                     $this->_getSession()->addSuccess(
@@ -198,13 +203,17 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
             $productPost = $this->getRequest()->getPost();
             if ($productPost) {
                 $productsId = $productPost['product'];
+                $productModel = Mage::getModel('catalog/product');
+
                 foreach ($productsId as $productid) {
-                    $product = Mage::getModel('catalog/product')
-                                ->setCurrentStore($storeId)
-                                ->load($productid);
+                    $product = $productModel
+                        ->setCurrentStore($storeId)
+                        ->load($productid);
                     $product->setData('fyndiq_exported', Fyndiq_Fyndiq_Model_Attribute_Exported::PRODUCT_NOT_EXPORTED)
                         ->getResource()
                         ->saveAttribute($product, 'fyndiq_exported');
+
+                    unset($product);
                 }
                 $this->_getSession()->addSuccess(Mage::helper('fyndiq_fyndiq')->__('The products you selected have been removed from the feed.'));
             }
