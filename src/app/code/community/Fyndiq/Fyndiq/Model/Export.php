@@ -226,7 +226,7 @@ class Fyndiq_Fyndiq_Model_Export
 
         $feedProduct = array(
             FyndiqFeedWriter::ID => $ourProductId,
-            FyndiqFeedWriter::PRODUCT_TITLE => $magArray['name'],
+            FyndiqFeedWriter::PRODUCT_TITLE => $this->getProductTitle($magArray['name'], $ourProductId, $storeId),
             FyndiqFeedWriter::PRODUCT_DESCRIPTION =>
                 $this->getProductDescription($magProduct, $descrType, $storeId),
             FyndiqFeedWriter::PRICE => FyndiqUtils::formatPrice($price),
@@ -329,6 +329,11 @@ class Fyndiq_Fyndiq_Model_Export
      */
     protected function getProductDescription($magProduct, $descrType, $storeId)
     {
+        $description = Mage::getResourceModel('catalog/product')->getAttributeRawValue($magProduct->getId(), 'fyndiq_description', $storeId);
+        if(isset($description)) {
+            return $description;
+        }
+
         switch ($descrType) {
             case 1:
                 return $this->getDescription($magProduct, $storeId);
@@ -338,6 +343,15 @@ class Fyndiq_Fyndiq_Model_Export
                 return $magProduct->getShortDescription() . "\n\n" . $this->getDescription($magProduct, $storeId);
         }
         return $this->getDescription($magProduct, $storeId);
+    }
+
+    protected function getProductTitle($title, $productId, $storeId)
+    {
+        $fyndiqTitle = Mage::getResourceModel('catalog/product')->getAttributeRawValue($productId, 'fyndiq_title', $storeId);
+        if(isset($fyndiqTitle)) {
+            return $fyndiqTitle;
+        }
+        return $title;
     }
 
     /**
