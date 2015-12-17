@@ -178,7 +178,8 @@ class Fyndiq_Fyndiq_Model_Export
         return $productsModel->load();
     }
 
-    protected function getComparisonUnit($product) {
+    protected function getComparisonUnit($product)
+    {
         $attribute = Mage::getModel('eav/entity_attribute')->loadByCode('catalog_product', 'base_price_unit');
         $unit = $attribute->getFrontend()->getValue($product);
         if ($unit) {
@@ -330,7 +331,7 @@ class Fyndiq_Fyndiq_Model_Export
     protected function getProductDescription($magProduct, $descrType, $storeId)
     {
         $description = Mage::getResourceModel('catalog/product')->getAttributeRawValue($magProduct->getId(), 'fyndiq_description', $storeId);
-        if(isset($description)) {
+        if (isset($description)) {
             return $description;
         }
 
@@ -348,7 +349,7 @@ class Fyndiq_Fyndiq_Model_Export
     protected function getProductTitle($title, $productId, $storeId)
     {
         $fyndiqTitle = Mage::getResourceModel('catalog/product')->getAttributeRawValue($productId, 'fyndiq_title', $storeId);
-        if(isset($fyndiqTitle)) {
+        if (isset($fyndiqTitle)) {
             return $fyndiqTitle;
         }
         return $title;
