@@ -32,7 +32,7 @@ $installer2->addAttribute(
         'searchable'    => true,
         'source'        => 'fyndiq/attribute_exported',
         'filterable_in_search' => true,
-        'sort_order'    => 3, // Place just below SKU (4)
+        'sort_order'    => 3, // Place last in fyndiq tab
         'default'       => '0'
     )
 );
@@ -53,7 +53,7 @@ $installer2->addAttribute(
         'global'        => Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_STORE,
         'searchable'    => false,
         'filterable_in_search' => false,
-        'sort_order'    => 1, // Place just below SKU (4)
+        'sort_order'    => 1, // Place first in fyndiq tab
         'default'       => '0'
     )
 );
@@ -74,7 +74,7 @@ $installer2->addAttribute(
         'global'        => Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_STORE,
         'searchable'    => false,
         'filterable_in_search' => false,
-        'sort_order'    => 2, // Place just below SKU (4)
+        'sort_order'    => 2, // Place after title in fyndiq tab
         'default'       => '0'
     )
 );
