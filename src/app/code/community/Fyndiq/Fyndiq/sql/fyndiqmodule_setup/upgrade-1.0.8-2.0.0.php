@@ -109,7 +109,7 @@ if ($installer2->tableExists($productTableName)) {
                 ->load($productRow['product_id']);
         }
         if ($product) {
-            $product->setData('fyndiq_exported', 1)
+            $product->setData('fyndiq_exported', Fyndiq_Fyndiq_Model_Attribute_Exported::PRODUCT_EXPORTED)
                 ->getResource()
                 ->saveAttribute($product, 'fyndiq_exported');
         }

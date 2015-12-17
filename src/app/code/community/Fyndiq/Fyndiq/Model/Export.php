@@ -76,33 +76,24 @@ class Fyndiq_Fyndiq_Model_Export
         FyndiqUtils::debug('$fyndiq_exported', $fyndiq_exported);
 
         //TODO: Find a better way to do that
-        $products = Mage::getModel('catalog/product')->getCollection()
+        $products = Mage::getModel('catalog/product')
+            ->getCollection()
             ->addStoreFilter($storeId)
             ->addAttributeToFilter(
                 'fyndiq_exported',
-                array('eq' => "Exported")
-            )
-            ->setOrder('id', 'DESC')
-            ->load();
+                array('eq' => Fyndiq_Fyndiq_Model_Attribute_Exported::PRODUCT_EXPORTED)
+            );
 
-        FyndiqUtils::debug('$idsToExport', $products);
+        $productIds = $products->getAllIds();
+        FyndiqUtils::debug('$productIds', $productIds);
 
-        $productInfo = array();
-        foreach ($products->getData() as $productData) {
-            $productInfo[intval($productData['entity_id'])] = $productData;
-        }
-        $products->clear();
-
-        FyndiqUtils::debug('$productInfo', $productInfo);
-
-        if ($productInfo) {
+        if ($productIds) {
             $market = Mage::getStoreConfig('general/country/default');
             $currency = $store->getCurrentCurrencyCode();
             $stockMin = intval($this->configModel->get('stockmin', $storeId));
             $priceGroup = intval($this->configModel->get('price_group', $storeId));
             $discountPrice = intval($this->configModel->get('price_absolute', $storeId));
 
-            $productIds = array_unique(array_keys($productInfo));
             $batches = array_chunk($productIds, self::BATCH_SIZE);
             foreach ($batches as $entityIds) {
                 FyndiqUtils::debug('MEMORY', memory_get_usage(true));
