@@ -14,7 +14,7 @@ class Fyndiq_Fyndiq_Model_Order
 
     private $configModel = null;
 
-    public function _construct()
+    public function __construct()
     {
         $this->configModel = Mage::getModel('fyndiq/config');
     }
@@ -94,7 +94,7 @@ class Fyndiq_Fyndiq_Model_Order
         // Check if country region is required
         $isRequired = Mage::helper('directory')->isRegionRequired($fyndiqOrder->delivery_country_code);
         if ($isRequired) {
-            $regionHelper = Mage::helper('fyndiq/region');
+            $regionHelper = Mage::helper('region');
             switch ($fyndiqOrder->delivery_country_code) {
                 case 'DE':
                     $regionCode = $regionHelper->codeToRegionCode(
