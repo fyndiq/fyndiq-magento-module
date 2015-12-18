@@ -26,12 +26,21 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
             FyndiqUtils::NAME_PING_URL => '',
             FyndiqUtils::NAME_NOTIFICATION_URL => '',
         );
-        if (Mage::getModel('fyndiq/config')->callApi($this->configModel, $storeId, 'PATCH', 'settings/', $data)) {
+        $result = false;
+        try {
+            $result = Mage::helper('api')->callApi($this->configModel, $storeId, 'PATCH', 'settings/', $data);
+        } catch(Exception $e) {
+            $this->_getSession()->addError(
+                Mage::helper('fyndiq_fyndiq')->
+                __('An unhandled error occurred. If this persists, please contact Fyndiq integration support.') . ' (' . $e->getMessage() . ')'
+            );
+        }
+        if ($result) {
             $this->configModel->set('username', '', $storeId, false);
             $this->configModel->set('apikey', '', $storeId, false);
             $this->configModel->reInit();
         }
-        $this->_redirect('fyndiq/admin/index');
+        $this->_redirect('adminhtml/system_config/edit/section/fyndiq');
     }
 
     protected function importOrdersForStore($storeId, $newTime)
