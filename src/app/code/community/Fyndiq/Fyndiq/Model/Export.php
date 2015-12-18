@@ -227,7 +227,8 @@ class Fyndiq_Fyndiq_Model_Export
         return false;
     }
 
-    protected function getMappedValues($mappedFields, $product) {
+    protected function getMappedValues($mappedFields, $product)
+    {
         $result = array();
         $codes = array_filter(array_values($mappedFields));
         if ($codes) {
