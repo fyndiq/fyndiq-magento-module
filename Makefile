@@ -18,7 +18,7 @@ build: clean
 	sed -i'' 's/XXXXXX/$(COMMIT)/g' $(BUILD_DIR)/src/app/code/community/Fyndiq/Fyndiq/Model/Config.php;
 	# mkdir -p $(BUILD_DIR)/src/docs
 	# cp $(DOCS_DIR)/* $(BUILD_DIR)/src/docs
-	cp $(BASE)/LICENSE $(BUILD_DIR)/src/fyndiq/
+	cp $(BASE)/LICENSE $(BUILD_DIR)/src/app/code/community/Fyndiq/Fyndiq/
 	cd $(BUILD_DIR)/src; zip -r -X ../fyndiq-magento-module-v$(MODULE_VERSION)-$(COMMIT).zip .
 	rm -r $(BUILD_DIR)/src
 
