@@ -122,7 +122,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         } catch (Exception $e) {
             $this->_getSession()->addError(
                 Mage::helper('fyndiq_fyndiq')->
-                __('An unhandled error occurred. If this persists, please contact Fyndiq integration support.') . ' (' . $e->getMessage() . ')'
+                    __('An unhandled error occurred. If this persists, please contact Fyndiq integration support.') . ' (' . $e->getMessage() . ')'
             );
             $this->_redirect('adminhtml/sales_order/index');
         }
@@ -142,8 +142,8 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                 $productsExported = 0;
                 foreach ($productIds as $productId) {
                     $product = Mage::getModel('catalog/product')
-                                ->setCurrentStore($storeId)
-                                ->load($productId);
+                        ->setCurrentStore($storeId)
+                        ->load($productId);
                     if ($product) {
                         $productTypeId = $product->getTypeId();
                         if ($productTypeId == Mage_Catalog_Model_Product_Type::TYPE_CONFIGURABLE ||

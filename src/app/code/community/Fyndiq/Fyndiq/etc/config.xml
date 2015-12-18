@@ -115,7 +115,7 @@
                 <isbn></isbn>
                 <mpn></mpn>
                 <brand>manufacturer</brand>
-            </mapings>
+            </mappings>
         </fyndiq>
         <carriers>
             <fyndiq_fyndiq translate="title" module="fyndiq_fyndiq">
