@@ -229,22 +229,26 @@ class Fyndiq_Fyndiq_Model_Export
 
     protected function getMappedValues($mappedFields, $product) {
         $result = array();
-
-        $attributes = Mage::getModel('eav/entity_attribute')
-            ->getCollection()
-            ->setEntityTypeFilter(Mage::getResourceModel('catalog/product')->getEntityType()->getData('entity_type_id'))
-            ->setCodeFilter(array_values($mappedFields));
-
-        foreach ($mappedFields as $field => $code) {
-            if ($attribute = $attributes->getItemByColumnValue('attribute_code', $code)) {
-                if ($attribute->getFrontendInput() == 'select' || $attribute->getFrontendInput() == 'multiselect') {
-                    $result[$field] = implode(', ', (array)$product->getAttributeText($code));
+        $codes = array_filter(array_values($mappedFields));
+        if ($codes) {
+            $attributes = Mage::getModel('eav/entity_attribute')
+                ->getCollection()
+                ->setEntityTypeFilter(Mage::getResourceModel('catalog/product')->getEntityType()->getData('entity_type_id'))
+                ->setCodeFilter($codes);
+            foreach ($mappedFields as $field => $code) {
+                if (empty($code)) {
+                    $result[$field] = '';
                     continue;
                 }
+                if ($attribute = $attributes->getItemByColumnValue('attribute_code', $code)) {
+                    if ($attribute->getFrontendInput() == 'select' || $attribute->getFrontendInput() == 'multiselect') {
+                        $result[$field] = implode(', ', (array)$product->getAttributeText($code));
+                        continue;
+                    }
+                }
+                $result[$field] = $product->getData($code);
             }
-            $result[$field] = $product->getData($code);
         }
-FyndiqUtils::debug('attributes', $result);
         return $result;
     }
 
