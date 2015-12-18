@@ -2,7 +2,7 @@
 <config>
     <sections>
         <fyndiq translate="label" module="fyndiq_fyndiq">
-            <label>Fyndiq Settings</label>
+            <label>Fyndiq</label>
             <tab>general</tab>
             <frontend_type>text</frontend_type>
             <sort_order>1000</sort_order>
@@ -138,6 +138,28 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </description>
+
+                        <disconnect translate="label comment" module="fyndiq_fyndiq">
+                            <label>Disconnect your account</label>
+                            <comment><![CDATA[Disconnect your account means to reset your api-token and username, no warning will come up when clicking so click with caution!]]></comment>
+                            <frontend_type>button</frontend_type>
+                            <frontend_model>Fyndiq_Fyndiq_Block_Button</frontend_model>
+                            <sort_order>16</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </disconnect>
+                    </fields>
+                </fyndiq_group>
+
+                <mappings translate="label" module="fyndiq_fyndiq">
+                    <label>Field Mappings</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>2</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
                         <ean translate="label comment" module="fyndiq_fyndiq">
                             <label>EAN</label>
                             <comment><![CDATA[Field to use for EAN.]]></comment>
@@ -178,20 +200,8 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </brand>
-
-                        <disconnect translate="label comment" module="fyndiq_fyndiq">
-                            <label>Disconnect your account</label>
-                            <comment><![CDATA[Disconnect your account means to reset your api-token and username, no warning will come up when clicking so click with caution!]]></comment>
-                            <frontend_type>button</frontend_type>
-                            <frontend_model>Fyndiq_Fyndiq_Block_Button</frontend_model>
-                            <sort_order>16</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </disconnect>
-
                     </fields>
-                </fyndiq_group>
+                </mappings>
             </groups>
         </fyndiq>
         <payment>
