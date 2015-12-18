@@ -67,7 +67,7 @@ class Fyndiq_Fyndiq_Model_Observer
                         )
                 );
             }
-            try{
+            try {
                 return Mage::helper('api')->callApi($this->configModel, $storeId, 'PATCH', 'settings/', $data);
             } catch (Exception $e) {
                 throw new Exception(

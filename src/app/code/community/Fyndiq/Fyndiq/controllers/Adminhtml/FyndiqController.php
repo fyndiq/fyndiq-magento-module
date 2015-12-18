@@ -131,7 +131,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         } catch (Exception $e) {
             $this->_getSession()->addError(
                 Mage::helper('fyndiq_fyndiq')->
-                __('An unhandled error occurred. If this persists, please contact Fyndiq integration support.') . ' (' . $e->getMessage() . ')'
+                    __('An unhandled error occurred. If this persists, please contact Fyndiq integration support.') . ' (' . $e->getMessage() . ')'
             );
             $this->_redirect('adminhtml/sales_order/index');
         }
@@ -158,8 +158,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                         ->load($productId);
                     if ($product) {
                         $productTypeId = $product->getTypeId();
-                        if (
-                            $productTypeId == Mage_Catalog_Model_Product_Type::TYPE_CONFIGURABLE ||
+                        if ($productTypeId == Mage_Catalog_Model_Product_Type::TYPE_CONFIGURABLE ||
                             (
                                 $productTypeId == Mage_Catalog_Model_Product_Type::TYPE_SIMPLE &&
                                 empty($productConfigurableModel->getParentIdsByChild($product->getId()))
@@ -182,7 +181,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                     $this->_getSession()->addNotice(
                         Mage::helper('fyndiq_fyndiq')->__('None of the selected products could be exported.')
                     );
-                } else if ($productsToExport > $productsExported) {
+                } elseif ($productsToExport > $productsExported) {
                     $this->_getSession()->addNotice(
                         sprintf(
                             Mage::helper('fyndiq_fyndiq')->__('%d products exported, %d products could not be exported.'),
