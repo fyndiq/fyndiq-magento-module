@@ -111,6 +111,9 @@
                 <fyndiq_shipment_method>fyndiq_fyndiq_standard</fyndiq_shipment_method>
             </fyndiq_group>
             <mappings>
+                <ean></ean>
+                <isbn></isbn>
+                <mpn></mpn>
                 <brand>manufacturer</brand>
             </mapings>
         </fyndiq>
