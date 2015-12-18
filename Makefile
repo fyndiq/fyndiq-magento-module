@@ -61,5 +61,8 @@ sniff-fix:
 	$(BIN_DIR)/phpcbf --standard=PSR2 --extensions=php $(TESTS_DIR)
 	$(BIN_DIR)/phpcbf --standard=PSR2 --extensions=php $(TOOLS_DIR)
 
+phpcpd:
+	$(BIN_DIR)/phpcpd --exclude=app/code/community/Fyndiq/Fyndiq/lib $(SRC_DIR)
+
 compatinfo:
 	$(BIN_DIR)/phpcompatinfo analyser:run $(SRC_DIR)
