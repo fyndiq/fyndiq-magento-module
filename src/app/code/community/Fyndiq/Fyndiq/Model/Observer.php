@@ -81,4 +81,21 @@ class Fyndiq_Fyndiq_Model_Observer
         }
         throw new Exception(Mage::helper('fyndiq_fyndiq')->__('Please specify a Username and API token.'));
     }
+
+    public function generateAllFeeds()
+    {
+        $storeIds = Mage::app()->getStores();
+        foreach ($storeId) {
+            $filePath = $configModel->getFeedPath($storeId);
+
+            //Check if feed file exist and if it is too old
+            if (FyndiqUtils::mustRegenerateFile($filePath)) {
+                $exportModel = Mage::getModel('fyndiq/export');
+                try {
+                    $exportModel->generateFeed($storeId);
+                } catch (Exception $e) {
+                }
+            }
+        }
+    }
 }

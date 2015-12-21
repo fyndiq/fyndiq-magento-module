@@ -138,4 +138,16 @@
             </fyndiq_fyndiq>
         </payment>
     </default>
+    <crontab>
+        <jobs>
+            <fyndiq_generate_feed>
+                <schedule>
+                    <cron_expr>*/10 * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>fyndiq/observer::generateAllFeeds</model>
+                </run>
+            </fyndiq_generate_feed>
+        </jobs>
+    </crontab>
 </config>
