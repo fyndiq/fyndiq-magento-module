@@ -64,8 +64,8 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 
     protected function isPingLocked($storeId)
     {
-        $lastPing = $this->configModel->get('fyndiq/fyndiq_group/ping_time', $storeId);
-        return $lastPing && $lastPing > strtotime('15 minutes ago');
+        $generatedTime = $this->configModel->get('fyndiq/feed/generated_time', $storeId);
+        return $generatedTime && $generatedTime > strtotime('15 minutes ago');
     }
 
     protected function isCorrectToken($token, $storeId)
@@ -86,7 +86,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 
         $this->getFyndiqOutput()->flushHeader('OK');
         if (!$this->isPingLocked($storeId)) {
-            $this->configModel->set('fyndiq/fyndiq_group/ping_time', time(), $storeId);
+            $this->configModel->set('fyndiq/feed/generated_time', time(), $storeId);
             $this->configModel->reInit();
             $exportModel = Mage::getModel('fyndiq/export');
             try {

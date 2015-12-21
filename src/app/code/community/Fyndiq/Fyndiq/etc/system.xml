@@ -24,12 +24,6 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                         </ping_token>
-                        <ping_time>
-                            <frontend_type>text</frontend_type>
-                            <show_in_default>0</show_in_default>
-                            <show_in_website>0</show_in_website>
-                            <show_in_store>0</show_in_store>
-                        </ping_time>
                         <username translate="label comment" module="fyndiq_fyndiq">
                             <label>Username</label>
                             <comment><![CDATA[Your login username to the merchant page.]]></comment>
@@ -210,6 +204,13 @@
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <fields>
+                        <generated_time>
+                            <frontend_type>text</frontend_type>
+                            <show_in_default>0</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </generated_time>
+
                         <cron_enabled translate="label comment" module="fyndiq_fyndiq">
                             <label>Use cron to generate feed</label>
                             <comment><![CDATA[If enabled, the export feed will be generated using the Magento cron jobs]]></comment>

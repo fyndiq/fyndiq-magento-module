@@ -82,20 +82,35 @@ class Fyndiq_Fyndiq_Model_Observer
         throw new Exception(Mage::helper('fyndiq_fyndiq')->__('Please specify a Username and API token.'));
     }
 
+    protected function mustRegenerate($generatedTime, $cronInterval)
+    {
+        if ($generatedTime) {
+            return time() < ($generatedTime + $cronInterval)
+        }
+        return true
+    }
+
     public function generateAllFeeds()
     {
         $storeIds = Mage::app()->getStores();
         foreach ($storeIds as $storeId) {
             if ($this->configModel->get('fyndiq/feed/cron_enabled', $storeId)) {
-                // check interval
-                $filePath = $configModel->getFeedPath($storeId);
+                $generatedTime = intval($this->configModel->get('fyndiq/feed/generated_time', $storeId));
+                $cronInterval = intval($this->configModel->get('fyndiq/feed/cron_interval', $storeId));
+                if ($this->mustRegenerate($generatedTime, $cronInterval)) {
+                    $this->configModel->set('fyndiq/feed/generated_time', time(), $storeId);
+                    $this->configModel->reInit();
 
-                //Check if feed file exist and if it is too old
-                if (FyndiqUtils::mustRegenerateFile($filePath)) {
-                    $exportModel = Mage::getModel('fyndiq/export');
-                    try {
-                        $exportModel->generateFeed($storeId);
-                    } catch (Exception $e) {
+                    // check interval
+                    $filePath = $configModel->getFeedPath($storeId);
+
+                    //Check if feed file exist and if it is too old
+                    if (FyndiqUtils::mustRegenerateFile($filePath)) {
+                        $exportModel = Mage::getModel('fyndiq/export');
+                        try {
+                            $exportModel->generateFeed($storeId);
+                        } catch (Exception $e) {
+                        }
                     }
                 }
             }
