@@ -92,42 +92,25 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         $this->_redirect('adminhtml/sales_order/index');
     }
 
-    /**
-     * Getting a PDF of orders.
-     *
-     */
+    public function getDeliveryNoteAction()
+    {
+        $orderId = $this->getRequest()->getParam('order_id');
+        try {
+            return $this->getDeliveryNotes(array($orderId));
+        } catch (Exception $e) {
+            $this->_getSession()->addError(
+                Mage::helper('fyndiq_fyndiq')->
+                    __('An unhandled error occurred. If this persists, please contact Fyndiq integration support.') . ' (' . $e->getMessage() . ')'
+            );
+            $this->_redirect('adminhtml/sales_order/view/order_id/' . $orderId);
+        }
+    }
+
     public function getDeliveryNotesAction()
     {
         $orderIds = $this->getRequest()->getParam('order_ids');
-        $fyndiqOrderIds = Mage::getModel('fyndiq/order')->getFydniqOrderIds($orderIds);
-        $observer = Mage::getModel('fyndiq/observer');
         try {
-            $orders = array(
-                'orders' => array()
-            );
-            foreach ($fyndiqOrderIds as $order) {
-                $orders['orders'][] = array('order' => intval($order));
-            }
-            $storeId = $observer->getStoreId();
-            $ret = Mage::helper('api')->callApi($this->configModel, $storeId, 'POST', 'delivery_notes/', $orders, true);
-
-            if ($ret['status'] == 200) {
-                $fileName = 'delivery_notes-' . implode('-', $fyndiqOrderIds) . '.pdf';
-
-                header('Content-Type: application/pdf');
-                header('Content-Disposition: attachment; filename="' . $fileName . '"');
-                header('Content-Transfer-Encoding: binary');
-                header('Content-Length: ' . strlen($ret['data']));
-                header('Expires: 0');
-                $handler = fopen('php://temp', 'wb+');
-                // Saving data to file
-                fputs($handler, $ret['data']);
-                rewind($handler);
-                fpassthru($handler);
-                fclose($handler);
-                die();
-            }
-            return $this->response(true);
+            return $this->getDeliveryNotes($orderIds);
         } catch (Exception $e) {
             $this->_getSession()->addError(
                 Mage::helper('fyndiq_fyndiq')->
@@ -136,6 +119,40 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
             $this->_redirect('adminhtml/sales_order/index');
         }
     }
+
+    protected function getDeliveryNotes($orderIds)
+    {
+        $fyndiqOrderIds = Mage::getModel('fyndiq/order')->getFydniqOrderIds($orderIds);
+        $observer = Mage::getModel('fyndiq/observer');
+        $orders = array(
+            'orders' => array()
+        );
+        foreach ($fyndiqOrderIds as $order) {
+            $orders['orders'][] = array('order' => intval($order));
+        }
+        $storeId = $observer->getStoreId();
+        $ret = Mage::helper('api')->callApi($this->configModel, $storeId, 'POST', 'delivery_notes/', $orders, true);
+
+        if ($ret['status'] == 200) {
+            $fileName = 'delivery_notes-' . implode('-', $fyndiqOrderIds) . '.pdf';
+
+            header('Content-Type: application/pdf');
+            header('Content-Disposition: attachment; filename="' . $fileName . '"');
+            header('Content-Transfer-Encoding: binary');
+            header('Content-Length: ' . strlen($ret['data']));
+            header('Expires: 0');
+            $handler = fopen('php://temp', 'wb+');
+            // Saving data to file
+            fputs($handler, $ret['data']);
+            rewind($handler);
+            fpassthru($handler);
+            fclose($handler);
+            die();
+        }
+        return $this->response(true);
+    }
+
+
     /**
     * Export products from Magento
     */
