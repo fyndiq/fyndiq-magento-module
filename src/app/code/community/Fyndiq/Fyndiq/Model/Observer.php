@@ -100,17 +100,12 @@ class Fyndiq_Fyndiq_Model_Observer
                 if ($this->mustRegenerate($generatedTime, $cronInterval)) {
                     $this->configModel->set('fyndiq/feed/generated_time', time(), $storeId);
                     $this->configModel->reInit();
-
-                    // check interval
                     $filePath = $configModel->getFeedPath($storeId);
-
                     //Check if feed file exist and if it is too old
-                    if (FyndiqUtils::mustRegenerateFile($filePath)) {
-                        $exportModel = Mage::getModel('fyndiq/export');
-                        try {
-                            $exportModel->generateFeed($storeId);
-                        } catch (Exception $e) {
-                        }
+                    try {
+                        Mage::getModel('fyndiq/export')->generateFeed($storeId);
+                    } catch (Exception $e) {
+                        Mage::logException($e);
                     }
                 }
             }
