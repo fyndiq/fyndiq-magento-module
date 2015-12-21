@@ -33,7 +33,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
     function order_created()
     {
         $storeId = $this->getRequest()->getParam('store');
-        if ($this->configModel->get('import_orders_disabled', $storeId) == Fyndiq_Fyndiq_Model_Order::ORDERS_DISABLED) {
+        if ($this->configModel->get('fyndiq/fyndiq_group/import_orders_disabled', $storeId) == Fyndiq_Fyndiq_Model_Order::ORDERS_DISABLED) {
             return $this->getFyndiqOutput()->showError(403, 'Forbidden', 'Forbidden');
         }
         $orderId = $this->getRequest()->getParam('order_id');
@@ -64,13 +64,13 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 
     protected function isPingLocked($storeId)
     {
-        $lastPing = $this->configModel->get('ping_time', $storeId);
+        $lastPing = $this->configModel->get('fyndiq/fyndiq_group/ping_time', $storeId);
         return $lastPing && $lastPing > strtotime('15 minutes ago');
     }
 
     protected function isCorrectToken($token, $storeId)
     {
-        $pingToken = $this->configModel->get('ping_token', $storeId);
+        $pingToken = $this->configModel->get('fyndiq/fyndiq_group/ping_token', $storeId);
         return !(is_null($token) || $token != $pingToken);
     }
 
@@ -86,7 +86,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 
         $this->getFyndiqOutput()->flushHeader('OK');
         if (!$this->isPingLocked($storeId)) {
-            $this->configModel->set('ping_time', time(), $storeId);
+            $this->configModel->set('fyndiq/fyndiq_group/ping_time', time(), $storeId);
             $this->configModel->reInit();
             $exportModel = Mage::getModel('fyndiq/export');
             try {

@@ -25,12 +25,12 @@ class Fyndiq_Fyndiq_Model_Observer
     public function handle_fyndiqConfigChangedSection()
     {
         $storeId = $this->getStoreId();
-        if ($this->configModel->get('username', $storeId) !== ''
-            && $this->configModel->get('apikey', $storeId) !== ''
+        if ($this->configModel->get('fyndiq/fyndiq_group/username', $storeId) !== ''
+            && $this->configModel->get('fyndiq/fyndiq_group/apikey', $storeId) !== ''
         ) {
             // Generate and save token
             $pingToken = Mage::helper('core')->uniqHash();
-            $this->configModel->set('ping_token', $pingToken, $storeId);
+            $this->configModel->set('fyndiq/fyndiq_group/ping_token', $pingToken, $storeId);
             $this->configModel->reInit();
             $data = array(
                 FyndiqUtils::NAME_PRODUCT_FEED_URL => Mage::getUrl(
@@ -55,7 +55,7 @@ class Fyndiq_Fyndiq_Model_Observer
                         )
                 )
             );
-            if ($this->configModel->get('import_orders_disabled', $storeId) != Fyndiq_Fyndiq_Model_Order::ORDERS_DISABLED) {
+            if ($this->configModel->get('fyndiq/fyndiq_group/import_orders_disabled', $storeId) != Fyndiq_Fyndiq_Model_Order::ORDERS_DISABLED) {
                 $data[FyndiqUtils::NAME_NOTIFICATION_URL] = Mage::getUrl(
                     'fyndiq/notification/index/store/' . $storeId,
                     array(
@@ -86,14 +86,17 @@ class Fyndiq_Fyndiq_Model_Observer
     {
         $storeIds = Mage::app()->getStores();
         foreach ($storeIds as $storeId) {
-            $filePath = $configModel->getFeedPath($storeId);
+            if ($this->configModel->get('fyndiq/feed/cron_enabled', $storeId)) {
+                // check interval
+                $filePath = $configModel->getFeedPath($storeId);
 
-            //Check if feed file exist and if it is too old
-            if (FyndiqUtils::mustRegenerateFile($filePath)) {
-                $exportModel = Mage::getModel('fyndiq/export');
-                try {
-                    $exportModel->generateFeed($storeId);
-                } catch (Exception $e) {
+                //Check if feed file exist and if it is too old
+                if (FyndiqUtils::mustRegenerateFile($filePath)) {
+                    $exportModel = Mage::getModel('fyndiq/export');
+                    try {
+                        $exportModel->generateFeed($storeId);
+                    } catch (Exception $e) {
+                    }
                 }
             }
         }
