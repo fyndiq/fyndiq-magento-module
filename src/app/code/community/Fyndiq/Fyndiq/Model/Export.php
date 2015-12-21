@@ -60,10 +60,10 @@ class Fyndiq_Fyndiq_Model_Export
     protected function getMappedFields($storeId)
     {
         return array(
-            FyndiqCSVFeedWriter::PRODUCT_BRAND_NAME => $this->configModel->get('brand', $storeId, 'fyndiq/mappings'),
-            FyndiqCSVFeedWriter::ARTICLE_EAN => $this->configModel->get('ean', $storeId, 'fyndiq/mappings'),
-            FyndiqCSVFeedWriter::ARTICLE_ISBN => $this->configModel->get('isbn', $storeId, 'fyndiq/mappings'),
-            FyndiqCSVFeedWriter::ARTICLE_MPN => $this->configModel->get('mpn', $storeId, 'fyndiq/mappings'),
+            FyndiqCSVFeedWriter::PRODUCT_BRAND_NAME => $this->configModel->get('fyndiq/mappings/brand', $storeId, true),
+            FyndiqCSVFeedWriter::ARTICLE_EAN => $this->configModel->get('fyndiq/mappings/ean', $storeId, true),
+            FyndiqCSVFeedWriter::ARTICLE_ISBN => $this->configModel->get('fyndiq/mappings/isbn', $storeId, true),
+            FyndiqCSVFeedWriter::ARTICLE_MPN => $this->configModel->get('fyndiq/mappings/mpn', $storeId, true),
         );
     }
 

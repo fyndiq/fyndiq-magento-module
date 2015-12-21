@@ -85,7 +85,7 @@ class Fyndiq_Fyndiq_Model_Observer
     public function generateAllFeeds()
     {
         $storeIds = Mage::app()->getStores();
-        foreach ($storeId) {
+        foreach ($storeIds as $storeId) {
             $filePath = $configModel->getFeedPath($storeId);
 
             //Check if feed file exist and if it is too old
