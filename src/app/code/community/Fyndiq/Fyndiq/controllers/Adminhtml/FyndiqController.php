@@ -29,7 +29,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         $result = false;
         try {
             $result = Mage::helper('api')->callApi($this->configModel, $storeId, 'PATCH', 'settings/', $data);
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $this->_getSession()->addError(
                 Mage::helper('fyndiq_fyndiq')->
                 __('An unhandled error occurred. If this persists, please contact Fyndiq integration support.') . ' (' . $e->getMessage() . ')'
