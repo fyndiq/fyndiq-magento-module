@@ -41,36 +41,19 @@ class Fyndiq_Fyndiq_Model_Order
      *
      * @return array
      */
-    public function getImportedOrders($page, $itemsPerPage)
+    public function getFydniqOrderIds($orderIds)
     {
         $result = array();
         $orders = Mage::getModel('sales/order')
             ->getCollection()
-            ->addFieldToFilter('fyndiq_order_id', array('neq' => 'NULL'));
-        if ($page != -1) {
-            $orders->setCurPage($page);
-            $orders->setPageSize($itemsPerPage);
-        }
-        $orders->load();
-        $directoryCurrency = Mage::getModel('directory/currency');
-        foreach ($orders as $order) {
-            $result[] = array(
-                'order_id' => $order->getId(),
-                'entity_id' => $order->getId(),
-                'fyndiq_orderid' => $order->getData('fyndiq_order_id'),
-                'price' => $directoryCurrency->formatTxt(
-                    $order->getBaseGrandTotal(),
-                    array('display' => Zend_Currency::NO_SYMBOL)
-                ),
-                'total_products' => intval($order->getTotalQtyOrdered()),
-                'state' => $order->getStatus(),
-                'created_at' => date('Y-m-d', strtotime($order->getCreatedAt())),
-                'created_at_time' => date('G:i:s', strtotime($order->getCreatedAt())),
-                'link' => Mage::helper('adminhtml')->getUrl(
-                    'adminhtml/sales_order/view',
-                    array('order_id' => $order->getId())
-                )
+            ->addFieldToFilter('fyndiq_order_id', array('neq' => 'NULL'))
+            ->addAttributeToFilter(
+                'entity_id',
+                array('in' => $orderIds)
             );
+        $orders->load();
+        foreach ($orders as $order) {
+            $result[] = $order->getData('fyndiq_order_id');
         }
         return $result;
     }
