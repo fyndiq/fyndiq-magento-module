@@ -9,7 +9,7 @@ class Fyndiq_Fyndiq_Block_Button extends Mage_Adminhtml_Block_System_Config_Form
 
         $request = $this->getRequest();
         $segments = array(
-            'fyndiq/admin/disconnect',
+            'adminhtml/fyndiq/disconnect',
             'website',
             $request->getParam('website'),
             'store',

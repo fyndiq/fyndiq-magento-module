@@ -9,9 +9,9 @@ class Fyndiq_Fyndiq_Model_Config
 
     const CONFIG_NAME = 'fyndiq/fyndiq_group';
 
-    private function key($name)
+    private function key($name, $configName = self::CONFIG_NAME)
     {
-        return self::CONFIG_NAME . '/' . $name;
+        return $configName . '/' . $name;
     }
 
     private function getScope($storeId)
@@ -27,9 +27,9 @@ class Fyndiq_Fyndiq_Model_Config
         return Mage::getConfig()->deleteConfig(self::key($name));
     }
 
-    public function get($name, $storeId)
+    public function get($name, $storeId, $configName = self::CONFIG_NAME)
     {
-        $result = Mage::getStoreConfig(self::key($name), $storeId);
+        $result = Mage::getStoreConfig(self::key($name, $configName), $storeId);
         // FIXME: Since prior versions use serialized values, we first try to unserialize the data
         // if that fails return the naked value; At some point this should be removed when we're sure
         // all data is stored as plain unserialized strings

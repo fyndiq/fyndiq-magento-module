@@ -57,6 +57,16 @@ class Fyndiq_Fyndiq_Model_Export
         FyndiqUtils::deleteFile($tempFileName);
     }
 
+    protected function getMappedFields($storeId)
+    {
+        return array(
+            FyndiqCSVFeedWriter::PRODUCT_BRAND_NAME => $this->configModel->get('brand', $storeId, 'fyndiq/mappings'),
+            FyndiqCSVFeedWriter::ARTICLE_EAN => $this->configModel->get('ean', $storeId, 'fyndiq/mappings'),
+            FyndiqCSVFeedWriter::ARTICLE_ISBN => $this->configModel->get('isbn', $storeId, 'fyndiq/mappings'),
+            FyndiqCSVFeedWriter::ARTICLE_MPN => $this->configModel->get('mpn', $storeId, 'fyndiq/mappings'),
+        );
+    }
+
     /**
      * Adding products added for export to the feed file
      *
@@ -74,6 +84,9 @@ class Fyndiq_Fyndiq_Model_Export
         $fyndiq_exported = Mage::getResourceModel('catalog/product')->getAttributeRawValue(403, 'fyndiq_exported', $storeId);
 
         FyndiqUtils::debug('$fyndiq_exported', $fyndiq_exported);
+
+        $mappedFields = $this->getMappedFields($storeId);
+        FyndiqUtils::debug('$mappedFields', $mappedFields);
 
         //TODO: Find a better way to do that
         $products = Mage::getModel('catalog/product')
@@ -116,7 +129,18 @@ class Fyndiq_Fyndiq_Model_Export
                             continue;
                         }
 
-                        $product = $this->getProduct($store, $magProduct, $productId, $discount, $market, $currency, $stockMin, $priceGroup, $discountPrice);
+                        $product = $this->getProduct(
+                            $store,
+                            $magProduct,
+                            $productId,
+                            $discount,
+                            $market,
+                            $currency,
+                            $stockMin,
+                            $priceGroup,
+                            $discountPrice,
+                            $mappedFields
+                        );
                         FyndiqUtils::debug('simple product', $product);
                         if (!$feedWriter->addCompleteProduct($product)) {
                             FyndiqUtils::debug('Validation Errors', $feedWriter->getLastProductErrors());
@@ -127,7 +151,18 @@ class Fyndiq_Fyndiq_Model_Export
                     // Configurable product
                     $articles = array();
                     $simpleCollection = $this->getConfigurableProductsCollection($magProduct, $storeId);
-                    $product = $this->getProduct($store, $magProduct, $productId, $discount, $market, $currency, $stockMin, $priceGroup, $discountPrice);
+                    $product = $this->getProduct(
+                        $store,
+                        $magProduct,
+                        $productId,
+                        $discount,
+                        $market,
+                        $currency,
+                        $stockMin,
+                        $priceGroup,
+                        $discountPrice,
+                        $mappedFields
+                    );
                     $index = 1;
                     foreach ($simpleCollection as $simpleProduct) {
                         if ($simpleProduct->getStockItem()->getMinSaleQty() > 1) {
@@ -135,7 +170,17 @@ class Fyndiq_Fyndiq_Model_Export
                             continue;
                         }
                         FyndiqUtils::debug('$simpleProduct', $simpleProduct);
-                        $article = $this->getArticle($store, $simpleProduct, $discount, $productId, $index, $stockMin, $priceGroup, $discountPrice);
+                        $article = $this->getArticle(
+                            $store,
+                            $simpleProduct,
+                            $discount,
+                            $productId,
+                            $index,
+                            $stockMin,
+                            $priceGroup,
+                            $discountPrice,
+                            $mappedFields
+                        );
                         if ($article) {
                             $articles[] = $article;
                         }
@@ -182,6 +227,32 @@ class Fyndiq_Fyndiq_Model_Export
         return false;
     }
 
+    protected function getMappedValues($mappedFields, $product)
+    {
+        $result = array();
+        $codes = array_filter(array_values($mappedFields));
+        if ($codes) {
+            $attributes = Mage::getModel('eav/entity_attribute')
+                ->getCollection()
+                ->setEntityTypeFilter(Mage::getResourceModel('catalog/product')->getEntityType()->getData('entity_type_id'))
+                ->setCodeFilter($codes);
+            foreach ($mappedFields as $field => $code) {
+                if (empty($code)) {
+                    $result[$field] = '';
+                    continue;
+                }
+                if ($attribute = $attributes->getItemByColumnValue('attribute_code', $code)) {
+                    if ($attribute->getFrontendInput() == 'select' || $attribute->getFrontendInput() == 'multiselect') {
+                        $result[$field] = implode(', ', (array)$product->getAttributeText($code));
+                        continue;
+                    }
+                }
+                $result[$field] = $product->getData($code);
+            }
+        }
+        return $result;
+    }
+
     /**
      * Get product information
      * @param  object $store
@@ -190,7 +261,7 @@ class Fyndiq_Fyndiq_Model_Export
      * @param  string $market
      * @return array
      */
-    private function getProduct($store, $magProduct, $ourProductId, $discount, $market, $currency, $stockMin, $priceGroup, $discountPrice)
+    private function getProduct($store, $magProduct, $ourProductId, $discount, $market, $currency, $stockMin, $priceGroup, $discountPrice, $mappedFields)
     {
         $storeId = intval($store->getId());
         $magArray = $magProduct->getData();
@@ -237,11 +308,6 @@ class Fyndiq_Fyndiq_Model_Export
             }
         }
 
-        $brand = $magProduct->getAttributeText('manufacturer');
-        if ($brand) {
-            $feedProduct[FyndiqFeedWriter::PRODUCT_BRAND_NAME] = $brand;
-        }
-
         // Category
         $categoryIds = $magProduct->getCategoryIds();
         if (count($categoryIds) > 0) {
@@ -276,6 +342,7 @@ class Fyndiq_Fyndiq_Model_Export
             }
         }
         $feedProduct[FyndiqFeedWriter::IMAGES] = $this->getProductImages($magProduct);
+        $feedProduct = array_merge($feedProduct, $this->getMappedValues($mappedFields, $magProduct));
         return $feedProduct;
     }
 
@@ -371,7 +438,7 @@ class Fyndiq_Fyndiq_Model_Export
         return $this->categoryCache[$categoryId];
     }
 
-    private function getArticle($store, $magProduct, $discount, $parentProductId, $index, $stockMin, $priceGroup, $discountPrice)
+    private function getArticle($store, $magProduct, $discount, $parentProductId, $index, $stockMin, $priceGroup, $discountPrice, $mappedFields)
     {
         // Setting the data
         if (!$magProduct->getPrice()) {
@@ -432,6 +499,7 @@ class Fyndiq_Fyndiq_Model_Export
                 );
             }
         }
+        $feedProduct = array_merge($feedProduct, $this->getMappedValues($mappedFields, $magProduct));
         return $feedProduct;
     }
 

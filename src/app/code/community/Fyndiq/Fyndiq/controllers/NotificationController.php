@@ -47,11 +47,9 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
                 Mage::getDesign()->setArea(Mage_Core_Model_App_Area::AREA_ADMIN);
                 $orderModel = Mage::getModel('fyndiq/order');
                 if (!$orderModel->orderExists($fyndiqOrder->id)) {
-                    $reservationId = $orderModel->reserve(intval($fyndiqOrder->id));
                     $orderModel->create($storeId, $fyndiqOrder, $reservationId);
                 }
             } catch (Exception $e) {
-                $orderModel->unreserve($reservationId);
                 // $inbox = Mage::getModel('Mage_AdminNotification_Model_Inbox');
                 // $inbox->addMinor(
                 //     sprintf('Fyndiq Order %s could not be imported', $orderId),
