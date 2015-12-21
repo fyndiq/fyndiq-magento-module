@@ -85,9 +85,9 @@ class Fyndiq_Fyndiq_Model_Observer
     protected function mustRegenerate($generatedTime, $cronInterval)
     {
         if ($generatedTime) {
-            return time() < ($generatedTime + $cronInterval)
+            return time() < ($generatedTime + $cronInterval);
         }
-        return true
+        return true;
     }
 
     public function generateAllFeeds()
