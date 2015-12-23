@@ -73,6 +73,9 @@ class Fyndiq_Fyndiq_Model_Order
             'country_id' => $fyndiqOrder->delivery_country_code,
             'telephone' => $fyndiqOrder->delivery_phone,
         );
+        if ($fyndiqOrder->delivery_co) {
+            $shippingAddressArray['street'] .= "\n" . Mage::helper('fyndiq_fyndiq')->__('c/o') . ' ' . $fyndiqOrder->delivery_co;
+        }
 
         // Check if country region is required
         $isRequired = Mage::helper('directory')->isRegionRequired($fyndiqOrder->delivery_country_code);
