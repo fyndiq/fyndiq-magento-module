@@ -15,9 +15,7 @@ $attributeGroupId = $installer2->getAttributeGroupId($entityTypeId, $attributeSe
 
 
 $attrCode = 'fyndiq_exported';
-
 $attrLabel = 'Fyndiq Exported';
-$attrNote = 'Show if product is exported or not';
 
 $installer2->addAttribute(
     'catalog_product',
@@ -39,7 +37,6 @@ $installer2->addAttribute(
 
 $attrCode = 'fyndiq_title';
 $attrLabel = 'Fyndiq Product Title';
-$attrNote = 'Set specific Fyndiq product title';
 
 $installer2->addAttribute(
     'catalog_product',
@@ -53,14 +50,13 @@ $installer2->addAttribute(
         'global'        => Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_STORE,
         'searchable'    => false,
         'filterable_in_search' => false,
-        'sort_order'    => 1, // Place first in fyndiq tab
-        'default'       => '0'
+        'sort_order'    => 1, // Place first in Fyndiq tab
+        'default'       => ''
     )
 );
 
 $attrCode = 'fyndiq_description';
 $attrLabel = 'Fyndiq Product Description';
-$attrNote = 'Set specific Fyndiq product description';
 
 $installer2->addAttribute(
     'catalog_product',
@@ -74,8 +70,8 @@ $installer2->addAttribute(
         'global'        => Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_STORE,
         'searchable'    => false,
         'filterable_in_search' => false,
-        'sort_order'    => 2, // Place after title in fyndiq tab
-        'default'       => '0'
+        'sort_order'    => 2, // Place after title in Fyndiq tab
+        'default'       => ''
     )
 );
 
