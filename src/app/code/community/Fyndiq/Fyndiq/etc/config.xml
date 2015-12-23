@@ -117,6 +117,10 @@
                 <mpn></mpn>
                 <brand>manufacturer</brand>
             </mappings>
+            <feed>
+                <cron_enabled>0</cron_enabled>
+                <cron_interval>60</cron_interval>
+            </feed>
         </fyndiq>
         <carriers>
             <fyndiq_fyndiq translate="title" module="fyndiq_fyndiq">
@@ -145,4 +149,16 @@
             </fyndiq_fyndiq>
         </payment>
     </default>
+    <crontab>
+        <jobs>
+            <fyndiq_generate_feed>
+                <schedule>
+                    <cron_expr>*/10 * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>fyndiq/observer::generateAllFeeds</model>
+                </run>
+            </fyndiq_generate_feed>
+        </jobs>
+    </crontab>
 </config>

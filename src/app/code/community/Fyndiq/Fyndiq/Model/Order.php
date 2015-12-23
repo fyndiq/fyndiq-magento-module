@@ -221,13 +221,13 @@ class Fyndiq_Fyndiq_Model_Order
         // Collect the shipping rates
         $shippingAddress->setCollectShippingRates(true)->collectShippingRates();
 
-        $shipmentMethod = trim($this->configModel->get('fyndiq_shipment_method', $storeId));
+        $shipmentMethod = trim($this->configModel->get('fyndiq/fyndiq_group/fyndiq_shipment_method', $storeId));
         $shipmentMethod = $shipmentMethod ? $shipmentMethod : self::DEFAULT_SHIPMENT_METHOD;
 
         // Set the shipping method
         $shippingAddress->setShippingMethod($shipmentMethod);
 
-        $paymentMethod = $this->configModel->get('fyndiq_payment_method', $storeId);
+        $paymentMethod = $this->configModel->get('fyndiq/fyndiq_group/fyndiq_payment_method', $storeId);
         $paymentMethod = $paymentMethod ? $paymentMethod : self::DEFAULT_PAYMENT_METHOD;
 
         // Set the payment method
@@ -246,7 +246,7 @@ class Fyndiq_Fyndiq_Model_Order
         $order = $service->getOrder();
 
         // Now set newly entered order's status to complete so customers can enjoy their goods.
-        $importStatus = $this->configModel->get('import_state', $storeId);
+        $importStatus = $this->configModel->get('fyndiq/fyndiq_group/import_state', $storeId);
         $order->setStatus($importStatus);
 
         // Add fyndiqOrder id as comment

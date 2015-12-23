@@ -12,8 +12,8 @@ class Fyndiq_Fyndiq_FileController extends Mage_Core_Controller_Front_Action
         $configModel = Mage::getModel('fyndiq/config');
         $storeId = Mage::app()->getRequest()->getParam('store');
 
-        if ($configModel->get('username', $storeId) == '' ||
-            $configModel->get('apikey', $storeId) == ''
+        if ($configModel->get('fyndiq/fyndiq_group/username', $storeId) == '' ||
+            $configModel->get('fyndiq/fyndiq_group/apikey', $storeId) == ''
         ) {
             $this->getResponse()->setBody('Module is not set up');
             $this->getResponse()->setHttpResponseCode(500);

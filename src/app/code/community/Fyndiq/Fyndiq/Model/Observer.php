@@ -25,12 +25,12 @@ class Fyndiq_Fyndiq_Model_Observer
     public function handle_fyndiqConfigChangedSection()
     {
         $storeId = $this->getStoreId();
-        if ($this->configModel->get('username', $storeId) !== ''
-            && $this->configModel->get('apikey', $storeId) !== ''
+        if ($this->configModel->get('fyndiq/fyndiq_group/username', $storeId) !== ''
+            && $this->configModel->get('fyndiq/fyndiq_group/apikey', $storeId) !== ''
         ) {
             // Generate and save token
             $pingToken = Mage::helper('core')->uniqHash();
-            $this->configModel->set('ping_token', $pingToken, $storeId);
+            $this->configModel->set('fyndiq/fyndiq_group/ping_token', $pingToken, $storeId);
             $this->configModel->reInit();
             $data = array(
                 FyndiqUtils::NAME_PRODUCT_FEED_URL => Mage::getUrl(
@@ -55,7 +55,7 @@ class Fyndiq_Fyndiq_Model_Observer
                         )
                 )
             );
-            if ($this->configModel->get('import_orders_disabled', $storeId) != Fyndiq_Fyndiq_Model_Order::ORDERS_DISABLED) {
+            if ($this->configModel->get('fyndiq/fyndiq_group/import_orders_disabled', $storeId) != Fyndiq_Fyndiq_Model_Order::ORDERS_DISABLED) {
                 $data[FyndiqUtils::NAME_NOTIFICATION_URL] = Mage::getUrl(
                     'fyndiq/notification/index/store/' . $storeId,
                     array(
@@ -80,5 +80,46 @@ class Fyndiq_Fyndiq_Model_Observer
             }
         }
         throw new Exception(Mage::helper('fyndiq_fyndiq')->__('Please specify a Username and API token.'));
+    }
+
+    protected static function mustRegenerate($generatedTime, $cronInterval)
+    {
+        if ($generatedTime) {
+            return time() > ($generatedTime + $cronInterval);
+        }
+        return true;
+    }
+
+    public function generateAllFeeds()
+    {
+        $storeIds = array(
+            0 // Add Default scope
+        );
+        $configModel = Mage::getModel('fyndiq/config');
+        foreach (Mage::app()->getWebsites() as $website) {
+            foreach ($website->getGroups() as $group) {
+                $stores = $group->getStores();
+                foreach ($stores as $store) {
+                    $storeId = $store->getId();
+                }
+            }
+        }
+        foreach ($storeIds as $storeId) {
+            $cronEnabled = $configModel->get('fyndiq/feed/cron_enabled', $storeId);
+            if ($cronEnabled == 1) {
+                $generatedTime = intval($configModel->get('fyndiq/feed/generated_time', $storeId));
+                $cronInterval = intval($configModel->get('fyndiq/feed/cron_interval', $storeId));
+                if (self::mustRegenerate($generatedTime, $cronInterval)) {
+                    // Update last generated time
+                    $configModel->set('fyndiq/feed/generated_time', time(), $storeId);
+                    $configModel->reInit();
+                    try {
+                        Mage::getModel('fyndiq/export')->generateFeed($storeId);
+                    } catch (Exception $e) {
+                        Mage::logException($e);
+                    }
+                }
+            }
+        }
     }
 }

@@ -60,10 +60,10 @@ class Fyndiq_Fyndiq_Model_Export
     protected function getMappedFields($storeId)
     {
         return array(
-            FyndiqCSVFeedWriter::PRODUCT_BRAND_NAME => $this->configModel->get('brand', $storeId, 'fyndiq/mappings'),
-            FyndiqCSVFeedWriter::ARTICLE_EAN => $this->configModel->get('ean', $storeId, 'fyndiq/mappings'),
-            FyndiqCSVFeedWriter::ARTICLE_ISBN => $this->configModel->get('isbn', $storeId, 'fyndiq/mappings'),
-            FyndiqCSVFeedWriter::ARTICLE_MPN => $this->configModel->get('mpn', $storeId, 'fyndiq/mappings'),
+            FyndiqCSVFeedWriter::PRODUCT_BRAND_NAME => $this->configModel->get('fyndiq/mappings/brand', $storeId),
+            FyndiqCSVFeedWriter::ARTICLE_EAN => $this->configModel->get('fyndiq/mappings/ean', $storeId),
+            FyndiqCSVFeedWriter::ARTICLE_ISBN => $this->configModel->get('fyndiq/mappings/isbn', $storeId),
+            FyndiqCSVFeedWriter::ARTICLE_MPN => $this->configModel->get('fyndiq/mappings/mpn', $storeId),
         );
     }
 
@@ -103,9 +103,9 @@ class Fyndiq_Fyndiq_Model_Export
         if ($productIds) {
             $market = Mage::getStoreConfig('general/country/default');
             $currency = $store->getCurrentCurrencyCode();
-            $stockMin = intval($this->configModel->get('stockmin', $storeId));
-            $priceGroup = intval($this->configModel->get('price_group', $storeId));
-            $discountPrice = intval($this->configModel->get('price_absolute', $storeId));
+            $stockMin = intval($this->configModel->get('fyndiq/fyndiq_group/stockmin', $storeId));
+            $priceGroup = intval($this->configModel->get('fyndiq/fyndiq_group/price_group', $storeId));
+            $discountPrice = floatval($this->configModel->get('fyndiq/fyndiq_group/price_absolute', $storeId));
 
             $batches = array_chunk($productIds, self::BATCH_SIZE);
             foreach ($batches as $entityIds) {
@@ -280,7 +280,7 @@ class Fyndiq_Fyndiq_Model_Export
         }
 
         $productId = $magProduct->getId();
-        $descrType = intval($this->configModel->get('description', $storeId));
+        $descrType = intval($this->configModel->get('fyndiq/fyndiq_group/description', $storeId));
         $magPrice = $this->getProductPrice($magProduct, $priceGroup);
         $price = FyndiqUtils::getFyndiqPrice($magPrice, $discount, $discountPrice);
 

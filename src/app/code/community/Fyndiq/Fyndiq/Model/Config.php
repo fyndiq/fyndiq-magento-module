@@ -5,14 +5,6 @@ class Fyndiq_Fyndiq_Model_Config
 
     const COMMIT = 'XXXXXX';
     const REPOSITORY_PATH = 'fyndiq/fyndiq-magento-module/';
-    const DISABLE_UPDATE_CHECK = 0;
-
-    const CONFIG_NAME = 'fyndiq/fyndiq_group';
-
-    private function key($name, $configName = self::CONFIG_NAME)
-    {
-        return $configName . '/' . $name;
-    }
 
     private function getScope($storeId)
     {
@@ -22,14 +14,9 @@ class Fyndiq_Fyndiq_Model_Config
         return 'stores';
     }
 
-    public function delete($name)
+    public function get($name, $storeId)
     {
-        return Mage::getConfig()->deleteConfig(self::key($name));
-    }
-
-    public function get($name, $storeId, $configName = self::CONFIG_NAME)
-    {
-        $result = Mage::getStoreConfig(self::key($name, $configName), $storeId);
+        $result = Mage::getStoreConfig($name, $storeId);
         // FIXME: Since prior versions use serialized values, we first try to unserialize the data
         // if that fails return the naked value; At some point this should be removed when we're sure
         // all data is stored as plain unserialized strings
@@ -40,17 +27,12 @@ class Fyndiq_Fyndiq_Model_Config
         return $result;
     }
 
-    public function getBool($name)
-    {
-        return (bool)Mage::getStoreConfigFlag(self::key($name));
-    }
-
     public function set($name, $value, $storeId)
     {
         return Mage::getConfig()->saveConfig(
-            self::key($name),
+            $name,
             $value,
-            self::getScope($storeId),
+            $this->getScope($storeId),
             $storeId
         );
     }

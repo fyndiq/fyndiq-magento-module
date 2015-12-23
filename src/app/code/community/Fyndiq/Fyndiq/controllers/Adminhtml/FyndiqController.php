@@ -36,8 +36,8 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
             );
         }
         if ($result) {
-            $this->configModel->set('username', '', $storeId, false);
-            $this->configModel->set('apikey', '', $storeId, false);
+            $this->configModel->set('fyndiq/fyndiq_group/username', '', $storeId, false);
+            $this->configModel->set('fyndiq/fyndiq_group/apikey', '', $storeId, false);
             $this->configModel->reInit();
         }
         $this->_redirect('adminhtml/system_config/edit/section/fyndiq');
@@ -45,16 +45,15 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
 
     protected function importOrdersForStore($storeId, $newTime)
     {
-        $lastUpdate = $this->configModel->get('order_lastdate', $storeId);
+        $lastUpdate = $this->configModel->get('fyndiq/fyndiq_group/order_lastdate', $storeId);
         $orderFetchModel = Mage::getModel('fyndiq/orderFetch');
         $orderFetchModel->init($storeId, $lastUpdate);
         $orderFetchModel->getAll();
-        return $this->configModel->set('order_lastdate', time(), $storeId);
+        return $this->configModel->set('fyndiq/fyndiq_group/order_lastdate', time(), $storeId);
     }
 
     public function importFyndiqOrdersAction()
     {
-
         foreach (Mage::app()->getWebsites() as $website) {
             foreach ($website->getGroups() as $group) {
                 $stores = $group->getStores();
@@ -62,8 +61,8 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                     try {
                         $observer = Mage::getModel('fyndiq/observer');
                         $storeId = $store->getId();
-                        if ($this->configModel->get('apikey', $storeId)) {
-                            if ($this->configModel->get('import_orders_disabled', $storeId) == Fyndiq_Fyndiq_Model_Order::ORDERS_DISABLED) {
+                        if ($this->configModel->get('fyndiq/fyndiq_group/apikey', $storeId)) {
+                            if ($this->configModel->get('fyndiq/fyndiq_group/import_orders_disabled', $storeId) == Fyndiq_Fyndiq_Model_Order::ORDERS_DISABLED) {
                                 $this->_getSession()->addError(
                                     sprintf(
                                         Mage::helper('fyndiq_fyndiq')->__('Order import is disabled for store `%s`'),
