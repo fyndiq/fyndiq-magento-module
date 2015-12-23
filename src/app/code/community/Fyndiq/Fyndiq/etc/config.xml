@@ -19,11 +19,6 @@
             <export>
                 <class>Fyndiq_Fyndiq_Model_Export</class>
             </export>
-            <sales>
-                <rewrite>
-                    <quote_address>Fyndiq_Fyndiq_Model_Sales_Quote_Address</quote_address>
-                </rewrite>
-            </sales>
         </models>
         <resources>
             <fyndiqmodule_setup>

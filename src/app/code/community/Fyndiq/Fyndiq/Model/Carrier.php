@@ -18,6 +18,18 @@ class Fyndiq_Fyndiq_Model_Carrier extends Mage_Shipping_Model_Carrier_Abstract i
             return false;
         }
 
+        // Disable Fyndiq shipping method for non admin area
+        if (
+            !in_array(Mage::getDesign()->getArea(),
+                array(
+                    Mage_Core_Model_App_Area::AREA_ADMIN,
+                    Mage_Core_Model_App_Area::AREA_ADMINHTML,
+                )
+            )
+        ) {
+            return false;
+        }
+
         /* @var $result Mage_Shipping_Model_Rate_Result */
         $result = Mage::getModel('shipping/rate_result');
         $result->append($this->_getStandardShippingRate());
