@@ -81,14 +81,6 @@ class Fyndiq_Fyndiq_Model_Export
 
         $this->productMediaConfig = Mage::getModel('catalog/product_media_config');
 
-        $fyndiq_exported = Mage::getResourceModel('catalog/product')->getAttributeRawValue(403, 'fyndiq_exported', $storeId);
-
-        FyndiqUtils::debug('$fyndiq_exported', $fyndiq_exported);
-
-        $mappedFields = $this->getMappedFields($storeId);
-        FyndiqUtils::debug('$mappedFields', $mappedFields);
-
-        //TODO: Find a better way to do that
         $products = Mage::getModel('catalog/product')
             ->getCollection()
             ->addStoreFilter($storeId)
@@ -101,11 +93,16 @@ class Fyndiq_Fyndiq_Model_Export
         FyndiqUtils::debug('$productIds', $productIds);
 
         if ($productIds) {
-            $market = Mage::getStoreConfig('general/country/default');
-            $currency = $store->getCurrentCurrencyCode();
-            $stockMin = intval($this->configModel->get('fyndiq/fyndiq_group/stockmin', $storeId));
-            $priceGroup = intval($this->configModel->get('fyndiq/fyndiq_group/price_group', $storeId));
-            $discountPrice = floatval($this->configModel->get('fyndiq/fyndiq_group/price_absolute', $storeId));
+            $config = array(
+                'market' => Mage::getStoreConfig('general/country/default'),
+                'priceGroup' => intval($this->configModel->get('fyndiq/fyndiq_group/price_group', $storeId)),
+                'discountPercentage' => floatval($this->configModel->get('fyndiq/fyndiq_group/price_percentage', $storeId)),
+                'discountPrice' => floatval($this->configModel->get('fyndiq/fyndiq_group/price_absolute', $storeId)),
+                'currency' => $store->getCurrentCurrencyCode(),
+                'stockMin' => intval($this->configModel->get('fyndiq/fyndiq_group/stockmin', $storeId)),
+                'mappedFields' => $this->getMappedFields($storeId),
+            );
+            FyndiqUtils::debug('$config', $config);
 
             $batches = array_chunk($productIds, self::BATCH_SIZE);
             foreach ($batches as $entityIds) {
@@ -118,9 +115,6 @@ class Fyndiq_Fyndiq_Model_Export
                     $typeId = $magProduct->getTypeId();
 
                     FyndiqUtils::debug('$magProduct->getTypeId()', $typeId);
-                    // FIXME: get global discount
-                    //$discount = intval($productInfo[$productId]['exported_price_percentage']);
-                    $discount = 0;
 
                     if ($typeId === 'simple') {
                         //Check if minimumQuantity is > 1, if it is it will skip this product.
@@ -133,13 +127,7 @@ class Fyndiq_Fyndiq_Model_Export
                             $store,
                             $magProduct,
                             $productId,
-                            $discount,
-                            $market,
-                            $currency,
-                            $stockMin,
-                            $priceGroup,
-                            $discountPrice,
-                            $mappedFields
+                            $config
                         );
                         FyndiqUtils::debug('simple product', $product);
                         if (!$feedWriter->addCompleteProduct($product)) {
@@ -155,13 +143,7 @@ class Fyndiq_Fyndiq_Model_Export
                         $store,
                         $magProduct,
                         $productId,
-                        $discount,
-                        $market,
-                        $currency,
-                        $stockMin,
-                        $priceGroup,
-                        $discountPrice,
-                        $mappedFields
+                        $config
                     );
                     $index = 1;
                     foreach ($simpleCollection as $simpleProduct) {
@@ -173,13 +155,9 @@ class Fyndiq_Fyndiq_Model_Export
                         $article = $this->getArticle(
                             $store,
                             $simpleProduct,
-                            $discount,
                             $productId,
                             $index,
-                            $stockMin,
-                            $priceGroup,
-                            $discountPrice,
-                            $mappedFields
+                            $config
                         );
                         if ($article) {
                             $articles[] = $article;
@@ -261,7 +239,7 @@ class Fyndiq_Fyndiq_Model_Export
      * @param  string $market
      * @return array
      */
-    private function getProduct($store, $magProduct, $ourProductId, $discount, $market, $currency, $stockMin, $priceGroup, $discountPrice, $mappedFields)
+    private function getProduct($store, $magProduct, $ourProductId, $config)
     {
         $storeId = intval($store->getId());
         $magArray = $magProduct->getData();
@@ -281,8 +259,12 @@ class Fyndiq_Fyndiq_Model_Export
 
         $productId = $magProduct->getId();
         $descrType = intval($this->configModel->get('fyndiq/fyndiq_group/description', $storeId));
-        $magPrice = $this->getProductPrice($magProduct, $priceGroup);
-        $price = FyndiqUtils::getFyndiqPrice($magPrice, $discount, $discountPrice);
+        $magPrice = $this->getProductPrice($magProduct, $config['priceGroup']);
+        $price = FyndiqUtils::getFyndiqPrice(
+            $magPrice,
+            $config['discountPercentage'],
+            $config['discountPrice']
+        );
 
         // Old price is always the product base price
         $oldPrice = $this->includeTax($magProduct, $magProduct->getPrice());
@@ -295,8 +277,8 @@ class Fyndiq_Fyndiq_Model_Export
             FyndiqFeedWriter::PRICE => FyndiqUtils::formatPrice($price),
             FyndiqFeedWriter::OLDPRICE => FyndiqUtils::formatPrice($oldPrice),
             FyndiqFeedWriter::PRODUCT_VAT_PERCENT => $this->getTaxRate($magProduct, $store),
-            FyndiqFeedWriter::PRODUCT_CURRENCY => $currency,
-            FyndiqFeedWriter::PRODUCT_MARKET => $market,
+            FyndiqFeedWriter::PRODUCT_CURRENCY => $config['currency'],
+            FyndiqFeedWriter::PRODUCT_MARKET => $config['market'],
         );
 
         if (isset($magArray['base_price_amount']) && $magArray['base_price_amount']) {
@@ -317,7 +299,7 @@ class Fyndiq_Fyndiq_Model_Export
         }
 
         if ($magArray['type_id'] === 'simple') {
-            $feedProduct[FyndiqFeedWriter::QUANTITY] = $this->getQuantity($magProduct, $stockMin);
+            $feedProduct[FyndiqFeedWriter::QUANTITY] = $this->getQuantity($magProduct, $config['stockMin']);
             $feedProduct[FyndiqFeedWriter::SKU] = $magProduct->getSKU();
             $feedProduct[FyndiqFeedWriter::PROPERTIES] = array();
 
@@ -342,7 +324,7 @@ class Fyndiq_Fyndiq_Model_Export
             }
         }
         $feedProduct[FyndiqFeedWriter::IMAGES] = $this->getProductImages($magProduct);
-        $feedProduct = array_merge($feedProduct, $this->getMappedValues($mappedFields, $magProduct));
+        $feedProduct = array_merge($feedProduct, $this->getMappedValues($config['mappedFields'], $magProduct));
         return $feedProduct;
     }
 
@@ -438,7 +420,7 @@ class Fyndiq_Fyndiq_Model_Export
         return $this->categoryCache[$categoryId];
     }
 
-    private function getArticle($store, $magProduct, $discount, $parentProductId, $index, $stockMin, $priceGroup, $discountPrice, $mappedFields)
+    private function getArticle($store, $magProduct, $parentProductId, $index, $config)
     {
         // Setting the data
         if (!$magProduct->getPrice()) {
@@ -456,15 +438,15 @@ class Fyndiq_Fyndiq_Model_Export
             return array();
         }
 
-        $magPrice = $this->getProductPrice($magProduct, $priceGroup);
-        $price = FyndiqUtils::getFyndiqPrice($magPrice, $discount, $discountPrice);
+        $magPrice = $this->getProductPrice($magProduct, $config['priceGroup']);
+        $price = FyndiqUtils::getFyndiqPrice($magPrice, $config['discountPercentage'], $config['discountPrice']);
 
         $feedProduct = array(
             FyndiqFeedWriter::ID => $index,
             FyndiqFeedWriter::PRICE => FyndiqUtils::formatPrice($price),
             FyndiqFeedWriter::OLDPRICE => FyndiqUtils::formatPrice($magPrice),
             FyndiqFeedWriter::ARTICLE_NAME => $magProduct->getName(),
-            FyndiqFeedWriter::QUANTITY => $this->getQuantity($magProduct, $stockMin),
+            FyndiqFeedWriter::QUANTITY => $this->getQuantity($magProduct, $config['stockMin']),
             FyndiqFeedWriter::SKU => $magProduct->getSKU(),
             FyndiqFeedWriter::IMAGES => $this->getProductImages($magProduct),
             FyndiqFeedWriter::PROPERTIES => array(),
@@ -499,7 +481,7 @@ class Fyndiq_Fyndiq_Model_Export
                 );
             }
         }
-        $feedProduct = array_merge($feedProduct, $this->getMappedValues($mappedFields, $magProduct));
+        $feedProduct = array_merge($feedProduct, $this->getMappedValues($config['mappedFields'], $magProduct));
         return $feedProduct;
     }
 
