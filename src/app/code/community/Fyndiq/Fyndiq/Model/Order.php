@@ -41,7 +41,7 @@ class Fyndiq_Fyndiq_Model_Order
      *
      * @return array
      */
-    public function getFydniqOrderIds($orderIds)
+    public function getFydniqOrders($orderIds)
     {
         $result = array();
         $orders = Mage::getModel('sales/order')
@@ -52,8 +52,11 @@ class Fyndiq_Fyndiq_Model_Order
                 array('in' => $orderIds)
             );
         $orders->load();
+        $storeId = false;
         foreach ($orders as $order) {
-            $result[] = $order->getData('fyndiq_order_id');
+            if ($order->getData('fyndiq_order_id')) {
+                $result[$order->getData('fyndiq_order_id')] = $order->getStoreId();
+            }
         }
         return $result;
     }

@@ -95,38 +95,51 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
     {
         $orderId = $this->getRequest()->getParam('order_id');
         try {
-            return $this->getDeliveryNotes(array($orderId));
+            $result = $this->getDeliveryNotes(array($orderId));
+            if ($result) {
+                return $result;
+            }
         } catch (Exception $e) {
             $this->_getSession()->addError(
                 Mage::helper('fyndiq_fyndiq')->
                     __('An unhandled error occurred. If this persists, please contact Fyndiq integration support.') . ' (' . $e->getMessage() . ')'
             );
-            $this->_redirect('adminhtml/sales_order/view/order_id/' . $orderId);
         }
+        $this->_redirect('adminhtml/sales_order/view/order_id/' . $orderId);
     }
 
     public function getDeliveryNotesAction()
     {
         $orderIds = $this->getRequest()->getParam('order_ids');
         try {
-            return $this->getDeliveryNotes($orderIds);
+            $result = $this->getDeliveryNotes($orderIds);
+            if ($result) {
+                return $result;
+            }
         } catch (Exception $e) {
             $this->_getSession()->addError(
                 Mage::helper('fyndiq_fyndiq')->
                     __('An unhandled error occurred. If this persists, please contact Fyndiq integration support.') . ' (' . $e->getMessage() . ')'
             );
-            $this->_redirect('adminhtml/sales_order/index');
         }
+        $this->_redirect('adminhtml/sales_order/index');
     }
 
     protected function getDeliveryNotes($orderIds)
     {
-        $fyndiqOrderIds = Mage::getModel('fyndiq/order')->getFydniqOrderIds($orderIds);
+        $fyndiqOrders = Mage::getModel('fyndiq/order')->getFydniqOrders($orderIds);
+        // Check if all the orders are from one store
+        if (count(array_unique(array_values($fyndiqOrders))) > 1) {
+            $this->_getSession()->addError(
+                Mage::helper('fyndiq_fyndiq')->__('Download is only possible for orders within the same store.')
+            );
+            return false;
+        }
         $observer = Mage::getModel('fyndiq/observer');
         $orders = array(
             'orders' => array()
         );
-        foreach ($fyndiqOrderIds as $order) {
+        foreach (array_keys($fyndiqOrderIds) as $order) {
             $orders['orders'][] = array('order' => intval($order));
         }
         $storeId = $observer->getStoreId();

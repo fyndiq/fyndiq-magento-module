@@ -19,14 +19,13 @@ class Fyndiq_Fyndiq_Model_Carrier extends Mage_Shipping_Model_Carrier_Abstract i
         }
 
         // Disable Fyndiq shipping method for non admin area
-        if (
-            !in_array(Mage::getDesign()->getArea(),
-                array(
-                    Mage_Core_Model_App_Area::AREA_ADMIN,
-                    Mage_Core_Model_App_Area::AREA_ADMINHTML,
-                )
+        if (!in_array(
+            Mage::getDesign()->getArea(),
+            array(
+                Mage_Core_Model_App_Area::AREA_ADMIN,
+                Mage_Core_Model_App_Area::AREA_ADMINHTML,
             )
-        ) {
+        )) {
             return false;
         }
 
