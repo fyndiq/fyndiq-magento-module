@@ -9,7 +9,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Sales_Order_View extends Mage_Adminhtml_Bloc
         if ($this->isFyndiqOrder($this->getRequest()->getParam('order_id'))) {
             $this->_addButton('fyndiq_delivery_note', array(
                 'label' => Mage::helper('fyndiq_fyndiq')->__('Fyndiq Delivery Note'),
-                'onclick' => 'setLocation(\' ' . $this->getDeliveryNoteURL() . '\')',
+                'onclick' => 'setLocation(\' ' . $this->getDeliveryNoteURL() . '\'); this.disabled = true;',
                 'class' => 'download',
             ));
         }
