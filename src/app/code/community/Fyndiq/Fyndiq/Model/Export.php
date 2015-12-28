@@ -252,25 +252,17 @@ class Fyndiq_Fyndiq_Model_Export
             return array();
         }
 
-        if ($magProduct->getStatus() != Mage_Catalog_Model_Product_Status::STATUS_ENABLED) {
-            FyndiqUtils::debug('product is not enabled');
-            return array();
-        }
-
         $productId = $magProduct->getId();
         $descrType = intval($this->configModel->get('fyndiq/fyndiq_group/description', $storeId));
         $magPrice = $this->getProductPrice($magProduct, $config['priceGroup']);
-        $price = FyndiqUtils::getFyndiqPrice(
-            $magPrice,
-            $config['discountPercentage'],
-            $config['discountPrice']
-        );
+        $price = FyndiqUtils::getFyndiqPrice($magPrice, $config['discountPercentage'], $config['discountPrice']);
 
         // Old price is always the product base price
         $oldPrice = $this->includeTax($magProduct, $magProduct->getPrice());
 
         $feedProduct = array(
             FyndiqFeedWriter::ID => $ourProductId,
+            FyndiqFeedWriter::PAUSED => $magProduct->getStatus() != Mage_Catalog_Model_Product_Status::STATUS_ENABLED ? 1 : 0,
             FyndiqFeedWriter::PRODUCT_TITLE => $this->getProductTitle($magArray['name'], $ourProductId, $storeId),
             FyndiqFeedWriter::PRODUCT_DESCRIPTION =>
                 $this->getProductDescription($magProduct, $descrType, $storeId),
@@ -428,11 +420,6 @@ class Fyndiq_Fyndiq_Model_Export
             return array();
         }
 
-        if ($magProduct->getStatus() != Mage_Catalog_Model_Product_Status::STATUS_ENABLED) {
-            FyndiqUtils::debug('product is not enabled');
-            return array();
-        }
-
         if ($magProduct->getTypeId() !== 'simple') {
             FyndiqUtils::debug('article is not simple product');
             return array();
@@ -443,6 +430,7 @@ class Fyndiq_Fyndiq_Model_Export
 
         $feedProduct = array(
             FyndiqFeedWriter::ID => $index,
+            FyndiqFeedWriter::PAUSED => $magProduct->getStatus() != Mage_Catalog_Model_Product_Status::STATUS_ENABLED ? 1 : 0,
             FyndiqFeedWriter::PRICE => FyndiqUtils::formatPrice($price),
             FyndiqFeedWriter::OLDPRICE => FyndiqUtils::formatPrice($magPrice),
             FyndiqFeedWriter::ARTICLE_NAME => $magProduct->getName(),
