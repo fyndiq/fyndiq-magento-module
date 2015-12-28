@@ -8,7 +8,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Sales_Order extends Mage_Adminhtml_Block_Sal
 
         $this->_addButton('fyndiq_import_orders', array(
             'label' => Mage::helper('fyndiq_fyndiq')->__('Import Fyndiq Orders'),
-            'onclick' => 'setLocation(\' '  . $this->getImportFyndiqOrdersURL() . '\')',
+            'onclick' => 'setLocation(\' '  . $this->getImportFyndiqOrdersURL() . '\'); this.disabled = true;',
             'class' => 'add',
         ));
     }
