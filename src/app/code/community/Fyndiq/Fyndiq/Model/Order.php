@@ -146,6 +146,10 @@ class Fyndiq_Fyndiq_Model_Order
             $customer->setFirstname(self::FYNDIQ_ORDERS_NAME_FIRST);
             $customer->setLastname(self::FYNDIQ_ORDERS_NAME_LAST);
             $customer->setPassword(md5(uniqid(rand(), true)));
+            $groupId = $this->configModel->get('fyndiq/fyndiq_group/price_group', $storeId);
+            if ($groupId) {
+                $customer->setGroupId($groupId);
+            }
             try {
                 $customer->save();
                 $customer->setConfirmation(null);
