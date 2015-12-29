@@ -135,14 +135,15 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
             );
             return false;
         }
+        $storeId = array_pop(array_values($fyndiqOrders));
         $observer = Mage::getModel('fyndiq/observer');
         $orders = array(
             'orders' => array()
         );
-        foreach (array_keys($fyndiqOrderIds) as $order) {
+        $fyndiqOrderIds = array_keys($fyndiqOrders);
+        foreach ($fyndiqOrderIds as $order) {
             $orders['orders'][] = array('order' => intval($order));
         }
-        $storeId = $observer->getStoreId();
         $ret = Mage::helper('api')->callApi($this->configModel, $storeId, 'POST', 'delivery_notes/', $orders, true);
 
         if ($ret['status'] == 200) {
