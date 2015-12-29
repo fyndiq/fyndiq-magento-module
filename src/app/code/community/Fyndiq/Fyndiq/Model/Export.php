@@ -254,11 +254,11 @@ class Fyndiq_Fyndiq_Model_Export
 
         $productId = $magProduct->getId();
         $descrType = intval($this->configModel->get('fyndiq/fyndiq_group/description', $storeId));
-        $magPrice = $this->getProductPrice($magProduct, $config['priceGroup']);
+        $magPrice = $this->getProductPrice($magProduct, $config['priceGroup'], $storeId);
         $price = FyndiqUtils::getFyndiqPrice($magPrice, $config['discountPercentage'], $config['discountPrice']);
 
         // Old price is always the product base price
-        $oldPrice = $this->includeTax($magProduct, $magProduct->getPrice());
+        $oldPrice = $this->includeTax($magProduct, $magProduct->getPrice(), $storeId);
 
         $feedProduct = array(
             FyndiqFeedWriter::ID => $ourProductId,
@@ -321,19 +321,19 @@ class Fyndiq_Fyndiq_Model_Export
     }
 
     // Add Tax to the price if required
-    protected function includeTax($product, $price)
+    protected function includeTax($product, $price, $storeId)
     {
-        if (!Mage::helper('tax')->priceIncludesTax()) {
-            return Mage::helper('tax')->getPrice($product, $price);
+        if (!Mage::helper('tax')->priceIncludesTax($storeId)) {
+            return Mage::helper('tax')->getPrice($product, $price, null, null, null, null, $storeId);
         }
         return $price;
     }
 
-    public function getProductPrice($product, $priceGroup)
+    public function getProductPrice($product, $priceGroup, $storeId)
     {
         $product->setCustomerGroupId($priceGroup);
         $price = $product->getFinalPrice();
-        return $this->includeTax($product, $price);
+        return $this->includeTax($product, $price, $storeId);
     }
 
     /**
@@ -425,7 +425,9 @@ class Fyndiq_Fyndiq_Model_Export
             return array();
         }
 
-        $magPrice = $this->getProductPrice($magProduct, $config['priceGroup']);
+        $storeId = intval($store->getId());
+
+        $magPrice = $this->getProductPrice($magProduct, $config['priceGroup'], $storeId);
         $price = FyndiqUtils::getFyndiqPrice($magPrice, $config['discountPercentage'], $config['discountPrice']);
 
         $feedProduct = array(
