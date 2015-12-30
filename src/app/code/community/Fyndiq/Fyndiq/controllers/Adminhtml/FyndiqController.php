@@ -188,8 +188,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                         ->load($productId);
                     if ($product) {
                         $productTypeId = $product->getTypeId();
-                        if (
-                            (
+                        if ((
                                 $productTypeId == Mage_Catalog_Model_Product_Type::TYPE_CONFIGURABLE ||
                                 (
                                     $productTypeId == Mage_Catalog_Model_Product_Type::TYPE_SIMPLE &&
@@ -266,5 +265,4 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         }
         $this->_redirect('adminhtml/catalog_product/index');
     }
-
 }
