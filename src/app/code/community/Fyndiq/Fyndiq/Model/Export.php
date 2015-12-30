@@ -252,6 +252,11 @@ class Fyndiq_Fyndiq_Model_Export
             return array();
         }
 
+        if ($magProduct->getData('has_options') != 0) {
+            FyndiqUtils::debug('Has custom options');
+            return array();
+        }
+
         $productId = $magProduct->getId();
         $descrType = intval($this->configModel->get('fyndiq/fyndiq_group/description', $storeId));
         $magPrice = $this->getProductPrice($magProduct, $config['priceGroup'], $storeId);
@@ -422,6 +427,11 @@ class Fyndiq_Fyndiq_Model_Export
 
         if ($magProduct->getTypeId() !== 'simple') {
             FyndiqUtils::debug('article is not simple product');
+            return array();
+        }
+
+        if ($magProduct->getData('has_options') != 0) {
+            FyndiqUtils::debug('Has custom options');
             return array();
         }
 
