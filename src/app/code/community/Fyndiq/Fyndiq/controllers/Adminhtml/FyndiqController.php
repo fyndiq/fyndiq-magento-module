@@ -263,4 +263,5 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         }
         $this->_redirect('adminhtml/catalog_product/index');
     }
+
 }
