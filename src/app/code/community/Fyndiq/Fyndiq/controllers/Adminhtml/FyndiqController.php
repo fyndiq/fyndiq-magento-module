@@ -188,11 +188,14 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                         ->load($productId);
                     if ($product) {
                         $productTypeId = $product->getTypeId();
-                        if ($productTypeId == Mage_Catalog_Model_Product_Type::TYPE_CONFIGURABLE ||
+                        if (
                             (
-                                $productTypeId == Mage_Catalog_Model_Product_Type::TYPE_SIMPLE &&
-                                empty($productConfigurableModel->getParentIdsByChild($product->getId()))
-                            )
+                                $productTypeId == Mage_Catalog_Model_Product_Type::TYPE_CONFIGURABLE ||
+                                (
+                                    $productTypeId == Mage_Catalog_Model_Product_Type::TYPE_SIMPLE &&
+                                    empty($productConfigurableModel->getParentIdsByChild($product->getId()))
+                                )
+                            ) && $product->getData('has_options') == 0
                         ) {
                             $product->setData('fyndiq_exported', Fyndiq_Fyndiq_Model_Attribute_Exported::PRODUCT_EXPORTED)
                                 ->getResource()
