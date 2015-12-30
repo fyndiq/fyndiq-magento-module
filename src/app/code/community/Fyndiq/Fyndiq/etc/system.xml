@@ -234,6 +234,26 @@
                         </cron_interval>
                     </fields>
                 </feed>
+                <troubleshooting>
+                    <label>Troubleshooting</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>4</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <module_list translate="label comment" module="fyndiq_fyndiq">
+                            <label>List installed modules</label>
+                            <comment><![CDATA[Shows list of installed modules]]></comment>
+                            <frontend_type>button</frontend_type>
+                            <frontend_model>Fyndiq_Fyndiq_Block_Modules</frontend_model>
+                            <sort_order>18</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </module_list>
+                    </fields>
+                </troubleshooting>
             </groups>
         </fyndiq>
         <payment>
