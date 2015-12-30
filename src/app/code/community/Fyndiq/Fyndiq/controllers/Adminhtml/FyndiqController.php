@@ -264,4 +264,35 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         $this->_redirect('adminhtml/catalog_product/index');
     }
 
+    /**
+     * Mark orders as handled
+     */
+    public function handledFyndiqOrdersAction()
+    {
+        $orderIds = $this->getRequest()->getParam('order_ids');
+        $fyndiqOrders = Mage::getModel('fyndiq/order')->getFydniqOrders($orderIds);
+        if ($fyndiqOrders) {
+            $work = array();
+            foreach ($fyndiqOrders as $orderId => $storeId) {
+                if (!isset($work[$storeId])){
+                    $work[$storeId] = array();
+                }
+            }
+            foreach ($work as $storeId => $orderIds) {
+                try {
+                    // Send the request for that storeId
+                } catch (Exception $e) {
+                    $this->_getSession()->addError(
+                        Mage::helper('fyndiq_fyndiq')->
+                        __('An unhandled error occurred. If this persists, please contact Fyndiq integration support.') . ' (' . $e->getMessage() . ')'
+                    );
+                }
+            }
+        } else {
+            $this->_getSession()->addError(
+                Mage::helper('fyndiq_fyndiq')->__('No Fyndiq orders were selected.')
+            );
+        }
+        $this->_redirect('adminhtml/sales_order/index');
+    }
 }
