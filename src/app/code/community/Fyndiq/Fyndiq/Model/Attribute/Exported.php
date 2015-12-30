@@ -9,12 +9,12 @@ class Fyndiq_Fyndiq_Model_Attribute_Exported extends Mage_Eav_Model_Entity_Attri
         if (is_null($this->_options)) {
             $this->_options = array(
                 array(
-                    'label' => Mage::helper('fyndiq_fyndiq')->__('Not Exported'),
-                    'value' =>  self::PRODUCT_NOT_EXPORTED,
+                    'label' => Mage::helper('fyndiq_fyndiq')->__('-'),
+                    'value' => self::PRODUCT_NOT_EXPORTED,
                 ),
                 array(
                     'label' => Mage::helper('fyndiq_fyndiq')->__('Exported'),
-                    'value' =>  self::PRODUCT_EXPORTED,
+                    'value' => self::PRODUCT_EXPORTED,
                 ),
             );
         }
@@ -40,6 +40,7 @@ class Fyndiq_Fyndiq_Model_Attribute_Exported extends Mage_Eav_Model_Entity_Attri
             array()
         );
 
+        $valueExpr = new Zend_Db_Expr("`{$valueTable1}`.`value`");
         if ($collection->getStoreId() != $adminStore) {
             $collection->getSelect()->joinLeft(
                 array($valueTable2 => $this->getAttribute()->getBackend()->getTable()),
@@ -49,12 +50,7 @@ class Fyndiq_Fyndiq_Model_Attribute_Exported extends Mage_Eav_Model_Entity_Attri
                 array()
             );
             $valueExpr = new Zend_Db_Expr("IF(`{$valueTable2}`.`value_id`>0, `{$valueTable2}`.`value`, `{$valueTable1}`.`value`)");
-
-        } else {
-            $valueExpr = new Zend_Db_Expr("`{$valueTable1}`.`value`");
         }
-
-
 
         $collection->getSelect()
             ->order($valueExpr, $dir);
