@@ -8,6 +8,8 @@ require __DIR__ . '/../vendor/autoload.php';
 use Aquilax\Magento\PackageConfig;
 use Aquilax\Magento\Generator;
 
+$basePath = $argv[1];
+
 $notes = <<<NOTES
 Version 1.0.8
 - Feature: Improved export performance
@@ -33,12 +35,12 @@ $pc->addAuthor('Evgeniy Vasilev', 'aquilax', 'evgeniy.vasilev@fyndiq.com');
 $pc->setTime(time());
 $pc->addContent(
     PackageConfig::TARGET_COMMUNITY_MODULE_FILE,
-    __DIR__ . '/../src/app/code/community/Fyndiq',
+    $basePath . '/app/code/community/Fyndiq',
     PackageConfig::TYPE_DIRECTORY
 );
 $pc->addContent(
     PackageConfig::TARGET_GLOBAL_CONFIGURATION,
-    __DIR__ . '/../src/app/etc/modules/Fyndiq_Fyndiq.xml',
+    $basePath . '/app/etc/modules/Fyndiq_Fyndiq.xml',
     PackageConfig::TYPE_FILE
 );
 $generator = new Generator();

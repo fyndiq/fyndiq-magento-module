@@ -19,12 +19,21 @@ build: clean
 	# mkdir -p $(BUILD_DIR)/src/docs
 	# cp $(DOCS_DIR)/* $(BUILD_DIR)/src/docs
 	cp $(BASE)/LICENSE $(BUILD_DIR)/src/app/code/community/Fyndiq/Fyndiq/
-	cd $(BUILD_DIR)/src; zip -r -X ../fyndiq-magento-module-v$(MODULE_VERSION)-$(COMMIT).zip .
+	cd $(BUILD_DIR)/src; zip -r -X ../fyndiq-magento-module-v$(MODULE_VERSION)-$(COMMIT).zip
 	rm -r $(BUILD_DIR)/src
 
-build-connect:
-	cd vagrant && vagrant ssh -c 'mkdir -p /var/www/html/magento/var/connect && sudo chown vagrant:www-data /var/www/html/magento/var/connect && sudo chmod -R 775 /var/www/html/magento/var/connect'
-	cd vagrant && vagrant ssh -c 'cp /opt/fyndiq-magento-module/deploys/Fyndiq_Fyndiq.xml /var/www/html/magento/var/connect/Fyndiq_Fyndiq.xml && cd /var/www/html/magento/ && echo "Setup correct version number and notes in Magento connect and click Save Data and Create Package. Then click Enter to continue here.." && read && mv /var/www/html/magento/var/connect/Fyndiq-*.tgz /opt/fyndiq-magento-module/build/Fyndiq-$(MODULE_VERSION).tgz && echo "You find the package in build directory now."'
+build-connect: clean
+	rsync -a --exclude='.*' $(SRC_DIR) $(BUILD_DIR)
+	# replace COMMIT hash
+	sed -i'' 's/XXXXXX/$(COMMIT)/g' $(BUILD_DIR)/src/app/code/community/Fyndiq/Fyndiq/Model/Config.php;
+	cp $(BASE)/LICENSE $(BUILD_DIR)/src/app/code/community/Fyndiq/Fyndiq/
+	php $(TOOLS_DIR)/package.php $(BUILD_DIR)/src > $(BUILD_DIR)/src/package.xml
+	cd $(BUILD_DIR)/src; tar -cvzf ../fyndiq-magento-module-v$(MODULE_VERSION)-$(COMMIT)-connect.tgz *
+	rm -r $(BUILD_DIR)/src
+
+# build-connect:
+# 	cd vagrant && vagrant ssh -c 'mkdir -p /var/www/html/magento/var/connect && sudo chown vagrant:www-data /var/www/html/magento/var/connect && sudo chmod -R 775 /var/www/html/magento/var/connect'
+# 	cd vagrant && vagrant ssh -c 'cp /opt/fyndiq-magento-module/deploys/Fyndiq_Fyndiq.xml /var/www/html/magento/var/connect/Fyndiq_Fyndiq.xml && cd /var/www/html/magento/ && echo "Setup correct version number and notes in Magento connect and click Save Data and Create Package. Then click Enter to continue here.." && read && mv /var/www/html/magento/var/connect/Fyndiq-*.tgz /opt/fyndiq-magento-module/build/Fyndiq-$(MODULE_VERSION).tgz && echo "You find the package in build directory now."'
 
 clean:
 	rm -r $(BUILD_DIR)/*
