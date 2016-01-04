@@ -178,7 +178,6 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
             if ($productPost) {
                 $productIds = $productPost['product'];
                 $productModel = Mage::getModel('catalog/product');
-                $productConfigurableModel = Mage::getModel('catalog/product_type_configurable');
                 $productsToExport = count($productIds);
                 $productsExported = 0;
 
@@ -187,15 +186,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                         ->setCurrentStore($storeId)
                         ->load($productId);
                     if ($product) {
-                        $productTypeId = $product->getTypeId();
-                        if ((
-                                $productTypeId == Mage_Catalog_Model_Product_Type::TYPE_CONFIGURABLE ||
-                                (
-                                    $productTypeId == Mage_Catalog_Model_Product_Type::TYPE_SIMPLE &&
-                                    empty($productConfigurableModel->getParentIdsByChild($product->getId()))
-                                )
-                            ) && $product->getData('has_options') == 0
-                        ) {
+                        if (Mage::helper('export')->isExportable($product)) {
                             $product->setData('fyndiq_exported', Fyndiq_Fyndiq_Model_Attribute_Exported::PRODUCT_EXPORTED)
                                 ->getResource()
                                 ->saveAttribute($product, 'fyndiq_exported');
