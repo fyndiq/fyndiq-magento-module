@@ -37,6 +37,7 @@
             <adminhtml>
                <rewrite>
                    <catalog_product_grid>Fyndiq_Fyndiq_Block_Adminhtml_Catalog_Product_Grid</catalog_product_grid>
+                   <catalog_product_edit_tabs>Fyndiq_Fyndiq_Block_Adminhtml_Catalog_Product_Edit_Tabs</catalog_product_edit_tabs>
                    <sales_order>Fyndiq_Fyndiq_Block_Adminhtml_Sales_Order</sales_order>
                    <sales_order_grid>Fyndiq_Fyndiq_Block_Adminhtml_Sales_Order_Grid</sales_order_grid>
                    <sales_order_view>Fyndiq_Fyndiq_Block_Adminhtml_Sales_Order_View</sales_order_view>
@@ -65,6 +66,9 @@
             <api>
                 <class>Fyndiq_Fyndiq_Helper_Api</class>
             </api>
+            <export>
+                <class>Fyndiq_Fyndiq_Helper_Export</class>
+            </export>
             <region>
                 <class>Fyndiq_Fyndiq_Helper_Region</class>
             </region>
