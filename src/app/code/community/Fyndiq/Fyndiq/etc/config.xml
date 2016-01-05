@@ -83,6 +83,7 @@
                 <args>
                     <modules>
                         <Fyndiq before="Mage_Adminhtml">Fyndiq_Fyndiq_Adminhtml</Fyndiq>
+                        <Fyndiq_Shipping before="Mage_Adminhtml">Fyndiq_Fyndiq_Adminhtml_Sales_Order_ShipmentController</Fyndiq_Shipping>
                     </modules>
                 </args>
             </adminhtml>
