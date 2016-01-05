@@ -12,7 +12,8 @@ class Fyndiq_Fyndiq_Adminhtml_Sales_Order_ShipmentController extends Mage_Adminh
         $detailtrack = '';
         $configModel = Mage::getModel('fyndiq/config');
         foreach($tracks as $track) {
-            $orderId = $this->getFyndiqOrderId($track->getOrderId());
+            $order = $order = Mage::getModel('sales/order')->load($orderId);
+            $orderId = $order->getData('fyndiq_order_id');
             if (!empty($orderId)) {
                 $storeId = $track->getStoreId();
                 $trackNumber = $track->getTrackNumber();
@@ -22,7 +23,7 @@ class Fyndiq_Fyndiq_Adminhtml_Sales_Order_ShipmentController extends Mage_Adminh
                     'packages' => array(
                         'service' => $this->getServiceByCarrierCode($carrierCode),
                         'tracking' => $trackNumber,
-                        'sku' => $this->getSKUs(),
+                        'sku' => $this->getSKUs($order),
                     )
                 );
                 try {
@@ -35,22 +36,29 @@ class Fyndiq_Fyndiq_Adminhtml_Sales_Order_ShipmentController extends Mage_Adminh
         return $result;
     }
 
-    protected function getFyndiqOrderId($orderId)
-    {
-        $order = Mage::getModel('sales/order')
-            ->load($orderId);
-        return $order->getData('fyndiq_order_id');
-    }
-
     protected function getServiceByCarrierCode($carrierCode)
     {
         // TODO: Implement me
         return $carrierCode;
     }
 
-    protected function getSKUs()
+    protected function getSKUs($order)
     {
-        // TODO: Implement me ??
-        return array();
+        $skus = array();
+        $orderedItems = $order->getAllVisibleItems();
+        $orderedProductIds = [];
+
+        foreach ($orderedItems as $item) {
+            $orderedProductIds[] = $item->getData('product_id');
+        }
+
+        $productCollection = Mage::getModel('catalog/product')
+            ->getCollection()
+            ->addAttributeToSelect('*')
+            ->addIdFilter($orderedProductIds);
+        foreach ($productCollection->load() as $product) {
+            $skus[] = $product->getSKU();
+        }
+        return $skus;
     }
 }
