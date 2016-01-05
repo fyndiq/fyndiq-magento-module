@@ -9,21 +9,33 @@ use Aquilax\Magento\PackageConfig;
 use Aquilax\Magento\Generator;
 
 $basePath = $argv[1];
+$moduleVersion = $argv[2];
+$changelog = $argv[3];
 
-$notes = <<<NOTES
-Version 1.0.8
-- Feature: Improved export performance
-- Feature: Orders which cannot be imported will be skipped and reported
-- Bugfix: hide Fydniq shipping method from checkout
-- Bugfix: Better mulitostore support
-- Bugfix: Settings are cleared on module disconnect
-- Bugfix: Promotions are handled correctly
-- Bugfix: Better image export
-NOTES;
+if (empty($basePath) || empty($moduleVersion) || empty($changelog)) {
+    throw new Exception('Base path, module version and CHANGELOG must be provided as parameters');
+    exit(1);
+}
+
+$handle = fopen($changelog, 'r');
+$notes = '';
+while (($line = fgets($handle, 4096)) !== false) {
+    if (trim($line) == ''){
+        break;
+    }
+    $notes .= $line;
+}
+fclose($handle);
+
+$versionLabel = 'Version '. $moduleVersion;
+if (strpos($notes, $versionLabel) === false) {
+    throw new Exception('Version information not found at the top of the CHANGELOG. Looking for: ' . $versionLabel);
+    exit(2);
+}
 
 $pc = new PackageConfig();
 $pc->setName('Fyndiq');
-$pc->setVersion('1.0.8');
+$pc->setVersion($moduleVersion);
 $pc->setStability('stable');
 $pc->setLicense('Copyright');
 $pc->setChannel('community');
@@ -40,8 +52,8 @@ $pc->addContent(
 );
 $pc->addContent(
     PackageConfig::TARGET_GLOBAL_CONFIGURATION,
-    $basePath . '/app/etc/modules/Fyndiq_Fyndiq.xml',
-    PackageConfig::TYPE_FILE
+    $basePath . '/app/etc/modules',
+    PackageConfig::TYPE_DIRECTORY
 );
 $generator = new Generator();
 $xml = $generator->getPackageXML($pc);

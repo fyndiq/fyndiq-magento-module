@@ -4,7 +4,6 @@
     "type": "magento-module",
     "description": "Fyndiq Magento Integration",
     "homepage": "http://www.fyndiq.se",
-    "minimum-stability": "dev",
     "require-dev": {
         "phpmd/phpmd" : "@stable",
         "phpunit/phpunit": "4.6.*",
