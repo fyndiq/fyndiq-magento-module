@@ -12,7 +12,7 @@ class Fyndiq_Fyndiq_Adminhtml_Sales_Order_ShipmentController extends Mage_Adminh
         $detailtrack = '';
         $configModel = Mage::getModel('fyndiq/config');
         foreach($tracks as $track) {
-            $order = $order = Mage::getModel('sales/order')->load($orderId);
+            $order = Mage::getModel('sales/order')->load($track->getOrderId());
             $orderId = $order->getData('fyndiq_order_id');
             if (!empty($orderId)) {
                 $storeId = $track->getStoreId();
@@ -23,11 +23,13 @@ class Fyndiq_Fyndiq_Adminhtml_Sales_Order_ShipmentController extends Mage_Adminh
                     'packages' => array(
                         'service' => $this->getServiceByCarrierCode($carrierCode),
                         'tracking' => $trackNumber,
-                        'sku' => $this->getSKUs($order),
+                        // FIXME: Don't send SKU's for now
+                        //'sku' => $this->getSKUs($order),
                     )
                 );
+                $api = Mage::helper('api');
                 try {
-                    Mage::helper('api')->callApi($configModel, $storeId, 'PUT', $url, $data);
+                    $api->callApi($configModel, $storeId, 'PUT', $url, $data);
                 } catch (Excepton $e) {
                     Mage::log('Error sending package information to Fyndiq: ' . $e->getMessage() , Zend_Log::ERR);
                 }
