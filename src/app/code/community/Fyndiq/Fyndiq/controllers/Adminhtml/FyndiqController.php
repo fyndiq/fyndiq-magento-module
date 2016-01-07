@@ -135,6 +135,12 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
             );
             return false;
         }
+        if (count(array_unique(array_values($fyndiqOrders))) == 0) {
+            $this->_getSession()->addError(
+                Mage::helper('fyndiq_fyndiq')->__('Please select Fyndiq orders.')
+            );
+            return false;
+        }
         $storeId = array_pop(array_values($fyndiqOrders));
         $observer = Mage::getModel('fyndiq/observer');
         $orders = array(

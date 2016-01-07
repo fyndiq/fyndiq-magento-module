@@ -1,0 +1,55 @@
+Version 2.0.0
+* Module is now fully integrated within the Magento native interface
+* Feature: Option to generate the export feed with Magento cron job
+* Custom field mapping for some fields
+* Bugfix: Fyndiq shipping provider shown on the store front
+
+Version 1.0.8
+* Enhancement: Improved export performance
+* Enhancement: Orders which cannot be imported will be skipped and reported
+* Enhancement: Better multiple store support
+* Bugfix: Settings are cleared on module disconnect
+* Bugfix: Hide Fydniq shipping method from checkout
+* Bugfix: Promotions are handled correctly
+* Bugfix: Better image export
+
+Version 1.0.7
+* Enhancement: Be able to pick shipping / payment method
+* Enhancement: Able to disable order management
+* Enhancement: Better HTML sanitization
+* Bugfix: Fixed multistore settings
+* Bugfix: Fixed product quantity issue
+
+Version 1.0.6
+* Enhancement: Categories are exported with the full path for easier category mapping
+* Bugfix: PHP notice on the module check page
+
+Version 1.0.5
+* Enhancement: The base price is used as old price
+* Enhancement: Better product export handling
+* Bugfix: Correct handling of shipping addresses
+* Bugfix: Skip placeholder images in some edge cases
+
+Version 1.0.4
+* Enhancement: Module page added to Magento Permissions page
+* Enhancement: Support for long description in Flat product table setup
+* Enhancement: Set Swedish region if marked as required, when importing orders
+* Enhancement: Better handling of expired admin session
+* Bugfix: Special prices for defined date interval
+* Bugfix: Support for custom prefixed tables
+
+Version 1.0.3
+* New Feature: Module check page to test the basic module functions
+* Enhancement: Better handling of errors
+* Bugfix: Notifications error message is fixed
+
+Version 1.0.2
+* Bugfix: Disconnect button functions properly
+
+Version 1.0.1
+* New Feature: Article SKU can now be clicked to go directly to the Magento product details page
+* New Feature: Global lowest stock value can now be set so that only products with a specific minimum stock value will be sent to Fyndiq
+* Bugfix: Fixed feed character encoding issue
+
+Version 1.0.0
+* Initial release

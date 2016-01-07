@@ -242,12 +242,22 @@
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <fields>
+                        <updated translate="label comment" module="fyndiq_fyndiq">
+                            <label>Feed last update</label>
+                            <comment><![CDATA[Last time the export feed was generated]]></comment>
+                            <frontend_type>button</frontend_type>
+                            <frontend_model>Fyndiq_Fyndiq_Block_Updated</frontend_model>
+                            <sort_order>18</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </updated>
                         <module_list translate="label comment" module="fyndiq_fyndiq">
                             <label>List installed modules</label>
                             <comment><![CDATA[Shows list of installed modules]]></comment>
                             <frontend_type>button</frontend_type>
                             <frontend_model>Fyndiq_Fyndiq_Block_Modules</frontend_model>
-                            <sort_order>18</sort_order>
+                            <sort_order>19</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
