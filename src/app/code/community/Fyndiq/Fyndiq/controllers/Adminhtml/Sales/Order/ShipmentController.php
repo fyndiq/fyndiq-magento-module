@@ -19,29 +19,30 @@ class Fyndiq_Fyndiq_Adminhtml_Sales_Order_ShipmentController extends Mage_Adminh
                 $trackNumber = $track->getTrackNumber();
                 $carrierCode = $track->getCarrierCode();
                 $url = 'packages/' . $orderId . '/';
-                $data = array(
-                    'packages' => array(
-                        'service' => $this->getServiceByCarrierCode($carrierCode),
-                        'tracking' => $trackNumber,
-                        // FIXME: Don't send SKU's for now
-                        //'sku' => $this->getSKUs($order),
-                    )
-                );
-                $api = Mage::helper('api');
-                try {
-                    $api->callApi($configModel, $storeId, 'PUT', $url, $data);
-                } catch (Excepton $e) {
-                    Mage::log('Error sending package information to Fyndiq: ' . $e->getMessage() , Zend_Log::ERR);
+                if ($carrierCode) {
+                    $serviceCode = Mage::helper('tracking')->getDeliveryMapping($carrierCode, $storeId);
+                    if ($serviceCode) {
+                        $data = array(
+                            'packages' => array(
+                                array(
+                                    'service' => $serviceCode,
+                                    'tracking' => $trackNumber,
+                                    // FIXME: Don't send SKU's for now
+                                    //'sku' => $this->getSKUs($order),
+                                )
+                            )
+                        );
+                        $api = Mage::helper('api');
+                        try {
+                            $api->callApi($configModel, $storeId, 'PUT', $url, $data);
+                        } catch (Excepton $e) {
+                            Mage::log('Error sending package information to Fyndiq: ' . $e->getMessage() , Zend_Log::ERR);
+                        }
+                    }
                 }
             }
         }
         return $result;
-    }
-
-    protected function getServiceByCarrierCode($carrierCode)
-    {
-        // TODO: Implement me
-        return $carrierCode;
     }
 
     protected function getSKUs($order)

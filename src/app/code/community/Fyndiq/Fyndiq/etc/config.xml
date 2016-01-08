@@ -72,6 +72,9 @@
             <region>
                 <class>Fyndiq_Fyndiq_Helper_Region</class>
             </region>
+            <tracking>
+                <class>Fyndiq_Fyndiq_Helper_Tracking</class>
+            </tracking>
             <fyndiq_fyndiq>
                 <class>Fyndiq_Fyndiq_Helper</class>
             </fyndiq_fyndiq>
