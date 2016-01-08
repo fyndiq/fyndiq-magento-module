@@ -72,6 +72,9 @@
             <region>
                 <class>Fyndiq_Fyndiq_Helper_Region</class>
             </region>
+            <tracking>
+                <class>Fyndiq_Fyndiq_Helper_Tracking</class>
+            </tracking>
             <fyndiq_fyndiq>
                 <class>Fyndiq_Fyndiq_Helper</class>
             </fyndiq_fyndiq>
@@ -83,6 +86,7 @@
                 <args>
                     <modules>
                         <Fyndiq before="Mage_Adminhtml">Fyndiq_Fyndiq_Adminhtml</Fyndiq>
+                        <Fyndiq_Shipping before="Mage_Adminhtml">Fyndiq_Fyndiq_Adminhtml_Sales_Order_ShipmentController</Fyndiq_Shipping>
                     </modules>
                 </args>
             </adminhtml>

@@ -196,10 +196,101 @@
                         </brand>
                     </fields>
                 </mappings>
+                <tracking>
+                    <label>Delivery Service Mapping</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>3</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <postnord translate="label comment" module="fyndiq_fyndiq">
+                            <label>PostNord</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>fyndiq/system_config_source_dropdown_carrier</source_model>
+                            <sort_order>16</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </postnord>
+                        <schenker translate="label comment" module="fyndiq_fyndiq">
+                            <label>Schenker</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>fyndiq/system_config_source_dropdown_carrier</source_model>
+                            <sort_order>17</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </schenker>
+                        <dhl translate="label comment" module="fyndiq_fyndiq">
+                            <label>DHL</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>fyndiq/system_config_source_dropdown_carrier</source_model>
+                            <sort_order>18</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </dhl>
+                        <bring translate="label comment" module="fyndiq_fyndiq">
+                            <label>Bring</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>fyndiq/system_config_source_dropdown_carrier</source_model>
+                            <sort_order>19</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </bring>
+                        <deutsche-post translate="label comment" module="fyndiq_fyndiq">
+                            <label>Deutsche Post</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>fyndiq/system_config_source_dropdown_carrier</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </deutsche-post>
+                        <dpd translate="label comment" module="fyndiq_fyndiq">
+                            <label>DPD</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>fyndiq/system_config_source_dropdown_carrier</source_model>
+                            <sort_order>21</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </dpd>
+                        <gls translate="label comment" module="fyndiq_fyndiq">
+                            <label>GLS</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>fyndiq/system_config_source_dropdown_carrier</source_model>
+                            <sort_order>22</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </gls>
+                        <ups translate="label comment" module="fyndiq_fyndiq">
+                            <label>UPS</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>fyndiq/system_config_source_dropdown_carrier</source_model>
+                            <sort_order>23</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </ups>
+                        <hermes translate="label comment" module="fyndiq_fyndiq">
+                            <label>Hermes</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>fyndiq/system_config_source_dropdown_carrier</source_model>
+                            <sort_order>24</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </hermes>
+                    </fields>
+                </tracking>
                 <feed>
                     <label>Feed Generation</label>
                     <frontend_type>text</frontend_type>
-                    <sort_order>3</sort_order>
+                    <sort_order>4</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
@@ -237,7 +328,7 @@
                 <troubleshooting>
                     <label>Troubleshooting</label>
                     <frontend_type>text</frontend_type>
-                    <sort_order>4</sort_order>
+                    <sort_order>5</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
@@ -268,7 +359,7 @@
         </fyndiq>
         <payment>
             <groups>
-                <fyndiq_fyndiq  translate="label" module="fyndiq_fyndiq">
+                <fyndiq_fyndiq translate="label" module="fyndiq_fyndiq">
                     <label>Fyndiq</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>9999</sort_order>
