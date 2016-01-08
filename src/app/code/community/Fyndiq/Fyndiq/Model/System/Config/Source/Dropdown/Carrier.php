@@ -25,5 +25,4 @@ class Fyndiq_Fyndiq_Model_System_Config_Source_Dropdown_Carrier
         }
         return $carriers;
     }
-
 }

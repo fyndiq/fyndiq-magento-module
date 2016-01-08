@@ -1,7 +1,7 @@
 <?php
 
 require_once(Mage::getModuleDir('', 'Fyndiq_Fyndiq') . '/lib/shared/src/init.php');
-require_once(Mage::getModuleDir('controllers','Mage_Adminhtml').DS.'Sales'.DS.'Order'.DS.'ShipmentController.php');
+require_once(Mage::getModuleDir('controllers', 'Mage_Adminhtml').DS.'Sales'.DS.'Order'.DS.'ShipmentController.php');
 
 class Fyndiq_Fyndiq_Adminhtml_Sales_Order_ShipmentController extends Mage_Adminhtml_Sales_Order_ShipmentController
 {
@@ -11,7 +11,7 @@ class Fyndiq_Fyndiq_Adminhtml_Sales_Order_ShipmentController extends Mage_Adminh
         $tracks = $shipment->getAllTracks();
         $detailtrack = '';
         $configModel = Mage::getModel('fyndiq/config');
-        foreach($tracks as $track) {
+        foreach ($tracks as $track) {
             $order = Mage::getModel('sales/order')->load($track->getOrderId());
             $orderId = $order->getData('fyndiq_order_id');
             if (!empty($orderId)) {
@@ -36,7 +36,7 @@ class Fyndiq_Fyndiq_Adminhtml_Sales_Order_ShipmentController extends Mage_Adminh
                         try {
                             $api->callApi($configModel, $storeId, 'PUT', $url, $data);
                         } catch (Excepton $e) {
-                            Mage::log('Error sending package information to Fyndiq: ' . $e->getMessage() , Zend_Log::ERR);
+                            Mage::log('Error sending package information to Fyndiq: ' . $e->getMessage(), Zend_Log::ERR);
                         }
                     }
                 }
