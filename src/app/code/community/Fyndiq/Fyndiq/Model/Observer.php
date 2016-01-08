@@ -22,9 +22,21 @@ class Fyndiq_Fyndiq_Model_Observer
         return 0;
     }
 
+    protected function checkTrackingMethods($storeId)
+    {
+        $duplicates = Mage::helper('tracking')->getDuplicates($storeId);
+        if ($duplicates) {
+            Mage::getSingleton('core/session')->addNotice(
+                Mage::helper('fyndiq_fyndiq')->
+                __('At least one Shipping Method was selected for more than Fyndiq Delivery Service. Please make sure that each method is only selected once.') . ' (' . implode(',', $duplicates). ')'
+            );
+        }
+    }
+
     public function handle_fyndiqConfigChangedSection()
     {
         $storeId = $this->getStoreId();
+        $this->checkTrackingMethods($storeId);
         if ($this->configModel->get('fyndiq/fyndiq_group/username', $storeId) !== ''
             && $this->configModel->get('fyndiq/fyndiq_group/apikey', $storeId) !== ''
         ) {
