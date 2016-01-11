@@ -258,7 +258,7 @@ class Fyndiq_Fyndiq_Model_Export
         }
 
         $productId = $magProduct->getId();
-        $descrType = intval($this->configModel->get('fyndiq/fyndiq_group/description', $storeId));
+        $descrType = intval($this->configModel->get('fyndiq/mappings/description', $storeId));
         $magPrice = $this->getProductPrice($magProduct, $config['priceGroup'], $storeId);
         $price = FyndiqUtils::getFyndiqPrice($magPrice, $config['discountPercentage'], $config['discountPrice']);
 
