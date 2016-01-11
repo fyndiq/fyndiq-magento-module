@@ -76,6 +76,8 @@ class Fyndiq_Fyndiq_Model_Export
     protected function exportProducts($storeId, $feedWriter)
     {
         FyndiqUtils::debug('exportProducts');
+        $productCount = 0;
+        $articleCount = 0;
 
         $store = Mage::getModel('core/store')->load($storeId);
 
@@ -130,7 +132,9 @@ class Fyndiq_Fyndiq_Model_Export
                             $config
                         );
                         FyndiqUtils::debug('simple product', $product);
-                        if (!$feedWriter->addCompleteProduct($product)) {
+                        if ($feedWriter->addCompleteProduct($product)) {
+                            $productCount++;
+                        } else {
                             FyndiqUtils::debug('Validation Errors', $feedWriter->getLastProductErrors());
                         }
                         continue;
@@ -166,14 +170,22 @@ class Fyndiq_Fyndiq_Model_Export
                     }
                     $simpleCollection->clear();
                     FyndiqUtils::debug('$product, $articles', $product, $articles);
-                    if (!$feedWriter->addCompleteProduct($product, $articles)) {
-                        FyndiqUtils::debug('Validation Errors', $feedWriter->getLastProductErrors());
+                    if ($feedWriter->addCompleteProduct($product, $articles)) {
+                        $articleCount += $index-1;
+                    } else {
+                        $errors = $feedWriter->getLastProductErrors();
+                        FyndiqUtils::debug('Validation Errors', $errors);
+                        $articleCount += $index-1-count($errors);
                     }
                 }
                 $productsToExport->clear();
             }
 
         }
+
+        FyndiqUtils::debug('$productCount', $productCount);
+        FyndiqUtils::debug('$articleCount', $articleCount);
+
         return $feedWriter->write();
     }
 
