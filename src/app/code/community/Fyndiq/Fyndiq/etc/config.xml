@@ -115,6 +115,7 @@
                 <fyndiq_shipment_method>fyndiq_fyndiq_standard</fyndiq_shipment_method>
             </fyndiq_group>
             <mappings>
+                <description>1</description>
                 <ean></ean>
                 <isbn></isbn>
                 <mpn></mpn>

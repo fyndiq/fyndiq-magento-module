@@ -101,6 +101,7 @@ class Fyndiq_Fyndiq_Model_Export
                 'currency' => $store->getCurrentCurrencyCode(),
                 'stockMin' => intval($this->configModel->get('fyndiq/fyndiq_group/stockmin', $storeId)),
                 'mappedFields' => $this->getMappedFields($storeId),
+                'descrType' => intval($this->configModel->get('fyndiq/mappings/description', $storeId)),
             );
             FyndiqUtils::debug('$config', $config);
 
@@ -258,7 +259,6 @@ class Fyndiq_Fyndiq_Model_Export
         }
 
         $productId = $magProduct->getId();
-        $descrType = intval($this->configModel->get('fyndiq/fyndiq_group/description', $storeId));
         $magPrice = $this->getProductPrice($magProduct, $config['priceGroup'], $storeId);
         $price = FyndiqUtils::getFyndiqPrice($magPrice, $config['discountPercentage'], $config['discountPrice']);
 
@@ -270,7 +270,7 @@ class Fyndiq_Fyndiq_Model_Export
             FyndiqFeedWriter::PAUSED => $magProduct->getStatus() != Mage_Catalog_Model_Product_Status::STATUS_ENABLED ? 1 : 0,
             FyndiqFeedWriter::PRODUCT_TITLE => $this->getProductTitle($magArray['name'], $ourProductId, $storeId),
             FyndiqFeedWriter::PRODUCT_DESCRIPTION =>
-                $this->getProductDescription($magProduct, $descrType, $storeId),
+                $this->getProductDescription($magProduct, $config['descrType'], $storeId),
             FyndiqFeedWriter::PRICE => FyndiqUtils::formatPrice($price),
             FyndiqFeedWriter::OLDPRICE => FyndiqUtils::formatPrice($oldPrice),
             FyndiqFeedWriter::PRODUCT_VAT_PERCENT => $this->getTaxRate($magProduct, $store),
