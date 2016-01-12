@@ -332,6 +332,18 @@
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <fields>
+                        <version_check_time>
+                            <frontend_type>text</frontend_type>
+                            <show_in_default>0</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </version_check_time>
+                        <last_version>
+                            <frontend_type>text</frontend_type>
+                            <show_in_default>0</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </last_version>
                         <updated translate="label comment" module="fyndiq_fyndiq">
                             <label>Feed last update</label>
                             <comment><![CDATA[Last time the export feed was generated]]></comment>
