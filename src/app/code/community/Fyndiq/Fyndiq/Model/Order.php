@@ -156,7 +156,10 @@ class Fyndiq_Fyndiq_Model_Order
                 $customer->save();
             } catch (Exception $e) {
                 throw new Exception(
-                    Mage::helper('fyndiq_fyndiq')->__('Error, creating Fyndiq customer:') .' '.$e->getMessage()
+                    sprintf(
+                        Mage::helper('fyndiq_fyndiq')->__('Error: Fyndiq customer could not be created: %s'),
+                        $e->getMessage()
+                    )
                 );
             }
         }
