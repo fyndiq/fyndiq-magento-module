@@ -17,14 +17,6 @@ class Fyndiq_Fyndiq_Model_System_Config_Source_Dropdown_Interval
                 'value' => 60,
                 'label' => 60,
             ),
-            array(
-                'value' => 120,
-                'label' => 120,
-            ),
-            array(
-                'value' => 180,
-                'label' => 180,
-            ),
         );
     }
 
@@ -34,8 +26,6 @@ class Fyndiq_Fyndiq_Model_System_Config_Source_Dropdown_Interval
             10 => 10,
             30 => 30,
             60 => 60,
-            120 => 120,
-            180 => 180,
         );
     }
 }
