@@ -80,24 +80,31 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
     private function ping()
     {
         $storeId = $this->getRequest()->getParam('store');
-        if ($this->configModel->get('fyndiq/feed/cron_enabled', $storeId)) {
-            return $this->getFyndiqOutput()->showError(405, 'Method not allowed', 'Feed is generated with cron job.');
-        }
         if (!$this->isCorrectToken($this->getRequest()->getParam('token'), $storeId)) {
             return $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
         }
-
-        $this->getFyndiqOutput()->flushHeader('OK');
-        if (!$this->isPingLocked($storeId)) {
-            $this->configModel->set('fyndiq/feed/generated_time', time(), $storeId);
-            $this->configModel->reInit();
-            $exportModel = Mage::getModel('fyndiq/export');
-            try {
-                $exportModel->generateFeed($storeId);
-            } catch (Exception $e) {
-                Mage::logException($e);
+        $cronEnabled = $this->configModel->get('fyndiq/feed/cron_enabled', $storeId);
+        if (!$cronEnabled) {
+            $this->getFyndiqOutput()->flushHeader('OK');
+            if (!$this->isPingLocked($storeId)) {
+                $this->configModel->set('fyndiq/feed/generated_time', time(), $storeId);
+                $this->configModel->reInit();
+                $exportModel = Mage::getModel('fyndiq/export');
+                try {
+                    $exportModel->generateFeed($storeId);
+                } catch (Exception $e) {
+                    Mage::logException($e);
+                }
             }
         }
+        $this->checkModuleUpdate(0);
+        if ($cronEnabled) {
+            return $this->getFyndiqOutput()->showError(405, 'Method not allowed', 'Feed is generated with cron job.');
+        }
+    }
+
+    private function checkModuleUpdate($storeId) {
+
     }
 
     private function debug()
