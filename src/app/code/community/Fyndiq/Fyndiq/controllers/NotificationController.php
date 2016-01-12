@@ -4,6 +4,7 @@ require_once(Mage::getModuleDir('', 'Fyndiq_Fyndiq') . '/lib/shared/src/init.php
 
 class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Action
 {
+    const VERSION_CHECK_INTERVAL = 10800;
 
     private $fyndiqOutput = null;
     private $configModel = null;
@@ -103,8 +104,59 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         }
     }
 
-    private function checkModuleUpdate($storeId) {
+    public function downloadURL($url)
+    {
+        $curl = new Varien_Http_Adapter_Curl();
+        $curl->setConfig(array(
+            'timeout' => 15 //Timeout in no of seconds
+        ));
+        $curl->write(Zend_Http_Client::GET, $url, '1.0');
+        $data = $curl->read();
+        if ($data === false) {
+            return false;
+        }
+        $data = substr($data, $curl->getInfo(CURLINFO_HEADER_SIZE));
+        $curl->close();
+        return $data;
+    }
 
+    public function checkModuleUpdate($storeId)
+    {
+        try {
+            $lastUpdate = intval($this->configModel->get('fyndiq/troubleshooting/version_check_time', $storeId));
+            if (($lastUpdate + self::VERSION_CHECK_INTERVAL) < time()) {
+                $this->configModel->set('fyndiq/troubleshooting/version_check_time', time(), $storeId);
+                $this->configModel->reInit();
+                $url = Fyndiq_Fyndiq_Model_Config::REPOSITORY_DOMAIN . '/repos/' . Fyndiq_Fyndiq_Model_Config::REPOSITORY_PATH . 'releases/latest.json';
+                $payload = $this->downloadURL($url);
+                if (!$payload) {
+                    return false;
+                }
+                $data = json_decode($payload);
+                $downloadURL = $data->html_url;
+                //set the new version
+                if (version_compare($this->configModel->getModuleVersion(), $version) < 0) {
+                    $this->configModel->set('fyndiq/troubleshooting/last_version', $version, $storeId);
+                    $this->configModel->reInit();
+                    $inbox = Mage::getModel('Mage_AdminNotification_Model_Inbox');
+                    $inbox->addMinor(
+                        sprintf(
+                            Mage::helper('fyndiq_fyndiq')->__('Fyndiq Magento Extension %s is available!'),
+                            $version
+                        ),
+                        sprintf(
+                            Mage::helper('fyndiq_fyndiq')->__('A new version of the Fyndiq Magento Extension has been published and is now available for download. For details, please check the Change History on the download page at %s'),
+                            $downloadURL
+                        ),
+                        $downloadURL
+                    );
+                    return true;
+                }
+            }
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            // fail silently
+        }
     }
 
     private function debug()

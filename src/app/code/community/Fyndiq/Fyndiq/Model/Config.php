@@ -5,6 +5,8 @@ class Fyndiq_Fyndiq_Model_Config
 
     const COMMIT = 'XXXXXX';
     const REPOSITORY_PATH = 'fyndiq/fyndiq-magento-module/';
+    const REPOSITORY_DOMAIN = 'http://developers.fyndiq.com';
+
 
     private function getScope($storeId)
     {
