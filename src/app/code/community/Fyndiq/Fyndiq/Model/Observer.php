@@ -27,8 +27,11 @@ class Fyndiq_Fyndiq_Model_Observer
         $duplicates = Mage::helper('tracking')->getDuplicates($storeId);
         if ($duplicates) {
             Mage::getSingleton('core/session')->addNotice(
-                Mage::helper('fyndiq_fyndiq')->
-                __('At least one Shipping Method was selected for more than Fyndiq Delivery Service. Please make sure that each method is only selected once.') . ' (' . implode(',', $duplicates). ')'
+                sprintf(
+                    Mage::helper('fyndiq_fyndiq')->
+                        __('One or more Shipping Methods were selected for more than one Fyndiq service (%s). Please make sure that each method is only selected once.'),
+                    implode(',', $duplicates)
+                )
             );
         }
     }
