@@ -134,6 +134,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
                 }
                 $data = json_decode($payload);
                 $downloadURL = $data->html_url;
+                $version = $data->tag_name;
                 //set the new version
                 if (version_compare($this->configModel->getModuleVersion(), $version) < 0) {
                     $this->configModel->set('fyndiq/troubleshooting/last_version', $version, $storeId);
