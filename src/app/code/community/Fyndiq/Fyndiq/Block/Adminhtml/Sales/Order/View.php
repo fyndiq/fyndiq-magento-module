@@ -19,7 +19,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Sales_Order_View extends Mage_Adminhtml_Bloc
     {
         $order = Mage::getModel('sales/order')
             ->load($orderId);
-        $orderId = $order->getData('fyndiq_order_id')
+        $orderId = $order->getData('fyndiq_order_id');
         return !empty($orderId);
     }
 
