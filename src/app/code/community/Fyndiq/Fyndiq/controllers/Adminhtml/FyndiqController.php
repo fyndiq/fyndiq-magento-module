@@ -284,13 +284,13 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                 } catch (Exception $e) {
                     $this->_getSession()->addError(
                         Mage::helper('fyndiq_fyndiq')->
-                        __('An unhandled error occurred. If this persists, please contact Fyndiq integration support.') . ' (' . $e->getMessage() . ')'
+                        __('Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support') . ' (' . $e->getMessage() . ')'
                     );
                 }
             }
         } else {
             $this->_getSession()->addError(
-                Mage::helper('fyndiq_fyndiq')->__('No Fyndiq orders were selected.')
+                Mage::helper('fyndiq_fyndiq')->__('No Fyndiq Orders were selected')
             );
         }
         $this->_redirect('adminhtml/sales_order/index');
