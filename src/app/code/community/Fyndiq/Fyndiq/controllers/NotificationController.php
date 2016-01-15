@@ -142,7 +142,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
                     $inbox = Mage::getModel('Mage_AdminNotification_Model_Inbox');
                     $inbox->addMinor(
                         sprintf(
-                            Mage::helper('fyndiq_fyndiq')->__('Fyndiq Magento Extension %s is available!'),
+                            Mage::helper('fyndiq_fyndiq')->__('Fyndiq\'s latest Magento Extension %s is now available!'),
                             $version
                         ),
                         sprintf(

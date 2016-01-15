@@ -98,7 +98,7 @@ class Fyndiq_Fyndiq_Model_Order
                     );
                     if (is_null($region)) {
                         throw new Exception(sprintf(
-                            Mage::helper('fyndiq_fyndiq')->__('Error, could not find region `%s` for `%s.`'),
+                            Mage::helper('fyndiq_fyndiq')->__('Region `%s` for `%s` could not be found'),
                             $regionCode,
                             $fyndiqOrder->delivery_country
                         ));
@@ -119,7 +119,7 @@ class Fyndiq_Fyndiq_Model_Order
                     break;
                 default:
                     throw new Exception(sprintf(
-                        Mage::helper('fyndiq_fyndiq')->__('Error, region is required for `%s`.'),
+                        Mage::helper('fyndiq_fyndiq')->__('A region is required when creating an order for `%s`'),
                         $fyndiqOrder->delivery_country_code
                     ));
             }
@@ -157,7 +157,7 @@ class Fyndiq_Fyndiq_Model_Order
             } catch (Exception $e) {
                 throw new Exception(
                     sprintf(
-                        Mage::helper('fyndiq_fyndiq')->__('Error: Fyndiq customer could not be created: %s'),
+                        Mage::helper('fyndiq_fyndiq')->__('Fyndiq customer could not be created (%s)'),
                         $e->getMessage()
                     )
                 );
@@ -184,7 +184,7 @@ class Fyndiq_Fyndiq_Model_Order
             if (!$id) {
                 throw new Exception(
                     sprintf(
-                        Mage::helper('fyndiq_fyndiq')->__('Product with SKU "%s", from order #%d cannot be found.'),
+                        Mage::helper('fyndiq_fyndiq')->__('Product with SKU `%s`, from order #%d can\'t be found'),
                         $sku,
                         $fyndiqOrder->id
                     )
@@ -261,14 +261,14 @@ class Fyndiq_Fyndiq_Model_Order
 
         // Add fyndiqOrder id as comment
         $comment = sprintf(
-            Mage::helper('fyndiq_fyndiq')->__('Fyndiq order id: %s'),
+            Mage::helper('fyndiq_fyndiq')->__('Fyndiq Order ID: %s'),
             $fyndiqOrder->id
         );
         $order->addStatusHistoryComment($comment);
 
         // Add delivery note as comment
         $comment = sprintf(
-            Mage::helper('fyndiq_fyndiq')->__('Fyndiq delivery note: %s'),
+            Mage::helper('fyndiq_fyndiq')->__('Fyndiq Delivery Note: %s'),
             $fyndiqOrder->delivery_note
         );
         $comment .= PHP_EOL;
