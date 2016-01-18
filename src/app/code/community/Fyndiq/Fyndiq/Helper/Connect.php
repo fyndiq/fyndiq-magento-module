@@ -3,7 +3,7 @@
 require_once(Mage::getModuleDir('', 'Fyndiq_Fyndiq') . '/lib/api/fyndiqAPI.php');
 require_once(Mage::getModuleDir('', 'Fyndiq_Fyndiq') . '/lib/shared/src/FyndiqAPICall.php');
 
-class Fyndiq_Fyndiq_Helper_Api_Data extends Mage_Core_Helper_Abstract
+class Fyndiq_Fyndiq_Helper_Connect extends Mage_Core_Helper_Abstract
 {
 
     public function callApi($configModel, $storeId, $method, $path, $data = array())

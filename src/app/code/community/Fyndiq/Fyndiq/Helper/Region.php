@@ -1,6 +1,6 @@
 <?php
 
-class Fyndiq_Fyndiq_Helper_Region_Data extends Mage_Core_Helper_Abstract
+class Fyndiq_Fyndiq_Helper_Region extends Mage_Core_Helper_Abstract
 {
 
     const CODE_DE = 'DE';

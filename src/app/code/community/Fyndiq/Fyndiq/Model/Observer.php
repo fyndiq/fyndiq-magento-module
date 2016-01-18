@@ -24,7 +24,7 @@ class Fyndiq_Fyndiq_Model_Observer
 
     protected function checkTrackingMethods($storeId)
     {
-        $duplicates = Mage::helper('tracking')->getDuplicates($storeId);
+        $duplicates = Mage::helper('fyndiq_fyndiq/tracking')->getDuplicates($storeId);
         if ($duplicates) {
             Mage::getSingleton('core/session')->addNotice(
                 sprintf(
@@ -83,7 +83,7 @@ class Fyndiq_Fyndiq_Model_Observer
                 );
             }
             try {
-                return Mage::helper('api')->callApi($this->configModel, $storeId, 'PATCH', 'settings/', $data);
+                return Mage::helper('fyndiq_fyndiq/connect')->callApi($this->configModel, $storeId, 'PATCH', 'settings/', $data);
             } catch (Exception $e) {
                 throw new Exception(
                     sprintf(

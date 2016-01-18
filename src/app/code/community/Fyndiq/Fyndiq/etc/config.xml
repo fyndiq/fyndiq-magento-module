@@ -63,18 +63,6 @@
             </sales_convert_quote>
         </fieldsets>
         <helpers>
-            <api>
-                <class>Fyndiq_Fyndiq_Helper_Api</class>
-            </api>
-            <export>
-                <class>Fyndiq_Fyndiq_Helper_Export</class>
-            </export>
-            <region>
-                <class>Fyndiq_Fyndiq_Helper_Region</class>
-            </region>
-            <tracking>
-                <class>Fyndiq_Fyndiq_Helper_Tracking</class>
-            </tracking>
             <fyndiq_fyndiq>
                 <class>Fyndiq_Fyndiq_Helper</class>
             </fyndiq_fyndiq>

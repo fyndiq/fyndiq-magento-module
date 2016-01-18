@@ -1,6 +1,6 @@
 <?php
 
-class Fyndiq_Fyndiq_Helper_Tracking_Data extends Mage_Core_Helper_Abstract
+class Fyndiq_Fyndiq_Helper_Tracking extends Mage_Core_Helper_Abstract
 {
 
     public function getFyndiqDeliveryServices()

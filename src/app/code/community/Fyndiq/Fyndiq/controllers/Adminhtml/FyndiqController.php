@@ -28,7 +28,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         );
         $result = false;
         try {
-            $result = Mage::helper('api')->callApi($this->configModel, $storeId, 'PATCH', 'settings/', $data);
+            $result = Mage::helper('fyndiq_fyndiq/connect')->callApi($this->configModel, $storeId, 'PATCH', 'settings/', $data);
         } catch (Exception $e) {
             $this->_getSession()->addError(
                 Mage::helper('fyndiq_fyndiq')->
@@ -150,7 +150,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         foreach ($fyndiqOrderIds as $order) {
             $orders['orders'][] = array('order' => intval($order));
         }
-        $ret = Mage::helper('api')->callApi($this->configModel, $storeId, 'POST', 'delivery_notes/', $orders, true);
+        $ret = Mage::helper('fyndiq_fyndiq/connect')->callApi($this->configModel, $storeId, 'POST', 'delivery_notes/', $orders, true);
 
         if ($ret['status'] == 200) {
             $fileName = 'delivery_notes-' . implode('-', $fyndiqOrderIds) . '.pdf';
@@ -192,7 +192,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                         ->setCurrentStore($storeId)
                         ->load($productId);
                     if ($product) {
-                        if (Mage::helper('export')->isExportable($product)) {
+                        if (Mage::helper('fyndiq_fyndiq/export')->isExportable($product)) {
                             $product->setData('fyndiq_exported', Fyndiq_Fyndiq_Model_Attribute_Exported::PRODUCT_EXPORTED)
                                 ->getResource()
                                 ->saveAttribute($product, 'fyndiq_exported');
