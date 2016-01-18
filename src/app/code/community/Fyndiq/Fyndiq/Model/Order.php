@@ -83,7 +83,7 @@ class Fyndiq_Fyndiq_Model_Order
         // Check if country region is required
         $isRequired = Mage::helper('directory')->isRegionRequired($fyndiqOrder->delivery_country_code);
         if ($isRequired) {
-            $regionHelper = Mage::helper('region');
+            $regionHelper = Mage::helper('fyndiq_fyndiq/region');
             switch ($fyndiqOrder->delivery_country_code) {
                 case 'DE':
                     $regionCode = $regionHelper->codeToRegionCode(

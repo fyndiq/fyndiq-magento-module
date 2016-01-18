@@ -20,7 +20,7 @@ class Fyndiq_Fyndiq_Adminhtml_Sales_Order_ShipmentController extends Mage_Adminh
                 $carrierCode = $track->getCarrierCode();
                 $url = 'packages/' . $orderId . '/';
                 if ($carrierCode) {
-                    $serviceCode = Mage::helper('tracking')->getDeliveryMapping($carrierCode, $storeId);
+                    $serviceCode = Mage::helper('fyndiq_fyndiq/tracking')->getDeliveryMapping($carrierCode, $storeId);
                     if ($serviceCode) {
                         $data = array(
                             'packages' => array(
@@ -32,7 +32,7 @@ class Fyndiq_Fyndiq_Adminhtml_Sales_Order_ShipmentController extends Mage_Adminh
                                 )
                             )
                         );
-                        $api = Mage::helper('connect');
+                        $api = Mage::helper('fyndiq_fyndiq/connect');
                         try {
                             $api->callApi($configModel, $storeId, 'PUT', $url, $data);
                         } catch (Excepton $e) {

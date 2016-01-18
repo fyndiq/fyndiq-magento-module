@@ -18,7 +18,7 @@ class Fyndiq_Fyndiq_Model_OrderFetch extends FyndiqPaginatedFetch
 
     public function getPageData($path)
     {
-        $ret = Mage::helper('connect')->callApi(
+        $ret = Mage::helper('fyndiq_fyndiq/connect')->callApi(
             Mage::getModel('fyndiq/config'),
             $this->storeId,
             'GET',
