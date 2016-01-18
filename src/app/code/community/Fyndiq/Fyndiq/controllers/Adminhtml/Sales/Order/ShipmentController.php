@@ -32,7 +32,7 @@ class Fyndiq_Fyndiq_Adminhtml_Sales_Order_ShipmentController extends Mage_Adminh
                                 )
                             )
                         );
-                        $api = Mage::helper('api');
+                        $api = Mage::helper('connect');
                         try {
                             $api->callApi($configModel, $storeId, 'PUT', $url, $data);
                         } catch (Excepton $e) {

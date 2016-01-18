@@ -63,9 +63,9 @@
             </sales_convert_quote>
         </fieldsets>
         <helpers>
-            <api>
-                <class>Fyndiq_Fyndiq_Helper_Api</class>
-            </api>
+            <connect>
+                <class>Fyndiq_Fyndiq_Helper_Connect</class>
+            </connect>
             <export>
                 <class>Fyndiq_Fyndiq_Helper_Export</class>
             </export>
