@@ -45,7 +45,7 @@
                         </ping_token>
                         <username translate="label comment" module="fyndiq_fyndiq">
                             <label>Username</label>
-                            <comment><![CDATA[Your login username to the merchant page.]]></comment>
+                            <comment><![CDATA[Your Username on Fyndiq]]></comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>1</sort_order>
                             <show_in_default>1</show_in_default>
@@ -54,7 +54,7 @@
                         </username>
                         <apikey translate="label comment" module="fyndiq_fyndiq">
                             <label>API token</label>
-                            <comment><![CDATA[The API key that is long randomly generated string you got from Fyndiq.]]></comment>
+                            <comment><![CDATA[Please generate an API Version 2 Token on your Fyndiq Merchant Account and add it to this field.]]></comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>2</sort_order>
                             <show_in_default>1</show_in_default>
@@ -63,8 +63,8 @@
                         </apikey>
 
                         <price_group  translate="label comment" module="fyndiq_fyndiq">
-                            <label>Customer Price Fyndiq will use</label>
-                            <comment><![CDATA[Customer price group, which products will use to set price for Fyndiq]]></comment>
+                            <label>Price for selected Customer Group</label>
+                            <comment><![CDATA[The Customer Group used for prices on Fyndiq]]></comment>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_customer_group</source_model>
                             <sort_order>3</sort_order>
@@ -73,8 +73,8 @@
                             <show_in_store>1</show_in_store>
                         </price_group>
                         <price_percentage  translate="label comment" module="fyndiq_fyndiq">
-                            <label>Global percentage of price</label>
-                            <comment><![CDATA[The percentage that will be removed from the price when sending to Fyndiq. Can be 0 if the price should be the same as in your shop.]]></comment>
+                            <label>Global percentage discount</label>
+                            <comment><![CDATA[If larger than 0, all prices sent to Fyndiq will be reduced by the percentage entered in this field.]]></comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>4</sort_order>
                             <show_in_default>1</show_in_default>
@@ -83,7 +83,7 @@
                         </price_percentage>
                         <price_absolute  translate="label comment" module="fyndiq_fyndiq">
                             <label>Absolute price discount</label>
-                            <comment><![CDATA[The price that will be removed from product price when exported to Fyndiq]]></comment>
+                            <comment><![CDATA[If larger than 0, all prices sent to Fyndiq will be reduced by the amount entered in this field. ]]></comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>5</sort_order>
                             <show_in_default>1</show_in_default>
@@ -91,8 +91,8 @@
                             <show_in_store>1</show_in_store>
                         </price_absolute>
                         <stockmin translate="label comment" module="fyndiq_fyndiq">
-                            <label>Lowest quantity to send to Fyndiq</label>
-                            <comment><![CDATA[Set this to a number which will be the lowest Fyndiq can go to, If set to ten, the module will send the quantity amount minus 10 to Fyndiq, if the quantity minus 10 becomes 0 or below 0 it will be sent as 0.]]></comment>
+                            <label>Minimum Stock value</label>
+                            <comment><![CDATA[The number to be deducted from Magento Stock Values when products are exported to Fyndiq. If set to 10, the extension will send the current quantity for each exported product minus 10. If the quantity minus 10 is 0 or lower, a quantity of 0 will be sent to Fyndiq.]]></comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>6</sort_order>
                             <show_in_default>1</show_in_default>
@@ -101,8 +101,8 @@
                         </stockmin>
 
                         <import_state  translate="label comment" module="fyndiq_fyndiq">
-                            <label>Import order status</label>
-                            <comment><![CDATA[Orders, imported from Fyndiq will be created with this orders status]]></comment>
+                            <label>Order Status</label>
+                            <comment><![CDATA[The Order Status used when Fyndiq Orders are created]]></comment>
                             <source_model>Mage_Adminhtml_Model_System_Config_Source_Order_Status</source_model>
                             <frontend_type>select</frontend_type>
                             <sort_order>7</sort_order>
@@ -111,8 +111,8 @@
                             <show_in_store>1</show_in_store>
                         </import_state>
                         <fyndiq_shipment_method  translate="label comment" module="fyndiq_fyndiq">
-                            <label>Create orders with this shipping method code</label>
-                            <comment><![CDATA[Leave the field empty for the default Fyndiq shipping method]]></comment>
+                            <label>Shipping Method</label>
+                            <comment><![CDATA[The Shipping Method used when Fyndiq Orders are created]]></comment>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_shipping_allowedmethods</source_model>
                             <sort_order>8</sort_order>
@@ -121,8 +121,8 @@
                             <show_in_store>1</show_in_store>
                         </fyndiq_shipment_method>
                         <fyndiq_payment_method translate="label comment" module="fyndiq_fyndiq">
-                            <label>Create orders with this payment method</label>
-                            <comment><![CDATA[Choose which payment method to create orders with]]></comment>
+                            <label>Payment method</label>
+                            <comment><![CDATA[The Payment Method used when Fyndiq Orders are created]]></comment>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_payment_allowedmethods</source_model>
                             <sort_order>9</sort_order>
@@ -131,8 +131,8 @@
                             <show_in_store>1</show_in_store>
                         </fyndiq_payment_method>
                         <import_orders_disabled translate="label comment" module="fyndiq_fyndiq">
-                            <label>Disable order import from Fyndiq</label>
-                            <comment><![CDATA[If the checkbox is checked, orders will be automatically imported from Fyndiq]]></comment>
+                            <label>Disable Order Import from Fyndiq</label>
+                            <comment><![CDATA[Deactivate Order Import here, if this is required for your workflows.]]></comment>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>10</sort_order>
@@ -142,8 +142,8 @@
                         </import_orders_disabled>
 
                         <disconnect translate="label comment" module="fyndiq_fyndiq">
-                            <label>Disconnect your account</label>
-                            <comment><![CDATA[Disconnect your account means to reset your api-token and username, no warning will come up when clicking so click with caution!]]></comment>
+                            <label>Disconnect account</label>
+                            <comment><![CDATA[This button will remove your current Fyndiq Username and API Token. Products and orders will not be synced anymore.]]></comment>
                             <frontend_type>button</frontend_type>
                             <frontend_model>Fyndiq_Fyndiq_Block_Button</frontend_model>
                             <sort_order>16</sort_order>
@@ -164,7 +164,7 @@
                     <fields>
                         <description translate="label comment" module="fyndiq_fyndiq">
                             <label>Description</label>
-                            <comment><![CDATA[This Description will be used, when sending the product to Fyndiq.]]></comment>
+                            <comment><![CDATA[Field used for the descriptions sent to Fyndiq]]></comment>
                             <frontend_type>select</frontend_type>
                             <source_model>fyndiq/system_config_source_dropdown_description</source_model>
                             <sort_order>11</sort_order>
@@ -174,7 +174,7 @@
                         </description>
                         <ean translate="label comment" module="fyndiq_fyndiq">
                             <label>EAN</label>
-                            <comment><![CDATA[Field to use for EAN.]]></comment>
+                            <comment><![CDATA[EAN]]></comment>
                             <frontend_type>select</frontend_type>
                             <source_model>fyndiq/system_config_source_dropdown_attribute</source_model>
                             <sort_order>12</sort_order>
@@ -184,7 +184,7 @@
                         </ean>
                         <isbn translate="label comment" module="fyndiq_fyndiq">
                             <label>ISBN</label>
-                            <comment><![CDATA[Field to use for ISBN.]]></comment>
+                            <comment><![CDATA[ISBN]]></comment>
                             <frontend_type>select</frontend_type>
                             <source_model>fyndiq/system_config_source_dropdown_attribute</source_model>
                             <sort_order>13</sort_order>
@@ -194,7 +194,7 @@
                         </isbn>
                         <mpn translate="label comment" module="fyndiq_fyndiq">
                             <label>MPN</label>
-                            <comment><![CDATA[Field to use for MPN.]]></comment>
+                            <comment><![CDATA[MPN]]></comment>
                             <frontend_type>select</frontend_type>
                             <source_model>fyndiq/system_config_source_dropdown_attribute</source_model>
                             <sort_order>14</sort_order>
@@ -204,7 +204,7 @@
                         </mpn>
                         <brand translate="label comment" module="fyndiq_fyndiq">
                             <label>Brand</label>
-                            <comment><![CDATA[Field to use for Brand.]]></comment>
+                            <comment><![CDATA[Brand]]></comment>
                             <frontend_type>select</frontend_type>
                             <source_model>fyndiq/system_config_source_dropdown_attribute</source_model>
                             <sort_order>15</sort_order>
@@ -321,8 +321,8 @@
                         </generated_time>
 
                         <cron_enabled translate="label comment" module="fyndiq_fyndiq">
-                            <label>Use cron to generate feed</label>
-                            <comment><![CDATA[If enabled, the export feed will be generated using the Magento cron jobs]]></comment>
+                            <label>Use Cron for Feed Generation</label>
+                            <comment><![CDATA[If enabled, the Magento Cron Jobs will be used to generate the product feed for Fyndiq.]]></comment>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>16</sort_order>
@@ -332,8 +332,8 @@
                         </cron_enabled>
 
                         <cron_interval translate="label comment" module="fyndiq_fyndiq">
-                            <label>Interval to generate the feed</label>
-                            <comment><![CDATA[Interval (in minutes) between generating the feed]]></comment>
+                            <label>Interval</label>
+                            <comment><![CDATA[Interval between Feed Generations]]></comment>
                             <frontend_type>select</frontend_type>
                             <source_model>fyndiq/system_config_source_dropdown_interval</source_model>
                             <sort_order>17</sort_order>
@@ -364,8 +364,8 @@
                             <show_in_store>0</show_in_store>
                         </last_version>
                         <updated translate="label comment" module="fyndiq_fyndiq">
-                            <label>Feed last update</label>
-                            <comment><![CDATA[Last time the export feed was generated]]></comment>
+                            <label>Latest Feed Update</label>
+                            <comment><![CDATA[Date and time of the latest Feed Generation]]></comment>
                             <frontend_type>button</frontend_type>
                             <frontend_model>Fyndiq_Fyndiq_Block_Updated</frontend_model>
                             <sort_order>18</sort_order>
@@ -374,8 +374,8 @@
                             <show_in_store>1</show_in_store>
                         </updated>
                         <module_list translate="label comment" module="fyndiq_fyndiq">
-                            <label>List installed modules</label>
-                            <comment><![CDATA[Shows list of installed modules]]></comment>
+                            <label>Installed Extensions</label>
+                            <comment><![CDATA[Currently installed extensions]]></comment>
                             <frontend_type>button</frontend_type>
                             <frontend_model>Fyndiq_Fyndiq_Block_Modules</frontend_model>
                             <sort_order>19</sort_order>
