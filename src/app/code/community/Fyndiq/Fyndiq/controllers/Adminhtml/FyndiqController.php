@@ -32,7 +32,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         } catch (Exception $e) {
             $this->_getSession()->addError(
                 Mage::helper('fyndiq_fyndiq')->
-                __('Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support') . ' (' . $e->getMessage() . ')'
+                __('Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support.') . ' (' . $e->getMessage() . ')'
             );
         }
         if ($result) {
@@ -74,7 +74,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                             $this->importOrdersForStore($storeId, time());
                             $this->_getSession()->addSuccess(
                                 sprintf(
-                                    Mage::helper('fyndiq_fyndiq')->__('Fyndiq Orders were imported for store `%s`'),
+                                    Mage::helper('fyndiq_fyndiq')->__('Fyndiq Orders were imported for Store `%s`'),
                                     $store->getName()
                                 )
                             );
@@ -82,7 +82,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                     } catch (Exception $e) {
                         $this->_getSession()->addError(
                             Mage::helper('fyndiq_fyndiq')->
-                            __('Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support') . ' (' . $e->getMessage() . ')'
+                            __('Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support.') . ' (' . $e->getMessage() . ')'
                         );
                     }
                 }
@@ -102,7 +102,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         } catch (Exception $e) {
             $this->_getSession()->addError(
                 Mage::helper('fyndiq_fyndiq')->
-                    __('Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support') . ' (' . $e->getMessage() . ')'
+                    __('Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support.') . ' (' . $e->getMessage() . ')'
             );
         }
         $this->_redirect('adminhtml/sales_order/view/order_id/' . $orderId);
@@ -119,7 +119,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         } catch (Exception $e) {
             $this->_getSession()->addError(
                 Mage::helper('fyndiq_fyndiq')->
-                    __('Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support') . ' (' . $e->getMessage() . ')'
+                    __('Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support.') . ' (' . $e->getMessage() . ')'
             );
         }
         $this->_redirect('adminhtml/sales_order/index');
@@ -223,7 +223,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         } catch (Exception $e) {
             $this->_getSession()->addError(
                 Mage::helper('fyndiq_fyndiq')->
-                __('Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support') . ' (' . $e->getMessage() . ')'
+                __('Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support.') . ' (' . $e->getMessage() . ')'
             );
         }
         $this->_redirect('adminhtml/catalog_product/index');
@@ -257,7 +257,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         } catch (Exception $e) {
             $this->_getSession()->addError(
                 Mage::helper('fyndiq_fyndiq')->
-                __('Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support') . ' (' . $e->getMessage() . ')'
+                __('Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support.') . ' (' . $e->getMessage() . ')'
             );
         }
         $this->_redirect('adminhtml/catalog_product/index');

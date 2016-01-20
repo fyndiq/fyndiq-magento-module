@@ -1,0 +1,8 @@
+[main]
+host = https://www.transifex.com
+
+[fyndiq-modules-magento.defaultphp-1]
+file_filter = src/app/code/community/Fyndiq/Fyndiq/translations/<lang>.php
+source_file = src/app/code/community/Fyndiq/Fyndiq/translations/default.php
+source_lang = en
+type = PHP_ARRAY
