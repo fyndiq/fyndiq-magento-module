@@ -88,7 +88,7 @@ class Fyndiq_Fyndiq_Model_Observer
                 throw new Exception(
                     sprintf(
                         Mage::helper('fyndiq_fyndiq')->
-                            __('The configuration could not be sent to Fyndiq. Your firewall could be blocking the access to https://api.fyndiq.com (%s)'),
+                            __('The configuration could not be sent to Fyndiq. Your firewall might be blocking the access to https://api.fyndiq.com (%s)'),
                         $e->getMessage()
                     )
                 );

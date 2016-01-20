@@ -252,7 +252,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
 
                     unset($product);
                 }
-                $this->_getSession()->addSuccess(Mage::helper('fyndiq_fyndiq')->__('These products are scheduled to be removed from Fyndiq.'));
+                $this->_getSession()->addSuccess(Mage::helper('fyndiq_fyndiq')->__('The selected products are scheduled to be removed from Fyndiq.'));
             }
         } catch (Exception $e) {
             $this->_getSession()->addError(

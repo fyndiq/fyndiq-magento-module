@@ -184,7 +184,7 @@ class Fyndiq_Fyndiq_Model_Order
             if (!$id) {
                 throw new Exception(
                     sprintf(
-                        Mage::helper('fyndiq_fyndiq')->__('Product with SKU `%s`, from order #%d can\'t be found'),
+                        Mage::helper('fyndiq_fyndiq')->__('Product with SKU `%s` from order %d can not be found'),
                         $sku,
                         $fyndiqOrder->id
                     )
