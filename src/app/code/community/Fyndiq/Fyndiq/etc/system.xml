@@ -83,7 +83,7 @@
                         </price_percentage>
                         <price_absolute  translate="label comment" module="fyndiq_fyndiq">
                             <label>Absolute price discount</label>
-                            <comment><![CDATA[If larger than 0, all prices sent to Fyndiq will be reduced by the amount entered in this field. ]]></comment>
+                            <comment><![CDATA[If larger than 0, all prices sent to Fyndiq will be reduced by the amount entered in this field.]]></comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>5</sort_order>
                             <show_in_default>1</show_in_default>

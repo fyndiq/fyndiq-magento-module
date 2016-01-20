@@ -90,4 +90,7 @@ $lang = array(
     'Absolute price discount' => 'Absolute price discount',
     'If larger than 0, all prices sent to Fyndiq will be reduced by the amount entered in this field.' => 'If larger than 0, all prices sent to Fyndiq will be reduced by the amount entered in this field.',
     '-' => '-',
+    'Username' => 'Username',
+    'Description' => 'Description',
+    'EAN' => 'EAN',
 );

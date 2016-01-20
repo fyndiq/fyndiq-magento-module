@@ -15,7 +15,10 @@ class Fyndiq_Fyndiq_Helper_Data extends Mage_Core_Helper_Abstract
             return '';
         }
         if (!$this->loaded) {
-            FyndiqTranslation::init(Mage::app()->getLocale()->getLocaleCode());
+            FyndiqTranslation::init(
+                Mage::app()->getLocale()->getLocaleCode(),
+                Mage::getModuleDir('', 'Fyndiq_Fyndiq') . '/translations'
+            );
             $this->loaded = true;
         }
         return FyndiqTranslation::get($string);
