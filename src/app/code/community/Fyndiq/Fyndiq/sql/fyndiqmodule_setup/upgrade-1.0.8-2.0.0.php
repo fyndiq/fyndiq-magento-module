@@ -110,8 +110,6 @@ if ($installer2->tableExists($productTableName)) {
                 ->saveAttribute($product, 'fyndiq_exported');
         }
     }
-    $sql = 'DROP TABLE IF EXISTS ' . $productTableName;
-    $installer2->run($sql);
 }
 $installer2->endSetup();
 
@@ -153,7 +151,5 @@ if ($installer2->tableExists($orderTableName)) {
             $order->save();
         }
     }
-    $sql = 'DROP TABLE IF EXISTS ' . $orderTableName;
-    $installerOrder->run($sql);
 }
 $installerOrder->endSetup();
