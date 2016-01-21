@@ -262,4 +262,35 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         }
         $this->_redirect('adminhtml/catalog_product/index');
     }
+
+    public function importSKUsAction()
+    {
+        $i = 0;
+        $skus = $this->getRequest()->getParam('skus');
+        $skuArray = array_unique(explode("\n", $skus));
+        $observer = Mage::getModel('fyndiq/observer');
+        $storeId = $observer->getStoreId();
+        $product = Mage::getModel('catalog/product');
+        $total = count($skuArray);
+        try {
+            foreach($skuArray as $sku) {
+                $sku = trim($sku);
+                if ($sku) {
+                    $productId = $product->getIdBySku($sku);
+                    if ($productId) {
+                        $product->load($productId);
+                        $product->setData('fyndiq_exported', Fyndiq_Fyndiq_Model_Attribute_Exported::PRODUCT_EXPORTED)
+                            ->getResource()
+                            ->saveAttribute($product, 'fyndiq_exported');
+                        $i++;
+                    }
+                }
+            }
+        } catch(Exception $e) {
+            $this->getResponse()->setBody($e->getMessage());
+            return;
+        }
+        $this->getResponse()->setBody('Exported ' . $i . ' of ' . $total);
+    }
+
 }

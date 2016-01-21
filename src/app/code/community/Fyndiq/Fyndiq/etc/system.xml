@@ -383,6 +383,15 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </module_list>
+                        <manual_import translate="label comment" module="fyndiq_fyndiq">
+                            <label>Export SKUs</label>
+                            <frontend_type>button</frontend_type>
+                            <frontend_model>Fyndiq_Fyndiq_Block_Export</frontend_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </manual_import>
                     </fields>
                 </troubleshooting>
             </groups>
