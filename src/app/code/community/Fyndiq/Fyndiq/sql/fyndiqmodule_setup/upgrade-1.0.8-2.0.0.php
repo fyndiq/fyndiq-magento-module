@@ -114,7 +114,6 @@ if ($installer2->tableExists($productTableName)) {
 $installer2->endSetup();
 
 // Add fyndiq_order_id
-require_once('app/Mage.php');
 Mage::app()->setCurrentStore(Mage::getModel('core/store')->load(Mage_Core_Model_App::ADMIN_STORE_ID));
 
 $installerOrder = new Mage_Sales_Model_Mysql4_Setup('sales_setup');
