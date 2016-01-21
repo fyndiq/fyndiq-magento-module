@@ -93,4 +93,5 @@ $lang = array(
     'Username' => 'Username',
     'Description' => 'Description',
     'EAN' => 'EAN',
+    'Settings' => 'Settings',
 );
