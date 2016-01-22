@@ -94,4 +94,9 @@ $lang = array(
     'Description' => 'Description',
     'EAN' => 'EAN',
     'Settings' => 'Settings',
+
+    'Disabled' => 'Disabled',
+    'Exported %s of %s SKUs' => 'Exported %s of %s SKUs',
+    'Export SKUs' => 'Export SKUs',
+
 );
