@@ -292,7 +292,14 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
             $this->getResponse()->setBody($e->getMessage());
             return;
         }
-        $this->getResponse()->setBody('Exported ' . $productsExported . ' of ' . $total);
+        $this->getResponse()->setBody(
+            sprintf(
+                Mage::helper('fyndiq_fyndiq')->__('Exported %s of %s SKUs'),
+                $productsExported,
+                $total
+            )
+        );
+
     }
 
 }
