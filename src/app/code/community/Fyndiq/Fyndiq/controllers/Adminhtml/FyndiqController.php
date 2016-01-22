@@ -171,6 +171,27 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         return $this->response(true);
     }
 
+    protected function exportProductIds($productIds, $storeId)
+    {
+        $productsExported = 0;
+        $productModel = Mage::getModel('catalog/product');
+        foreach ($productIds as $productId) {
+            $product = $productModel
+                ->setCurrentStore($storeId)
+                ->load($productId);
+            if ($product) {
+                if (Mage::helper('fyndiq_fyndiq/export')->isExportable($product)) {
+                    $product->setData('fyndiq_exported', Fyndiq_Fyndiq_Model_Attribute_Exported::PRODUCT_EXPORTED)
+                        ->getResource()
+                        ->saveAttribute($product, 'fyndiq_exported');
+                    $productsExported++;
+                }
+            }
+
+            unset($product);
+        }
+        return $productsExported;
+    }
 
     /**
     * Export products from Magento
@@ -183,25 +204,8 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
             $productPost = $this->getRequest()->getPost();
             if ($productPost) {
                 $productIds = $productPost['product'];
-                $productModel = Mage::getModel('catalog/product');
                 $productsToExport = count($productIds);
-                $productsExported = 0;
-
-                foreach ($productIds as $productId) {
-                    $product = $productModel
-                        ->setCurrentStore($storeId)
-                        ->load($productId);
-                    if ($product) {
-                        if (Mage::helper('fyndiq_fyndiq/export')->isExportable($product)) {
-                            $product->setData('fyndiq_exported', Fyndiq_Fyndiq_Model_Attribute_Exported::PRODUCT_EXPORTED)
-                                ->getResource()
-                                ->saveAttribute($product, 'fyndiq_exported');
-                            $productsExported++;
-                        }
-                    }
-
-                    unset($product);
-                }
+                $productsExported = $this->exportProductIds($productIds, $storeId);
                 if ($productsToExport == $productsExported) {
                     $this->_getSession()->addSuccess(
                         Mage::helper('fyndiq_fyndiq')->__('The selected products are being exported to Fyndiq.')
@@ -265,32 +269,30 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
 
     public function importSKUsAction()
     {
-        $i = 0;
+        $productsExported = 0;
         $skus = $this->getRequest()->getParam('skus');
         $skuArray = array_unique(explode("\n", $skus));
         $observer = Mage::getModel('fyndiq/observer');
         $storeId = $observer->getStoreId();
         $product = Mage::getModel('catalog/product');
         $total = count($skuArray);
+        $productIds = array();
         try {
             foreach($skuArray as $sku) {
                 $sku = trim($sku);
                 if ($sku) {
                     $productId = $product->getIdBySku($sku);
                     if ($productId) {
-                        $product->load($productId);
-                        $product->setData('fyndiq_exported', Fyndiq_Fyndiq_Model_Attribute_Exported::PRODUCT_EXPORTED)
-                            ->getResource()
-                            ->saveAttribute($product, 'fyndiq_exported');
-                        $i++;
+                        $productIds[] = $productId;
                     }
                 }
             }
+            $productsExported = $this->exportProductIds($productIds, $storeId);
         } catch(Exception $e) {
             $this->getResponse()->setBody($e->getMessage());
             return;
         }
-        $this->getResponse()->setBody('Exported ' . $i . ' of ' . $total);
+        $this->getResponse()->setBody('Exported ' . $productsExported . ' of ' . $total);
     }
 
 }

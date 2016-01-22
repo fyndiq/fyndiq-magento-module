@@ -20,7 +20,7 @@
                     <fields>
                         <warning_label translate="label comment" module="fyndiq_fyndiq">
                             <label>Configuration Scope</label>
-                            <frontend_type>button</frontend_type>
+                            <frontend_type>text</frontend_type>
                             <frontend_model>Fyndiq_Fyndiq_Block_Warning</frontend_model>
                             <sort_order>1</sort_order>
                             <show_in_default>1</show_in_default>
