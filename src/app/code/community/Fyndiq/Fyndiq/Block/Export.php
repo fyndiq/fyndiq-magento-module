@@ -5,7 +5,7 @@ class Fyndiq_Fyndiq_Block_Export extends Mage_Adminhtml_Block_System_Config_Form
     protected function _getElementHtml(Varien_Data_Form_Element_Abstract $element)
     {
         if (!$this->getRequest()->getParam('import')) {
-            return 'Disabled';
+            return Mage::helper('fyndiq_fyndiq')->__('Disabled');
         }
         $this->setElement($element);
 
