@@ -28,7 +28,7 @@ $installer2->addAttribute(
         'required'      => false,
         'global'        => Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_STORE,
         'searchable'    => true,
-        'source'        => 'fyndiq/attribute_exported',
+        'source'        => 'eav/entity_attribute_source_boolean',
         'filterable_in_search' => true,
         'sort_order'    => 3, // Place last in fyndiq tab
         'default'       => '0'
@@ -105,7 +105,7 @@ if ($installer2->tableExists($productTableName)) {
                 ->load($productRow['product_id']);
         }
         if ($product) {
-            $product->setData('fyndiq_exported', Fyndiq_Fyndiq_Model_Attribute_Exported::PRODUCT_EXPORTED)
+            $product->setData('fyndiq_exported', Mage_Eav_Model_Entity_Attribute_Source_Boolean::VALUE_YES)
                 ->getResource()
                 ->saveAttribute($product, 'fyndiq_exported');
         }
