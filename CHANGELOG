@@ -1,7 +1,11 @@
+Version 2.0.1
+* Enhancement: More consistent labels and messages
+* Bugfix: Reuse Magento's boolean attribute for exported columns
+
 Version 2.0.0
 * Module is now fully integrated within the Magento native interface
 * Feature: Option to generate the export feed with Magento cron job
-* Custom field mapping for some fields
+* Feature: Custom field mapping for some fields
 * Bugfix: Fyndiq shipping provider shown on the store front
 
 Version 1.0.8
