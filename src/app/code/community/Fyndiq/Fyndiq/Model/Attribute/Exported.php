@@ -1,4 +1,7 @@
 <?php
+
+// TODO: This file is deprecated and have to be removed once all modules update to 2.0.1
+
 class Fyndiq_Fyndiq_Model_Attribute_Exported extends Mage_Eav_Model_Entity_Attribute_Source_Abstract
 {
     const PRODUCT_NOT_EXPORTED = 0;

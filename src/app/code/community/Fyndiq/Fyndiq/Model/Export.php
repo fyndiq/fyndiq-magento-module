@@ -86,7 +86,7 @@ class Fyndiq_Fyndiq_Model_Export
             ->addStoreFilter($storeId)
             ->addAttributeToFilter(
                 'fyndiq_exported',
-                array('eq' => Fyndiq_Fyndiq_Model_Attribute_Exported::PRODUCT_EXPORTED)
+                array('eq' => Mage_Eav_Model_Entity_Attribute_Source_Boolean::VALUE_YES)
             );
 
         $productIds = $products->getAllIds();
