@@ -267,6 +267,60 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         $this->_redirectReferer();
     }
 
+    /**
+     * Mark orders as handled
+     */
+    public function handledFyndiqOrdersAction()
+    {
+        $this->orderHandling(true);
+    }
+
+    /**
+     * Mark orders as handled
+     */
+    public function unhandledFyndiqOrdersAction()
+    {
+        $this->orderHandling(false);
+    }
+
+    protected function orderHandling($handled){
+        $orderIds = $this->getRequest()->getParam('order_ids');
+        $fyndiqOrders = Mage::getModel('fyndiq/order')->getFydniqOrders($orderIds);
+        if ($fyndiqOrders) {
+            $work = array();
+            foreach ($fyndiqOrders as $orderId => $storeId) {
+                if (!isset($work[$storeId])){
+                    $work[$storeId] = array();
+                }
+                $work[$storeId][] = $orderId;
+            }
+            foreach ($work as $storeId => $orderIds) {
+                try {
+                        $data = array(
+                            'orders' => array()
+                        );
+                        foreach($orderIds as $fyndiqOrderId) {
+                            $data['orders'][] = array(
+                                'id' => $fyndiqOrderId,
+                                'marked' => $handled,
+                            );
+                        }
+                        $ret = Mage::helper('fyndiq_fyndiq/connect')->callApi($this->configModel, $storeId, 'POST', 'orders/marked/', $data);
+                } catch (Exception $e) {
+                    $this->_getSession()->addError(
+                        Mage::helper('fyndiq_fyndiq')->
+                        __('Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support') . ' (' . $e->getMessage() . ')'
+                    );
+                }
+            }
+        } else {
+            $this->_getSession()->addError(
+                Mage::helper('fyndiq_fyndiq')->__('No Fyndiq Orders were selected')
+            );
+        }
+        $this->_redirectReferer();
+    }
+
     public function importSKUsAction()
     {
         $productsExported = 0;
