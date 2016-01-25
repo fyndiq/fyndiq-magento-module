@@ -28,11 +28,11 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         );
         $result = false;
         try {
-            $result = Mage::helper('api')->callApi($this->configModel, $storeId, 'PATCH', 'settings/', $data);
+            $result = Mage::helper('fyndiq_fyndiq/connect')->callApi($this->configModel, $storeId, 'PATCH', 'settings/', $data);
         } catch (Exception $e) {
             $this->_getSession()->addError(
                 Mage::helper('fyndiq_fyndiq')->
-                __('An unhandled error occurred. If this persists, please contact Fyndiq integration support.') . ' (' . $e->getMessage() . ')'
+                __('Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support.') . ' (' . $e->getMessage() . ')'
             );
         }
         if ($result) {
@@ -65,7 +65,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                             if ($this->configModel->get('fyndiq/fyndiq_group/import_orders_disabled', $storeId) == Fyndiq_Fyndiq_Model_Order::ORDERS_DISABLED) {
                                 $this->_getSession()->addError(
                                     sprintf(
-                                        Mage::helper('fyndiq_fyndiq')->__('Order import is disabled for store `%s`'),
+                                        Mage::helper('fyndiq_fyndiq')->__('Orders could not be imported. Order Import from Fyndiq is disabled for store `%s`'),
                                         $store->getName()
                                     )
                                 );
@@ -74,7 +74,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                             $this->importOrdersForStore($storeId, time());
                             $this->_getSession()->addSuccess(
                                 sprintf(
-                                    Mage::helper('fyndiq_fyndiq')->__('Fyndiq Orders were imported for store `%s`'),
+                                    Mage::helper('fyndiq_fyndiq')->__('Fyndiq Orders were imported for Store `%s`'),
                                     $store->getName()
                                 )
                             );
@@ -82,7 +82,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                     } catch (Exception $e) {
                         $this->_getSession()->addError(
                             Mage::helper('fyndiq_fyndiq')->
-                            __('An unhandled error occurred. If this persists, please contact Fyndiq integration support.') . ' (' . $e->getMessage() . ')'
+                            __('Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support.') . ' (' . $e->getMessage() . ')'
                         );
                     }
                 }
@@ -102,7 +102,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         } catch (Exception $e) {
             $this->_getSession()->addError(
                 Mage::helper('fyndiq_fyndiq')->
-                    __('An unhandled error occurred. If this persists, please contact Fyndiq integration support.') . ' (' . $e->getMessage() . ')'
+                    __('Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support.') . ' (' . $e->getMessage() . ')'
             );
         }
         $this->_redirect('adminhtml/sales_order/view/order_id/' . $orderId);
@@ -119,7 +119,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         } catch (Exception $e) {
             $this->_getSession()->addError(
                 Mage::helper('fyndiq_fyndiq')->
-                    __('An unhandled error occurred. If this persists, please contact Fyndiq integration support.') . ' (' . $e->getMessage() . ')'
+                    __('Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support.') . ' (' . $e->getMessage() . ')'
             );
         }
         $this->_redirect('adminhtml/sales_order/index');
@@ -131,7 +131,13 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         // Check if all the orders are from one store
         if (count(array_unique(array_values($fyndiqOrders))) > 1) {
             $this->_getSession()->addError(
-                Mage::helper('fyndiq_fyndiq')->__('Download is only possible for orders within the same store.')
+                Mage::helper('fyndiq_fyndiq')->__('You can only download Delivery Notes for one store at a time. Please make sure you are not trying to download Delivery Notes for different stores.')
+            );
+            return false;
+        }
+        if (count(array_unique(array_values($fyndiqOrders))) == 0) {
+            $this->_getSession()->addError(
+                Mage::helper('fyndiq_fyndiq')->__('Please select one or more Fyndiq Orders')
             );
             return false;
         }
@@ -144,7 +150,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         foreach ($fyndiqOrderIds as $order) {
             $orders['orders'][] = array('order' => intval($order));
         }
-        $ret = Mage::helper('api')->callApi($this->configModel, $storeId, 'POST', 'delivery_notes/', $orders, true);
+        $ret = Mage::helper('fyndiq_fyndiq/connect')->callApi($this->configModel, $storeId, 'POST', 'delivery_notes/', $orders, true);
 
         if ($ret['status'] == 200) {
             $fileName = 'delivery_notes-' . implode('-', $fyndiqOrderIds) . '.pdf';
@@ -165,6 +171,27 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         return $this->response(true);
     }
 
+    protected function exportProductIds($productIds, $storeId)
+    {
+        $productsExported = 0;
+        $productModel = Mage::getModel('catalog/product');
+        foreach ($productIds as $productId) {
+            $product = $productModel
+                ->setCurrentStore($storeId)
+                ->load($productId);
+            if ($product) {
+                if (Mage::helper('fyndiq_fyndiq/export')->isExportable($product)) {
+                    $product->setData('fyndiq_exported', Mage_Eav_Model_Entity_Attribute_Source_Boolean::VALUE_YES)
+                        ->getResource()
+                        ->saveAttribute($product, 'fyndiq_exported');
+                    $productsExported++;
+                }
+            }
+
+            unset($product);
+        }
+        return $productsExported;
+    }
 
     /**
     * Export products from Magento
@@ -177,44 +204,20 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
             $productPost = $this->getRequest()->getPost();
             if ($productPost) {
                 $productIds = $productPost['product'];
-                $productModel = Mage::getModel('catalog/product');
-                $productConfigurableModel = Mage::getModel('catalog/product_type_configurable');
                 $productsToExport = count($productIds);
-                $productsExported = 0;
-
-                foreach ($productIds as $productId) {
-                    $product = $productModel
-                        ->setCurrentStore($storeId)
-                        ->load($productId);
-                    if ($product) {
-                        $productTypeId = $product->getTypeId();
-                        if ($productTypeId == Mage_Catalog_Model_Product_Type::TYPE_CONFIGURABLE ||
-                            (
-                                $productTypeId == Mage_Catalog_Model_Product_Type::TYPE_SIMPLE &&
-                                empty($productConfigurableModel->getParentIdsByChild($product->getId()))
-                            )
-                        ) {
-                            $product->setData('fyndiq_exported', Fyndiq_Fyndiq_Model_Attribute_Exported::PRODUCT_EXPORTED)
-                                ->getResource()
-                                ->saveAttribute($product, 'fyndiq_exported');
-                            $productsExported++;
-                        }
-                    }
-
-                    unset($product);
-                }
+                $productsExported = $this->exportProductIds($productIds, $storeId);
                 if ($productsToExport == $productsExported) {
                     $this->_getSession()->addSuccess(
-                        Mage::helper('fyndiq_fyndiq')->__('The products you selected have been exported to Fyndiq.')
+                        Mage::helper('fyndiq_fyndiq')->__('The selected products are being exported to Fyndiq.')
                     );
                 } elseif ($productsToExport > 0  && $productsExported == 0) {
                     $this->_getSession()->addNotice(
-                        Mage::helper('fyndiq_fyndiq')->__('None of the selected products could be exported.')
+                        Mage::helper('fyndiq_fyndiq')->__('None of the selected products could be exported')
                     );
                 } elseif ($productsToExport > $productsExported) {
                     $this->_getSession()->addNotice(
                         sprintf(
-                            Mage::helper('fyndiq_fyndiq')->__('%d products exported, %d products could not be exported.'),
+                            Mage::helper('fyndiq_fyndiq')->__('%d products were exported to Fyndiq. %d products could not be exported.'),
                             $productsExported,
                             $productsToExport - $productsExported
                         )
@@ -224,7 +227,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         } catch (Exception $e) {
             $this->_getSession()->addError(
                 Mage::helper('fyndiq_fyndiq')->
-                __('An unhandled error occurred. If this persists, please contact Fyndiq integration support.') . ' (' . $e->getMessage() . ')'
+                __('Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support.') . ' (' . $e->getMessage() . ')'
             );
         }
         $this->_redirect('adminhtml/catalog_product/index');
@@ -247,18 +250,18 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                     $product = $productModel
                         ->setCurrentStore($storeId)
                         ->load($productid);
-                    $product->setData('fyndiq_exported', Fyndiq_Fyndiq_Model_Attribute_Exported::PRODUCT_NOT_EXPORTED)
+                    $product->setData('fyndiq_exported', Mage_Eav_Model_Entity_Attribute_Source_Boolean::VALUE_NO)
                         ->getResource()
                         ->saveAttribute($product, 'fyndiq_exported');
 
                     unset($product);
                 }
-                $this->_getSession()->addSuccess(Mage::helper('fyndiq_fyndiq')->__('The products you selected have been removed from the feed.'));
+                $this->_getSession()->addSuccess(Mage::helper('fyndiq_fyndiq')->__('The selected products are scheduled to be removed from Fyndiq.'));
             }
         } catch (Exception $e) {
             $this->_getSession()->addError(
                 Mage::helper('fyndiq_fyndiq')->
-                __('An unhandled error occurred. If this persists, please contact Fyndiq integration support.') . ' (' . $e->getMessage() . ')'
+                __('Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support.') . ' (' . $e->getMessage() . ')'
             );
         }
         $this->_redirect('adminhtml/catalog_product/index');
@@ -295,4 +298,40 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         }
         $this->_redirect('adminhtml/sales_order/index');
     }
+
+    public function importSKUsAction()
+    {
+        $productsExported = 0;
+        $skus = $this->getRequest()->getParam('skus');
+        $skuArray = array_unique(explode("\n", $skus));
+        $observer = Mage::getModel('fyndiq/observer');
+        $storeId = $observer->getStoreId();
+        $product = Mage::getModel('catalog/product');
+        $total = count($skuArray);
+        $productIds = array();
+        try {
+            foreach($skuArray as $sku) {
+                $sku = trim($sku);
+                if ($sku) {
+                    $productId = $product->getIdBySku($sku);
+                    if ($productId) {
+                        $productIds[] = $productId;
+                    }
+                }
+            }
+            $productsExported = $this->exportProductIds($productIds, $storeId);
+        } catch(Exception $e) {
+            $this->getResponse()->setBody($e->getMessage());
+            return;
+        }
+        $this->getResponse()->setBody(
+            sprintf(
+                Mage::helper('fyndiq_fyndiq')->__('Exported %s of %s SKUs'),
+                $productsExported,
+                $total
+            )
+        );
+
+    }
+
 }

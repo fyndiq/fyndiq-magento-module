@@ -28,7 +28,7 @@ $installer2->addAttribute(
         'required'      => false,
         'global'        => Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_STORE,
         'searchable'    => true,
-        'source'        => 'fyndiq/attribute_exported',
+        'source'        => 'eav/entity_attribute_source_boolean',
         'filterable_in_search' => true,
         'sort_order'    => 3, // Place last in fyndiq tab
         'default'       => '0'
@@ -105,18 +105,15 @@ if ($installer2->tableExists($productTableName)) {
                 ->load($productRow['product_id']);
         }
         if ($product) {
-            $product->setData('fyndiq_exported', Fyndiq_Fyndiq_Model_Attribute_Exported::PRODUCT_EXPORTED)
+            $product->setData('fyndiq_exported', Mage_Eav_Model_Entity_Attribute_Source_Boolean::VALUE_YES)
                 ->getResource()
                 ->saveAttribute($product, 'fyndiq_exported');
         }
     }
-    $sql = 'DROP TABLE IF EXISTS ' . $productTableName;
-    $installer2->run($sql);
 }
 $installer2->endSetup();
 
 // Add fyndiq_order_id
-require_once('app/Mage.php');
 Mage::app()->setCurrentStore(Mage::getModel('core/store')->load(Mage_Core_Model_App::ADMIN_STORE_ID));
 
 $installerOrder = new Mage_Sales_Model_Mysql4_Setup('sales_setup');
@@ -153,7 +150,5 @@ if ($installer2->tableExists($orderTableName)) {
             $order->save();
         }
     }
-    $sql = 'DROP TABLE IF EXISTS ' . $orderTableName;
-    $installerOrder->run($sql);
 }
 $installerOrder->endSetup();

@@ -86,7 +86,7 @@ class Fyndiq_Fyndiq_Model_Export
             ->addStoreFilter($storeId)
             ->addAttributeToFilter(
                 'fyndiq_exported',
-                array('eq' => Fyndiq_Fyndiq_Model_Attribute_Exported::PRODUCT_EXPORTED)
+                array('eq' => Mage_Eav_Model_Entity_Attribute_Source_Boolean::VALUE_YES)
             );
 
         $productIds = $products->getAllIds();
@@ -101,6 +101,7 @@ class Fyndiq_Fyndiq_Model_Export
                 'currency' => $store->getCurrentCurrencyCode(),
                 'stockMin' => intval($this->configModel->get('fyndiq/fyndiq_group/stockmin', $storeId)),
                 'mappedFields' => $this->getMappedFields($storeId),
+                'descrType' => intval($this->configModel->get('fyndiq/mappings/description', $storeId)),
             );
             FyndiqUtils::debug('$config', $config);
 
@@ -174,6 +175,8 @@ class Fyndiq_Fyndiq_Model_Export
             }
 
         }
+        FyndiqUtils::debug('$feedWriter->getProductCount()', $feedWriter->getProductCount());
+        FyndiqUtils::debug('$feedWriter->getArticleCount()', $feedWriter->getArticleCount());
         return $feedWriter->write();
     }
 
@@ -252,8 +255,12 @@ class Fyndiq_Fyndiq_Model_Export
             return array();
         }
 
+        if ($magProduct->getData('has_options') != 0) {
+            FyndiqUtils::debug('Has custom options');
+            return array();
+        }
+
         $productId = $magProduct->getId();
-        $descrType = intval($this->configModel->get('fyndiq/fyndiq_group/description', $storeId));
         $magPrice = $this->getProductPrice($magProduct, $config['priceGroup'], $storeId);
         $price = FyndiqUtils::getFyndiqPrice($magPrice, $config['discountPercentage'], $config['discountPrice']);
 
@@ -265,7 +272,7 @@ class Fyndiq_Fyndiq_Model_Export
             FyndiqFeedWriter::PAUSED => $magProduct->getStatus() != Mage_Catalog_Model_Product_Status::STATUS_ENABLED ? 1 : 0,
             FyndiqFeedWriter::PRODUCT_TITLE => $this->getProductTitle($magArray['name'], $ourProductId, $storeId),
             FyndiqFeedWriter::PRODUCT_DESCRIPTION =>
-                $this->getProductDescription($magProduct, $descrType, $storeId),
+                $this->getProductDescription($magProduct, $config['descrType'], $storeId),
             FyndiqFeedWriter::PRICE => FyndiqUtils::formatPrice($price),
             FyndiqFeedWriter::OLDPRICE => FyndiqUtils::formatPrice($oldPrice),
             FyndiqFeedWriter::PRODUCT_VAT_PERCENT => $this->getTaxRate($magProduct, $store),
@@ -422,6 +429,11 @@ class Fyndiq_Fyndiq_Model_Export
 
         if ($magProduct->getTypeId() !== 'simple') {
             FyndiqUtils::debug('article is not simple product');
+            return array();
+        }
+
+        if ($magProduct->getData('has_options') != 0) {
+            FyndiqUtils::debug('Has custom options');
             return array();
         }
 

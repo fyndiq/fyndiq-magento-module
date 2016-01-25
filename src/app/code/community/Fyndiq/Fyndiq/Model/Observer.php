@@ -22,9 +22,24 @@ class Fyndiq_Fyndiq_Model_Observer
         return 0;
     }
 
+    protected function checkTrackingMethods($storeId)
+    {
+        $duplicates = Mage::helper('fyndiq_fyndiq/tracking')->getDuplicates($storeId);
+        if ($duplicates) {
+            Mage::getSingleton('core/session')->addNotice(
+                sprintf(
+                    Mage::helper('fyndiq_fyndiq')->
+                        __('One or more Shipping Methods were selected for more than one Fyndiq Delivery Service (%s). Please make sure that each method is only selected once.'),
+                    implode(',', $duplicates)
+                )
+            );
+        }
+    }
+
     public function handle_fyndiqConfigChangedSection()
     {
         $storeId = $this->getStoreId();
+        $this->checkTrackingMethods($storeId);
         if ($this->configModel->get('fyndiq/fyndiq_group/username', $storeId) !== ''
             && $this->configModel->get('fyndiq/fyndiq_group/apikey', $storeId) !== ''
         ) {
@@ -68,18 +83,18 @@ class Fyndiq_Fyndiq_Model_Observer
                 );
             }
             try {
-                return Mage::helper('api')->callApi($this->configModel, $storeId, 'PATCH', 'settings/', $data);
+                return Mage::helper('fyndiq_fyndiq/connect')->callApi($this->configModel, $storeId, 'PATCH', 'settings/', $data);
             } catch (Exception $e) {
                 throw new Exception(
                     sprintf(
                         Mage::helper('fyndiq_fyndiq')->
-                            __('Error setting the configuration on Fyndiq. Possible reason: Access to https://api.fyndiq.com is restricted (%s)'),
+                            __('The configuration could not be sent to Fyndiq. Your firewall might be blocking the access to https://api.fyndiq.com (%s)'),
                         $e->getMessage()
                     )
                 );
             }
         }
-        throw new Exception(Mage::helper('fyndiq_fyndiq')->__('Please specify a Username and API token.'));
+        throw new Exception(Mage::helper('fyndiq_fyndiq')->__('Please enter your Fyndiq Username and API Token'));
     }
 
     protected static function mustRegenerate($generatedTime, $cronInterval)

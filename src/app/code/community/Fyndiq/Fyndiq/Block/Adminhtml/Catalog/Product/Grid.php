@@ -31,7 +31,6 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Catalog_Product_Grid extends Mage_Adminhtml_
         } else {
             $collection->addAttributeToSelect('fyndiq_exported');
         }
-
         parent::setCollection($collection);
     }
 
@@ -41,7 +40,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Catalog_Product_Grid extends Mage_Adminhtml_
         $this->addColumnAfter(
             'fyndiq_status',
             array(
-                'header'=> Mage::helper('fyndiq_fyndiq')->__('Fyndiq Exported'),
+                'header'=> Mage::helper('fyndiq_fyndiq')->__('Fyndiq'),
                 'type' => 'options',
                 'index' => 'fyndiq_exported',
                 'sortable' => true,
@@ -67,6 +66,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Catalog_Product_Grid extends Mage_Adminhtml_
 
     protected function _prepareMassaction()
     {
+        $result = parent::_prepareMassaction();
 
         $this->getMassactionBlock()->addItem(
             'export',
@@ -84,6 +84,6 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Catalog_Product_Grid extends Mage_Adminhtml_
             )
         );
 
-        return parent::_prepareMassaction();
+        return $result;
     }
 }
