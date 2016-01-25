@@ -40,7 +40,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
             $this->configModel->set('fyndiq/fyndiq_group/apikey', '', $storeId, false);
             $this->configModel->reInit();
         }
-        $this->_redirect('adminhtml/system_config/edit/section/fyndiq');
+        $this->_redirectReferer();
     }
 
     protected function importOrdersForStore($storeId, $newTime)
@@ -88,7 +88,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                 }
             }
         }
-        $this->_redirect('adminhtml/sales_order/index');
+        $this->_redirectReferer();
     }
 
     public function getDeliveryNoteAction()
@@ -105,7 +105,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                     __('Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support.') . ' (' . $e->getMessage() . ')'
             );
         }
-        $this->_redirect('adminhtml/sales_order/view/order_id/' . $orderId);
+        $this->_redirectReferer();
     }
 
     public function getDeliveryNotesAction()
@@ -122,7 +122,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                     __('Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support.') . ' (' . $e->getMessage() . ')'
             );
         }
-        $this->_redirect('adminhtml/sales_order/index');
+        $this->_redirectReferer();
     }
 
     protected function getDeliveryNotes($orderIds)
@@ -230,7 +230,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                 __('Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support.') . ' (' . $e->getMessage() . ')'
             );
         }
-        $this->_redirect('adminhtml/catalog_product/index');
+        $this->_redirectReferer();
     }
 
     /**
@@ -264,7 +264,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                 __('Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support.') . ' (' . $e->getMessage() . ')'
             );
         }
-        $this->_redirect('adminhtml/catalog_product/index');
+        $this->_redirectReferer();
     }
 
     public function importSKUsAction()

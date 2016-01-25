@@ -29,6 +29,9 @@
             </fyndiqmodule_setup>
         </resources>
         <blocks>
+            <fyndiq_fyndiq>
+                <class>Fyndiq_Fyndiq_Block</class>
+            </fyndiq_fyndiq>
             <Fyndiq>
                 <rewrite>
                     <exportproducts>Fyndiq_Fyndiq_Block_Exportproducts</exportproducts>
