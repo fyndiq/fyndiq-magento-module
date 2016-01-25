@@ -23,4 +23,18 @@
             </admin>
         </resources>
     </acl>
+    <menu>
+        <catalog>
+            <children>
+                <fyndiqgrid translate="title" module="fyndiq_fyndiq">
+                    <title>Fyndiq</title>
+                    <action>adminhtml/fyndiqgrid/</action>
+                    <sort_order>1000</sort_order>
+                    <depends>
+                        <config>fyndiq/troubleshooting/fyndiq_grid</config>
+                    </depends>
+                </fyndiqgrid>
+            </children>
+        </catalog>
+    </menu>
 </config>

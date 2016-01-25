@@ -98,5 +98,7 @@ $lang = array(
     'Disabled' => 'Disabled',
     'Exported %s of %s SKUs' => 'Exported %s of %s SKUs',
     'Export SKUs' => 'Export SKUs',
+    'Enable Fyndiq Product Grid' => 'Enable Fyndiq Product Grid',
+    'Products' => 'Products',
 
 );

@@ -101,4 +101,4 @@ $lang = array(
     'Enable Fyndiq Product Grid' => 'Enable Fyndiq Product Grid',
     'Products' => 'Products',
     'Mark as not handled on Fyndiq' => 'Mark as not handled on Fyndiq',
-);
+
