@@ -280,10 +280,20 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                 if (!isset($work[$storeId])){
                     $work[$storeId] = array();
                 }
+                $work[$storeId][] = $orderId;
             }
             foreach ($work as $storeId => $orderIds) {
                 try {
-                    // Send the request for that storeId
+                        $data = array(
+                            'orders' => array()
+                        );
+                        foreach($orderIds as $fyndiqOrderId) {
+                            $data['orders'][] = array(
+                                'id' => $fyndiqOrderId,
+                                'marked' => true,
+                            );
+                        }
+                        $ret = Mage::helper('fyndiq_fyndiq/connect')->callApi($this->configModel, $storeId, 'POST', 'orders/marked/', $data);
                 } catch (Exception $e) {
                     $this->_getSession()->addError(
                         Mage::helper('fyndiq_fyndiq')->
@@ -296,7 +306,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                 Mage::helper('fyndiq_fyndiq')->__('No Fyndiq Orders were selected')
             );
         }
-        $this->_redirect('adminhtml/sales_order/index');
+        $this->_redirectReferer();
     }
 
     public function importSKUsAction()
