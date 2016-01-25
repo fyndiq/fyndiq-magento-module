@@ -272,6 +272,18 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
      */
     public function handledFyndiqOrdersAction()
     {
+        $this->orderHandling(true);
+    }
+
+    /**
+     * Mark orders as handled
+     */
+    public function unhandledFyndiqOrdersAction()
+    {
+        $this->orderHandling(false);
+    }
+
+    protected function orderHandling($handled){
         $orderIds = $this->getRequest()->getParam('order_ids');
         $fyndiqOrders = Mage::getModel('fyndiq/order')->getFydniqOrders($orderIds);
         if ($fyndiqOrders) {
@@ -290,7 +302,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                         foreach($orderIds as $fyndiqOrderId) {
                             $data['orders'][] = array(
                                 'id' => $fyndiqOrderId,
-                                'marked' => true,
+                                'marked' => $handled,
                             );
                         }
                         $ret = Mage::helper('fyndiq_fyndiq/connect')->callApi($this->configModel, $storeId, 'POST', 'orders/marked/', $data);
