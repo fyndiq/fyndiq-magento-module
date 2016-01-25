@@ -6,6 +6,9 @@ class Fyndiq_Fyndiq_Model_Export
     const BATCH_SIZE = 30;
     const CATEGORY_SEPARATOR = ' / ';
 
+    const VALUE_NO = 0;
+    const VALUE_YES = 1;
+
     private $configModel = null;
     private $categoryModel = null;
     private $taxCalculationModel = null;
@@ -86,7 +89,7 @@ class Fyndiq_Fyndiq_Model_Export
             ->addStoreFilter($storeId)
             ->addAttributeToFilter(
                 'fyndiq_exported',
-                array('eq' => Mage_Eav_Model_Entity_Attribute_Source_Boolean::VALUE_YES)
+                array('eq' => self::VALUE_YES)
             );
 
         $productIds = $products->getAllIds();

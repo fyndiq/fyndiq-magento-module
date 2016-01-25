@@ -105,7 +105,7 @@ if ($installer2->tableExists($productTableName)) {
                 ->load($productRow['product_id']);
         }
         if ($product) {
-            $product->setData('fyndiq_exported', Mage_Eav_Model_Entity_Attribute_Source_Boolean::VALUE_YES)
+            $product->setData('fyndiq_exported', 1)
                 ->getResource()
                 ->saveAttribute($product, 'fyndiq_exported');
         }

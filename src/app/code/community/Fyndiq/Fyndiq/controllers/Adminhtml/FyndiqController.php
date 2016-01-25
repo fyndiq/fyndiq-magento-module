@@ -181,7 +181,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                 ->load($productId);
             if ($product) {
                 if (Mage::helper('fyndiq_fyndiq/export')->isExportable($product)) {
-                    $product->setData('fyndiq_exported', Mage_Eav_Model_Entity_Attribute_Source_Boolean::VALUE_YES)
+                    $product->setData('fyndiq_exported', Fyndiq_Fyndiq_Model_Export::VALUE_YES)
                         ->getResource()
                         ->saveAttribute($product, 'fyndiq_exported');
                     $productsExported++;
@@ -250,7 +250,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                     $product = $productModel
                         ->setCurrentStore($storeId)
                         ->load($productid);
-                    $product->setData('fyndiq_exported', Mage_Eav_Model_Entity_Attribute_Source_Boolean::VALUE_NO)
+                    $product->setData('fyndiq_exported', Fyndiq_Fyndiq_Model_Export::VALUE_NO)
                         ->getResource()
                         ->saveAttribute($product, 'fyndiq_exported');
 
