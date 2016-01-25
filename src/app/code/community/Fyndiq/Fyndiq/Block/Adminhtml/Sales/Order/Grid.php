@@ -13,6 +13,14 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Sales_Order_Grid extends Mage_Adminhtml_Bloc
                 'url'  => $this->getUrl('adminhtml/fyndiq/getDeliveryNotes')
             )
         );
+        $this->getMassactionBlock()->addItem(
+            'handle_orders',
+            array(
+                'label'=> Mage::helper('fyndiq_fyndiq')->__('Mark as handled on Fyndiq'),
+                'url'  => $this->getUrl('adminhtml/fyndiq/handledFyndiqOrders')
+            )
+        );
+
         return $result;
     }
 
