@@ -52,7 +52,7 @@ class Fyndiq_Fyndiq_Model_Config
 
     public function getUserAgent()
     {
-        return FyndiqUtils::getUserAgentString("Magento", Mage::getVersion(), "module", $this->getModuleVersion(), self::COMMIT);
+        return FyndiqUtils::getUserAgentString('Magento', Mage::getVersion(), 'module', $this->getModuleVersion(), self::COMMIT);
     }
 
     public function getFeedPath($storeId)

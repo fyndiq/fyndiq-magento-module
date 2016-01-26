@@ -188,6 +188,17 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         FyndiqUtils::debugStop();
     }
 
+    private function info() {
+        $info = FyndiqUtils::getInfo(
+            'Magento',
+            Mage::getVersion(),
+            $this->configModel->getModuleVersion(),
+            Fyndiq_Fyndiq_Model_Config::COMMIT
+        );
+        $this->getResponse()->setHeader('Content-type', 'application/json');
+        $this->getResponse()->setBody(json_encode($info));
+    }
+
     protected function getFyndiqOutput()
     {
         if (!$this->fyndiqOutput) {
