@@ -88,7 +88,7 @@ class Fyndiq_Fyndiq_Model_Order
                 case 'DE':
                     $regionCode = $regionHelper->codeToRegionCode(
                         $fyndiqOrder->delivery_postalcode,
-                        Fyndiq_Fyndiq_Helper_Export::CODE_DE
+                        Fyndiq_Fyndiq_Helper_Region::CODE_DE
                     );
 
                     // Try to deduce the region for Germany
@@ -109,11 +109,11 @@ class Fyndiq_Fyndiq_Model_Order
                 case 'SE':
                     $regionCode = $regionHelper->codeToRegionCode(
                         $fyndiqOrder->delivery_postalcode,
-                        Fyndiq_Fyndiq_Helper_Export::CODE_SE
+                        Fyndiq_Fyndiq_Helper_Region::CODE_SE
                     );
                     $regionName = $regionHelper->getRegionName(
                         $regionCode,
-                        Fyndiq_Fyndiq_Helper_Export::CODE_SE
+                        Fyndiq_Fyndiq_Helper_Region::CODE_SE
                     );
                     $shippingAddressArray['region'] = $regionName;
                     break;
