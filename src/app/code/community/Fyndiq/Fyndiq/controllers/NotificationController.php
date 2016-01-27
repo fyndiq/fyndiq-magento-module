@@ -188,7 +188,8 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         FyndiqUtils::debugStop();
     }
 
-    private function info() {
+    private function info()
+    {
         $info = FyndiqUtils::getInfo(
             Fyndiq_Fyndiq_Model_Config::PLATFORM_NAME,
             Mage::getVersion(),

@@ -195,7 +195,8 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         return $productsExportedReport;
     }
 
-    protected function showExportedReport($productsToExport, $productsExportedReport){
+    protected function showExportedReport($productsToExport, $productsExportedReport)
+    {
         $productsExported = $productsExportedReport[Fyndiq_Fyndiq_Helper_Export::IS_EXPORTABLE];
         if ($productsToExport == $productsExported) {
             $this->_getSession()->addSuccess(
@@ -213,8 +214,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                 $productsToExport - $productsExported
             );
 
-            if (
-                isset($productsExportedReport[Fyndiq_Fyndiq_Helper_Export::ERR_HAS_OPTIONS]) &&
+            if (isset($productsExportedReport[Fyndiq_Fyndiq_Helper_Export::ERR_HAS_OPTIONS]) &&
                 $productsExportedReport[Fyndiq_Fyndiq_Helper_Export::ERR_HAS_OPTIONS] > 0
             ) {
                 $lines[] = sprintf(
@@ -321,13 +321,14 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         $this->orderHandling(false);
     }
 
-    protected function orderHandling($handled){
+    protected function orderHandling($handled)
+    {
         $orderIds = $this->getRequest()->getParam('order_ids');
         $fyndiqOrders = Mage::getModel('fyndiq/order')->getFydniqOrders($orderIds);
         if ($fyndiqOrders) {
             $work = array();
             foreach ($fyndiqOrders as $orderId => $storeId) {
-                if (!isset($work[$storeId])){
+                if (!isset($work[$storeId])) {
                     $work[$storeId] = array();
                 }
                 $work[$storeId][] = $orderId;
@@ -337,7 +338,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                         $data = array(
                             'orders' => array()
                         );
-                        foreach($orderIds as $fyndiqOrderId) {
+                        foreach ($orderIds as $fyndiqOrderId) {
                             $data['orders'][] = array(
                                 'id' => $fyndiqOrderId,
                                 'marked' => $handled,
@@ -370,7 +371,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         $total = count($skuArray);
         $productIds = array();
         try {
-            foreach($skuArray as $sku) {
+            foreach ($skuArray as $sku) {
                 $sku = trim($sku);
                 if ($sku) {
                     $productId = $product->getIdBySku($sku);
@@ -380,7 +381,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                 }
             }
             $productsExportedReport = $this->exportProductIds($productIds, $storeId);
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $this->getResponse()->setBody($e->getMessage());
             return;
         }
@@ -389,5 +390,4 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         );
 
     }
-
 }

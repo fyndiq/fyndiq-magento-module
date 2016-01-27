@@ -18,14 +18,13 @@ class Fyndiq_Fyndiq_Helper_Export extends Mage_Core_Helper_Abstract
         $productTypeId = $product->getTypeId();
         $productConfigurableModel = Mage::getModel('catalog/product_type_configurable');
         $parentId = $productConfigurableModel->getParentIdsByChild($product->getId());
-        if (
-            !in_array(
-                $productTypeId,
-                array(
+        if (!in_array(
+            $productTypeId,
+            array(
                     Mage_Catalog_Model_Product_Type::TYPE_SIMPLE,
                     Mage_Catalog_Model_Product_Type::TYPE_CONFIGURABLE
                 )
-            )
+        )
         ) {
             return self::ERR_NOT_SIMPLE_OR_CONFIGURABLE;
         }
