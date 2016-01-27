@@ -236,7 +236,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                 $productsExportedReport[Fyndiq_Fyndiq_Helper_Export::ERR_NOT_SIMPLE_OR_CONFIGURABLE] > 0
             ) {
                 $lines[] = sprintf(
-                    Mage::helper('fyndiq_fyndiq')->__('%d are neither a simple nor a configurable product'),
+                    Mage::helper('fyndiq_fyndiq')->__('%d are neither simple nor configurable products'),
                     $productsExportedReport[Fyndiq_Fyndiq_Helper_Export::ERR_NOT_SIMPLE_OR_CONFIGURABLE]
                 );
             }
