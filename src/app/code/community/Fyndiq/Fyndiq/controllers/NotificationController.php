@@ -190,7 +190,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 
     private function info() {
         $info = FyndiqUtils::getInfo(
-            'Magento',
+            Fyndiq_Fyndiq_Model_Config::PLATFORM_NAME,
             Mage::getVersion(),
             $this->configModel->getModuleVersion(),
             Fyndiq_Fyndiq_Model_Config::COMMIT
