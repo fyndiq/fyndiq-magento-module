@@ -3,6 +3,7 @@
 class Fyndiq_Fyndiq_Model_Config
 {
 
+    const PLATFORM_NAME = 'Magento';
     const COMMIT = 'XXXXXX';
     const REPOSITORY_PATH = 'fyndiq/fyndiq-magento-module/';
     const REPOSITORY_DOMAIN = 'http://developers.fyndiq.com';
@@ -52,7 +53,13 @@ class Fyndiq_Fyndiq_Model_Config
 
     public function getUserAgent()
     {
-        return FyndiqUtils::getUserAgentString('Magento', Mage::getVersion(), 'module', $this->getModuleVersion(), self::COMMIT);
+        return FyndiqUtils::getUserAgentString(
+            self::PLATFORM_NAME,
+            Mage::getVersion(),
+            'module',
+            $this->getModuleVersion(),
+            self::COMMIT
+        );
     }
 
     public function getFeedPath($storeId)
