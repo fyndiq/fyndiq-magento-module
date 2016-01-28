@@ -258,10 +258,10 @@ class Fyndiq_Fyndiq_Model_Export
             return array();
         }
 
-        if ($magProduct->getData('has_options') != 0) {
-            FyndiqUtils::debug('Has custom options');
-            return array();
-        }
+        // if ($magProduct->getData('has_options') != 0) {
+        //     FyndiqUtils::debug('Has custom options');
+        //     return array();
+        // }
 
         $productId = $magProduct->getId();
         $magPrice = $this->getProductPrice($magProduct, $config['priceGroup'], $storeId);
@@ -435,10 +435,10 @@ class Fyndiq_Fyndiq_Model_Export
             return array();
         }
 
-        if ($magProduct->getData('has_options') != 0) {
-            FyndiqUtils::debug('Has custom options');
-            return array();
-        }
+        // if ($magProduct->getData('has_options') != 0) {
+        //     FyndiqUtils::debug('Has custom options');
+        //     return array();
+        // }
 
         $storeId = intval($store->getId());
 
