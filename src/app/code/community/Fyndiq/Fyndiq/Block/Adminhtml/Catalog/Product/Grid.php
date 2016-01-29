@@ -19,7 +19,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Catalog_Product_Grid extends Mage_Adminhtml_
         $store = $this->_getStore();
         /* @var $collection Mage_Catalog_Model_Resource_Product_Collection */
         $collection->addStoreFilter($store->getId());
-        if ($store->getId() && !isset($this->_joinAttributes['fyndiq_exported'])) {
+        if (!isset($this->_joinAttributes['fyndiq_exported'])) {
             $collection->joinAttribute(
                 'fyndiq_exported',
                 'catalog_product/fyndiq_exported',
@@ -36,7 +36,6 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Catalog_Product_Grid extends Mage_Adminhtml_
 
     protected function _prepareColumns()
     {
-        $store = $this->_getStore();
         $this->addColumnAfter(
             'fyndiq_status',
             array(
@@ -46,22 +45,15 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Catalog_Product_Grid extends Mage_Adminhtml_
                 'sortable' => true,
                 'align'   => 'right',
                 'width' => '80px',
-                'options' => $this->_getAttributeOptions('fyndiq_exported'),
+                'options' => array(
+                    Fyndiq_Fyndiq_Model_Export::VALUE_YES => Mage::helper('eav')->__('Yes'),
+                    Fyndiq_Fyndiq_Model_Export::VALUE_NO => Mage::helper('eav')->__('No'),
+                ),
             ),
             'status'
         );
 
         return parent::_prepareColumns();
-    }
-
-    protected function _getAttributeOptions($attribute_code)
-    {
-        $attribute = Mage::getModel('eav/config')->getAttribute('catalog_product', $attribute_code);
-        $options = array();
-        foreach ($attribute->getSource()->getAllOptions(true, true) as $option) {
-            $options[$option['value']] = $option['label'];
-        }
-        return $options;
     }
 
     protected function _prepareMassaction()
