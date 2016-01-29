@@ -195,56 +195,62 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         return $productsExportedReport;
     }
 
-    protected function showExportedReport($productsToExport, $productsExportedReport)
+    protected function detailedReport($productsExported, $productsToExport, $productsExportedReport)
     {
-        $productsExported = $productsExportedReport[Fyndiq_Fyndiq_Helper_Export::IS_EXPORTABLE];
-        if ($productsToExport == $productsExported) {
-            $this->_getSession()->addSuccess(
-                Mage::helper('fyndiq_fyndiq')->__('The selected products are being exported to Fyndiq.')
-            );
-        } elseif ($productsToExport > 0  && $productsExported == 0) {
-            $this->_getSession()->addNotice(
-                Mage::helper('fyndiq_fyndiq')->__('None of the selected products could be exported')
-            );
+        if ($productsToExport > 0  && $productsExported == 0) {
+            $text = Mage::helper('fyndiq_fyndiq')->__('None of the selected products could be exported');
         } elseif ($productsToExport > $productsExported) {
-            $lines = array();
             $text = sprintf(
                 Mage::helper('fyndiq_fyndiq')->__('%d products were exported to Fyndiq. %d products could not be exported'),
                 $productsExported,
                 $productsToExport - $productsExported
             );
+        }
+        $lines = array();
 
-            if (isset($productsExportedReport[Fyndiq_Fyndiq_Helper_Export::ERR_HAS_OPTIONS]) &&
-                $productsExportedReport[Fyndiq_Fyndiq_Helper_Export::ERR_HAS_OPTIONS] > 0
-            ) {
-                $lines[] = sprintf(
-                    Mage::helper('fyndiq_fyndiq')->__('%d have custom options set up'),
-                    $productsExportedReport[Fyndiq_Fyndiq_Helper_Export::ERR_HAS_OPTIONS]
-                );
-            }
-
-            if (isset($productsExportedReport[Fyndiq_Fyndiq_Helper_Export::ERR_SIMPLE_HAS_PARENT]) &&
-                $productsExportedReport[Fyndiq_Fyndiq_Helper_Export::ERR_SIMPLE_HAS_PARENT] > 0
-            ) {
-                $lines[] = sprintf(
-                    Mage::helper('fyndiq_fyndiq')->__('%d are part of a configurable product'),
-                    $productsExportedReport[Fyndiq_Fyndiq_Helper_Export::ERR_SIMPLE_HAS_PARENT]
-                );
-            }
-
-            if (isset($productsExportedReport[Fyndiq_Fyndiq_Helper_Export::ERR_NOT_SIMPLE_OR_CONFIGURABLE]) &&
-                $productsExportedReport[Fyndiq_Fyndiq_Helper_Export::ERR_NOT_SIMPLE_OR_CONFIGURABLE] > 0
-            ) {
-                $lines[] = sprintf(
-                    Mage::helper('fyndiq_fyndiq')->__('%d are neither simple nor configurable products'),
-                    $productsExportedReport[Fyndiq_Fyndiq_Helper_Export::ERR_NOT_SIMPLE_OR_CONFIGURABLE]
-                );
-            }
-
-            $this->_getSession()->addNotice(
-                $text . ' (' . implode(', ', $lines) . ')'
+        if (isset($productsExportedReport[Fyndiq_Fyndiq_Helper_Export::ERR_HAS_OPTIONS]) &&
+            $productsExportedReport[Fyndiq_Fyndiq_Helper_Export::ERR_HAS_OPTIONS] > 0
+        ) {
+            $lines[] = sprintf(
+                Mage::helper('fyndiq_fyndiq')->__('%d have custom options set up'),
+                $productsExportedReport[Fyndiq_Fyndiq_Helper_Export::ERR_HAS_OPTIONS]
             );
         }
+
+        if (isset($productsExportedReport[Fyndiq_Fyndiq_Helper_Export::ERR_SIMPLE_HAS_PARENT]) &&
+            $productsExportedReport[Fyndiq_Fyndiq_Helper_Export::ERR_SIMPLE_HAS_PARENT] > 0
+        ) {
+            $lines[] = sprintf(
+                Mage::helper('fyndiq_fyndiq')->__('%d are part of a configurable product'),
+                $productsExportedReport[Fyndiq_Fyndiq_Helper_Export::ERR_SIMPLE_HAS_PARENT]
+            );
+        }
+
+        if (isset($productsExportedReport[Fyndiq_Fyndiq_Helper_Export::ERR_NOT_SIMPLE_OR_CONFIGURABLE]) &&
+            $productsExportedReport[Fyndiq_Fyndiq_Helper_Export::ERR_NOT_SIMPLE_OR_CONFIGURABLE] > 0
+        ) {
+            $lines[] = sprintf(
+                Mage::helper('fyndiq_fyndiq')->__('%d are neither simple nor configurable products'),
+                $productsExportedReport[Fyndiq_Fyndiq_Helper_Export::ERR_NOT_SIMPLE_OR_CONFIGURABLE]
+            );
+        }
+
+        return $this->_getSession()->addNotice(
+            $text . ' (' . implode(', ', $lines) . ')'
+        );
+    }
+
+    protected function showExportedReport($productsToExport, $productsExportedReport)
+    {
+        $productsExported = isset($productsExportedReport[Fyndiq_Fyndiq_Helper_Export::IS_EXPORTABLE]) ?
+            $productsExportedReport[Fyndiq_Fyndiq_Helper_Export::IS_EXPORTABLE]:
+            0;
+        if ($productsToExport == $productsExported) {
+            return $this->_getSession()->addSuccess(
+                Mage::helper('fyndiq_fyndiq')->__('The selected products are being exported to Fyndiq.')
+            );
+        }
+        return $this->detailedReport($productsExported, $productsToExport, $productsExportedReport);
     }
 
     /**
