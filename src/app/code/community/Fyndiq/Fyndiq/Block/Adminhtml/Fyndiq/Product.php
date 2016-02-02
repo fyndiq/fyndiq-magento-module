@@ -10,15 +10,6 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Product extends Mage_Adminhtml_Block_
         $this->_headerText = Mage::helper('fyndiq_fyndiq')->__('Products');
 
         parent::__construct();
-        $this->setTemplate('catalog/product.phtml');
         $this->_removeButton('add');
-    }
-
-    public function isSingleStoreMode()
-    {
-        if (!Mage::app()->isSingleStoreMode()) {
-               return false;
-        }
-        return true;
     }
 }
