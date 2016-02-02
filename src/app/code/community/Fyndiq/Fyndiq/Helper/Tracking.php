@@ -20,7 +20,7 @@ class Fyndiq_Fyndiq_Helper_Tracking extends Mage_Core_Helper_Abstract
 
     public function getDeliveryMapping($shippingProviderCode, $storeId)
     {
-        $configModel =  Mage::getModel('fyndiq/config');
+        $configModel = Mage::getModel('fyndiq/config');
         foreach ($this->getFyndiqDeliveryServices() as $serviceCode => $serviceName) {
             $list = $configModel->get('fyndiq/tracking/' . $serviceCode, $storeId);
             $codes = explode(',', $list);

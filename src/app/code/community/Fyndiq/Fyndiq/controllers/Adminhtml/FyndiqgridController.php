@@ -7,7 +7,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqgridController extends Mage_Adminhtml_Contro
         $this->_title($this->__('Products'))->_title($this->__('Export to Fyndiq'));
         $this->loadLayout();
         $this->_setActiveMenu('catalog/fyndiqgrid');
-        $this->_addContent($this->getLayout()->createBlock('fyndiq_fyndiq/adminhtml_catalog_product'));
+        $this->_addContent($this->getLayout()->createBlock('fyndiq_fyndiq/adminhtml_fyndiq_product'));
         $this->renderLayout();
     }
 
@@ -15,7 +15,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqgridController extends Mage_Adminhtml_Contro
     {
         $this->loadLayout();
         $this->getResponse()->setBody(
-            $this->getLayout()->createBlock('fyndiq_fyndiq/adminhtml_catalog_product_grid')->toHtml()
+            $this->getLayout()->createBlock('fyndiq_fyndiq/adminhtml_fyndiq_product_grid')->toHtml()
         );
     }
 
