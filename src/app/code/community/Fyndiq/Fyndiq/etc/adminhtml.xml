@@ -19,18 +19,18 @@
                             </config>
                         </children>
                     </system>
+                    <sales>
+                        <children>
+                            <fyndiqpordergrid translate="title" module="fyndiq_fyndiq">
+                                <title>Fyndiq</title>
+                            </fyndiqpordergrid>
+                        </children>
+                    </sales>
                     <catalog>
                         <children>
                             <fyndiqproductgrid translate="title" module="fyndiq_fyndiq">
                                 <title>Fyndiq</title>
                             </fyndiqproductgrid>
-                        </children>
-                    </catalog>
-                    <catalog>
-                        <children>
-                            <fyndiqpordergrid translate="title" module="fyndiq_fyndiq">
-                                <title>Fyndiq</title>
-                            </fyndiqpordergrid>
                         </children>
                     </catalog>
                 </children>
