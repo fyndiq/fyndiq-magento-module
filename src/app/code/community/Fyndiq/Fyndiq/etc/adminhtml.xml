@@ -21,9 +21,16 @@
                     </system>
                     <catalog>
                         <children>
-                            <fyndiqgrid translate="title" module="fyndiq_fyndiq">
+                            <fyndiqproductgrid translate="title" module="fyndiq_fyndiq">
                                 <title>Fyndiq</title>
-                            </fyndiqgrid>
+                            </fyndiqproductgrid>
+                        </children>
+                    </catalog>
+                    <catalog>
+                        <children>
+                            <fyndiqpordergrid translate="title" module="fyndiq_fyndiq">
+                                <title>Fyndiq</title>
+                            </fyndiqpordergrid>
                         </children>
                     </catalog>
                 </children>
@@ -45,14 +52,14 @@
         </catalog>
         <sales>
             <children>
-                <fyndiqproductgrid translate="title" module="fyndiq_fyndiq">
+                <fyndiqpordergrid translate="title" module="fyndiq_fyndiq">
                     <title>Fyndiq</title>
                     <action>adminhtml/fyndiqordergrid/</action>
                     <sort_order>1000</sort_order>
                     <depends>
                         <config>fyndiq/troubleshooting/fyndiq_grid</config>
                     </depends>
-                </fyndiqproductgrid>
+                </fyndiqpordergrid>
             </children>
         </sales>
     </menu>
