@@ -3,7 +3,7 @@
 class Fyndiq_Fyndiq_Block_Adminhtml_Sales_Order_Grid extends Mage_Adminhtml_Block_Sales_Order_Grid
 {
 
-   private $isEnabled = null;
+    private $isEnabled = null;
 
     protected function isEnabled($storeId)
     {
