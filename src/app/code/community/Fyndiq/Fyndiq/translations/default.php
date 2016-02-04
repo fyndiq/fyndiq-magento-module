@@ -104,4 +104,6 @@ $lang = array(
     '%d have custom options set up' => '%d have custom options set up',
     '%d are part of a configurable product' => '%d are part of a configurable product',
     '%d are neither simple nor configurable products' => '%d are neither simple nor configurable products',
+    'Orders' => 'Orders',
+    'Enable Compatibility Mode' => 'Enable Compatibility Mode',
 );
