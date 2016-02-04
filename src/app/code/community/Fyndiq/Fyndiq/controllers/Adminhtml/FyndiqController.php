@@ -14,7 +14,27 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
 
     protected function _isAllowed()
     {
-        return Mage::getSingleton('admin/session')->isAllowed('system/fyndiq');
+        $section = 'system/fyndiq';
+        switch($this->getRequest()->getActionName()) {
+            // orders
+            case 'importFyndiqOrders':
+            case 'getDeliveryNote':
+            case 'getDeliveryNotes':
+            case 'handledFyndiqOrders':
+            case 'unhandledFyndiqOrders':
+                $section = 'sales/fyndiqpordergrid';
+                break;
+            // products
+            case 'exportProducts':
+            case 'removeProducts':
+                $section = 'catalog/fyndiqproductgrid';
+                break;
+            case 'disconnect':
+            case 'importSKUs':
+            default:
+                $section = 'system/fyndiq';
+        }
+        return Mage::getSingleton('admin/session')->isAllowed($section);
     }
 
     public function disconnectAction()
