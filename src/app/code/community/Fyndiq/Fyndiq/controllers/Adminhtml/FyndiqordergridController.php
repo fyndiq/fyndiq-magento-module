@@ -2,6 +2,11 @@
 class Fyndiq_Fyndiq_Adminhtml_FyndiqordergridController extends Mage_Adminhtml_Controller_Action
 {
 
+    protected function _isAllowed()
+    {
+        return Mage::getSingleton('admin/session')->isAllowed('sales/fyndiqpordergrid');
+    }
+
     public function indexAction()
     {
         $this->_title($this->__('Sales'))->_title($this->__('Orders'));

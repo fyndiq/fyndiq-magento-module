@@ -2,6 +2,11 @@
 class Fyndiq_Fyndiq_Adminhtml_FyndiqproductgridController extends Mage_Adminhtml_Controller_Action
 {
 
+    protected function _isAllowed()
+    {
+        return Mage::getSingleton('admin/session')->isAllowed('catalog/fyndiqproductgrid');
+    }
+
     public function indexAction()
     {
         $this->_title($this->__('Products'))->_title($this->__('Export to Fyndiq'));
