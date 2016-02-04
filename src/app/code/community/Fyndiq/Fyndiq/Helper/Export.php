@@ -13,6 +13,12 @@ class Fyndiq_Fyndiq_Helper_Export extends Mage_Core_Helper_Abstract
         return $this->isExportableStatus($product) == self::IS_EXPORTABLE;
     }
 
+    public function hasCustomOptions($product)
+    {
+        $opts = Mage::getSingleton('catalog/product_option')->getProductOptionCollection($product);
+        return $opts->getSize() > 0;
+    }
+
     public function isExportableStatus($product)
     {
         $productTypeId = $product->getTypeId();
@@ -32,10 +38,9 @@ class Fyndiq_Fyndiq_Helper_Export extends Mage_Core_Helper_Abstract
         if ($productTypeId == Mage_Catalog_Model_Product_Type::TYPE_SIMPLE && !empty($parentId)) {
             return self::ERR_SIMPLE_HAS_PARENT;
         }
-        // TODO: This is temporary until we know more
-        // if ($product->getData('has_options')) {
-        //     return self::ERR_HAS_OPTIONS;
-        // }
+        if ($this->hasCustomOptions($product)) {
+            return self::ERR_HAS_OPTIONS;
+        }
         return self::IS_EXPORTABLE;
     }
 }
