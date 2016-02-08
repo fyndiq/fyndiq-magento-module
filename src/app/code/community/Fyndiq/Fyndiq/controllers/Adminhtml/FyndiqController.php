@@ -31,6 +31,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                 break;
             case 'disconnect':
             case 'importSKUs':
+            case 'reinstall':
             default:
                 $section = 'system/fyndiq';
         }
@@ -414,6 +415,20 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         $this->getResponse()->setBody(
             json_encode($productsExportedReport)
         );
+    }
 
+    public function reinstallAction(){
+        $moduleName = 'fyndiqmodule_setup';
+        $sql = 'DELETE FROM core_resource WHERE code = "' . $moduleName . '";';
+        $connection = Mage::getSingleton('core/resource')->getConnection('core_write');
+        try {
+            $connection->query($sql);
+            $this->_getSession()->addNotice(
+                Mage::helper('fyndiq_fyndiq')->__('Please clear cache for the reinstall to take effect')
+            );
+        } catch (Exception $e) {
+           $this->_getSession()->addError($e->getMessage());
+        }
+        $this->_redirectReferer();
     }
 }
