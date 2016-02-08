@@ -423,8 +423,9 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         $connection = Mage::getSingleton('core/resource')->getConnection('core_write');
         try {
             $connection->query($sql);
-            $this->_getSession()->addNotice(
-                Mage::helper('fyndiq_fyndiq')->__('Please clear cache for the reinstall to take effect')
+            Mage::app()->getCacheInstance()->flush();
+            $this->_getSession()->addSuccess(
+                Mage::helper('fyndiq_fyndiq')->__('Module reinstalled successfully.')
             );
         } catch (Exception $e) {
            $this->_getSession()->addError($e->getMessage());

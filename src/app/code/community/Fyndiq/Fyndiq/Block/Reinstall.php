@@ -6,7 +6,7 @@ class Fyndiq_Fyndiq_Block_Reinstall extends Mage_Adminhtml_Block_System_Config_F
     {
         $this->setElement($element);
 
-        $url =  Mage::getUrl('adminhtml/fyndiq/reinstall');
+        $url = Mage::helper("adminhtml")->getUrl('adminhtml/fyndiq/reinstall');
         $html = $this->getLayout()->createBlock('adminhtml/widget_button')
             ->setType('button')
             ->setClass('scalable')

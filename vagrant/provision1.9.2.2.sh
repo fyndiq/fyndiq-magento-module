@@ -119,6 +119,11 @@ if [ ! -f "/var/www/html/magento/app/etc/local.xml" ]; then
     chown vagrant:vagrant /var/www/html/magento/shell/repl.php
     chmod u+x /var/www/html/magento/shell/repl.php
 
+    echo "Installing MageRun"
+    wget https://files.magerun.net/n98-magerun.phar -O /var/www/html/magento/shell/n98-magerun.phar
+    chown vagrant:vagrant /var/www/html/magento/shell/n98-magerun.phar
+    chmod u+x /var/www/html/magento/shell/n98-magerun.phar
+
     echo "Add Cron job"
     echo "*/5 * * * * vagrant php /var/www/html/magento/cron.php > /dev/null;" > /etc/cron.d/magento
 
