@@ -120,7 +120,7 @@ if [ ! -f "/var/www/html/magento/app/etc/local.xml" ]; then
     chmod u+x /var/www/html/magento/shell/repl.php
 
     echo "Add Cron job"
-    echo "*/5 * * * * vagrant wget -O /dev/null -q http://magento.local/cron.php > /dev/null;" > /etc/cron.d/magento
+    echo "*/5 * * * * vagrant php /var/www/html/magento/cron.php > /dev/null;" > /etc/cron.d/magento
 
     ## Enable template sym-links
     mysql -u root -p123 -e "UPDATE magento.core_config_data SET value = '1' WHERE path = 'dev/template/allow_symlink'"
