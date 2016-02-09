@@ -15,7 +15,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
     protected function _isAllowed()
     {
         $section = 'system/fyndiq';
-        switch($this->getRequest()->getActionName()) {
+        switch ($this->getRequest()->getActionName()) {
             // orders
             case 'importFyndiqOrders':
             case 'getDeliveryNote':
@@ -423,7 +423,8 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         );
     }
 
-    public function reinstallAction(){
+    public function reinstallAction()
+    {
         $moduleName = 'fyndiqmodule_setup';
         $sql = 'DELETE FROM core_resource WHERE code = "' . $moduleName . '";';
         $connection = Mage::getSingleton('core/resource')->getConnection('core_write');
@@ -434,7 +435,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                 Mage::helper('fyndiq_fyndiq')->__('Module reinstalled successfully.')
             );
         } catch (Exception $e) {
-           $this->_getSession()->addError($e->getMessage());
+            $this->_getSession()->addError($e->getMessage());
         }
         $this->_redirectReferer();
     }
