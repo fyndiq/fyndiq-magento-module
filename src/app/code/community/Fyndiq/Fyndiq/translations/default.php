@@ -1,5 +1,5 @@
 <?php
-
+// Magento localization
 $lang = array(
     'Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support.' => 'Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support.',
     'The Payment Method used when Fyndiq Orders are imported' => 'The Payment Method used when Fyndiq Orders are imported',
