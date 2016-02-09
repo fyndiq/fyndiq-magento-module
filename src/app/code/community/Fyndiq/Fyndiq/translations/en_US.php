@@ -1,5 +1,5 @@
 <?php
-
+// Magento localization
 $lang = array(
     'Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support.' => 'Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support.',
     'The Payment Method used when Fyndiq Orders are imported' => 'The Payment Method used when Fyndiq Orders are imported',
@@ -74,6 +74,7 @@ $lang = array(
     'Currently installed extensions' => 'Currently installed extensions',
     'Please generate an API Version 2 Token on your Fyndiq Merchant Account and add it to this field.' => 'Please generate an API Version 2 Token on your Fyndiq Merchant Account and add it to this field.',
     'If larger than 0, all prices sent to Fyndiq will be reduced by the percentage entered in this field' => 'If larger than 0, all prices sent to Fyndiq will be reduced by the percentage entered in this field',
+    'If larger than 0, all prices sent to Fyndiq will be reduced by the amount entered in this field' => 'If larger than 0, all prices sent to Fyndiq will be reduced by the amount entered in this field',
     'The selected products are being exported to Fyndiq' => 'The selected products are being exported to Fyndiq',
     'The selected products are scheduled to be removed from Fyndiq' => 'The selected products are scheduled to be removed from Fyndiq',
     'Field used for the descriptions sent to Fyndiq' => 'Field used for the descriptions sent to Fyndiq',
@@ -95,6 +96,7 @@ $lang = array(
     'Disabled' => 'Disabled',
     'Export SKUs' => 'Export SKUs',
     'Orders marked as "handled" on Fyndiq' => 'Orders marked as "handled" on Fyndiq',
+    'Orders marked as "not handled" on Fyndiq' => 'Orders marked as "not handled" on Fyndiq',
     'Enable Compatibility Mode' => 'Enable Compatibility Mode',
     'Products' => 'Products',
     'Mark as "not handled" on Fyndiq' => 'Mark as "not handled" on Fyndiq',
