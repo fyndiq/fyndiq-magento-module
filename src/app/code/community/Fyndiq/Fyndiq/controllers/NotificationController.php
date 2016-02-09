@@ -146,7 +146,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
                             $version
                         ),
                         sprintf(
-                            Mage::helper('fyndiq_fyndiq')->__('A new version of the Fyndiq Magento Extension has been published and is now available for download. For details, please check the Change History on the download page at %s'),
+                            Mage::helper('fyndiq_fyndiq')->__('Download the latest version of the Fyndiq Magento Extension. For details, please check the Change History on the download page at %s'),
                             $downloadURL
                         ),
                         $downloadURL
