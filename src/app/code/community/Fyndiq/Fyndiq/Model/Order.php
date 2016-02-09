@@ -98,7 +98,7 @@ class Fyndiq_Fyndiq_Model_Order
                     );
                     if (is_null($region)) {
                         throw new Exception(sprintf(
-                            Mage::helper('fyndiq_fyndiq')->__('Region `%s` for `%s` could not be found'),
+                            Mage::helper('fyndiq_fyndiq')->__('Region "%s" for "%s" could not be found'),
                             $regionCode,
                             $fyndiqOrder->delivery_country
                         ));
@@ -119,7 +119,7 @@ class Fyndiq_Fyndiq_Model_Order
                     break;
                 default:
                     throw new Exception(sprintf(
-                        Mage::helper('fyndiq_fyndiq')->__('A region is required when creating an order for `%s`'),
+                        Mage::helper('fyndiq_fyndiq')->__('A region is required when creating an order for "%s"'),
                         $fyndiqOrder->delivery_country_code
                     ));
             }
@@ -184,7 +184,7 @@ class Fyndiq_Fyndiq_Model_Order
             if (!$id) {
                 throw new Exception(
                     sprintf(
-                        Mage::helper('fyndiq_fyndiq')->__('Product with SKU `%s` from order %d can not be found'),
+                        Mage::helper('fyndiq_fyndiq')->__('Product with SKU "%s" from order %d can not be found'),
                         $sku,
                         $fyndiqOrder->id
                     )

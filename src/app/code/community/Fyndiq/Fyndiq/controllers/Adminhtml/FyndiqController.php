@@ -15,7 +15,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
     protected function _isAllowed()
     {
         $section = 'system/fyndiq';
-        switch($this->getRequest()->getActionName()) {
+        switch ($this->getRequest()->getActionName()) {
             // orders
             case 'importFyndiqOrders':
             case 'getDeliveryNote':
@@ -86,7 +86,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                             if ($this->configModel->get('fyndiq/fyndiq_group/import_orders_disabled', $storeId) == Fyndiq_Fyndiq_Model_Order::ORDERS_DISABLED) {
                                 $this->_getSession()->addError(
                                     sprintf(
-                                        Mage::helper('fyndiq_fyndiq')->__('Orders could not be imported. Order Import from Fyndiq is disabled for store `%s`'),
+                                        Mage::helper('fyndiq_fyndiq')->__('Orders could not be imported. Order Import from Fyndiq is disabled for store "%s"'),
                                         $store->getName()
                                     )
                                 );
@@ -95,7 +95,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                             $this->importOrdersForStore($storeId, time());
                             $this->_getSession()->addSuccess(
                                 sprintf(
-                                    Mage::helper('fyndiq_fyndiq')->__('Fyndiq Orders were imported for Store `%s`'),
+                                    Mage::helper('fyndiq_fyndiq')->__('Fyndiq Orders were imported for Store "%s"'),
                                     $store->getName()
                                 )
                             );
@@ -222,7 +222,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
             $text = Mage::helper('fyndiq_fyndiq')->__('None of the selected products could be exported');
         } elseif ($productsToExport > $productsExported) {
             $text = sprintf(
-                Mage::helper('fyndiq_fyndiq')->__('%d products were exported to Fyndiq. %d products could not be exported'),
+                Mage::helper('fyndiq_fyndiq')->__('%d products were exported to Fyndiq. %d products could not be exported.'),
                 $productsExported,
                 $productsToExport - $productsExported
             );
@@ -268,7 +268,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
             0;
         if ($productsToExport == $productsExported) {
             return $this->_getSession()->addSuccess(
-                Mage::helper('fyndiq_fyndiq')->__('The selected products are being exported to Fyndiq.')
+                Mage::helper('fyndiq_fyndiq')->__('The selected products are being exported to Fyndiq')
             );
         }
         return $this->detailedReport($productsExported, $productsToExport, $productsExportedReport);
@@ -321,7 +321,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
 
                     unset($product);
                 }
-                $this->_getSession()->addSuccess(Mage::helper('fyndiq_fyndiq')->__('The selected products are scheduled to be removed from Fyndiq.'));
+                $this->_getSession()->addSuccess(Mage::helper('fyndiq_fyndiq')->__('The selected products are scheduled to be removed from Fyndiq'));
             }
         } catch (Exception $e) {
             $this->_getSession()->addError(
@@ -372,6 +372,12 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                             );
                         }
                         $ret = Mage::helper('fyndiq_fyndiq/connect')->callApi($this->configModel, $storeId, 'POST', 'orders/marked/', $data);
+                        if ($ret['status'] == 200) {
+                            $message = $handled ?
+                                Mage::helper('fyndiq_fyndiq')->__('Orders marked as "handled" on Fyndiq') :
+                                Mage::helper('fyndiq_fyndiq')->__('Orders marked as "not handled" on Fyndiq');
+                            $this->_getSession()->addSuccess($message);
+                        }
                 } catch (Exception $e) {
                     $this->_getSession()->addError(
                         Mage::helper('fyndiq_fyndiq')->
@@ -417,7 +423,8 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         );
     }
 
-    public function reinstallAction(){
+    public function reinstallAction()
+    {
         $moduleName = 'fyndiqmodule_setup';
         $sql = 'DELETE FROM core_resource WHERE code = "' . $moduleName . '";';
         $connection = Mage::getSingleton('core/resource')->getConnection('core_write');
@@ -428,7 +435,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                 Mage::helper('fyndiq_fyndiq')->__('Module reinstalled successfully.')
             );
         } catch (Exception $e) {
-           $this->_getSession()->addError($e->getMessage());
+            $this->_getSession()->addError($e->getMessage());
         }
         $this->_redirectReferer();
     }
