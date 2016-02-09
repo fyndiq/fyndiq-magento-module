@@ -174,7 +174,6 @@
                         </description>
                         <ean translate="label comment" module="fyndiq_fyndiq">
                             <label>EAN</label>
-                            <comment><![CDATA[EAN]]></comment>
                             <frontend_type>select</frontend_type>
                             <source_model>fyndiq/system_config_source_dropdown_attribute</source_model>
                             <sort_order>12</sort_order>
@@ -184,7 +183,6 @@
                         </ean>
                         <isbn translate="label comment" module="fyndiq_fyndiq">
                             <label>ISBN</label>
-                            <comment><![CDATA[ISBN]]></comment>
                             <frontend_type>select</frontend_type>
                             <source_model>fyndiq/system_config_source_dropdown_attribute</source_model>
                             <sort_order>13</sort_order>
@@ -194,7 +192,6 @@
                         </isbn>
                         <mpn translate="label comment" module="fyndiq_fyndiq">
                             <label>MPN</label>
-                            <comment><![CDATA[MPN]]></comment>
                             <frontend_type>select</frontend_type>
                             <source_model>fyndiq/system_config_source_dropdown_attribute</source_model>
                             <sort_order>14</sort_order>
@@ -204,7 +201,6 @@
                         </mpn>
                         <brand translate="label comment" module="fyndiq_fyndiq">
                             <label>Brand</label>
-                            <comment><![CDATA[Brand]]></comment>
                             <frontend_type>select</frontend_type>
                             <source_model>fyndiq/system_config_source_dropdown_attribute</source_model>
                             <sort_order>15</sort_order>
