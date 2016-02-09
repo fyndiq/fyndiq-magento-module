@@ -106,4 +106,7 @@ $lang = array(
     '%d are neither simple nor configurable products' => '%d are neither simple nor configurable products',
     'Orders' => 'Orders',
     'Enable Compatibility Mode' => 'Enable Compatibility Mode',
+    'Reinstall module' => 'Reinstall module',
+    'Module reinstalled successfully.' => 'Module reinstalled successfully.',
+    'Reinstall' => 'Reinstall',
 );
