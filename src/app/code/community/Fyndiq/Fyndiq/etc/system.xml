@@ -53,7 +53,7 @@
                             <show_in_store>1</show_in_store>
                         </username>
                         <apikey translate="label comment" module="fyndiq_fyndiq">
-                            <label>API token</label>
+                            <label>API Token</label>
                             <comment><![CDATA[Please generate an API Version 2 Token on your Fyndiq Merchant Account and add it to this field.]]></comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>2</sort_order>
@@ -63,7 +63,7 @@
                         </apikey>
 
                         <price_group  translate="label comment" module="fyndiq_fyndiq">
-                            <label>Price for selected Customer Group</label>
+                            <label>Customer Group</label>
                             <comment><![CDATA[The Customer Group used for prices on Fyndiq]]></comment>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_customer_group</source_model>
@@ -74,7 +74,7 @@
                         </price_group>
                         <price_percentage  translate="label comment" module="fyndiq_fyndiq">
                             <label>Global percentage discount</label>
-                            <comment><![CDATA[If larger than 0, all prices sent to Fyndiq will be reduced by the percentage entered in this field.]]></comment>
+                            <comment><![CDATA[If larger than 0, all prices sent to Fyndiq will be reduced by the percentage entered in this field]]></comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>4</sort_order>
                             <show_in_default>1</show_in_default>
@@ -82,8 +82,8 @@
                             <show_in_store>1</show_in_store>
                         </price_percentage>
                         <price_absolute  translate="label comment" module="fyndiq_fyndiq">
-                            <label>Absolute price discount</label>
-                            <comment><![CDATA[If larger than 0, all prices sent to Fyndiq will be reduced by the amount entered in this field.]]></comment>
+                            <label>Global absolute discount</label>
+                            <comment><![CDATA[If larger than 0, all prices sent to Fyndiq will be reduced by the amount entered in this field]]></comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>5</sort_order>
                             <show_in_default>1</show_in_default>
@@ -92,7 +92,7 @@
                         </price_absolute>
                         <stockmin translate="label comment" module="fyndiq_fyndiq">
                             <label>Minimum Stock Quantity</label>
-                            <comment><![CDATA[The number to be deducted from Magento Stock Values when products are exported to Fyndiq. If set to 10, the current quantity for each exported product minus 10 will be sent. If the quantity minus 10 is 0 or lower, a quantity of 0 will be sent to Fyndiq.]]></comment>
+                            <comment><![CDATA[The number to be deducted from the Magento Stock Quantity when products are exported to Fyndiq. If set to 10, the current quantity for each exported product minus 10 will be sent. If the quantity minus 10 is 0 or lower, a quantity of 0 will be sent to Fyndiq.]]></comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>6</sort_order>
                             <show_in_default>1</show_in_default>
@@ -121,7 +121,7 @@
                             <show_in_store>1</show_in_store>
                         </fyndiq_shipment_method>
                         <fyndiq_payment_method translate="label comment" module="fyndiq_fyndiq">
-                            <label>Payment method</label>
+                            <label>Payment Method</label>
                             <comment><![CDATA[The Payment Method used when Fyndiq Orders are imported]]></comment>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_payment_allowedmethods</source_model>
@@ -402,7 +402,7 @@
                             <show_in_store>1</show_in_store>
                         </manual_import>
                         <manual_import translate="label comment" module="fyndiq_fyndiq">
-                            <label>Reinstall module</label>
+                            <label>Reinstall extension</label>
                             <frontend_type>button</frontend_type>
                             <frontend_model>Fyndiq_Fyndiq_Block_Reinstall</frontend_model>
                             <sort_order>22</sort_order>

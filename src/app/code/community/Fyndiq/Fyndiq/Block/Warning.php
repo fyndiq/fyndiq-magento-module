@@ -17,7 +17,7 @@ class Fyndiq_Fyndiq_Block_Warning extends Mage_Adminhtml_Block_System_Config_For
         }
 
         $label = sprintf(
-            Mage::helper('fyndiq_fyndiq')->__('Please note that you are working on settings for the `%s` scope. Please check the selection in the top left corner of this screen and make sure you are setting up the Fyndiq Magento Extension for the correct scope depending on your requirements. Read the User Guide for more information.'),
+            Mage::helper('fyndiq_fyndiq')->__('Please note that you are working on settings for the "%s" configuration scope. Please check the selection in the top left corner of this screen and make sure you are setting up the Fyndiq Magento Extension for the correct scope depending on your requirements. Read the User Guide for more information.'),
             $currentScope
         );
         $html = '<div>'.$label.'</div>';

@@ -17,14 +17,14 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Order_Grid extends Mage_Adminhtml_Blo
         $this->getMassactionBlock()->addItem(
             'handle_orders',
             array(
-                'label'=> Mage::helper('fyndiq_fyndiq')->__('Mark as handled on Fyndiq'),
+                'label'=> Mage::helper('fyndiq_fyndiq')->__('Mark as "handled" on Fyndiq'),
                 'url'  => $this->getUrl('adminhtml/fyndiq/handledFyndiqOrders')
             )
         );
         $this->getMassactionBlock()->addItem(
             'unhandle_orders',
             array(
-                'label'=> Mage::helper('fyndiq_fyndiq')->__('Mark as not handled on Fyndiq'),
+                'label'=> Mage::helper('fyndiq_fyndiq')->__('Mark as "not handled" on Fyndiq'),
                 'url'  => $this->getUrl('adminhtml/fyndiq/unhandledFyndiqOrders')
             )
         );
