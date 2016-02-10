@@ -31,7 +31,7 @@ $installer2->addAttribute(
         'source'        => 'eav/entity_attribute_source_boolean',
         'filterable_in_search' => true,
         'sort_order'    => 3, // Place last in fyndiq tab
-        'default'       => '0',
+        'default'       => 0,
         'used_in_product_listing' => true,
     )
 );

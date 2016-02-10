@@ -432,7 +432,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
             $connection->query($sql);
             Mage::app()->getCacheInstance()->flush();
             $this->_getSession()->addSuccess(
-                Mage::helper('fyndiq_fyndiq')->__('Module reinstalled successfully.')
+                Mage::helper('fyndiq_fyndiq')->__('Extension reinstalled successfully')
             );
         } catch (Exception $e) {
             $this->_getSession()->addError($e->getMessage());
