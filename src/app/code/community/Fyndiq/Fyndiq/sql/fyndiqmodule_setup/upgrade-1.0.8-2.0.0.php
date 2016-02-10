@@ -32,7 +32,7 @@ $installer2->addAttribute(
         'filterable_in_search' => true,
         'sort_order'    => 3, // Place last in fyndiq tab
         'default'       => '0',
-        'visible_on_front' => true,
+        'used_in_product_listing' => true,
     )
 );
 
