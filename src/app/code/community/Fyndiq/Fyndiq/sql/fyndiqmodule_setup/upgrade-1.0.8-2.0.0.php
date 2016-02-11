@@ -31,7 +31,7 @@ $installer2->addAttribute(
         'source'        => 'eav/entity_attribute_source_boolean',
         'filterable_in_search' => true,
         'sort_order'    => 3, // Place last in fyndiq tab
-        'default'       => '0',
+        'default'       => 0,
         'used_in_product_listing' => true,
     )
 );
@@ -117,7 +117,7 @@ $installer2->endSetup();
 // Add fyndiq_order_id
 Mage::app()->setCurrentStore(Mage::getModel('core/store')->load(Mage_Core_Model_App::ADMIN_STORE_ID));
 
-$installerOrder = new Mage_Sales_Model_Mysql4_Setup('sales_setup');
+$installerOrder = new Mage_Sales_Model_Resource_Setup('sales_setup');
 $installerOrder->startSetup();
 $installerOrder->addAttribute(
     Mage_Sales_Model_Order::ENTITY,
