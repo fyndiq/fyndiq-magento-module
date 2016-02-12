@@ -85,13 +85,23 @@ class Fyndiq_Fyndiq_Model_Observer
             try {
                 return Mage::helper('fyndiq_fyndiq/connect')->callApi($this->configModel, $storeId, 'PATCH', 'settings/', $data);
             } catch (Exception $e) {
-                throw new Exception(
-                    sprintf(
+                $message = sprintf(
+                    Mage::helper('fyndiq_fyndiq')->__('The configuration could not be sent to Fyndiq (%s)'),
+                    $e->getMessage()
+                );
+                if ($e instanceof FyndiqAPIUnsupportedStatus) {
+                    $message = sprintf(
                         Mage::helper('fyndiq_fyndiq')->
                             __('The configuration could not be sent to Fyndiq. Your firewall might be blocking the access to https://api.fyndiq.com (%s)'),
                         $e->getMessage()
-                    )
-                );
+                    );
+                }
+                if ($e instanceof FyndiqAPIAuthorizationFailed) {
+                    $message = sprintf(
+                        Mage::helper('fyndiq_fyndiq')->__('Incorrect Username or API Token')
+                    );
+                }
+                throw new Exception($message);
             }
         }
         throw new Exception(Mage::helper('fyndiq_fyndiq')->__('Please enter your Fyndiq Username and API Token'));
