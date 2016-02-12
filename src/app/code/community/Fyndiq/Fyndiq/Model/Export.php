@@ -88,13 +88,16 @@ class Fyndiq_Fyndiq_Model_Export
 
         $this->productMediaConfig = Mage::getModel('catalog/product_media_config');
 
-        $products = Mage::getModel('catalog/product')
-            ->getCollection()
-            ->addStoreFilter($storeId)
-            ->addAttributeToFilter(
-                'fyndiq_exported',
-                array('eq' => self::VALUE_YES)
-            );
+        $products = Mage::getModel('catalog/product')->getCollection();
+
+        if ($storeId != Mage_Core_Model_App::ADMIN_STORE_ID) {
+            $products->setStoreId($storeId);
+        }
+
+        $products->addAttributeToFilter(
+            'fyndiq_exported',
+            array('eq' => self::VALUE_YES)
+        );
 
         $productIds = $products->getAllIds();
         FyndiqUtils::debug('$productIds', $productIds);
