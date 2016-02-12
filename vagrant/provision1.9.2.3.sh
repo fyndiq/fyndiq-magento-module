@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MAGE_VERSION="1.9.2.2"
+MAGE_VERSION="1.9.2.3"
 DATA_VERSION="1.9.1.0"
 
 apt-get update
