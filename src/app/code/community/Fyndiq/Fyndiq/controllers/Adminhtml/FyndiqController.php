@@ -201,7 +201,8 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
             if ($product) {
                 $exportableStatus = Mage::helper('fyndiq_fyndiq/export')->isExportableStatus($product);
                 if ($exportableStatus == Fyndiq_Fyndiq_Helper_Export::IS_EXPORTABLE) {
-                    $product->setData('fyndiq_exported', Fyndiq_Fyndiq_Model_Export::VALUE_YES)
+                    $product->setStoreId($storeId)
+                        ->setData('fyndiq_exported', Fyndiq_Fyndiq_Model_Export::VALUE_YES)
                         ->getResource()
                         ->saveAttribute($product, 'fyndiq_exported');
                 }
@@ -310,15 +311,12 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
             if ($productPost) {
                 $productsId = $productPost['product'];
                 $productModel = Mage::getModel('catalog/product');
-
                 foreach ($productsId as $productid) {
-                    $product = $productModel
-                        ->setCurrentStore($storeId)
-                        ->load($productid);
-                    $product->setData('fyndiq_exported', Fyndiq_Fyndiq_Model_Export::VALUE_NO)
+                    $product = $productModel->load($productid);
+                    $product->setStoreId($storeId)
+                        ->setData('fyndiq_exported', Fyndiq_Fyndiq_Model_Export::VALUE_NO)
                         ->getResource()
                         ->saveAttribute($product, 'fyndiq_exported');
-
                     unset($product);
                 }
                 $this->_getSession()->addSuccess(Mage::helper('fyndiq_fyndiq')->__('The selected products are scheduled to be removed from Fyndiq'));
