@@ -150,12 +150,7 @@ class Fyndiq_Fyndiq_Model_Export
                     // Configurable product
                     $articles = array();
                     $simpleCollection = $this->getConfigurableProductsCollection($magProduct, $storeId);
-                    $product = $this->getProduct(
-                        $store,
-                        $magProduct,
-                        $productId,
-                        $config
-                    );
+                    $product = $this->getProduct($store, $magProduct, $productId, $config);
                     $index = 1;
                     foreach ($simpleCollection as $simpleProduct) {
                         if ($simpleProduct->getStockItem()->getMinSaleQty() > 1) {
@@ -505,8 +500,7 @@ class Fyndiq_Fyndiq_Model_Export
             ->addAttributeToSelect('*')
             ->addFilterByRequiredOptions();
         if ($storeId) {
-            $confModel->setStoreId($storeId)
-            ->addStoreFilter($storeId);
+            $confModel->setStoreId($storeId);
         }
         return  $confModel->load();
     }
