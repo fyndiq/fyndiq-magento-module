@@ -106,5 +106,8 @@ $lang = array(
     'Orders' => 'Bestellungen',
     'Reinstall extension' => 'Extension neu installieren',
     'Extension reinstalled successfully' => 'Extension erfolgreich neu installiert',
-    'Reinstall' => 'Neu installieren'
+    'Reinstall' => 'Neu installieren',
+    'The configuration could not be sent to Fyndiq (%s)' => 'The configuration could not be sent to Fyndiq (%s)',
+    'Incorrect Username or API Token' => 'Incorrect Username or API Token',
+
 );
