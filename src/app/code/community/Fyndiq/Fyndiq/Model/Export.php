@@ -84,6 +84,10 @@ class Fyndiq_Fyndiq_Model_Export
     {
         FyndiqUtils::debug('exportProducts');
 
+        if ($storeId) {
+            Mage::app()->setCurrentStore($storeId);
+        }
+
         $store = Mage::getModel('core/store')->load($storeId);
 
         $this->productMediaConfig = Mage::getModel('catalog/product_media_config');
