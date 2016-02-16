@@ -47,9 +47,10 @@ class Fyndiq_Fyndiq_Model_Export
         }
         $feedWriter = new FyndiqCSVFeedWriter($file);
 
-        // TODO: Consider that
-        // FyndiqUtils::debug('Setting current store to ', $storeId);
-        // Mage::app()->setCurrentStore($storeId);
+        if ($storeId) {
+            FyndiqUtils::debug('Setting current store to ', $storeId);
+            Mage::app()->setCurrentStore($storeId);
+        }
 
         $exportResult = $this->exportProducts($storeId, $feedWriter);
         FyndiqUtils::debug('Closing file');
