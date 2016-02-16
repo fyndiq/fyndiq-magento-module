@@ -87,7 +87,7 @@ $lang = array(
     'Download the latest version of the Fyndiq Magento Extension. For details, please check the Change History on the download page at %s' => 'Ladda ner senaste versionen av Fyndiq Magento Extension. För detaljer, vänligen läs Ändringshistoriken på nedladdningssidan %s',
     'Warnings' => 'Varningar',
     'Configuration Scope' => 'Omfång för nuvarande konfiguration',
-    'Please note that you are working on settings for the "%s" configuration scope. Please check the selection in the top left corner of this screen and make sure you are setting up the Fyndiq Magento Extension for the correct scope depending on your requirements. Read the User Guide for more information.' => 'Vänligen kom ihåg att du jobbar med inställningar för omfång "%s" för konfiguration. Kolla igenom valet längst upp till vänster på den här sidan och var säker på att du att satt upp Fyndiq Magento Extension till rätt omfång beroende på dina krav. Läs igenom användarguiden för mer information.',
+    'Please note that you are working on settings for the "%s" configuration scope. Please check the selection in the top left corner of this screen and make sure you are setting up the Fyndiq Magento Extension for the correct scope depending on your requirements. Read the User Guide for more information.' => 'Vänligen kom ihåg att du jobbar med inställningar för omfång "%s" för konfiguration. Kolla igenom valet längst upp till vänster på den här sidan och var säker på att du satt upp Fyndiq Magento Extension till rätt omfång beroende på dina krav. Läs igenom användarguiden för mer information.',
     'Bring' => 'Bring',
     '%d minutes' => '%d minuter',
     'API Token' => 'API Token',
@@ -106,5 +106,8 @@ $lang = array(
     'Orders' => 'Beställning',
     'Reinstall extension' => 'Ominstallera Extension',
     'Extension reinstalled successfully' => 'Extension ominstallerade utan problem',
-    'Reinstall' => 'Ominstallera'
+    'Reinstall' => 'Ominstallera',
+    'The configuration could not be sent to Fyndiq (%s)' => 'The configuration could not be sent to Fyndiq (%s)',
+    'Incorrect Username or API Token' => 'Incorrect Username or API Token',
+
 );
