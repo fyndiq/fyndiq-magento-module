@@ -147,4 +147,18 @@ class Fyndiq_Fyndiq_Model_Observer
             }
         }
     }
+
+    public function handleCategoryEditForm(Varien_Event_Observer $observer)
+    {
+        $form   = $observer->getEvent()->getForm();
+        error_log(get_class($form));
+        // $attributes = Mage::getConfig()
+        //     ->getNode(self::XML_PATH_CATEGORY_ATTRIBUTES);
+        // if ($attributes) {
+        //     $fields = array_keys($attributes->asArray());
+        //     $this->_setMediaChooserFieldRenderer($form, $fields);
+        // }
+        return $this;
+    }
+
 }
