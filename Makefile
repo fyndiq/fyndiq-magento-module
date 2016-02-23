@@ -41,6 +41,14 @@ dev:
 	ln -sf $(SRC_DIR)/app/etc/modules/Fyndiq_Fyndiq.xml $(MAGENTO_ROOT)/app/etc/modules/Fyndiq_Fyndiq.xml
 	ln -sf $(SRC_DIR)/app/design/adminhtml/default/default/layout/Fyndiq_Fyndiq.xml $(MAGENTO_ROOT)/app/design/adminhtml/default/default/layout/Fyndiq_Fyndiq.xml
 
+uninstall:
+	#cp -svr --remove-destination $(SRC_DIR)/* $(MAGENTO_ROOT)/
+	rm $(MAGENTO_ROOT)/app/code/community/Fyndiq
+	rm $(MAGENTO_ROOT)/js/Fyndiq
+	rm $(MAGENTO_ROOT)/app/etc/modules/Fyndiq_Fyndiq.xml
+	rm $(MAGENTO_ROOT)/app/design/adminhtml/default/default/layout/Fyndiq_Fyndiq.xml
+
+
 css:
 	cd $(SRC_DIR)/fyndiq/frontend/css; scss -C --sourcemap=none main.scss:main.css
 
