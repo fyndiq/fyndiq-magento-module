@@ -3,11 +3,19 @@
 MAGE_VERSION="1.8.1.0"
 DATA_VERSION="1.6.1.0"
 
+##We're not doing any installs interactively
+export DEBIAN_FRONTEND=noninteractive
+
 apt-get update
-apt-get install -y build-essential vim-nox git
+apt-get install -y git
+apt-get install -y curl
+apt-get install -y build-essential vim-nox
 apt-get install -y unzip
 
 ## Setup locales
+export LANGUAGE=en_GB.UTF-8
+export LANG=en_GB.UTF-8
+export LC_ALL=en_GB.UTF-8
 locale-gen en_GB.UTF-8
 dpkg-reconfigure locales
 
@@ -17,11 +25,13 @@ echo "mysql-server-5.5 mysql-server/root_password_again password 123" | sudo deb
 apt-get install -y mysql-server
 apt-get install -y apache2 php5 php5-mysql php5-gd php5-mcrypt php5-curl
 
-apt-get remove -y puppet chef
+echo 'ServerName localhost' >> /etc/apache2/apache2.conf
 
 php5enmod mcrypt
 
-# Install scss
+apt-get remove -y puppet chef
+
+## Install SCSS
 sudo gem install sass
 
 ###########################################################
@@ -61,6 +71,10 @@ if [[ ! -f "/var/www/html/magento/index.php" ]]; then
     cp -R magento-sample-data-${DATA_VERSION}/* magento
 
     ## Setup virtual host
+    echo 'xdebug.remote_enable=on
+    xdebug.remote_connect_back=on
+    xdebug.idekey="PHPSTORM"
+    xdebug.extended_info=1' >> /etc/php5/mods-available/xdebug.ini
     ln -s /vagrant/assets/001-magento.conf /etc/apache2/sites-enabled/001-magento.conf
     a2enmod rewrite
     service apache2 restart
