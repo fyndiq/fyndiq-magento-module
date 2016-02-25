@@ -34,8 +34,6 @@ php5enmod mcrypt
 
 apt-get remove -y puppet chef
 
-## Install SCSS
-sudo gem install sass
 
 ###########################################################
 # COMPOSER
