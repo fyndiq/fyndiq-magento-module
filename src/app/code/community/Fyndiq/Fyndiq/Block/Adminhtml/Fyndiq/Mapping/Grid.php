@@ -5,7 +5,6 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Grid extends Mage_Adminhtml_B
 
     public function __construct()
     {
-        error_log('WERKS');
         parent::__construct();
         $this->setId('mappingGrid');
         $this->setDefaultSort('id');
@@ -16,7 +15,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Grid extends Mage_Adminhtml_B
     protected function _prepareCollection()
     {
         $collection = Mage::getModel('catalog/category')->getCollection();
-        $collection->addAttributeToSelect('*');
+        $collection->addAttributeToSelect(array('name'));
         $this->setCollection($collection);
         return parent::_prepareCollection();
     }
@@ -30,7 +29,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Grid extends Mage_Adminhtml_B
           'index'     => 'entity_id',
         ));
         $this->addColumn('parent_id', array(
-          'header'    => Mage::helper('fyndiq_fyndiq')->__('ID'),
+          'header'    => Mage::helper('fyndiq_fyndiq')->__('Parent ID'),
           'align'     =>'right',
           'width'     => '10px',
           'index'     => 'parent_id',
@@ -40,12 +39,11 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Grid extends Mage_Adminhtml_B
           'header'    => Mage::helper('fyndiq_fyndiq')->__('Name'),
           'align'     =>'left',
           'index'     => 'name',
-          'width'     => '50px',
         ));
-        $this->addColumn('association', array(
+        $this->addColumn('fyndiq_category_id', array(
           'header'    => Mage::helper('fyndiq_fyndiq')->__('Fyndiq Category'),
           'align'     =>'left',
-          'width'     => '50px',
+          'width'     => '350px',
         ));
         return parent::_prepareColumns();
     }
