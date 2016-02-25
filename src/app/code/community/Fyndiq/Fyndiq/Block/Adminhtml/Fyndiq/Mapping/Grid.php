@@ -1,68 +1,56 @@
 <?php
 
-class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Grid extends Mage_Adminhtml_Block_Catalog_Product_Grid
+class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Grid extends Mage_Adminhtml_Block_Widget_Grid
 {
 
-    public function setCollection($collection)
+    public function __construct()
     {
-        $storeId = $this->getStoreId();
-        /* @var $collection Mage_Catalog_Model_Resource_Product_Collection */
-        $collection->addStoreFilter($storeId);
-        if (!isset($this->_joinAttributes['fyndiq_exported'])) {
-            $collection->joinAttribute(
-                'fyndiq_exported',
-                'catalog_product/fyndiq_exported',
-                'entity_id',
-                null,
-                'left',
-                $storeId
-            );
-        } else {
-            $collection->addAttributeToSelect('fyndiq_exported');
-        }
-        parent::setCollection($collection);
+        error_log('WERKS');
+        parent::__construct();
+        $this->setId('mappingGrid');
+        $this->setDefaultSort('id');
+        $this->setDefaultDir('ASC');
+        $this->setSaveParametersInSession(true);
+    }
+
+    protected function _prepareCollection()
+    {
+        $collection = Mage::getModel('catalog/category')->getCollection();
+        $collection->addAttributeToSelect('*');
+        $this->setCollection($collection);
+        return parent::_prepareCollection();
     }
 
     protected function _prepareColumns()
     {
-        $this->addColumnAfter(
-            'fyndiq_status',
-            array(
-                'header'=> Mage::helper('fyndiq_fyndiq')->__('Fyndiq'),
-                'type' => 'options',
-                'index' => 'fyndiq_exported',
-                'sortable' => true,
-                'align'   => 'right',
-                'width' => '80px',
-                'options' => array(
-                    Fyndiq_Fyndiq_Model_Export::VALUE_YES => Mage::helper('eav')->__('Yes'),
-                    Fyndiq_Fyndiq_Model_Export::VALUE_NO => Mage::helper('eav')->__('No'),
-                ),
-            ),
-            'status'
-        );
+        $this->addColumn('entity_id', array(
+          'header'    => Mage::helper('fyndiq_fyndiq')->__('ID'),
+          'align'     =>'right',
+          'width'     => '10px',
+          'index'     => 'entity_id',
+        ));
+        $this->addColumn('parent_id', array(
+          'header'    => Mage::helper('fyndiq_fyndiq')->__('ID'),
+          'align'     =>'right',
+          'width'     => '10px',
+          'index'     => 'parent_id',
+        ));
+
+        $this->addColumn('name', array(
+          'header'    => Mage::helper('fyndiq_fyndiq')->__('Name'),
+          'align'     =>'left',
+          'index'     => 'name',
+          'width'     => '50px',
+        ));
+        $this->addColumn('association', array(
+          'header'    => Mage::helper('fyndiq_fyndiq')->__('Fyndiq Category'),
+          'align'     =>'left',
+          'width'     => '50px',
+        ));
         return parent::_prepareColumns();
     }
 
-    protected function _prepareMassaction()
-    {
-        $result = parent::_prepareMassaction();
-
-        $this->getMassactionBlock()->addItem(
-            'export',
-            array(
-                'label'=> Mage::helper('fyndiq_fyndiq')->__('Export to Fyndiq'),
-                'url' => $this->getUrl('adminhtml/fyndiq/exportProducts', array('_current'=>true))
-            )
-        );
-
-        $this->getMassactionBlock()->addItem(
-            'remove',
-            array(
-                'label'=> Mage::helper('fyndiq_fyndiq')->__('Remove from Fyndiq'),
-                'url' => $this->getUrl('adminhtml/fyndiq/removeProducts', array('_current'=>true))
-            )
-        );
-        return $result;
+    public function getMultipleRows() {
+        return false;
     }
 }

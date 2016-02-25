@@ -1,4 +1,5 @@
 <?php
+
 class Fyndiq_Fyndiq_Adminhtml_FyndiqcategorygridController extends Mage_Adminhtml_Controller_Action
 {
 
