@@ -3,7 +3,10 @@
 MAGE_VERSION="1.7.0.2"
 DATA_VERSION="1.6.1.0"
 
-##We're not doing any installs interactively
+## Confirm what is being provisioned
+echo "Hello. Today, we're cooking with Magento version: " ${MAGE_VERSION} "and using data version: " ${DATA_VERSION}
+
+## We're not doing any installs interactively
 export DEBIAN_FRONTEND=noninteractive
 
 apt-get update

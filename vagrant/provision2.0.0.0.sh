@@ -4,7 +4,10 @@
 MAGE_TYPE="magento-with-samples"
 MAGE_VERSION="2.0.0"
 
-##We're not doing any installs interactively
+## Confirm what is being provisioned
+echo "Hello. Today, we're cooking with Magento version: " ${MAGE_VERSION} "and using data version: " ${DATA_VERSION}
+
+## We're not doing any installs interactively
 export DEBIAN_FRONTEND=noninteractive
 
 apt-get update
