@@ -13,8 +13,12 @@ $attributeData = array('fyndiq_exported' => 0);
 $storeId = Mage_Core_Model_App::ADMIN_STORE_ID;
 
 //Now Update the attribute for the given products.
-Mage::getSingleton('catalog/product_action')
-    ->updateAttributes($productIds, $attributeData, $storeId);
+try {
+    Mage::getSingleton('catalog/product_action')
+        ->updateAttributes($productIds, $attributeData, $storeId);
+} catch (Exception $e) {
+    Mage::log($e->getMessage(), Zend_Log::ERR);
+}
 
 // Migrate products
 $productTableName = Mage::getConfig()->getTablePrefix()."fyndiq_products";
@@ -34,10 +38,14 @@ if ($installer->tableExists($productTableName)) {
                 ->load($productRow['product_id']);
         }
         if ($product) {
-            $product->setStoreId($storeId)
-                ->setData('fyndiq_exported', 1)
-                ->getResource()
-                ->saveAttribute($product, 'fyndiq_exported');
+            try {
+                $product->setStoreId($storeId)
+                    ->setData('fyndiq_exported', 1)
+                    ->getResource()
+                    ->saveAttribute($product, 'fyndiq_exported');
+            } catch (Exception $e){
+                Mage::log($e->getMessage(), Zend_Log::ERR);
+            }
         }
     }
 }
@@ -55,8 +63,12 @@ if ($installer->tableExists($orderTableName)) {
     foreach ($orders as $orderRow) {
         $order = $orderModel->load($orderRow['order_id']);
         if ($order) {
-            $order->setData('fyndiq_order_id', $orderRow['fyndiq_orderid']);
-            $order->save();
+            try {
+                $order->setData('fyndiq_order_id', $orderRow['fyndiq_orderid']);
+                $order->save();
+            } catch (Exception $e) {
+                Mage::log($e->getMessage(), Zend_Log::ERR);
+            }
         }
     }
 }
