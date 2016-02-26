@@ -45,6 +45,25 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Grid extends Mage_Adminhtml_B
           'align'     =>'left',
           'width'     => '350px',
         ));
+        $this->addColumn('action', array(
+            'header'    => Mage::helper('catalog')->__('Action'),
+            'width'     => '50px',
+            'type'      => 'action',
+            'getter'    => 'getId',
+            'actions'   => array(
+                array(
+                    'caption' => Mage::helper('catalog')->__('Edit'),
+                    'url'     => array(
+                        'base'=>'*/*/edit',
+                        'params'=>array('store'=>$this->getRequest()->getParam('store'))
+                    ),
+                    'field'   => 'id'
+                )
+            ),
+            'filter'    => false,
+            'sortable'  => false,
+            'index'     => 'stores',
+        ));
         return parent::_prepareColumns();
     }
 

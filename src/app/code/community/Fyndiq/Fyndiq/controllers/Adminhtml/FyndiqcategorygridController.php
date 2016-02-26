@@ -24,4 +24,31 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqcategorygridController extends Mage_Adminhtm
             $this->getLayout()->createBlock('fyndiq_fyndiq/adminhtml_fyndiq_mapping_grid')->toHtml()
         );
     }
+
+    public function editAction()
+    {
+        $categoryId  = (int) $this->getRequest()->getParam('id');
+
+        $category = Mage::getModel('catalog/category')
+          ->setStoreId($this->getRequest()->getParam('store', 0))
+          ->load($categoryId);
+
+        $this->_title($category->getName());
+
+        // Instantiate the form container.
+        $mappingEditBlock = $this->getLayout()->createBlock(
+            'fyndiq_fyndiq/adminhtml_fyndiq_mapping_edit'
+        );
+
+        // Add the form container as the only item on this page.
+        $this->loadLayout()
+            ->_addContent($mappingEditBlock)
+            ->renderLayout();
+    }
+
+    public function saveAction()
+    {
+        error_log('SAVE ME');
+    }
+
 }
