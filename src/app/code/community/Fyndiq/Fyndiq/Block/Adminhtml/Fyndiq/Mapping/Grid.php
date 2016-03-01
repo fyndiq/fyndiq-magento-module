@@ -14,8 +14,16 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Grid extends Mage_Adminhtml_B
 
     protected function _prepareCollection()
     {
+        $columnName = 'name_se';
         $collection = Mage::getModel('catalog/category')->getCollection();
-        $collection->addAttributeToSelect(array('name'));
+        $collection->addAttributeToSelect('*');
+        // TODO: Fixme
+        // $collection->getSelect()->joinLeft(
+        //     array('fyndiq_category' => 'fyndiq_fyndiq_category'),
+        //     'fyndiq_category_id = fyndiq_category.id',
+        //     array($columnName)
+        // );
+        // error_log($collection->getSelect());
         $this->setCollection($collection);
         return parent::_prepareCollection();
     }
@@ -44,6 +52,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Grid extends Mage_Adminhtml_B
           'header'    => Mage::helper('fyndiq_fyndiq')->__('Fyndiq Category'),
           'align'     =>'left',
           'width'     => '350px',
+          'index'     => 'fyndiq_category_id',
         ));
         $this->addColumn('action', array(
             'header'    => Mage::helper('catalog')->__('Action'),

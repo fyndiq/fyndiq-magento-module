@@ -48,7 +48,20 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqcategorygridController extends Mage_Adminhtm
 
     public function saveAction()
     {
-        error_log('SAVE ME');
+
+        $categoryId  = (int)$this->getRequest()->getParam('id');
+        $storeId = (int)$this->getRequest()->getParam('store', 0);
+        $fyndiqCategoryId = (int)$this->getRequest()->getPost('fyndiq_category_id');
+
+        $categorySingleton = Mage::getSingleton('catalog/category');
+        $categorySingleton->setId($categoryId);
+        $categorySingleton->setFyndiqCategoryId($fyndiqCategoryId);
+        $categorySingleton->setStoreId($storeId);
+
+        Mage::getModel('catalog/category')->getResource()
+            ->saveAttribute($categorySingleton, 'fyndiq_category_id');
+
+        $this->_redirect('adminhtml/fyndiqcategorygrid/');
     }
 
 }

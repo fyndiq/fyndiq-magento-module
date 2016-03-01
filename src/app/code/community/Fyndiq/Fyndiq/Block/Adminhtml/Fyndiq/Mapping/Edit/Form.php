@@ -33,12 +33,37 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Edit_Form extends Mage_Adminh
             'value'     => 'Tumbalumba',
         ));
 
-        $fieldset->addField('fyndiq_category_id', 'text', array(
-            'label'     => $this->__('Fyndiq Category'),
-            'class'     => 'required-entry',
-            'required'  => true,
-            'name'      => 'fyndiq_category_id',
-        ));
+
+        // FIXME: Use proper model once you figure out how it is supposed to work
+        $langCode = Mage::app()->getLocale()->getLocaleCode();
+        $fieldName = $langCode == 'de' ? 'name_de' : 'name_se';
+
+        $resource = Mage::getSingleton('core/resource');
+        $tableName = $resource->getTableName('fyndiq/category');
+        $readConnection = $resource->getConnection('core_read');
+        $query = 'SELECT * FROM fyndiq_fyndiq_category';
+        $results = $readConnection->fetchAll($query);
+
+        $values = array();
+        foreach($results as $item){
+            $values[] = array(
+                'value' => $item['id'],
+                'label' => $item[$fieldName],
+            );
+        }
+
+        $fieldset->addField(
+            'fyndiq_category_id',
+            'select',
+            array(
+                'label'     => $this->__('Fyndiq Category'),
+                'class'     => 'required-entry',
+                'required'  => true,
+                'name'      => 'fyndiq_category_id',
+                'value'     => 2,
+                'values'    => $values,
+            )
+        );
 
         return $this;
     }

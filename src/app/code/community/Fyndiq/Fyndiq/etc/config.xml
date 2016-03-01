@@ -9,6 +9,7 @@
         <models>
             <fyndiq>
                 <class>Fyndiq_Fyndiq_Model</class>
+                <resourceModel>fyndiq_resource</resourceModel>
             </fyndiq>
             <observer>
                 <class>Fyndiq_Fyndiq_Model_Observer</class>
@@ -19,6 +20,14 @@
             <export>
                 <class>Fyndiq_Fyndiq_Model_Export</class>
             </export>
+            <fyndiq_resource>
+                <class>Fyndiq_Fyndiq_Model_Resource</class>
+                <entities>
+                    <category>
+                        <table>fyndiq_category</table>
+                    </category>
+                </entities>
+            </fyndiq_resource>
         </models>
         <resources>
             <fyndiqmodule_setup>
