@@ -1,6 +1,5 @@
 .idea
 .sass-cache
-*.csv
 main.css.map
 build/*
 build
