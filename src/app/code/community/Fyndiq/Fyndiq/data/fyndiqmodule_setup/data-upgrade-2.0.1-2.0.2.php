@@ -2,6 +2,7 @@
 
 $tableName = $this->getTable('fyndiq/category');
 $fileName = realpath(dirname(__FILE__)) . '/tree.csv';
+$tableColumns = array('id', 'name_se', 'name_de');
 
 // Populate the Fyndiq categories
 try {
@@ -15,7 +16,7 @@ try {
             $connection->insert(
                 $tableName,
                 array_combine(
-                    array('id', 'name_se', 'name_de'),
+                    $tableColumns,
                     $data
                 )
             );
