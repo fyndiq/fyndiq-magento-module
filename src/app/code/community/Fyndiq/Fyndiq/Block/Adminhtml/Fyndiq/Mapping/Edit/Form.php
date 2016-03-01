@@ -52,7 +52,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Edit_Form extends Mage_Adminh
             );
         }
 
-        $fieldset->addField(
+        $field = $fieldset->addField(
             'fyndiq_category_id',
             'select',
             array(
@@ -64,6 +64,10 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Edit_Form extends Mage_Adminh
                 'values'    => $values,
             )
         );
+
+        $field->setAfterElementHtml('<script>
+            console.log("IT WERKS")
+        </script>');
 
         return $this;
     }

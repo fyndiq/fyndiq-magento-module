@@ -19,51 +19,56 @@ $installer->addAttribute(Mage_Catalog_Model_Category::ENTITY, 'fyndiq_category_i
     'default'           => 0,
 ));
 
-// Add tree table
-$table = new Varien_Db_Ddl_Table();
+$tableName = $this->getTable('fyndiq/category');
 
-$table->setName($this->getTable('fyndiq/category'));
+if ($installer->getConnection()->isTableExists($tableName) != true) {
 
-$table->addColumn(
-    'id',
-    Varien_Db_Ddl_Table::TYPE_INTEGER,
-    10,
-    array(
-        'auto_increment' => false,
-        'unsigned' => true,
-        'nullable'=> false,
-        'primary' => true
-    )
-);
+    // Add tree table
+    $table = new Varien_Db_Ddl_Table();
 
-$table->addColumn(
-    'name_se',
-    Varien_Db_Ddl_Table::TYPE_VARCHAR,
-    255,
-    array(
-        'nullable' => false,
-    )
-);
+    $table->setName($tableName);
+
+    $table->addColumn(
+        'id',
+        Varien_Db_Ddl_Table::TYPE_INTEGER,
+        10,
+        array(
+            'auto_increment' => false,
+            'unsigned' => true,
+            'nullable'=> false,
+            'primary' => true
+        )
+    );
+
+    $table->addColumn(
+        'name_se',
+        Varien_Db_Ddl_Table::TYPE_VARCHAR,
+        255,
+        array(
+            'nullable' => false,
+        )
+    );
 
 
-$table->addColumn(
-    'name_de',
-    Varien_Db_Ddl_Table::TYPE_VARCHAR,
-    255,
-    array(
-        'nullable' => false,
-    )
-);
+    $table->addColumn(
+        'name_de',
+        Varien_Db_Ddl_Table::TYPE_VARCHAR,
+        255,
+        array(
+            'nullable' => false,
+        )
+    );
 
-/**
- * These two important lines are often missed.
- */
-$table->setOption('type', 'InnoDB');
-$table->setOption('charset', 'utf8');
+    /**
+     * These two important lines are often missed.
+     */
+    $table->setOption('type', 'InnoDB');
+    $table->setOption('charset', 'utf8');
 
-/**
- * Create the table!
- */
-$this->getConnection()->createTable($table);
+    /**
+     * Create the table!
+     */
+    $this->getConnection()->createTable($table);
+}
 
 $this->endSetup();

@@ -38,6 +38,7 @@ dev:
 	#cp -svr --remove-destination $(SRC_DIR)/* $(MAGENTO_ROOT)/
 	ln -s $(SRC_DIR)/app/code/community/Fyndiq $(MAGENTO_ROOT)/app/code/community/Fyndiq
 	ln -s $(SRC_DIR)/app/etc/modules/Fyndiq_Fyndiq.xml $(MAGENTO_ROOT)/app/etc/modules/Fyndiq_Fyndiq.xml
+	ln -sf $(SRC_DIR)/app/design/adminhtml/default/default/layout/Fyndiq_Fyndiq.xml $(MAGENTO_ROOT)/app/design/adminhtml/default/default/layout/Fyndiq_Fyndiq.xml
 
 css:
 	cd $(SRC_DIR)/fyndiq/frontend/css; scss -C --sourcemap=none main.scss:main.css

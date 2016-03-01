@@ -92,6 +92,15 @@
             </adminhtml>
         </routers>
     </admin>
+    <adminhtml>
+        <layout>
+            <updates>
+                <fyndiq_fyndiq>
+                    <file>Fyndiq_Fyndiq.xml</file>
+                </fyndiq_fyndiq>
+            </updates>
+        </layout>
+    </adminhtml>
     <frontend>
         <routers>
             <Fyndiq>
