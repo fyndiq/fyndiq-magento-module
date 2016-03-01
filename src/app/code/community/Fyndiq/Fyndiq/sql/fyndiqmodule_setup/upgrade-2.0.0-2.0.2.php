@@ -41,7 +41,7 @@ if ($installer->getConnection()->isTableExists($tableName) != true) {
     );
 
     $table->addColumn(
-        'name_se',
+        'name_sv',
         Varien_Db_Ddl_Table::TYPE_VARCHAR,
         255,
         array(
