@@ -424,7 +424,8 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
     public function reinstallAction()
     {
         $moduleName = 'fyndiqmodule_setup';
-        $sql = 'DELETE FROM core_resource WHERE code = "' . $moduleName . '";';
+        $tableName = Mage::getSingleton('core/resource')->getTableName('core/resource');
+        $sql = 'DELETE FROM ' . $tableName . ' WHERE code = "' . $moduleName . '";';
         $connection = Mage::getSingleton('core/resource')->getConnection('core_write');
         try {
             $connection->query($sql);
