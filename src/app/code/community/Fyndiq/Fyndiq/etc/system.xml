@@ -359,6 +359,12 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                         </last_version>
+                        <categories_check_time>
+                            <frontend_type>text</frontend_type>
+                            <show_in_default>0</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </categories_check_time>
                         <updated translate="label comment" module="fyndiq_fyndiq">
                             <label>Latest Feed Update</label>
                             <comment><![CDATA[Date and time of the latest Feed Generation]]></comment>
