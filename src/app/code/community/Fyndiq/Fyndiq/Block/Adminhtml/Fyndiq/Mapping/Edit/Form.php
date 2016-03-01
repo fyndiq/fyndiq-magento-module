@@ -36,7 +36,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Edit_Form extends Mage_Adminh
 
         // FIXME: Use proper model once you figure out how it is supposed to work
         $langCode = Mage::app()->getLocale()->getLocaleCode();
-        $fieldName = $langCode == 'de' ? 'name_de' : 'name_se';
+        $fieldName = substr($langCode, 0, 2) == 'de' ? 'name_de' : 'name_se';
 
         $resource = Mage::getSingleton('core/resource');
         $tableName = $resource->getTableName('fyndiq/category');
@@ -65,9 +65,23 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Edit_Form extends Mage_Adminh
             )
         );
 
-        $field->setAfterElementHtml('<script>
-            console.log("IT WERKS")
-        </script>');
+        $field->setAfterElementHtml("
+            <style>
+                .hor-scroll{
+                    height:500px
+                }
+                #fyndiq_category_id{
+                    width: 100%;
+                }
+            </style>
+            <script>
+            document.observe('dom:loaded', function(evt) {
+                var element = $$('#fyndiq_category_id');
+                if (element.length > 0) {
+                    new Chosen(element[0], {});
+                }
+            });
+        </script>");
 
         return $this;
     }
