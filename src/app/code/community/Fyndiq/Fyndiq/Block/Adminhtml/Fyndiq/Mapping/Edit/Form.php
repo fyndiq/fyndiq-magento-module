@@ -19,7 +19,6 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Edit_Form extends Mage_Adminh
         $form->setUseContainer(true);
         $this->setForm($form);
 
-        // Define a new fieldset. We need only one for our simple entity.
         $fieldset = $form->addFieldset(
             'general',
             array(
@@ -41,7 +40,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Edit_Form extends Mage_Adminh
         $resource = Mage::getSingleton('core/resource');
         $tableName = $resource->getTableName('fyndiq/category');
         $readConnection = $resource->getConnection('core_read');
-        $query = 'SELECT * FROM fyndiq_fyndiq_category';
+        $query = 'SELECT * FROM ' . $tableName;
         $results = $readConnection->fetchAll($query);
 
         $values = array();
