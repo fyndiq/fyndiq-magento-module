@@ -82,3 +82,7 @@ translations_push:
 
 translations_pull:
 	tx pull -a
+
+update_tree:
+	curl -s https://api.fyndiq.com/v2/categories/ -u ${FUSER}:${TOKEN} | php ${TOOLS_DIR}/tree2csv.php > ${SRC_DIR}/app/code/community/Fyndiq/Fyndiq/data/fyndiqmodule_setup/tree.csv
+	wc -l ${SRC_DIR}/app/code/community/Fyndiq/Fyndiq/data/fyndiqmodule_setup/tree.csv
