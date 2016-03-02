@@ -19,7 +19,6 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Edit_Form extends Mage_Adminh
         $form->setUseContainer(true);
         $this->setForm($form);
 
-        // Define a new fieldset. We need only one for our simple entity.
         $fieldset = $form->addFieldset(
             'general',
             array(
@@ -36,12 +35,12 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Edit_Form extends Mage_Adminh
 
         // FIXME: Use proper model once you figure out how it is supposed to work
         $langCode = Mage::app()->getLocale()->getLocaleCode();
-        $fieldName = substr($langCode, 0, 2) == 'de' ? 'name_de' : 'name_se';
+        $fieldName = substr($langCode, 0, 2) == 'de' ? 'name_de' : 'name_sv';
 
         $resource = Mage::getSingleton('core/resource');
         $tableName = $resource->getTableName('fyndiq/category');
         $readConnection = $resource->getConnection('core_read');
-        $query = 'SELECT * FROM fyndiq_fyndiq_category';
+        $query = 'SELECT * FROM ' . $tableName;
         $results = $readConnection->fetchAll($query);
 
         $values = array();
