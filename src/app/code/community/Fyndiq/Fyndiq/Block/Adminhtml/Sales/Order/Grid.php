@@ -60,9 +60,10 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Sales_Order_Grid extends Mage_Adminhtml_Bloc
     public function setCollection($collection)
     {
         if (!$this->isEnabled($this->getStoreId())) {
+            $tableName = Mage::getSingleton('core/resource')->getTableName('sales/order');
             $collection->getSelect()->columns(
                 array(
-                    'fyndiq_order_id' => '(SELECT fyndiq_order_id FROM sales_flat_order sfo WHERE sfo.entity_id = main_table.entity_id)'
+                    'fyndiq_order_id' => '(SELECT fyndiq_order_id FROM ' . $tableName . ' sfo WHERE sfo.entity_id = main_table.entity_id)'
                 )
             );
         }

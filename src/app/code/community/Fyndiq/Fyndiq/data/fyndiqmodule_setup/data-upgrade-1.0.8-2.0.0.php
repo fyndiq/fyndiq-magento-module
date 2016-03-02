@@ -43,7 +43,7 @@ if ($installer->tableExists($productTableName)) {
                     ->setData('fyndiq_exported', 1)
                     ->getResource()
                     ->saveAttribute($product, 'fyndiq_exported');
-            } catch (Exception $e){
+            } catch (Exception $e) {
                 Mage::log($e->getMessage(), Zend_Log::ERR);
             }
         }
