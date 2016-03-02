@@ -5,7 +5,7 @@ $installer->startSetup();
 
 $installer->removeAttribute(Mage_Catalog_Model_Category::ENTITY, 'fyndiq_category_id');
 
-$installer->addAttribute(Mage_Catalog_Model_Category::ENTITY, 'fyndiq_category_id',  array(
+$installer->addAttribute(Mage_Catalog_Model_Category::ENTITY, 'fyndiq_category_id', array(
     'group'             => 'Fyndiq',
     'type'              => 'int',
     'input'             => 'text',

@@ -8,7 +8,8 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Edit_Form extends Mage_Adminh
         // Instantiate a new form to display our brand for editing.
         $form = new Varien_Data_Form(array(
             'id' => 'edit_form',
-            'action' => $this->getUrl('*/*/save',
+            'action' => $this->getUrl(
+                '*/*/save',
                 array(
                     '_current' => true,
                     'continue' => 0,
@@ -45,7 +46,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Edit_Form extends Mage_Adminh
         $results = $readConnection->fetchAll($query);
 
         $values = array();
-        foreach($results as $item){
+        foreach ($results as $item) {
             $values[] = array(
                 'value' => $item['id'],
                 'label' => $item[$fieldName],

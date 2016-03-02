@@ -76,7 +76,8 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Grid extends Mage_Adminhtml_B
         return parent::_prepareColumns();
     }
 
-    public function getMultipleRows() {
+    public function getMultipleRows()
+    {
         return false;
     }
 }
