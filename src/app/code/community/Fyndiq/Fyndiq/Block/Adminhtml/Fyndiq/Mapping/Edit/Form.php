@@ -44,7 +44,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Edit_Form extends Mage_Adminh
         $values = array(
             array(
                 'value' => 0,
-                'label' => '',
+                'label' => Mage::helper('fyndiq_fyndiq')->__('none'),
             )
         );
         foreach ($categories as $item) {
