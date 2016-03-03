@@ -113,4 +113,6 @@ $lang = array(
     'Fyndiq Category Mapping' => 'Fyndiq Category Mapping',
     'Category Mapping' => 'Category Mapping',
     'Update Fyndiq Cateogories' => 'Update Fyndiq Cateogories',
+    'Latest Categories Update' => 'Latest Categories Update',
+    'Date and time of the latest Category update' => 'Date and time of the latest Category update',
 );
