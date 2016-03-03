@@ -24,7 +24,7 @@ class Fyndiq_Fyndiq_Model_Category
     protected function getStoreId()
     {
         // First check the global scope
-        if ($this->storeIsSetUp(0)) {
+        if ($this->storeIsSetUp(Mage_Core_Model_App::ADMIN_STORE_ID)) {
             return 0;
         }
         // Then loop through all stores to find the first set-up
