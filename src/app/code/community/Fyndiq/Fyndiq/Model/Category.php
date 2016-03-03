@@ -8,6 +8,7 @@ class Fyndiq_Fyndiq_Model_Category
     public function __construct()
     {
         $this->configModel = Mage::getModel('fyndiq/config');
+
     }
 
     public function update($storeId = self::NO_STORE)
@@ -15,7 +16,7 @@ class Fyndiq_Fyndiq_Model_Category
         if ($storeId == self::NO_STORE) {
             $storeId = $this->getStoreId();
         }
-        $categories = $this->getCategories($storeId);
+        $categories = $this->downloadCategories($storeId);
         if (is_object($categories)) {
             $this->updateCateories($categories);
         }
@@ -47,7 +48,7 @@ class Fyndiq_Fyndiq_Model_Category
         return (bool)$this->configModel->get('fyndiq/fyndiq_group/apikey', $storeId);
     }
 
-    protected function getCategories($storeId)
+    protected function downloadCategories($storeId)
     {
         try {
             $res = Mage::helper('fyndiq_fyndiq/connect')->callApi($this->configModel, $storeId, 'GET', 'categories/');
@@ -81,5 +82,14 @@ class Fyndiq_Fyndiq_Model_Category
             $connection->rollback();
             throw new Exception(Mage::helper('fyndiq_fyndiq')->__('Error updating the category tree') . '('. $e->getMessage() .')');
         }
+    }
+
+    public function getCategories()
+    {
+        $resource = Mage::getSingleton('core/resource');
+        $tableName = $resource->getTableName('fyndiq/category');
+        $readConnection = $resource->getConnection('core_read');
+        $query = 'SELECT * FROM ' . $tableName;
+        return $readConnection->fetchAll($query);
     }
 }
