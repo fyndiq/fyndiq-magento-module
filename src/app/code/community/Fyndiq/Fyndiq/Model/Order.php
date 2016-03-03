@@ -225,6 +225,11 @@ class Fyndiq_Fyndiq_Model_Order
         // Ignore shipping address validation
         $quote->getShippingAddress()->setShouldIgnoreValidation(true);
 
+        // Set baseToOrderRate
+        $baseToOrderRate = 1;
+        $quote->setBaseToQuoteRate($baseToOrderRate);
+        $quote->setStoreToQuoteRate($baseToOrderRate);
+
         // Add the address data to the shipping address
         $shippingAddress = $quote->getShippingAddress()->addData($shippingAddressArray);
 
