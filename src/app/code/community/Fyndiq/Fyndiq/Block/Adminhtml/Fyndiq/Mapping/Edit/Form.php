@@ -5,6 +5,10 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Edit_Form extends Mage_Adminh
 
     protected function _prepareForm()
     {
+
+
+        $categoryId  = (int)$this->getRequest()->getParam('id');
+
         // Instantiate a new form to display our brand for editing.
         $form = new Varien_Data_Form(array(
             'id' => 'edit_form',
@@ -30,9 +34,8 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Edit_Form extends Mage_Adminh
         $fieldset->addField('category_name', 'label', array(
             'label'     => $this->__('Category'),
             'name'      => 'category_name',
-            'value'     => 'Tumbalumba',
+            'value'     => Mage::getModel('fyndiq/export')->getCategoryName($categoryId),
         ));
-
 
         // FIXME: Use proper model once you figure out how it is supposed to work
         $langCode = Mage::app()->getLocale()->getLocaleCode();
