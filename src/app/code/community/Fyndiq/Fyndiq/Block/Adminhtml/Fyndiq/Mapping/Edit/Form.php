@@ -35,6 +35,15 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Edit_Form extends Mage_Adminh
             'value'     => Mage::getModel('fyndiq/export')->getCategoryName($categoryId),
         ));
 
+        $fyndiqCategoryId = 0;
+        if ($categoryId) {
+            $category = Mage::getModel('catalog/category')
+                ->setStoreId($this->getRequest()->getParam('store', 0))
+                ->load($categoryId);
+            $fyndiqCategoryId = (int)$category->getFyndiqCategoryId();
+        }
+
+
         // FIXME: Use proper model once you figure out how it is supposed to work
         $langCode = Mage::app()->getLocale()->getLocaleCode();
         $fieldName = substr($langCode, 0, 2) == 'de' ? 'name_de' : 'name_sv';
@@ -61,7 +70,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Edit_Form extends Mage_Adminh
                 'class'     => 'required-entry',
                 'required'  => true,
                 'name'      => 'fyndiq_category_id',
-                'value'     => 2,
+                'value'     => $fyndiqCategoryId,
                 'values'    => $values,
             )
         );
