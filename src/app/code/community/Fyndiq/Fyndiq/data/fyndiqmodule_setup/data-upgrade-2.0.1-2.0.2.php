@@ -2,6 +2,7 @@
 
 $tableName = $this->getTable('fyndiq/category');
 $fileName = realpath(dirname(__FILE__)) . '/tree.csv';
+
 $tableColumns = array('id', 'name_sv', 'name_de');
 
 // Populate the Fyndiq categories
@@ -11,17 +12,22 @@ try {
         $connection = Mage::getSingleton('core/resource')->getConnection('core_write');
         $connection->beginTransaction();
         //clear the table first
-        $connection->delete($tableName);
-        while (($data = fgetcsv($handle)) !== FALSE) {
-            $connection->insert(
-                $tableName,
-                array_combine(
-                    $tableColumns,
-                    $data
-                )
-            );
+        try {
+            $connection->delete($tableName);
+            while (($data = fgetcsv($handle)) !== false) {
+                $connection->insert(
+                    $tableName,
+                    array_combine(
+                        $tableColumns,
+                        $data
+                    )
+                );
+            }
+            $connection->commit();
+        } catch (Exception $e) {
+            $connection->rollback();
+            Mage::log($e->getMessage(), Zend_Log::ERR);
         }
-        $connection->commit();
         fclose($handle);
     }
 } catch (Exception $e) {

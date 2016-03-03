@@ -63,5 +63,4 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqcategorygridController extends Mage_Adminhtm
 
         $this->_redirect('adminhtml/fyndiqcategorygrid/');
     }
-
 }
