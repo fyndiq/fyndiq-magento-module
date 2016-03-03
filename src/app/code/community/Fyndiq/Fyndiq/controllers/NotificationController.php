@@ -6,6 +6,9 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 {
     const VERSION_CHECK_INTERVAL = 10800;
 
+    const CATEGORY_UPDATE_START_HOUR = 1;
+    const CATEGORY_UPDATE_END_HOUR = 5;
+
     private $fyndiqOutput = null;
     private $configModel = null;
 
@@ -98,13 +101,38 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
                 }
             }
         }
-        $this->checkModuleUpdate(0);
+        $this->checkModuleUpdate(Mage_Core_Model_App::ADMIN_STORE_ID);
+        $this->updateFyndiqCategories(Mage_Core_Model_App::ADMIN_STORE_ID);
         if ($cronEnabled) {
             return $this->getFyndiqOutput()->showError(405, 'Method not allowed', 'Feed is generated with cron job.');
         }
     }
 
-    public function downloadURL($url)
+    protected function updateFyndiqCategories($storeId)
+    {
+        $lastUpdate = $this->configModel->get('fyndiq/troubleshooting/categories_check_time', $storeId);
+        $timeInterval = self::CATEGORY_UPDATE_END_HOUR - self::CATEGORY_UPDATE_START_HOUR - 1;
+        if (
+            FyndiqUtils::isRunWithinInterval(
+                time(),
+                $lastUpdate,
+                self::CATEGORY_UPDATE_START_HOUR,
+                self::CATEGORY_UPDATE_END_HOUR
+            )
+        ) {
+            //should update
+            $categoryModel = Mage::getModel('fyndiq/category');
+            try {
+                $categoryModel->update();
+                // Set the last updated time
+                $this->configModel->set('fyndiq/troubleshooting/categories_check_time', time(), $storeId);
+            } catch (Exception $e) {
+                Mage::log($e->getMessage(), Zend_Log::ERR);
+            }
+        }
+    }
+
+    protected function downloadURL($url)
     {
         $curl = new Varien_Http_Adapter_Curl();
         $curl->setConfig(array(
@@ -120,7 +148,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         return $data;
     }
 
-    public function checkModuleUpdate($storeId)
+    protected function checkModuleUpdate($storeId)
     {
         try {
             $lastUpdate = intval($this->configModel->get('fyndiq/troubleshooting/version_check_time', $storeId));

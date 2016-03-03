@@ -10,7 +10,7 @@ class Fyndiq_Fyndiq_Model_Category
         $this->configModel = Mage::getModel('fyndiq/config');
     }
 
-    public function updateTree($storeId = self::NO_STORE)
+    public function update($storeId = self::NO_STORE)
     {
         if ($storeId == self::NO_STORE) {
             $storeId = $this->getStoreId();
@@ -27,6 +27,7 @@ class Fyndiq_Fyndiq_Model_Category
         if ($this->storeIsSetUp(0)) {
             return 0;
         }
+        // Then loop through all stores to find the first set-up
         foreach (Mage::app()->getWebsites() as $website) {
             foreach ($website->getGroups() as $group) {
                 $stores = $group->getStores();
