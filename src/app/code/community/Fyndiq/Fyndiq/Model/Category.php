@@ -16,7 +16,7 @@ class Fyndiq_Fyndiq_Model_Category
             $storeId = $this->getStoreId();
         }
         $categories = $this->getCategories($storeId);
-        if (is_array($categories)) {
+        if (is_object($categories)) {
             $this->updateCateories($categories);
         }
     }
@@ -47,11 +47,11 @@ class Fyndiq_Fyndiq_Model_Category
         return (bool)$this->configModel->get('fyndiq/fyndiq_group/apikey', $storeId);
     }
 
-    protected function getTree($storeId)
+    protected function getCategories($storeId)
     {
         try {
-            $json = Mage::helper('fyndiq_fyndiq/connect')->callApi($this->configModel, $storeId, 'GET', 'categories/');
-            return json_decode($json, true);
+            $res = Mage::helper('fyndiq_fyndiq/connect')->callApi($this->configModel, $storeId, 'GET', 'categories/');
+            return $res['data'];
         } catch (Exception $e) {
             throw new Exception(Mage::helper('fyndiq_fyndiq')->__('Error getting the category tree') . '('. $e->getMessage() .')');
         }
@@ -59,18 +59,20 @@ class Fyndiq_Fyndiq_Model_Category
 
     protected function updateCateories($categories)
     {
-        $connection = Mage::getSingleton('core/resource')->getConnection('core_write');
+        $coreResource = Mage::getSingleton('core/resource');
+        $tableName = $coreResource->getTableName('fyndiq/category');
+        $connection = $coreResource->getConnection('core_write');
         try {
             $connection->beginTransaction();
             //clear the table first
             $connection->delete($tableName);
-            foreach ($categories['categories'] as $category) {
+            foreach ($categories->categories as $category) {
                 $connection->insert(
                     $tableName,
                     array(
-                        'id' => $category['id'],
-                        'name_sv' => $category['path']['sv'],
-                        'name_de' => $category['path']['de'],
+                        'id' => $category->id,
+                        'name_sv' => $category->path->sv,
+                        'name_de' => $category->path->de,
                     )
                 );
             }

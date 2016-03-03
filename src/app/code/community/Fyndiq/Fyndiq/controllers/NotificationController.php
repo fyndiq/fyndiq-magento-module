@@ -110,16 +110,14 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 
     protected function updateFyndiqCategories($storeId)
     {
-        $lastUpdate = $this->configModel->get('fyndiq/troubleshooting/categories_check_time', $storeId);
+        $lastUpdate = (int)$this->configModel->get('fyndiq/troubleshooting/categories_check_time', $storeId);
         $timeInterval = self::CATEGORY_UPDATE_END_HOUR - self::CATEGORY_UPDATE_START_HOUR - 1;
-        if (
-            FyndiqUtils::isRunWithinInterval(
-                time(),
-                $lastUpdate,
-                self::CATEGORY_UPDATE_START_HOUR,
-                self::CATEGORY_UPDATE_END_HOUR
-            )
-        ) {
+        if (FyndiqUtils::isRunWithinInterval(
+            time(),
+            $lastUpdate,
+            self::CATEGORY_UPDATE_START_HOUR,
+            self::CATEGORY_UPDATE_END_HOUR
+        )) {
             //should update
             $categoryModel = Mage::getModel('fyndiq/category');
             try {
