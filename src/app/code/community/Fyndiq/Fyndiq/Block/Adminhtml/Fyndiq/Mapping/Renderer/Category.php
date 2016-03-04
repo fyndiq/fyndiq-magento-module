@@ -6,7 +6,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Renderer_Category
 
     public function render(Varien_Object $row)
     {
-        $value =  $row->getData($this->getColumn()->getIndex());
-        return '<span style="color:red;">'.$value.'</span>';
+        $categoryId =  $row->getData($this->getColumn()->getIndex());
+        return Mage::getModel('fyndiq/export')->getCategoryName($categoryId);
     }
 }

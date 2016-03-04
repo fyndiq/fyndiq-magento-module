@@ -39,15 +39,17 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Grid extends Mage_Adminhtml_B
         $this->addColumn('name', array(
             'header'    => Mage::helper('fyndiq_fyndiq')->__('Name'),
             'align'     => 'left',
-            'index'     => 'name',
+            'width'     => '50%',
+            'index'     => 'entity_id',
             'renderer'  => 'Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Renderer_Category',
         ));
         $this->addColumn('fyndiq_category_id', array(
             'header'    => Mage::helper('fyndiq_fyndiq')->__('Fyndiq Category'),
             'align'     => 'left',
-            'width'     => '350px',
+            'width'     => '50%',
             'index'     => 'fyndiq_category_id',
             'renderer'  => 'Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Renderer_FyndiqCategory',
+            'filter'    => false,
         ));
         $this->addColumn('action', array(
             'header'    => Mage::helper('catalog')->__('Action'),
