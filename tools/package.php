@@ -55,6 +55,11 @@ $pc->addContent(
     $basePath . '/app/etc/modules',
     PackageConfig::TYPE_DIRECTORY
 );
+$pc->addContent(
+    PackageConfig::TARGET_GLOBAL_CONFIGURATION,
+    $basePath . '/js/Fyndiq',
+    PackageConfig::TYPE_DIRECTORY
+);
 $generator = new Generator();
 $xml = $generator->getPackageXML($pc);
 print($xml);
