@@ -406,7 +406,7 @@ class Fyndiq_Fyndiq_Model_Export
      * @param  int $categoryId
      * @return string
      */
-    protected function getCategoryName($categoryId)
+    public function getCategoryName($categoryId)
     {
         if (isset($this->categoryCache[$categoryId])) {
             return $this->categoryCache[$categoryId];
