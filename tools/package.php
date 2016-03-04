@@ -56,10 +56,16 @@ $pc->addContent(
     PackageConfig::TYPE_DIRECTORY
 );
 $pc->addContent(
-    PackageConfig::TARGET_GLOBAL_CONFIGURATION,
-    $basePath . '/js/Fyndiq',
+    PackageConfig::TARGET_USER_INTERFACE,
+    $basePath . '/app/design/adminhtml/default/default/layout/Fyndiq_Fyndiq.xml',
+    PackageConfig::TYPE_FILE
+);
+$pc->addContent(
+    PackageConfig::TARGET_THEME_SKIN,
+    $basePath . '/skin/adminhtml/base',
     PackageConfig::TYPE_DIRECTORY
 );
+
 $generator = new Generator();
 $xml = $generator->getPackageXML($pc);
 print($xml);
