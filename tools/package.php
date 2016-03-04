@@ -57,12 +57,12 @@ $pc->addContent(
 );
 $pc->addContent(
     PackageConfig::TARGET_USER_INTERFACE,
-    $basePath . '/app/design/adminhtml/default/default/layout/Fyndiq_Fyndiq.xml',
-    PackageConfig::TYPE_FILE
+    $basePath . '/app/design/adminhtml',
+    PackageConfig::TYPE_DIRECTORY
 );
 $pc->addContent(
     PackageConfig::TARGET_THEME_SKIN,
-    $basePath . '/skin/adminhtml/base',
+    $basePath . '/skin/adminhtml',
     PackageConfig::TYPE_DIRECTORY
 );
 
