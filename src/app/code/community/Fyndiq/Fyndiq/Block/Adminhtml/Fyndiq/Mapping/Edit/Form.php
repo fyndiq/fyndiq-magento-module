@@ -5,6 +5,8 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Edit_Form extends Mage_Adminh
 
     protected function _prepareForm()
     {
+        $categoryId  = (int)$this->getRequest()->getParam('id');
+
         // Instantiate a new form to display our brand for editing.
         $form = new Varien_Data_Form(array(
             'id' => 'edit_form',
@@ -23,15 +25,23 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Edit_Form extends Mage_Adminh
         $fieldset = $form->addFieldset(
             'general',
             array(
-                'legend' => $this->__('Field map')
+                'legend' => Mage::helper('fyndiq_fyndiq')->__('Map Category')
             )
         );
 
         $fieldset->addField('category_name', 'label', array(
-            'label'     => $this->__('Category'),
+            'label'     => Mage::helper('fyndiq_fyndiq')->__('Category'),
             'name'      => 'category_name',
-            'value'     => 'Tumbalumba',
+            'value'     => Mage::getModel('fyndiq/export')->getCategoryName($categoryId),
         ));
+
+        $fyndiqCategoryId = 0;
+        if ($categoryId) {
+            $category = Mage::getModel('catalog/category')
+                ->setStoreId($this->getRequest()->getParam('store', 0))
+                ->load($categoryId);
+            $fyndiqCategoryId = (int)$category->getFyndiqCategoryId();
+        }
 
 
         // FIXME: Use proper model once you figure out how it is supposed to work
@@ -58,11 +68,11 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Edit_Form extends Mage_Adminh
             'fyndiq_category_id',
             'select',
             array(
-                'label'     => $this->__('Fyndiq Category'),
+                'label'     => Mage::helper('fyndiq_fyndiq')->__('Fyndiq Category'),
                 'class'     => 'required-entry',
                 'required'  => true,
                 'name'      => 'fyndiq_category_id',
-                'value'     => 2,
+                'value'     => $fyndiqCategoryId,
                 'values'    => $values,
             )
         );

@@ -1,5 +1,7 @@
 <?php
 
+require_once(Mage::getModuleDir('', 'Fyndiq_Fyndiq') . '/lib/shared/src/init.php');
+
 class Fyndiq_Fyndiq_Adminhtml_FyndiqcategorygridController extends Mage_Adminhtml_Controller_Action
 {
 
@@ -62,5 +64,21 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqcategorygridController extends Mage_Adminhtm
             ->saveAttribute($categorySingleton, 'fyndiq_category_id');
 
         $this->_redirect('adminhtml/fyndiqcategorygrid/');
+    }
+
+    public function updateCategoriesAction()
+    {
+        $categoryModel = Mage::getModel('fyndiq/category');
+        try {
+            $categoryModel->update();
+            // Set the last updated time
+            Mage::getModel('fyndiq/config')->set('fyndiq/troubleshooting/categories_check_time', time(), Mage_Core_Model_App::ADMIN_STORE_ID);
+        } catch (Exception $e) {
+            $this->_getSession()->addError(
+                Mage::helper('fyndiq_fyndiq')->
+                __('Unfortunately something went wrong. If you keep on getting this message, please contact Fyndiq\'s Integration Support.') . ' (' . $e->getMessage() . ')'
+            );
+        }
+        $this->_redirectReferer();
     }
 }

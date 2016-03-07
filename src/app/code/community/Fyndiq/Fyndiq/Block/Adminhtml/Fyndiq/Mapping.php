@@ -10,5 +10,15 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping extends Mage_Adminhtml_Block_
 
         parent::__construct();
         $this->_removeButton('add');
+        $this->_addButton('fyndiq_import_orders', array(
+            'label' => Mage::helper('fyndiq_fyndiq')->__('Update Fyndiq Categories'),
+            'onclick' => 'this.disabled = true; setLocation(\' '  . $this->getUpdateFyndiqCategoriesURL() . '\');',
+            'class' => 'add',
+        ));
+    }
+
+    public function getUpdateFyndiqCategoriesURL()
+    {
+        return $this->getUrl('adminhtml/fyndiqcategorygrid/updateCategories');
     }
 }

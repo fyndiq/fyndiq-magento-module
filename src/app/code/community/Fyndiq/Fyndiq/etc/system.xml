@@ -375,12 +375,22 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </updated>
+                        <category_updated translate="label comment" module="fyndiq_fyndiq">
+                            <label>Latest Categories Update</label>
+                            <comment><![CDATA[Date and time of the latest Category update]]></comment>
+                            <frontend_type>button</frontend_type>
+                            <frontend_model>Fyndiq_Fyndiq_Block_CategoryUpdated</frontend_model>
+                            <sort_order>19</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </category_updated>
                         <module_list translate="label comment" module="fyndiq_fyndiq">
                             <label>Installed Extensions</label>
                             <comment><![CDATA[Currently installed extensions]]></comment>
                             <frontend_type>button</frontend_type>
                             <frontend_model>Fyndiq_Fyndiq_Block_Modules</frontend_model>
-                            <sort_order>19</sort_order>
+                            <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -389,7 +399,7 @@
                             <label>Enable Compatibility Mode</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>20</sort_order>
+                            <sort_order>21</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
@@ -398,7 +408,7 @@
                             <label>Export SKUs</label>
                             <frontend_type>button</frontend_type>
                             <frontend_model>Fyndiq_Fyndiq_Block_Export</frontend_model>
-                            <sort_order>21</sort_order>
+                            <sort_order>22</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -407,7 +417,7 @@
                             <label>Reinstall extension</label>
                             <frontend_type>button</frontend_type>
                             <frontend_model>Fyndiq_Fyndiq_Block_Reinstall</frontend_model>
-                            <sort_order>22</sort_order>
+                            <sort_order>23</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
