@@ -118,4 +118,5 @@ $lang = array(
     'Update Fyndiq Categories' => 'Update Fyndiq Categories',
     'Latest Categories Update' => 'Latest Categories Update',
     'Date and time of the latest Category update' => 'Date and time of the latest Category update',
+    'none' => 'none',
 );

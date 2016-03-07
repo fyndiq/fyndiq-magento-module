@@ -48,14 +48,16 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Edit_Form extends Mage_Adminh
         $langCode = Mage::app()->getLocale()->getLocaleCode();
         $fieldName = substr($langCode, 0, 2) == 'de' ? 'name_de' : 'name_sv';
 
-        $resource = Mage::getSingleton('core/resource');
-        $tableName = $resource->getTableName('fyndiq/category');
-        $readConnection = $resource->getConnection('core_read');
-        $query = 'SELECT * FROM ' . $tableName;
-        $results = $readConnection->fetchAll($query);
+        $categories = Mage::getModel('fyndiq/category')->getCategories();
 
-        $values = array();
-        foreach ($results as $item) {
+        // Add the zero option
+        $values = array(
+            array(
+                'value' => 0,
+                'label' => Mage::helper('fyndiq_fyndiq')->__('none'),
+            )
+        );
+        foreach ($categories as $item) {
             $values[] = array(
                 'value' => $item['id'],
                 'label' => $item[$fieldName],
