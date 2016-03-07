@@ -84,6 +84,15 @@ class Fyndiq_Fyndiq_Model_Category
         }
     }
 
+    public function getById($categoryId)
+    {
+        $resource = Mage::getSingleton('core/resource');
+        $tableName = $resource->getTableName('fyndiq/category');
+        $readConnection = $resource->getConnection('core_read');
+        $query = sprintf('SELECT * FROM ' . $tableName . ' WHERE id = %d', $categoryId);
+        return $readConnection->fetchRow($query);
+    }
+
     public function getCategories()
     {
         $resource = Mage::getSingleton('core/resource');
