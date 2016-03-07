@@ -55,6 +55,17 @@ $pc->addContent(
     $basePath . '/app/etc/modules',
     PackageConfig::TYPE_DIRECTORY
 );
+$pc->addContent(
+    PackageConfig::TARGET_USER_INTERFACE,
+    $basePath . '/app/design/adminhtml',
+    PackageConfig::TYPE_DIRECTORY
+);
+$pc->addContent(
+    PackageConfig::TARGET_THEME_SKIN,
+    $basePath . '/skin/adminhtml',
+    PackageConfig::TYPE_DIRECTORY
+);
+
 $generator = new Generator();
 $xml = $generator->getPackageXML($pc);
 print($xml);

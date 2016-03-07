@@ -39,8 +39,13 @@ dev:
 	ln -s $(SRC_DIR)/app/code/community/Fyndiq $(MAGENTO_ROOT)/app/code/community/Fyndiq
 	ln -s $(SRC_DIR)/app/etc/modules/Fyndiq_Fyndiq.xml $(MAGENTO_ROOT)/app/etc/modules/Fyndiq_Fyndiq.xml
 	ln -sf $(SRC_DIR)/app/design/adminhtml/default/default/layout/Fyndiq_Fyndiq.xml $(MAGENTO_ROOT)/app/design/adminhtml/default/default/layout/Fyndiq_Fyndiq.xml
-	ln -s $(SRC_DIR)/js/Fyndiq $(MAGENTO_ROOT)/js/Fyndiq
 	ln -s $(SRC_DIR)/skin/adminhtml/base $(MAGENTO_ROOT)/skin/adminhtml/base
+
+dev-clean:
+	rm $(MAGENTO_ROOT)/app/code/community/Fyndiq
+	rm $(MAGENTO_ROOT)/app/etc/modules/Fyndiq_Fyndiq.xml
+	rm $(MAGENTO_ROOT)/app/design/adminhtml/default/default/layout/Fyndiq_Fyndiq.xml
+	rm $(MAGENTO_ROOT)/skin/adminhtml/base
 
 css:
 	cd $(SRC_DIR)/fyndiq/frontend/css; scss -C --sourcemap=none main.scss:main.css
