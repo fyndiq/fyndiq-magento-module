@@ -51,7 +51,7 @@ css:
 	cd $(SRC_DIR)/fyndiq/frontend/css; scss -C --sourcemap=none main.scss:main.css
 
 test:
-	$(BIN_DIR)/phpunit
+	$(BIN_DIR)/phpunit --exclude-group ignore
 
 scss-lint:
 	scss-lint $(SRC_DIR)/fyndiq/frontend/css/*.scss
@@ -63,7 +63,7 @@ phpmd:
 	$(BIN_DIR)/phpmd $(SRC_DIR) --exclude /api,/shared text cleancode,codesize,controversial,design,naming,unusedcode
 
 coverage: clear_coverage
-	$(BIN_DIR)/phpunit --coverage-html $(COVERAGE_DIR)
+	$(BIN_DIR)/phpunit --exclude-group ignore --coverage-html $(COVERAGE_DIR)
 
 clear_coverage:
 	rm -rf $(COVERAGE_DIR)
