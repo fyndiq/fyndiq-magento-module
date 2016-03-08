@@ -22,3 +22,4 @@ require_once(dirname(__FILE__) . '/dep/Mage_Core_Helper_Abstract.php');
 // require_once MAGENTO_ROOT . '/src/app/code/community/Fyndiq/Fyndiq/Model/Observer.php';
 
 require_once MAGENTO_ROOT .  '/app/code/community/Fyndiq/Fyndiq/Helper/Region.php';
+require_once MAGENTO_ROOT .  '/app/code/community/Fyndiq/Fyndiq/Helper/Export.php';

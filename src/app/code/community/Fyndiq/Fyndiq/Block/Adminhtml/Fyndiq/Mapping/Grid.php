@@ -17,13 +17,6 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Grid extends Mage_Adminhtml_B
         $columnName = 'name_sv';
         $collection = Mage::getModel('catalog/category')->getCollection();
         $collection->addAttributeToSelect('*');
-        // TODO: Fixme
-        // $collection->getSelect()->joinLeft(
-        //     array('fyndiq_category' => 'fyndiq_fyndiq_category'),
-        //     'fyndiq_category_id = fyndiq_category.id',
-        //     array($columnName)
-        // );
-        // error_log($collection->getSelect());
         $this->setCollection($collection);
         return parent::_prepareCollection();
     }
