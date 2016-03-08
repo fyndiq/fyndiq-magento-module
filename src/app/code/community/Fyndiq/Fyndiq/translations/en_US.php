@@ -110,4 +110,15 @@ $lang = array(
     'The configuration could not be sent to Fyndiq (%s)' => 'The configuration could not be sent to Fyndiq (%s)',
     'Incorrect Username or API Token' => 'Incorrect Username or API Token',
 
+    'Fyndiq Category' => 'Fyndiq Category',
+    'Category' => 'Category',
+    'Category Selection' => 'Category Selection',
+    'Fyndiq Category Mapping' => 'Fyndiq Category Mapping',
+    'Category Mapping' => 'Category Mapping',
+    'Update Fyndiq Categories' => 'Update Fyndiq Categories',
+    'Latest Category Update' => 'Latest Category Update',
+    'Date and time of the latest Category Update' => 'Date and time of the latest Category Update',
+    'none' => 'none',
+    'ID' => 'ID',
+    'Name' => 'Name'
 );
