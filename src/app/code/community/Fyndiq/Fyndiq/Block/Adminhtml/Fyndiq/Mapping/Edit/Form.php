@@ -25,7 +25,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Edit_Form extends Mage_Adminh
         $fieldset = $form->addFieldset(
             'general',
             array(
-                'legend' => Mage::helper('fyndiq_fyndiq')->__('Map Category')
+                'legend' => Mage::helper('fyndiq_fyndiq')->__('Category Selection')
             )
         );
 
