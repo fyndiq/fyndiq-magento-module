@@ -3,6 +3,11 @@
 class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Edit_Form extends Mage_Adminhtml_Block_Widget_Form
 {
 
+    /**
+     * _prepareForm adds the required fields to the form
+     *
+     * @return Mage_Adminhtml_Block_Widget_Form
+     */
     protected function _prepareForm()
     {
         $categoryId  = (int)$this->getRequest()->getParam('id');

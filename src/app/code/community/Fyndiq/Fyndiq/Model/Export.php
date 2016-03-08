@@ -299,7 +299,7 @@ class Fyndiq_Fyndiq_Model_Export
         $categoryIds = $magProduct->getCategoryIds();
         if (count($categoryIds) > 0) {
             $cateogrySetup = $this->getCategorySetup($storeId, $categoryIds);
-            if (is_array($cateogrySetup)){
+            if (is_array($cateogrySetup)) {
                 $feedProduct = array_merge($feedProduct, $cateogrySetup);
             }
         }

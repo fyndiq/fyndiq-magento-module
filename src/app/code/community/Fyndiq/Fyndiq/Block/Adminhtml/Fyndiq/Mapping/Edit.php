@@ -2,6 +2,10 @@
 
 class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Edit extends Mage_Adminhtml_Block_Widget_Form_Container
 {
+
+    /**
+     * Mapping form container constructor
+     */
     public function __construct()
     {
         parent::__construct();
