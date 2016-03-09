@@ -417,7 +417,6 @@ class Fyndiq_Fyndiq_Model_Export
     protected function getCategoryFyndiqId($storeId, $categoryId)
     {
         $category = Mage::getModel('catalog/category')
-            ->setStoreId($storeId)
             ->load($categoryId);
         return $category->getFyndiqCategoryId();
     }
