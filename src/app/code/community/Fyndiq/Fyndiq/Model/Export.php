@@ -405,11 +405,20 @@ class Fyndiq_Fyndiq_Model_Export
     {
         $categoryId = array_shift($categoryIds);
         if (!isset($this->categoryCache[$categoryId])) {
-            $this->categoryCache[$categoryId] = array(
-                FyndiqFeedWriter::PRODUCT_CATEGORY_ID => $categoryId,
-                FyndiqFeedWriter::PRODUCT_CATEGORY_NAME => $this->getCategoryName($categoryId),
-                FyndiqFeedWriter::PRODUCT_CATEGORY_FYNDIQ_ID => $this->getCategoryFyndiqId($storeId, $categoryId),
-            );
+            $fyndiqCategoryId = $this->getCategoryFyndiqId($storeId, $categoryId);
+            if (empty($fyndiqCategoryId)) {
+                $this->categoryCache[$categoryId] = array(
+                    FyndiqFeedWriter::PRODUCT_CATEGORY_ID => $categoryId,
+                    FyndiqFeedWriter::PRODUCT_CATEGORY_NAME => $this->getCategoryName($categoryId),
+                    FyndiqFeedWriter::PRODUCT_CATEGORY_FYNDIQ_ID => '',
+                );
+            } else {
+                $this->categoryCache[$categoryId] = array(
+                    FyndiqFeedWriter::PRODUCT_CATEGORY_ID => '',
+                    FyndiqFeedWriter::PRODUCT_CATEGORY_NAME => '',
+                    FyndiqFeedWriter::PRODUCT_CATEGORY_FYNDIQ_ID => $fyndiqCategoryId,
+                );
+            }
         }
         return $this->categoryCache[$categoryId];
     }
