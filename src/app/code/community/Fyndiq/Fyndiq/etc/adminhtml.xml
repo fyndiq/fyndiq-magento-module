@@ -31,6 +31,9 @@
                             <fyndiqproductgrid translate="title" module="fyndiq_fyndiq">
                                 <title>Fyndiq</title>
                             </fyndiqproductgrid>
+                            <fyndiqcategorygrid translate="title" module="fyndiq_fyndiq">
+                                <title>Fyndiq Category Mapping</title>
+                            </fyndiqcategorygrid>
                         </children>
                     </catalog>
                 </children>
@@ -38,18 +41,6 @@
         </resources>
     </acl>
     <menu>
-        <catalog>
-            <children>
-                <fyndiqproductgrid translate="title" module="fyndiq_fyndiq">
-                    <title>Fyndiq</title>
-                    <action>adminhtml/fyndiqproductgrid/</action>
-                    <sort_order>1000</sort_order>
-                    <depends>
-                        <config>fyndiq/troubleshooting/fyndiq_grid</config>
-                    </depends>
-                </fyndiqproductgrid>
-            </children>
-        </catalog>
         <sales>
             <children>
                 <fyndiqpordergrid translate="title" module="fyndiq_fyndiq">
@@ -62,5 +53,22 @@
                 </fyndiqpordergrid>
             </children>
         </sales>
+        <catalog>
+            <children>
+                <fyndiqproductgrid translate="title" module="fyndiq_fyndiq">
+                    <title>Fyndiq</title>
+                    <action>adminhtml/fyndiqproductgrid/</action>
+                    <sort_order>1000</sort_order>
+                    <depends>
+                        <config>fyndiq/troubleshooting/fyndiq_grid</config>
+                    </depends>
+                </fyndiqproductgrid>
+                <fyndiqcategorygrid translate="title" module="fyndiq_fyndiq">
+                    <title>Fyndiq Category Mapping</title>
+                    <action>adminhtml/fyndiqcategorygrid/</action>
+                    <sort_order>1001</sort_order>
+                </fyndiqcategorygrid>
+            </children>
+        </catalog>
     </menu>
 </config>

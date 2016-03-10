@@ -24,12 +24,18 @@ class NotificationControllerTest extends PHPUnit_Framework_TestCase
             ->will($this->returnValue($fyndiqOutput));
     }
 
+    /**
+     * @group ignore
+     */
     function testIndexAction()
     {
         $return = $this->notification->indexAction();
         $this->assertEquals(false, $return);
     }
 
+    /**
+     * @group ignore
+     */
     function testIndexActionWorking()
     {
         $this->request->expects($this->at(0))

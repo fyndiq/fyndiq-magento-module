@@ -70,7 +70,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         $orderFetchModel = Mage::getModel('fyndiq/orderFetch');
         $orderFetchModel->init($storeId, $lastUpdate);
         $orderFetchModel->getAll();
-        return $this->configModel->set('fyndiq/fyndiq_group/order_lastdate', time(), $storeId);
+        return $this->configModel->set('fyndiq/fyndiq_group/order_lastdate', $newTime, $storeId);
     }
 
     public function importFyndiqOrdersAction()
@@ -80,7 +80,6 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                 $stores = $group->getStores();
                 foreach ($stores as $store) {
                     try {
-                        $observer = Mage::getModel('fyndiq/observer');
                         $storeId = $store->getId();
                         if ($this->configModel->get('fyndiq/fyndiq_group/apikey', $storeId)) {
                             if ($this->configModel->get('fyndiq/fyndiq_group/import_orders_disabled', $storeId) == Fyndiq_Fyndiq_Model_Order::ORDERS_DISABLED) {
@@ -163,7 +162,6 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
             return false;
         }
         $storeId = array_pop(array_values($fyndiqOrders));
-        $observer = Mage::getModel('fyndiq/observer');
         $orders = array(
             'orders' => array()
         );
@@ -393,13 +391,11 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
 
     public function importSKUsAction()
     {
-        $productsExported = 0;
         $skus = $this->getRequest()->getParam('skus');
         $skuArray = array_unique(explode("\n", $skus));
         $observer = Mage::getModel('fyndiq/observer');
         $storeId = $observer->getStoreId();
         $product = Mage::getModel('catalog/product');
-        $total = count($skuArray);
         $productIds = array();
         try {
             foreach ($skuArray as $sku) {

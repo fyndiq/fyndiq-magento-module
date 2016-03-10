@@ -2,13 +2,14 @@
 <config>
     <modules>
         <Fyndiq_Fyndiq>
-            <version>2.0.1</version>
+            <version>2.0.2</version>
         </Fyndiq_Fyndiq>
     </modules>
     <global>
         <models>
             <fyndiq>
                 <class>Fyndiq_Fyndiq_Model</class>
+                <resourceModel>fyndiq_resource</resourceModel>
             </fyndiq>
             <observer>
                 <class>Fyndiq_Fyndiq_Model_Observer</class>
@@ -19,6 +20,14 @@
             <export>
                 <class>Fyndiq_Fyndiq_Model_Export</class>
             </export>
+            <fyndiq_resource>
+                <class>Fyndiq_Fyndiq_Model_Resource</class>
+                <entities>
+                    <category>
+                        <table>fyndiq_category</table>
+                    </category>
+                </entities>
+            </fyndiq_resource>
         </models>
         <resources>
             <fyndiqmodule_setup>
@@ -83,6 +92,15 @@
             </adminhtml>
         </routers>
     </admin>
+    <adminhtml>
+        <layout>
+            <updates>
+                <fyndiq_fyndiq>
+                    <file>Fyndiq_Fyndiq.xml</file>
+                </fyndiq_fyndiq>
+            </updates>
+        </layout>
+    </adminhtml>
     <frontend>
         <routers>
             <Fyndiq>

@@ -8,6 +8,9 @@ class ObserverTest extends PHPUnit_Framework_TestCase
         $this->observer = new Fyndiq_Fyndiq_Model_Observer();
     }
 
+    /**
+     * @group ignore
+     */
     function testQuantity()
     {
         $product = new Catalog_Product();

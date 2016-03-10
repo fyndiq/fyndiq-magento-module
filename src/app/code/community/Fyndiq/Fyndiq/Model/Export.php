@@ -13,8 +13,6 @@ class Fyndiq_Fyndiq_Model_Export
     private $categoryModel = null;
     private $taxCalculationModel = null;
 
-    private $imageHelper = null;
-    private $productImages = array();
     private $productMediaConfig = null;
     private $categoryCache = array();
     private $productAttrOptions = null;
@@ -266,7 +264,6 @@ class Fyndiq_Fyndiq_Model_Export
             return array();
         }
 
-        $productId = $magProduct->getId();
         $magPrice = $this->getProductPrice($magProduct, $config['priceGroup'], $storeId);
         $price = FyndiqUtils::getFyndiqPrice($magPrice, $config['discountPercentage'], $config['discountPrice']);
 
@@ -298,9 +295,10 @@ class Fyndiq_Fyndiq_Model_Export
         // Category
         $categoryIds = $magProduct->getCategoryIds();
         if (count($categoryIds) > 0) {
-            $firstCategoryId = array_shift($categoryIds);
-            $feedProduct[FyndiqFeedWriter::PRODUCT_CATEGORY_ID] = $firstCategoryId;
-            $feedProduct[FyndiqFeedWriter::PRODUCT_CATEGORY_NAME] = $this->getCategoryName($firstCategoryId);
+            $cateogrySetup = $this->getCategorySetup($storeId, $categoryIds);
+            if (is_array($cateogrySetup)) {
+                $feedProduct = array_merge($feedProduct, $cateogrySetup);
+            }
         }
 
         if ($magArray['type_id'] === 'simple') {
@@ -400,29 +398,54 @@ class Fyndiq_Fyndiq_Model_Export
         return $title;
     }
 
+    protected function getCategorySetup($storeId, $categoryIds)
+    {
+        $categoryId = array_shift($categoryIds);
+        if (!isset($this->categoryCache[$categoryId])) {
+            $fyndiqCategoryId = $this->getCategoryFyndiqId($storeId, $categoryId);
+            if (empty($fyndiqCategoryId)) {
+                $this->categoryCache[$categoryId] = array(
+                    FyndiqFeedWriter::PRODUCT_CATEGORY_ID => $categoryId,
+                    FyndiqFeedWriter::PRODUCT_CATEGORY_NAME => $this->getCategoryName($categoryId),
+                    FyndiqFeedWriter::PRODUCT_CATEGORY_FYNDIQ_ID => '',
+                );
+            } else {
+                $this->categoryCache[$categoryId] = array(
+                    FyndiqFeedWriter::PRODUCT_CATEGORY_ID => '',
+                    FyndiqFeedWriter::PRODUCT_CATEGORY_NAME => '',
+                    FyndiqFeedWriter::PRODUCT_CATEGORY_FYNDIQ_ID => $fyndiqCategoryId,
+                );
+            }
+        }
+        return $this->categoryCache[$categoryId];
+    }
+
+    protected function getCategoryFyndiqId($storeId, $categoryId)
+    {
+        $category = Mage::getModel('catalog/category')
+            ->load($categoryId);
+        return $category->getFyndiqCategoryId();
+    }
+
     /**
      * getCategoryName returns the full category path
      *
      * @param  int $categoryId
      * @return string
      */
-    protected function getCategoryName($categoryId)
+    public function getCategoryName($categoryId)
     {
-        if (isset($this->categoryCache[$categoryId])) {
-            return $this->categoryCache[$categoryId];
-        }
         $category = $this->categoryModel->load($categoryId);
         $pathIds = explode('/', $category->getPath());
         if (!$pathIds) {
-            $this->categoryCache[$categoryId] = $firstCategory->getName();
+            $this->categoryCache[$categoryId] = $category->getName();
             return $this->categoryCache[$categoryId];
         }
         $name = array();
         foreach ($pathIds as $id) {
             $name[] = $this->categoryModel->load($id)->getName();
         }
-        $this->categoryCache[$categoryId] = implode(self::CATEGORY_SEPARATOR, $name);
-        return $this->categoryCache[$categoryId];
+        return implode(self::CATEGORY_SEPARATOR, $name);
     }
 
     private function getArticle($store, $magProduct, $parentProductId, $index, $config)

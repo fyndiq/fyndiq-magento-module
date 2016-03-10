@@ -6,6 +6,9 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
 {
     const VERSION_CHECK_INTERVAL = 10800;
 
+    const CATEGORY_UPDATE_START_HOUR = 1;
+    const CATEGORY_UPDATE_END_HOUR = 5;
+
     private $fyndiqOutput = null;
     private $configModel = null;
 
@@ -18,10 +21,15 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
     {
         $event = $this->getRequest()->getParam('event');
         $eventName = $event ? $event : false;
-        if ($eventName) {
-            if ($eventName[0] != '_' && method_exists($this, $eventName)) {
-                return $this->$eventName();
-            }
+        switch ($eventName) {
+            case 'order_created':
+                return $this->orderCreated();
+            case 'ping':
+                return $this->ping();
+            case 'debug':
+                return $this->debug();
+            case 'info':
+                return $this->info();
         }
         return $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
     }
@@ -31,7 +39,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
      *
      * @return bool
      */
-    function order_created()
+    protected function orderCreated()
     {
         $storeId = $this->getRequest()->getParam('store');
         if ($this->configModel->get('fyndiq/fyndiq_group/import_orders_disabled', $storeId) == Fyndiq_Fyndiq_Model_Order::ORDERS_DISABLED) {
@@ -78,7 +86,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
     /**
      * Generate feed
      */
-    private function ping()
+    protected function ping()
     {
         $storeId = $this->getRequest()->getParam('store');
         if (!$this->isCorrectToken($this->getRequest()->getParam('token'), $storeId)) {
@@ -98,13 +106,35 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
                 }
             }
         }
-        $this->checkModuleUpdate(0);
+        $this->checkModuleUpdate(Mage_Core_Model_App::ADMIN_STORE_ID);
+        $this->updateFyndiqCategories(Mage_Core_Model_App::ADMIN_STORE_ID);
         if ($cronEnabled) {
             return $this->getFyndiqOutput()->showError(405, 'Method not allowed', 'Feed is generated with cron job.');
         }
     }
 
-    public function downloadURL($url)
+    protected function updateFyndiqCategories($storeId)
+    {
+        $lastUpdate = (int)$this->configModel->get('fyndiq/troubleshooting/categories_check_time', $storeId);
+        if (FyndiqUtils::isRunWithinInterval(
+            time(),
+            $lastUpdate,
+            self::CATEGORY_UPDATE_START_HOUR,
+            self::CATEGORY_UPDATE_END_HOUR
+        )) {
+            //should update
+            $categoryModel = Mage::getModel('fyndiq/category');
+            try {
+                $categoryModel->update();
+                // Set the last updated time
+                $this->configModel->set('fyndiq/troubleshooting/categories_check_time', time(), $storeId);
+            } catch (Exception $e) {
+                Mage::log($e->getMessage(), Zend_Log::ERR);
+            }
+        }
+    }
+
+    protected function downloadURL($url)
     {
         $curl = new Varien_Http_Adapter_Curl();
         $curl->setConfig(array(
@@ -120,7 +150,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         return $data;
     }
 
-    public function checkModuleUpdate($storeId)
+    protected function checkModuleUpdate($storeId)
     {
         try {
             $lastUpdate = intval($this->configModel->get('fyndiq/troubleshooting/version_check_time', $storeId));
