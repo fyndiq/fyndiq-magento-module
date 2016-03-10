@@ -7,7 +7,6 @@ class Fyndiq_Fyndiq_FileController extends Mage_Core_Controller_Front_Action
 
     public function indexAction()
     {
-        $result = '';
         $lastModified = 0;
         $configModel = Mage::getModel('fyndiq/config');
         $storeId = Mage::app()->getRequest()->getParam('store');

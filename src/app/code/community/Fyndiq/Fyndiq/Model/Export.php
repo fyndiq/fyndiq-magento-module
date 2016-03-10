@@ -13,8 +13,6 @@ class Fyndiq_Fyndiq_Model_Export
     private $categoryModel = null;
     private $taxCalculationModel = null;
 
-    private $imageHelper = null;
-    private $productImages = array();
     private $productMediaConfig = null;
     private $categoryCache = array();
     private $productAttrOptions = null;
@@ -266,7 +264,6 @@ class Fyndiq_Fyndiq_Model_Export
             return array();
         }
 
-        $productId = $magProduct->getId();
         $magPrice = $this->getProductPrice($magProduct, $config['priceGroup'], $storeId);
         $price = FyndiqUtils::getFyndiqPrice($magPrice, $config['discountPercentage'], $config['discountPrice']);
 
@@ -441,7 +438,7 @@ class Fyndiq_Fyndiq_Model_Export
         $category = $this->categoryModel->load($categoryId);
         $pathIds = explode('/', $category->getPath());
         if (!$pathIds) {
-            $this->categoryCache[$categoryId] = $firstCategory->getName();
+            $this->categoryCache[$categoryId] = $category->getName();
             return $this->categoryCache[$categoryId];
         }
         $name = array();

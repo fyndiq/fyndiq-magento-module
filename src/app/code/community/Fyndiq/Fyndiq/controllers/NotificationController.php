@@ -21,10 +21,15 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
     {
         $event = $this->getRequest()->getParam('event');
         $eventName = $event ? $event : false;
-        if ($eventName) {
-            if ($eventName[0] != '_' && method_exists($this, $eventName)) {
-                return $this->$eventName();
-            }
+        switch ($eventName) {
+            case 'order_created':
+                return $this->orderCreated();
+            case 'ping':
+                return $this->ping();
+            case 'debug':
+                return $this->debug();
+            case 'info':
+                return $this->info();
         }
         return $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
     }
@@ -34,7 +39,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
      *
      * @return bool
      */
-    function order_created()
+    protected function orderCreated()
     {
         $storeId = $this->getRequest()->getParam('store');
         if ($this->configModel->get('fyndiq/fyndiq_group/import_orders_disabled', $storeId) == Fyndiq_Fyndiq_Model_Order::ORDERS_DISABLED) {
@@ -81,7 +86,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
     /**
      * Generate feed
      */
-    private function ping()
+    protected function ping()
     {
         $storeId = $this->getRequest()->getParam('store');
         if (!$this->isCorrectToken($this->getRequest()->getParam('token'), $storeId)) {
@@ -111,7 +116,6 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
     protected function updateFyndiqCategories($storeId)
     {
         $lastUpdate = (int)$this->configModel->get('fyndiq/troubleshooting/categories_check_time', $storeId);
-        $timeInterval = self::CATEGORY_UPDATE_END_HOUR - self::CATEGORY_UPDATE_START_HOUR - 1;
         if (FyndiqUtils::isRunWithinInterval(
             time(),
             $lastUpdate,

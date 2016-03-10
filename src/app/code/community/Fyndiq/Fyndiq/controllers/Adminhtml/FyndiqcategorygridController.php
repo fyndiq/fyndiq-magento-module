@@ -71,7 +71,8 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqcategorygridController extends Mage_Adminhtm
         try {
             $categoryModel->update();
             // Set the last updated time
-            Mage::getModel('fyndiq/config')->set('fyndiq/troubleshooting/categories_check_time', time(), Mage_Core_Model_App::ADMIN_STORE_ID);
+            Mage::getModel('fyndiq/config')
+                ->set('fyndiq/troubleshooting/categories_check_time', time(), Mage_Core_Model_App::ADMIN_STORE_ID);
         } catch (Exception $e) {
             $this->_getSession()->addError(
                 Mage::helper('fyndiq_fyndiq')->
