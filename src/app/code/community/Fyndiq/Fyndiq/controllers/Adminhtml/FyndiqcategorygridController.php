@@ -50,7 +50,6 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqcategorygridController extends Mage_Adminhtm
 
     public function saveAction()
     {
-
         $categoryId  = (int)$this->getRequest()->getParam('id');
         $storeId = (int)$this->getRequest()->getParam('store', 0);
         $fyndiqCategoryId = (int)$this->getRequest()->getPost('fyndiq_category_id');

@@ -14,7 +14,6 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Grid extends Mage_Adminhtml_B
 
     protected function _prepareCollection()
     {
-        $columnName = 'name_sv';
         $collection = Mage::getModel('catalog/category')->getCollection();
         $collection->addAttributeToSelect('*');
         $this->setCollection($collection);
