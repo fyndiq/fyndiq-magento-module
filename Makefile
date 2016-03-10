@@ -38,12 +38,20 @@ dev:
 	#cp -svr --remove-destination $(SRC_DIR)/* $(MAGENTO_ROOT)/
 	ln -s $(SRC_DIR)/app/code/community/Fyndiq $(MAGENTO_ROOT)/app/code/community/Fyndiq
 	ln -s $(SRC_DIR)/app/etc/modules/Fyndiq_Fyndiq.xml $(MAGENTO_ROOT)/app/etc/modules/Fyndiq_Fyndiq.xml
+	ln -sf $(SRC_DIR)/app/design/adminhtml/default/default/layout/Fyndiq_Fyndiq.xml $(MAGENTO_ROOT)/app/design/adminhtml/default/default/layout/Fyndiq_Fyndiq.xml
+	ln -s $(SRC_DIR)/skin/adminhtml/base $(MAGENTO_ROOT)/skin/adminhtml/base
+
+dev-clean:
+	rm $(MAGENTO_ROOT)/app/code/community/Fyndiq
+	rm $(MAGENTO_ROOT)/app/etc/modules/Fyndiq_Fyndiq.xml
+	rm $(MAGENTO_ROOT)/app/design/adminhtml/default/default/layout/Fyndiq_Fyndiq.xml
+	rm $(MAGENTO_ROOT)/skin/adminhtml/base
 
 css:
 	cd $(SRC_DIR)/fyndiq/frontend/css; scss -C --sourcemap=none main.scss:main.css
 
 test:
-	$(BIN_DIR)/phpunit
+	$(BIN_DIR)/phpunit --exclude-group ignore
 
 scss-lint:
 	scss-lint $(SRC_DIR)/fyndiq/frontend/css/*.scss
@@ -55,13 +63,15 @@ phpmd:
 	$(BIN_DIR)/phpmd $(SRC_DIR) --exclude /api,/shared text cleancode,codesize,controversial,design,naming,unusedcode
 
 coverage: clear_coverage
-	$(BIN_DIR)/phpunit --coverage-html $(COVERAGE_DIR)
+	$(BIN_DIR)/phpunit --exclude-group ignore --coverage-html $(COVERAGE_DIR)
 
 clear_coverage:
 	rm -rf $(COVERAGE_DIR)
 
 sniff:
 	$(BIN_DIR)/phpcs --standard=PSR2 --extensions=php --ignore=shared,templates,api --colors $(SRC_DIR)
+	$(BIN_DIR)/phpcs --standard=PSR2 --extensions=php $(TESTS_DIR)
+	$(BIN_DIR)/phpcs --standard=PSR2 --extensions=php $(TOOLS_DIR)
 
 sniff-fix:
 	$(BIN_DIR)/phpcbf --standard=PSR2 --extensions=php --ignore=shared,templates,api $(SRC_DIR)
@@ -79,3 +89,7 @@ translations_push:
 
 translations_pull:
 	tx pull -a
+
+update_tree:
+	curl -s https://api.fyndiq.com/v2/categories/ -u ${FUSER}:${TOKEN} | php ${TOOLS_DIR}/tree2csv.php > ${SRC_DIR}/app/code/community/Fyndiq/Fyndiq/data/fyndiqmodule_setup/tree.csv
+	wc -l ${SRC_DIR}/app/code/community/Fyndiq/Fyndiq/data/fyndiqmodule_setup/tree.csv

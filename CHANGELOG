@@ -1,3 +1,7 @@
+Version 2.0.2
+* Enhancement: Category mapping
+* Bugfix: Tables with custom prefixes
+
 Version 2.0.1
 * Enhancement: More consistent labels and messages
 * Bugfix: Reuse Magento's boolean attribute for exported columns

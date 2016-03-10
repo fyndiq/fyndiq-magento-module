@@ -4,8 +4,6 @@ require_once(Mage::getModuleDir('', 'Fyndiq_Fyndiq') . '/lib/shared/src/init.php
 
 class Fyndiq_Fyndiq_Model_Observer
 {
-
-    private $productModel = null;
     private $configModel = null;
 
     public function __construct()

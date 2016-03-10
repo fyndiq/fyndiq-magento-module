@@ -36,7 +36,10 @@ class Fyndiq_Fyndiq_Adminhtml_Sales_Order_ShipmentController extends Mage_Adminh
                         try {
                             $api->callApi($configModel, $storeId, 'PUT', $url, $data);
                         } catch (Excepton $e) {
-                            Mage::log('Error sending package information to Fyndiq: ' . $e->getMessage(), Zend_Log::ERR);
+                            Mage::log(
+                                'Error sending package information to Fyndiq: ' . $e->getMessage(),
+                                Zend_Log::ERR
+                            );
                         }
                     }
                 }

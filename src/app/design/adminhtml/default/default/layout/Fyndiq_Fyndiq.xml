@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<layout>
+    <adminhtml_fyndiqcategorygrid_edit>
+        <reference name="head">
+            <action method="addItem">
+                 <type>skin_css</type>
+                 <stylesheet>css/Fyndiq/Fyndiq/chosen.min.css</stylesheet>
+            </action>
+            <action method="addItem">
+                <type>skin_js</type>
+                <script>js/Fyndiq/Fyndiq/chosen.proto.min.js</script>
+            </action>
+        </reference>
+    </adminhtml_fyndiqcategorygrid_edit>
+</layout>
