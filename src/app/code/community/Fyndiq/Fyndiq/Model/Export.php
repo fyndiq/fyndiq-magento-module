@@ -431,10 +431,8 @@ class Fyndiq_Fyndiq_Model_Export
      */
     public function getCategoryName($categoryId)
     {
-
         $category = Mage::getModel('catalog/category')
             ->load($categoryId);
-
 
         $pathIds = explode('/', $category->getPath());
         $name = array();
