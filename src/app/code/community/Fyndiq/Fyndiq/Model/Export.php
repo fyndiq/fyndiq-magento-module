@@ -10,7 +10,6 @@ class Fyndiq_Fyndiq_Model_Export
     const VALUE_YES = 1;
 
     private $configModel = null;
-    private $categoryModel = null;
     private $taxCalculationModel = null;
 
     private $productMediaConfig = null;
@@ -21,7 +20,6 @@ class Fyndiq_Fyndiq_Model_Export
     public function __construct()
     {
         $this->configModel = Mage::getModel('fyndiq/config');
-        $this->categoryModel = Mage::getModel('catalog/category');
     }
 
     /**
@@ -45,10 +43,8 @@ class Fyndiq_Fyndiq_Model_Export
         }
         $feedWriter = new FyndiqCSVFeedWriter($file);
 
-        if ($storeId) {
-            FyndiqUtils::debug('Setting current store to ', $storeId);
-            Mage::app()->setCurrentStore($storeId);
-        }
+        FyndiqUtils::debug('Setting current store to ', $storeId);
+        Mage::app()->setCurrentStore($storeId);
 
         $exportResult = $this->exportProducts($storeId, $feedWriter);
         FyndiqUtils::debug('Closing file');
@@ -435,15 +431,15 @@ class Fyndiq_Fyndiq_Model_Export
      */
     public function getCategoryName($categoryId)
     {
-        $category = $this->categoryModel->load($categoryId);
+        $category = Mage::getModel('catalog/category')
+            ->load($categoryId);
+
         $pathIds = explode('/', $category->getPath());
-        if (!$pathIds) {
-            $this->categoryCache[$categoryId] = $category->getName();
-            return $this->categoryCache[$categoryId];
-        }
         $name = array();
         foreach ($pathIds as $id) {
-            $name[] = $this->categoryModel->load($id)->getName();
+            $name[] = Mage::getModel('catalog/category')
+                ->load($id)
+                ->getName();
         }
         return implode(self::CATEGORY_SEPARATOR, $name);
     }
