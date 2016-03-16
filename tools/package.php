@@ -20,7 +20,7 @@ if (empty($basePath) || empty($moduleVersion) || empty($changelog)) {
 $handle = fopen($changelog, 'r');
 $notes = '';
 while (($line = fgets($handle, 4096)) !== false) {
-    if (trim($line) == ''){
+    if (trim($line) == '') {
         break;
     }
     $notes .= $line;
