@@ -12,9 +12,16 @@
         </testsuite>
     </testsuites>
     <filter>
-        <blacklist>
-            <directory>./src/fyndiq</directory>
-            <directory>./tests/dep</directory>
-        </blacklist>
+        <whitelist>
+            <directory suffix=".php">src/</directory>
+            <exclude>
+                <directory suffix=".php">src/app/code/community/Fyndiq/Fyndiq/lib</directory>
+                <directory suffix=".php">src/app/code/community/Fyndiq/Fyndiq/sql</directory>
+                <directory suffix=".php">src/app/code/community/Fyndiq/Fyndiq/data</directory>
+                <directory suffix=".php">src/app/code/community/Fyndiq/Fyndiq/translations</directory>
+                <directory suffix=".php">tests</directory>
+                <directory suffix=".php">tools</directory>
+            </exclude>
+        </whitelist>
     </filter>
 </phpunit>
