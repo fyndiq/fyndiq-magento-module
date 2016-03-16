@@ -64,13 +64,22 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         $this->_redirectReferer();
     }
 
-    protected function importOrdersForStore($storeId, $newTime)
+    /**
+     * importOrdersForStore imports new orders for single store
+     * @param  int $storeId StoreId
+     * @param  int $lastUpdate last time the orders were updated
+     * @return bool
+     */
+    protected function importOrdersForStore($storeId, $lastUpdate)
     {
-        $lastUpdate = $this->configModel->get('fyndiq/fyndiq_group/order_lastdate', $storeId);
         $orderFetchModel = Mage::getModel('fyndiq/orderFetch');
         $orderFetchModel->init($storeId, $lastUpdate);
         $orderFetchModel->getAll();
-        return $this->configModel->set('fyndiq/fyndiq_group/order_lastdate', $newTime, $storeId);
+        $lastTimestamp = $orderFetchModel->getLastTimestamp();
+        if ($lastTimestamp) {
+            return $this->configModel->set('fyndiq/fyndiq_group/order_lastdate', $lastTimestamp, $storeId);
+        }
+        return false;
     }
 
     public function importFyndiqOrdersAction()
@@ -91,7 +100,10 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                                 );
                                 continue;
                             }
-                            $this->importOrdersForStore($storeId, time());
+                            $this->importOrdersForStore(
+                                $storeId,
+                                intval($this->configModel->get('fyndiq/fyndiq_group/order_lastdate', $storeId))
+                            );
                             $this->_getSession()->addSuccess(
                                 sprintf(
                                     Mage::helper('fyndiq_fyndiq')->__('Fyndiq Orders were imported for Store "%s"'),
