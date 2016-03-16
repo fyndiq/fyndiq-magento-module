@@ -4,7 +4,7 @@ class Fyndiq_Fyndiq_Model_OrderFetch extends FyndiqPaginatedFetch
 {
     private $storeId = 0;
     private $lastUpdate = null;
-    private $lastTimestamp = null;
+    private $lastTimestamp = 0;
 
     /**
      * init initializes the fetching class
@@ -45,6 +45,16 @@ class Fyndiq_Fyndiq_Model_OrderFetch extends FyndiqPaginatedFetch
     }
 
     /**
+     * getOrderModel returns the order model
+     *
+     * @return \Fyndiq_Fyndiq_Model_Order order model
+     */
+    protected function getOrderModel()
+    {
+        return Mage::getModel('fyndiq/order');
+    }
+
+    /**
      * processData processes an API payload
      *
      * @param  object $data API response object
@@ -53,7 +63,7 @@ class Fyndiq_Fyndiq_Model_OrderFetch extends FyndiqPaginatedFetch
     public function processData($data)
     {
         $errors = array();
-        $orderModel = Mage::getModel('fyndiq/order');
+        $orderModel = $this->getOrderModel();
         foreach ($data as $order) {
             $timestamp = strtotime($order->created);
             if ($timestamp > $this->lastTimestamp) {
@@ -90,6 +100,6 @@ class Fyndiq_Fyndiq_Model_OrderFetch extends FyndiqPaginatedFetch
      */
     public function getLastTimestamp()
     {
-        return $this->lastTimestamp();
+        return $this->lastTimestamp;
     }
 }
