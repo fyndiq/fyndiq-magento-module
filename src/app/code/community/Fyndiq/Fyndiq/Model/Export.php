@@ -553,7 +553,8 @@ class Fyndiq_Fyndiq_Model_Export
                 $newImages[$image->getPosition()] = $url;
             }
         }
-        $images->clear();
+        if(is_object($images))
+            $images->clear();
         if (count($newImages)) {
             ksort($newImages);
             return  array_values($newImages);
