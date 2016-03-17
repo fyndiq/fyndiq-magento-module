@@ -8,7 +8,6 @@ class Fyndiq_Fyndiq_Model_OrderFetch extends FyndiqPaginatedFetch
 
     /**
      * init initializes the fetching class
-     *
      * @param  int $storeId
      * @param  int $lastUpdate timestamp for the last time orders were updated
      */
@@ -46,7 +45,6 @@ class Fyndiq_Fyndiq_Model_OrderFetch extends FyndiqPaginatedFetch
 
     /**
      * getOrderModel returns the order model
-     *
      * @return \Fyndiq_Fyndiq_Model_Order order model
      */
     protected function getOrderModel()
@@ -56,7 +54,6 @@ class Fyndiq_Fyndiq_Model_OrderFetch extends FyndiqPaginatedFetch
 
     /**
      * processData processes an API payload
-     *
      * @param  object $data API response object
      * @return bool
      */
@@ -85,7 +82,6 @@ class Fyndiq_Fyndiq_Model_OrderFetch extends FyndiqPaginatedFetch
 
     /**
      * getSleepIntervalSeconds returns the interval between two requests in seconds
-     *
      * @return float
      */
     public function getSleepIntervalSeconds()
@@ -95,7 +91,6 @@ class Fyndiq_Fyndiq_Model_OrderFetch extends FyndiqPaginatedFetch
 
     /**
      * getLastTimestamp returns the last order timestamp from the process
-     *
      * @return int
      */
     public function getLastTimestamp()
