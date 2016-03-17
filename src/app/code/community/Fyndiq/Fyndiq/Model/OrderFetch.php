@@ -20,7 +20,7 @@ class Fyndiq_Fyndiq_Model_OrderFetch extends FyndiqPaginatedFetch
 
     /**
      * getInitialPath returns the initial API path for fetching the orders
-     * @return [type] [description]
+     * @return string
      */
     public function getInitialPath()
     {
@@ -30,7 +30,7 @@ class Fyndiq_Fyndiq_Model_OrderFetch extends FyndiqPaginatedFetch
     /**
      * getPageData fetches order data given URL path
      * @param  string $path URL path to the resource
-     * @return string result pauload
+     * @return array result payload
      */
     public function getPageData($path)
     {
