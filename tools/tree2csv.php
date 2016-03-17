@@ -5,7 +5,7 @@ $tree = json_decode($fileIn, true);
 
 $fileOut = fopen('php://stdout', 'w');
 
-foreach($tree['categories'] as $cat) {
+foreach ($tree['categories'] as $cat) {
     $row = array(
         $cat['id'],
         $cat['path']['sv'],

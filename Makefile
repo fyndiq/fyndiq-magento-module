@@ -58,6 +58,8 @@ scss-lint:
 
 php-lint:
 	find $(SRC_DIR) -name "*.php" -print0 | xargs -0 -n1 -P8 php -l
+	find $(TESTS_DIR) -name "*.php" -print0 | xargs -0 -n1 -P8 php -l
+	find $(TOOLS_DIR) -name "*.php" -print0 | xargs -0 -n1 -P8 php -l
 
 phpmd:
 	$(BIN_DIR)/phpmd $(SRC_DIR) --exclude /api,/shared text cleancode,codesize,controversial,design,naming,unusedcode

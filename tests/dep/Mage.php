@@ -38,7 +38,7 @@ class Mage
 
     static function getModel($model)
     {
-        switch($model) {
+        switch ($model) {
             case 'fyndiq/product':
                 return new Fyndiq_Fyndiq_Model_Product();
                 break;
