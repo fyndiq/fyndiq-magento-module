@@ -304,7 +304,7 @@ class Fyndiq_Fyndiq_Model_Export
 
             if (method_exists($magProduct->getTypeInstance(), 'getConfigurableAttributes')) {
                 if (!$this->productAttrOptions) {
-                    $this->productAttrOptions = $parentProduct->getTypeInstance()->getConfigurableAttributes();
+                    $this->productAttrOptions = $magProduct->getTypeInstance()->getConfigurableAttributes();
                 }
                 foreach ($this->productAttrOptions as $productAttribute) {
                     $attrValue = $magProduct->getResource()->getAttribute(
