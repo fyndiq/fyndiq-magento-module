@@ -56,7 +56,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
                 Mage::getDesign()->setArea(Mage_Core_Model_App_Area::AREA_ADMIN);
                 $orderModel = Mage::getModel('fyndiq/order');
                 if (!$orderModel->orderExists($fyndiqOrder->id)) {
-                    $orderModel->create($storeId, $fyndiqOrder, $reservationId);
+                    $orderModel->create($storeId, $fyndiqOrder);
                 }
             } catch (Exception $e) {
                 // $inbox = Mage::getModel('Mage_AdminNotification_Model_Inbox');
