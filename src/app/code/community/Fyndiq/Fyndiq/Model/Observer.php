@@ -41,9 +41,7 @@ class Fyndiq_Fyndiq_Model_Observer
         if ($this->configModel->get('fyndiq/fyndiq_group/username', $storeId) !== ''
             && $this->configModel->get('fyndiq/fyndiq_group/apikey', $storeId) !== ''
         ) {
-            // Generate and save token
             $pingToken = Mage::helper('core')->uniqHash();
-            $this->configModel->set('fyndiq/fyndiq_group/ping_token', $pingToken, $storeId);
             $this->configModel->reInit();
             $data = array(
                 FyndiqUtils::NAME_PRODUCT_FEED_URL => Mage::getUrl(
@@ -81,7 +79,9 @@ class Fyndiq_Fyndiq_Model_Observer
                 );
             }
             try {
-                return Mage::helper('fyndiq_fyndiq/connect')->callApi($this->configModel, $storeId, 'PATCH', 'settings/', $data);
+                $result = Mage::helper('fyndiq_fyndiq/connect')->callApi($this->configModel, $storeId, 'PATCH', 'settings/', $data);
+                // save token if success
+                return $this->configModel->set('fyndiq/fyndiq_group/ping_token', $pingToken, $storeId);
             } catch (Exception $e) {
                 $message = sprintf(
                     Mage::helper('fyndiq_fyndiq')->__('The configuration could not be sent to Fyndiq (%s)'),
