@@ -193,8 +193,9 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
     private function debug()
     {
         $storeId = Mage::app()->getRequest()->getParam('store');
+        $lastUpdate = (boolean)$this->configModel->get('fyndiq/troubleshooting/enable_debug', $storeId);
 
-        if (!$this->isCorrectToken($this->getRequest()->getParam('token'), $storeId)) {
+        if (!$this->isCorrectToken($this->getRequest()->getParam('token'), $storeId) || !$lastUpdate) {
             return $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
         }
 
