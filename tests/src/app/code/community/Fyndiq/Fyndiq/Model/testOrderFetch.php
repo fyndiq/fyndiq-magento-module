@@ -34,7 +34,7 @@ class OrderFetchTest extends PHPUnit_Framework_TestCase
         return array(
             array(
                 array(),
-                0,
+                date('r', 0),
                 true,
                 'Return 0 if there are no orders'
             ),
@@ -42,10 +42,10 @@ class OrderFetchTest extends PHPUnit_Framework_TestCase
                 array(
                     (object)array(
                         'id' => 1,
-                        'created' => '2014-12-01T14:25:32',
+                        'created' => '2014-12-01T14:25:32 +0100',
                     ),
                 ),
-                1417443932,
+                'Mon, 01 Dec 2014 14:25:32 +0100',
                 true,
                 'Return the last timestamp if there is an order with timestamp'
             ),
@@ -53,14 +53,14 @@ class OrderFetchTest extends PHPUnit_Framework_TestCase
                 array(
                     (object)array(
                         'id' => 1,
-                        'created' => '2014-12-01T14:25:31',
+                        'created' => '2014-12-01T14:25:31 +0100',
                     ),
                     (object)array(
                         'id' => 2,
-                        'created' => '2014-12-01T14:25:32',
+                        'created' => '2014-12-01T14:25:32 +0100',
                     ),
                 ),
-                1417443932,
+                'Mon, 01 Dec 2014 14:25:32 +0100',
                 true,
                 'Return the last timestamp if there are more than one timestamps'
             )
@@ -80,6 +80,6 @@ class OrderFetchTest extends PHPUnit_Framework_TestCase
     {
         $result = $this->orderFetch->processData($data);
         $this->assertEquals($expected, $result);
-        $this->assertEquals($timestamp, $this->orderFetch->getLastTimestamp(), $message);
+        $this->assertEquals($timestamp, date('r', $this->orderFetch->getLastTimestamp()), $message);
     }
 }
