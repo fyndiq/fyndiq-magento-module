@@ -80,8 +80,9 @@ class Fyndiq_Fyndiq_Model_Observer
             try {
                 Mage::helper('fyndiq_fyndiq/connect')->callApi($this->configModel, $storeId, 'PATCH', 'settings/', $data);
                 // save token if success
+                $this->configModel->set('fyndiq/fyndiq_group/ping_token', $pingToken, $storeId);
                 $this->configModel->reInit();
-                return $this->configModel->set('fyndiq/fyndiq_group/ping_token', $pingToken, $storeId);
+                return true;
             } catch (Exception $e) {
                 $message = sprintf(
                     Mage::helper('fyndiq_fyndiq')->__('The configuration could not be sent to Fyndiq (%s)'),
