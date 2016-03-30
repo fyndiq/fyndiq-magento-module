@@ -423,7 +423,7 @@
                             <show_in_store>1</show_in_store>
                         </manual_import>
                         <enable_debug translate="label comment" module="fyndiq_fyndiq">
-                            <label>Enable Debug of Fyndiq Feed</label>
+                            <label>Enable Debug</label>
                             <comment><![CDATA[When needed eable this to enable detailed debug page for the feed generation]]></comment>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
