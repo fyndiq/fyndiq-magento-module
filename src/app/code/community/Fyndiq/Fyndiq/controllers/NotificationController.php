@@ -196,7 +196,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         // Get the setting for enable debug
         $enableDebug = (boolean)$this->configModel->get('fyndiq/troubleshooting/enable_debug', $storeId);
 
-        if(!$enableDebug) {
+        if (!$enableDebug) {
             return $this->showError(403, 'Forbidden');
         }
 
@@ -244,7 +244,14 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         return $this->fyndiqOutput;
     }
 
-    protected function showError($statusCode, $message) {
+    /**
+     * Handle the error with correct status code and message
+     * @param  integer $statusCode http status code
+     * @param  string $message     message to show in body
+     * @return mixed               return the response
+     */
+    protected function showError($statusCode, $message)
+    {
         $response = $this->getResponse()
             ->setHttpResponseCode($statusCode)
             ->setBody($message);
