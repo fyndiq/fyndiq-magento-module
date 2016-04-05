@@ -10,7 +10,7 @@ class Fyndiq_Fyndiq_Model_System_Config_Source_Dropdown_Attribute
         );
 
         foreach ($attributes as $attribute) {
-                $attributeArray[] = array(
+            $attributeArray[] = array(
                     'label' => $attribute->getData('frontend_label'),
                     'value' => $attribute->getData('attribute_code')
                 );

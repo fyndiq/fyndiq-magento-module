@@ -27,7 +27,6 @@ $installer->updateAttribute(Mage_Catalog_Model_Category::ENTITY, 'fyndiq_categor
 // Add the categories table
 $tableName = $this->getTable('fyndiq/category');
 if ($installer->getConnection()->isTableExists($tableName) != true) {
-
     $table = new Varien_Db_Ddl_Table();
 
     $table->setName($tableName);

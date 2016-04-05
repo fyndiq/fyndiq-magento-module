@@ -8,7 +8,6 @@ class Fyndiq_Fyndiq_Model_Category
     public function __construct()
     {
         $this->configModel = Mage::getModel('fyndiq/config');
-
     }
 
     public function update($storeId = self::NO_STORE)

@@ -370,22 +370,22 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
             }
             foreach ($work as $storeId => $orderIds) {
                 try {
-                        $data = array(
+                    $data = array(
                             'orders' => array()
                         );
-                        foreach ($orderIds as $fyndiqOrderId) {
-                            $data['orders'][] = array(
+                    foreach ($orderIds as $fyndiqOrderId) {
+                        $data['orders'][] = array(
                                 'id' => $fyndiqOrderId,
                                 'marked' => $handled,
                             );
-                        }
-                        $ret = Mage::helper('fyndiq_fyndiq/connect')->callApi($this->configModel, $storeId, 'POST', 'orders/marked/', $data);
-                        if ($ret['status'] == 200) {
-                            $message = $handled ?
+                    }
+                    $ret = Mage::helper('fyndiq_fyndiq/connect')->callApi($this->configModel, $storeId, 'POST', 'orders/marked/', $data);
+                    if ($ret['status'] == 200) {
+                        $message = $handled ?
                                 Mage::helper('fyndiq_fyndiq')->__('Orders marked as "handled" on Fyndiq') :
                                 Mage::helper('fyndiq_fyndiq')->__('Orders marked as "not handled" on Fyndiq');
-                            $this->_getSession()->addSuccess($message);
-                        }
+                        $this->_getSession()->addSuccess($message);
+                    }
                 } catch (Exception $e) {
                     $this->_getSession()->addError(
                         Mage::helper('fyndiq_fyndiq')->
