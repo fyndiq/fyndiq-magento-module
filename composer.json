@@ -10,6 +10,7 @@
         "squizlabs/php_codesniffer": "2.*",
         "bartlett/php-compatinfo": "4.1.0",
         "sebastian/phpcpd": "*",
-        "aquilax/magento-package-generator": "dev-master"
+        "aquilax/magento-package-generator": "dev-master",
+        "fabpot/php-cs-fixer": "^1.11"
     }
 }
