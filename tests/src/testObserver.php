@@ -2,7 +2,7 @@
 
 class ObserverTest extends PHPUnit_Framework_TestCase
 {
-    function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->observer = new Fyndiq_Fyndiq_Model_Observer();
@@ -11,7 +11,7 @@ class ObserverTest extends PHPUnit_Framework_TestCase
     /**
      * @group ignore
      */
-    function testQuantity()
+    public function testQuantity()
     {
         $product = new Catalog_Product();
         $qtystock = $this->observer->getQuantity($product, 1);

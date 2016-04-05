@@ -8,7 +8,7 @@ class OrderFetchTest extends PHPUnit_Framework_TestCase
      */
     protected $orderFetch;
 
-    function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->orderFetch = $this->getMockBuilder('Fyndiq_Fyndiq_Model_OrderFetch')

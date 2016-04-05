@@ -2,7 +2,7 @@
 
 class NotificationControllerTest extends PHPUnit_Framework_TestCase
 {
-    function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->notification = $this->getMockBuilder('Fyndiq_Fyndiq_NotificationController')
@@ -27,7 +27,7 @@ class NotificationControllerTest extends PHPUnit_Framework_TestCase
     /**
      * @group ignore
      */
-    function testIndexAction()
+    public function testIndexAction()
     {
         $return = $this->notification->indexAction();
         $this->assertEquals(false, $return);
@@ -36,7 +36,7 @@ class NotificationControllerTest extends PHPUnit_Framework_TestCase
     /**
      * @group ignore
      */
-    function testIndexActionWorking()
+    public function testIndexActionWorking()
     {
         $this->request->expects($this->at(0))
             ->method('getParam')

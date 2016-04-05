@@ -8,27 +8,27 @@
 
 class Mage_Core_Model_Abstract
 {
-    function getCollection()
+    public function getCollection()
     {
         return $this;
     }
-    function setOrder($id, $sort)
+    public function setOrder($id, $sort)
     {
         return new Magdata();
     }
-    function addAttributeToSelect($select)
+    public function addAttributeToSelect($select)
     {
         return $this;
     }
-    function addStoreFilter($id)
+    public function addStoreFilter($id)
     {
         return $this;
     }
-    function addAttributeToFilter($field, $field)
+    public function addAttributeToFilter($field, $field)
     {
         return $this;
     }
-    function load()
+    public function load()
     {
         return $this;
     }
@@ -36,7 +36,7 @@ class Mage_Core_Model_Abstract
 class Magdata
 {
 
-    function __construct()
+    public function __construct()
     {
         $this->items = array();
         for ($i = 0; $i<6; $i++) {
@@ -47,14 +47,14 @@ class Magdata
         }
     }
 
-    function getItems()
+    public function getItems()
     {
         return $this->items;
     }
 }
 class MagProd
 {
-    function getData()
+    public function getData()
     {
         return json_decode(json_encode($this), true);
     }

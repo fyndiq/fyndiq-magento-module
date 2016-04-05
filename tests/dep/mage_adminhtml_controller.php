@@ -2,22 +2,22 @@
 
 class Mage_Adminhtml_Controller_Action
 {
-    function loadLayout($layout)
+    public function loadLayout($layout)
     {
         return true;
     }
 
-    function getRequest()
+    public function getRequest()
     {
         return new ParamClass();
     }
 
-    function renderLayout($test = false)
+    public function renderLayout($test = false)
     {
         return true;
     }
 
-    function getLayout()
+    public function getLayout()
     {
         return new GetLayout();
     }
@@ -25,7 +25,7 @@ class Mage_Adminhtml_Controller_Action
 
 class ParamClass
 {
-    function getParam($test)
+    public function getParam($test)
     {
         return 1;
     }
@@ -33,11 +33,11 @@ class ParamClass
 
 class GetLayout
 {
-    function getBlock($test)
+    public function getBlock($test)
     {
         return new GetBlock();
     }
-    function CreateBlock($test, $test2)
+    public function CreateBlock($test, $test2)
     {
         return new GetBlock();
     }
@@ -45,17 +45,17 @@ class GetLayout
 
 class GetBlock
 {
-    function append($test)
+    public function append($test)
     {
         return true;
     }
 
-    function setTemplate($template)
+    public function setTemplate($template)
     {
         return $this;
     }
 
-    function setData($data, $data2)
+    public function setData($data, $data2)
     {
         return true;
     }

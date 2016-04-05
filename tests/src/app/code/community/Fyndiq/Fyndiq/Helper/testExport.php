@@ -3,7 +3,7 @@
 class Fyndiq_Fyndiq_Helper_Export_Test extends PHPUnit_Framework_TestCase
 {
 
-    var $helper = null;
+    public $helper = null;
 
     public function setUp()
     {
