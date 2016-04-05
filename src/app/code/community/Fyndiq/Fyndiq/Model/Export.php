@@ -173,7 +173,6 @@ class Fyndiq_Fyndiq_Model_Export
                 }
                 $productsToExport->clear();
             }
-
         }
         FyndiqUtils::debug('$feedWriter->getProductCount()', $feedWriter->getProductCount());
         FyndiqUtils::debug('$feedWriter->getArticleCount()', $feedWriter->getArticleCount());

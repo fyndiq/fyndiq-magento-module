@@ -80,6 +80,11 @@ sniff-fix:
 	$(BIN_DIR)/phpcbf --standard=PSR2 --extensions=php $(TESTS_DIR)
 	$(BIN_DIR)/phpcbf --standard=PSR2 --extensions=php $(TOOLS_DIR)
 
+sniff-fixer:
+	php -n $(BIN_DIR)/php-cs-fixer fix --config-file=$(BASE)/.php_cs.php
+	php -n $(BIN_DIR)/php-cs-fixer fix $(TESTS_DIR) --level=psr2
+	php -n $(BIN_DIR)/php-cs-fixer fix $(TOOLS_DIR) --level=psr2
+
 phpcpd:
 	$(BIN_DIR)/phpcpd --exclude=app/code/community/Fyndiq/Fyndiq/lib $(SRC_DIR)
 

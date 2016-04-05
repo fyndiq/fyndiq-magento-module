@@ -8,7 +8,6 @@ class Fyndiq_Fyndiq_Helper_Connect extends Mage_Core_Helper_Abstract
 
     public function callApi($configModel, $storeId, $method, $path, $data = array())
     {
-
         $username = $configModel->get('fyndiq/fyndiq_group/username', $storeId);
         $apiToken = $configModel->get('fyndiq/fyndiq_group/apikey', $storeId);
         $userAgent = $configModel->getUserAgent();

@@ -2,41 +2,41 @@
 
 class Mage
 {
-    static function App()
+    public static function App()
     {
         return new Mage();
     }
 
-    static function getStoreConfig($test)
+    public static function getStoreConfig($test)
     {
         return serialize("blablabla");
     }
-    static function getStoreConfigFlag($test)
+    public static function getStoreConfigFlag($test)
     {
         return $test;
     }
 
-    static function getConfig()
+    public static function getConfig()
     {
         return new GetConfig();
     }
 
-    static function getVersion()
+    public static function getVersion()
     {
         return "1.9.0.3";
     }
 
-    function getStore()
+    public function getStore()
     {
         return new getNode();
     }
 
-    function getLocale()
+    public function getLocale()
     {
         return new GetLocale();
     }
 
-    static function getModel($model)
+    public static function getModel($model)
     {
         switch ($model) {
             case 'fyndiq/product':
@@ -51,7 +51,7 @@ class Mage
         }
     }
 
-    static function reinitStores()
+    public static function reinitStores()
     {
         return true;
     }
@@ -59,16 +59,16 @@ class Mage
 
 class GetConfig
 {
-    function getNode()
+    public function getNode()
     {
         return new GetNode();
     }
 
-    function saveConfig($key, $value)
+    public function saveConfig($key, $value)
     {
         return true;
     }
-    function reinit()
+    public function reinit()
     {
         return true;
     }
@@ -76,31 +76,31 @@ class GetConfig
 
 class GetNode
 {
-    function __construct()
+    public function __construct()
     {
         $this->modules = new getModule();
     }
 
-    function getCurrentCurrencyCode()
+    public function getCurrentCurrencyCode()
     {
         return "SEK";
     }
 
-    function getStoreId()
+    public function getStoreId()
     {
         return 1;
     }
 }
 class getModule
 {
-    function __construct()
+    public function __construct()
     {
         $this->Fyndiq_Fyndiq = new FyndiqModule();
     }
 }
 class FyndiqModule
 {
-    function __construct()
+    public function __construct()
     {
         $this->version = "1.0.0";
     }
@@ -108,7 +108,7 @@ class FyndiqModule
 
 class GetLocale
 {
-    function getLocaleCode()
+    public function getLocaleCode()
     {
         return "SE";
     }
