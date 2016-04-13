@@ -1,6 +1,5 @@
 <?php
 
-require_once(Mage::getModuleDir('', 'Fyndiq_Fyndiq') . '/lib/api/fyndiqAPI.php');
 require_once(Mage::getModuleDir('', 'Fyndiq_Fyndiq') . '/lib/shared/src/FyndiqAPICall.php');
 
 class Fyndiq_Fyndiq_Helper_Connect extends Mage_Core_Helper_Abstract
@@ -18,8 +17,7 @@ class Fyndiq_Fyndiq_Helper_Connect extends Mage_Core_Helper_Abstract
             $apiToken,
             $method,
             $path,
-            $data,
-            array('FyndiqAPI', 'call')
+            $data
         );
     }
 }
