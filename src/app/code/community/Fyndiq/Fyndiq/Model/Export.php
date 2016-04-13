@@ -631,13 +631,12 @@ class Fyndiq_Fyndiq_Model_Export
         $inbox->addMinor(
             sprintf(
                 Mage::helper('fyndiq_fyndiq')->__(
-                    'You have %d unmapped Fyndiq Categories for store %s. Please map your categories.'
+                    'You have %d unmapped Fyndiq Categories for store %s. Please map your categories in Catalog -> Fyndiq Category Mapping.'
                 ),
                 $unmappedCategoriesCount,
                 $storeName
             ),
-            '',
-            $url
+            ''
         );
         return true;
     }
