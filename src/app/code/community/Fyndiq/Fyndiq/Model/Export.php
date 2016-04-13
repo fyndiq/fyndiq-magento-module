@@ -590,6 +590,7 @@ class Fyndiq_Fyndiq_Model_Export
     public function getUnmappedCategoriesCount($categoryCache)
     {
         $n = 0;
+        var_dump($categoryCache);
         foreach ($categoryCache as $categoryId => $row) {
             if ($row[FyndiqFeedWriter::PRODUCT_CATEGORY_ID] == $categoryId) {
                 $n++;
