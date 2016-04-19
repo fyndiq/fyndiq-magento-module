@@ -365,6 +365,12 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                         </categories_check_time>
+                        <unmapped_categories>
+                            <frontend_type>text</frontend_type>
+                            <show_in_default>0</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </unmapped_categories>
                         <updated translate="label comment" module="fyndiq_fyndiq">
                             <label>Latest Feed Update</label>
                             <comment><![CDATA[Date and time of the latest Feed Generation]]></comment>

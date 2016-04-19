@@ -2,6 +2,7 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(-1);
+date_default_timezone_set('Europe/Stockholm');
 
 define("MAGENTO_ROOT", dirname(dirname(__FILE__)) . '/src');
 
@@ -23,6 +24,7 @@ require_once(dirname(__FILE__) . '/dep/FyndiqPaginatedFetchDummy.php');
 // require_once MAGENTO_ROOT . '/src/app/code/community/Fyndiq/Fyndiq/Model/Product.php';
 // require_once MAGENTO_ROOT . '/src/app/code/community/Fyndiq/Fyndiq/Model/Observer.php';
 
-require_once MAGENTO_ROOT .  '/app/code/community/Fyndiq/Fyndiq/Helper/Region.php';
-require_once MAGENTO_ROOT .  '/app/code/community/Fyndiq/Fyndiq/Helper/Export.php';
-require_once MAGENTO_ROOT .  '/app/code/community/Fyndiq/Fyndiq/Model/OrderFetch.php';
+require_once MAGENTO_ROOT . '/app/code/community/Fyndiq/Fyndiq/Helper/Region.php';
+require_once MAGENTO_ROOT . '/app/code/community/Fyndiq/Fyndiq/Helper/Export.php';
+require_once MAGENTO_ROOT . '/app/code/community/Fyndiq/Fyndiq/Model/OrderFetch.php';
+require_once MAGENTO_ROOT . '/app/code/community/Fyndiq/Fyndiq/Model/Export.php';
