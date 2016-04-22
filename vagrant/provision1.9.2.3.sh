@@ -124,7 +124,7 @@ if [ ! -f "/var/www/html/magento/app/etc/local.xml" ]; then
     /usr/bin/php -f shell/indexer.php reindexall
 
     ## Add hosts to file
-    echo "192.168.44.44  fyndiq.local" >> /etc/hosts
+    echo "192.168.44.45  fyndiq.local" >> /etc/hosts
     echo "127.0.0.1  magento.local" >> /etc/hosts
 
     ## Install Tools
