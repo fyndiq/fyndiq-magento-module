@@ -18,5 +18,4 @@ class ObserverTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(3, $qtystock);
     }
-
 }

@@ -36,9 +36,9 @@ class ExportTest extends PHPUnit_Framework_TestCase
      * testGetUnmappedCategoriesCount
      * @dataProvider testGetUnmappedCategoriesCountProvider
      */
-    public function testGetUnmappedCategoriesCount($cache, $expected) {
+    public function testGetUnmappedCategoriesCount($cache, $expected)
+    {
         $result = $this->exportModel->getUnmappedCategoriesCount($cache);
         $this->assertEquals($expected, $result);
     }
-
 }
