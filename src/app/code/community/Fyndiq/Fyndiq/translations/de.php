@@ -120,5 +120,7 @@ $lang = array(
     'Date and time of the latest Category Update' => 'Date and time of the latest Category Update',
     'none' => 'none',
     'ID' => 'ID',
-    'Name' => 'Name'
+    'Name' => 'Name',
+    'Enable Debug' => 'Enable Debug',
+    'When needed enable this to enable detailed debug page for the feed generation' => 'When needed enable this to enable detailed debug page for the feed generation'
 );
