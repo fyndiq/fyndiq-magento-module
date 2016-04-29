@@ -435,7 +435,7 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </enable_debug>
-                        <manual_import translate="label comment" module="fyndiq_fyndiq">
+                        <manual_import translate="label" module="fyndiq_fyndiq">
                             <label>Reinstall extension</label>
                             <frontend_type>button</frontend_type>
                             <frontend_model>Fyndiq_Fyndiq_Block_Reinstall</frontend_model>
