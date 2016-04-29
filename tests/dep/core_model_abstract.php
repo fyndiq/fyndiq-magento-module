@@ -24,7 +24,7 @@ class Mage_Core_Model_Abstract
     {
         return $this;
     }
-    public function addAttributeToFilter($field, $field)
+    public function addAttributeToFilter($field, $field2)
     {
         return $this;
     }
