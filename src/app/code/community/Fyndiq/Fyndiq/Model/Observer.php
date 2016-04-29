@@ -107,6 +107,10 @@ class Fyndiq_Fyndiq_Model_Observer
         throw new Exception(Mage::helper('fyndiq_fyndiq')->__('Please enter your Fyndiq Username and API Token'));
     }
 
+    /**
+     * setUpOrderLastDate Sets order last date if not set
+     * @param int $storeId StoreId
+     */
     protected function setUpOrderLastDate($storeId)
     {
         $lastOrderDate = $this->configModel->get('fyndiq/fyndiq_group/order_lastdate', $storeId);
