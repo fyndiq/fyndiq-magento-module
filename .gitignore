@@ -11,3 +11,4 @@ composer.lock
 *.sublime-workspace
 .vagrant/
 assets/*
+.vscode/

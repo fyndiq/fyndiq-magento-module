@@ -4,7 +4,7 @@ class Fyndiq_Fyndiq_Model_Config
 {
 
     const PLATFORM_NAME = 'Magento';
-    const COMMIT = 'XXXXXX';
+    const COMMIT = '1f1657d';
     const REPOSITORY_PATH = 'fyndiq/fyndiq-magento-module/';
     const REPOSITORY_DOMAIN = 'http://developers.fyndiq.com';
 

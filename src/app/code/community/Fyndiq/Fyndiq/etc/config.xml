@@ -134,9 +134,6 @@
                 <cron_enabled>0</cron_enabled>
                 <cron_interval>60</cron_interval>
             </feed>
-            <troubleshooting>
-                <enable_debug>0</enable_debug>
-            </troubleshooting>
         </fyndiq>
         <carriers>
             <fyndiq_fyndiq translate="title" module="fyndiq_fyndiq">

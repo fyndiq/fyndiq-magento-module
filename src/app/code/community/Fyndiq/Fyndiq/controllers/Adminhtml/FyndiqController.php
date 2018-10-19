@@ -64,22 +64,13 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
         $this->_redirectReferer();
     }
 
-    /**
-     * importOrdersForStore imports new orders for single store
-     * @param  int $storeId StoreId
-     * @param  int $lastUpdate last time the orders were updated
-     * @return bool
-     */
-    protected function importOrdersForStore($storeId, $lastUpdate)
+    protected function importOrdersForStore($storeId, $newTime)
     {
+        $lastUpdate = $this->configModel->get('fyndiq/fyndiq_group/order_lastdate', $storeId);
         $orderFetchModel = Mage::getModel('fyndiq/orderFetch');
         $orderFetchModel->init($storeId, $lastUpdate);
         $orderFetchModel->getAll();
-        $lastTimestamp = $orderFetchModel->getLastTimestamp();
-        if ($lastTimestamp) {
-            return $this->configModel->set('fyndiq/fyndiq_group/order_lastdate', $lastTimestamp, $storeId);
-        }
-        return false;
+        return $this->configModel->set('fyndiq/fyndiq_group/order_lastdate', $newTime, $storeId);
     }
 
     public function importFyndiqOrdersAction()
@@ -100,10 +91,7 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
                                 );
                                 continue;
                             }
-                            $this->importOrdersForStore(
-                                $storeId,
-                                intval($this->configModel->get('fyndiq/fyndiq_group/order_lastdate', $storeId))
-                            );
+                            $this->importOrdersForStore($storeId, time());
                             $this->_getSession()->addSuccess(
                                 sprintf(
                                     Mage::helper('fyndiq_fyndiq')->__('Fyndiq Orders were imported for Store "%s"'),
@@ -370,22 +358,22 @@ class Fyndiq_Fyndiq_Adminhtml_FyndiqController extends Mage_Adminhtml_Controller
             }
             foreach ($work as $storeId => $orderIds) {
                 try {
-                    $data = array(
+                        $data = array(
                             'orders' => array()
                         );
-                    foreach ($orderIds as $fyndiqOrderId) {
-                        $data['orders'][] = array(
+                        foreach ($orderIds as $fyndiqOrderId) {
+                            $data['orders'][] = array(
                                 'id' => $fyndiqOrderId,
                                 'marked' => $handled,
                             );
-                    }
-                    $ret = Mage::helper('fyndiq_fyndiq/connect')->callApi($this->configModel, $storeId, 'POST', 'orders/marked/', $data);
-                    if ($ret['status'] == 200) {
-                        $message = $handled ?
+                        }
+                        $ret = Mage::helper('fyndiq_fyndiq/connect')->callApi($this->configModel, $storeId, 'POST', 'orders/marked/', $data);
+                        if ($ret['status'] == 200) {
+                            $message = $handled ?
                                 Mage::helper('fyndiq_fyndiq')->__('Orders marked as "handled" on Fyndiq') :
                                 Mage::helper('fyndiq_fyndiq')->__('Orders marked as "not handled" on Fyndiq');
-                        $this->_getSession()->addSuccess($message);
-                    }
+                            $this->_getSession()->addSuccess($message);
+                        }
                 } catch (Exception $e) {
                     $this->_getSession()->addError(
                         Mage::helper('fyndiq_fyndiq')->

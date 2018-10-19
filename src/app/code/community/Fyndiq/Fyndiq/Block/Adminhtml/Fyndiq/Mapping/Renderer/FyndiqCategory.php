@@ -5,6 +5,7 @@ class Fyndiq_Fyndiq_Block_Adminhtml_Fyndiq_Mapping_Renderer_FyndiqCategory exten
 
     public function render(Varien_Object $row)
     {
+
         $fyndiqCategoryId = (int)$row->getData($this->getColumn()->getIndex());
         if ($fyndiqCategoryId) {
             $row = Mage::getModel('fyndiq/category')->getById($fyndiqCategoryId);

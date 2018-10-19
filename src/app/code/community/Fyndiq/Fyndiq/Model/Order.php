@@ -134,7 +134,7 @@ class Fyndiq_Fyndiq_Model_Order
      *
      * @throws Exception
      */
-    public function create($storeId, $fyndiqOrder)
+    public function create($storeId, $fyndiqOrder, $reservationId = false)
     {
         //get customer by mail
         $customer = Mage::getModel('customer/customer');

@@ -31,7 +31,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
             case 'info':
                 return $this->info();
         }
-        return $this->showError(400, 'The request did not work.');
+        return $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
     }
 
     /**
@@ -43,7 +43,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
     {
         $storeId = $this->getRequest()->getParam('store');
         if ($this->configModel->get('fyndiq/fyndiq_group/import_orders_disabled', $storeId) == Fyndiq_Fyndiq_Model_Order::ORDERS_DISABLED) {
-            return $this->showError(403, 'Forbidden');
+            return $this->getFyndiqOutput()->showError(403, 'Forbidden', 'Forbidden');
         }
         $orderId = $this->getRequest()->getParam('order_id');
         $orderId = is_numeric($orderId) ? intval($orderId) : 0;
@@ -56,7 +56,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
                 Mage::getDesign()->setArea(Mage_Core_Model_App_Area::AREA_ADMIN);
                 $orderModel = Mage::getModel('fyndiq/order');
                 if (!$orderModel->orderExists($fyndiqOrder->id)) {
-                    $orderModel->create($storeId, $fyndiqOrder);
+                    $orderModel->create($storeId, $fyndiqOrder, $reservationId);
                 }
             } catch (Exception $e) {
                 // $inbox = Mage::getModel('Mage_AdminNotification_Model_Inbox');
@@ -64,11 +64,11 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
                 //     sprintf('Fyndiq Order %s could not be imported', $orderId),
                 //     $e->getMessage()
                 // );
-                return $this->showError(500, $e->getMessage());
+                return $this->getFyndiqOutput()->showError(500, 'Internal Server Error', $e->getMessage());
             }
             return $this->getFyndiqOutput()->output('OK');
         }
-        return $this->showError(400, 'The request did not work.');
+        return $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
     }
 
     protected function isPingLocked($storeId)
@@ -90,7 +90,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
     {
         $storeId = $this->getRequest()->getParam('store');
         if (!$this->isCorrectToken($this->getRequest()->getParam('token'), $storeId)) {
-            return $this->showError(400, 'The request did not work.');
+            return $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
         }
         $cronEnabled = $this->configModel->get('fyndiq/feed/cron_enabled', $storeId);
         if (!$cronEnabled) {
@@ -109,7 +109,7 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
         $this->checkModuleUpdate(Mage_Core_Model_App::ADMIN_STORE_ID);
         $this->updateFyndiqCategories(Mage_Core_Model_App::ADMIN_STORE_ID);
         if ($cronEnabled) {
-            return $this->showError(405, 'Feed is generated with cron job.');
+            return $this->getFyndiqOutput()->showError(405, 'Method not allowed', 'Feed is generated with cron job.');
         }
     }
 
@@ -193,15 +193,9 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
     private function debug()
     {
         $storeId = Mage::app()->getRequest()->getParam('store');
-        // Get the setting for enable debug
-        $enableDebug = (boolean)$this->configModel->get('fyndiq/troubleshooting/enable_debug', $storeId);
-
-        if (!$enableDebug) {
-            return $this->showError(403, 'Forbidden');
-        }
 
         if (!$this->isCorrectToken($this->getRequest()->getParam('token'), $storeId)) {
-            return $this->showError(400, 'The request did not work.');
+            return $this->getFyndiqOutput()->showError(400, 'Bad Request', 'The request did not work.');
         }
 
         FyndiqUtils::debugStart();
@@ -242,19 +236,5 @@ class Fyndiq_Fyndiq_NotificationController extends Mage_Core_Controller_Front_Ac
             $this->fyndiqOutput = new FyndiqOutput();
         }
         return $this->fyndiqOutput;
-    }
-
-    /**
-     * Handle the error with correct status code and message
-     * @param  integer $statusCode http status code
-     * @param  string $message     message to show in body
-     * @return mixed               return the response
-     */
-    protected function showError($statusCode, $message)
-    {
-        $response = $this->getResponse()
-            ->setHttpResponseCode($statusCode)
-            ->setBody($message);
-        return $response->sendHeaders();
     }
 }

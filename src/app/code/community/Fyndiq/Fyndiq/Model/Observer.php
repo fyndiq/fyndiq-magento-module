@@ -41,7 +41,10 @@ class Fyndiq_Fyndiq_Model_Observer
         if ($this->configModel->get('fyndiq/fyndiq_group/username', $storeId) !== ''
             && $this->configModel->get('fyndiq/fyndiq_group/apikey', $storeId) !== ''
         ) {
+            // Generate and save token
             $pingToken = Mage::helper('core')->uniqHash();
+            $this->configModel->set('fyndiq/fyndiq_group/ping_token', $pingToken, $storeId);
+            $this->configModel->reInit();
             $data = array(
                 FyndiqUtils::NAME_PRODUCT_FEED_URL => Mage::getUrl(
                     'fyndiq/file/index/store/' . $storeId,
@@ -78,12 +81,7 @@ class Fyndiq_Fyndiq_Model_Observer
                 );
             }
             try {
-                Mage::helper('fyndiq_fyndiq/connect')->callApi($this->configModel, $storeId, 'PATCH', 'settings/', $data);
-                // save token if success
-                $this->configModel->set('fyndiq/fyndiq_group/ping_token', $pingToken, $storeId);
-                $this->setUpOrderLastDate($storeId);
-                $this->configModel->reInit();
-                return true;
+                return Mage::helper('fyndiq_fyndiq/connect')->callApi($this->configModel, $storeId, 'PATCH', 'settings/', $data);
             } catch (Exception $e) {
                 $message = sprintf(
                     Mage::helper('fyndiq_fyndiq')->__('The configuration could not be sent to Fyndiq (%s)'),
@@ -105,35 +103,6 @@ class Fyndiq_Fyndiq_Model_Observer
             }
         }
         throw new Exception(Mage::helper('fyndiq_fyndiq')->__('Please enter your Fyndiq Username and API Token'));
-    }
-
-    /**
-     * setUpOrderLastDate Sets order last date if not set
-     * @param int $storeId StoreId
-     */
-    protected function setUpOrderLastDate($storeId)
-    {
-        $lastOrderDate = $this->configModel->get('fyndiq/fyndiq_group/order_lastdate', $storeId);
-        if (empty($lastOrderDate)) {
-            try {
-                $ret = Mage::helper('fyndiq_fyndiq/connect')->callApi(
-                    $this->configModel,
-                    $storeId,
-                    'GET',
-                    'orders/'
-                );
-                $data = $ret['data'];
-                $orders = $data->results;
-            } catch (Exception $e) {
-                // Ignore if something goes wrong
-                return;
-            }
-            $order = array_shift($orders);
-            if ($order) {
-                $lastTimestamp = strtotime($order->created);
-                $this->configModel->set('fyndiq/fyndiq_group/order_lastdate', $lastTimestamp, $storeId);
-            }
-        }
     }
 
     protected static function mustRegenerate($generatedTime, $cronInterval)

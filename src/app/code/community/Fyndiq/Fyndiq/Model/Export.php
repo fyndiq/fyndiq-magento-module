@@ -47,7 +47,6 @@ class Fyndiq_Fyndiq_Model_Export
         Mage::app()->setCurrentStore($storeId);
 
         $exportResult = $this->exportProducts($storeId, $feedWriter);
-        $this->handleUnmappedCategories($storeId, $this->getUnmappedCategoriesCount($this->categoryCache));
         FyndiqUtils::debug('Closing file');
         fclose($file);
         if ($exportResult) {
@@ -174,6 +173,7 @@ class Fyndiq_Fyndiq_Model_Export
                 }
                 $productsToExport->clear();
             }
+
         }
         FyndiqUtils::debug('$feedWriter->getProductCount()', $feedWriter->getProductCount());
         FyndiqUtils::debug('$feedWriter->getArticleCount()', $feedWriter->getArticleCount());
@@ -304,7 +304,7 @@ class Fyndiq_Fyndiq_Model_Export
 
             if (method_exists($magProduct->getTypeInstance(), 'getConfigurableAttributes')) {
                 if (!$this->productAttrOptions) {
-                    $this->productAttrOptions = $magProduct->getTypeInstance()->getConfigurableAttributes();
+                    $this->productAttrOptions = $parentProduct->getTypeInstance()->getConfigurableAttributes();
                 }
                 foreach ($this->productAttrOptions as $productAttribute) {
                     $attrValue = $magProduct->getResource()->getAttribute(
@@ -580,64 +580,5 @@ class Fyndiq_Fyndiq_Model_Export
         $minQty = intval($stockItem->getMinQty());
         $qtyStock = intval($qtyStock - max(array($stockMin - $minQty)));
         return $qtyStock < 0 ? 0 : $qtyStock;
-    }
-
-    /**
-     * getUnmappedCategoriesCount returns the number of unmapped categories
-     * @param  array $categoryCache last processing category cache
-     * @return int
-     */
-    public function getUnmappedCategoriesCount($categoryCache)
-    {
-        $n = 0;
-        foreach ($categoryCache as $categoryId => $row) {
-            if ($row[FyndiqFeedWriter::PRODUCT_CATEGORY_ID] == $categoryId) {
-                $n++;
-            }
-        }
-        return $n;
-    }
-
-    /**
-     * handleUnmappedCategories handles unmapped categories
-     * @param  int $storeId StoreId
-     * @param  int $unmappedCategoriesCount current number of unmapped categories
-     * @return bool
-     */
-    public function handleUnmappedCategories($storeId, $unmappedCategoriesCount)
-    {
-        $oldValue = intval($this->configModel->get('fyndiq/troubleshooting/unmapped_categories', $storeId));
-        if ($oldValue !== $unmappedCategoriesCount) {
-            $this->addUnmappedCategoriesMessage($storeId, $unmappedCategoriesCount);
-            return $this->configModel->set('fyndiq/troubleshooting/unmapped_categories', $unmappedCategoriesCount, $storeId);
-        }
-    }
-
-    /**
-     * addUnmappedCategoriesMessage adds InBox message for unmapped categories
-     * @param int $storeId StoreId
-     * @param int $unmappedCategoriesCount current number of unmapped categories
-     * @return bool
-     */
-    public function addUnmappedCategoriesMessage($storeId, $unmappedCategoriesCount)
-    {
-        if ($unmappedCategoriesCount === 0) {
-            return false;
-        }
-        $inbox = Mage::getModel('Mage_AdminNotification_Model_Inbox');
-        $url = Mage::helper('adminhtml')->getUrl('adminhtml/fyndiqcategorygrid/index');
-        $store = Mage::getModel('core/store')->load($storeId);
-        $storeName = $store->getName();
-        $inbox->addMinor(
-            sprintf(
-                Mage::helper('fyndiq_fyndiq')->__(
-                    'You have %d unmapped Fyndiq Categories for store %s. Please map your categories in Catalog -> Fyndiq Category Mapping.'
-                ),
-                $unmappedCategoriesCount,
-                $storeName
-            ),
-            ''
-        );
-        return true;
     }
 }
