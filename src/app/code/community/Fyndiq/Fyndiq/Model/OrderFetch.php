@@ -27,11 +27,16 @@ class Fyndiq_Fyndiq_Model_OrderFetch extends FyndiqPaginatedFetch
 
         return $ret['data'];
     }
+    public function getOrderModel() 
+    {
+        return Mage::getModel('fyndiq/order');
+    }
 
     public function processData($data)
     {
         $errors = array();
-        $orderModel = Mage::getModel('fyndiq/order');
+        $orderModel = $this->getOrderModel();
+
         foreach ($data as $order) {
             if (!$orderModel->orderExists(intval($order->id))) {
                 try {

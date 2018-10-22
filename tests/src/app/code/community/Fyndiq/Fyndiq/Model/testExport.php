@@ -7,6 +7,7 @@ class ExportTest extends PHPUnit_Framework_TestCase
     {
         $this->exportModel = $this->getMockBuilder('Fyndiq_Fyndiq_Model_Export')
             ->disableOriginalConstructor()
+            ->setMethods(array('getUnmappedCategoriesCount'))
             ->getMock();
     }
 

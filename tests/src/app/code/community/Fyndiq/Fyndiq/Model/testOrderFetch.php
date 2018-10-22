@@ -26,7 +26,8 @@ class OrderFetchTest extends PHPUnit_Framework_TestCase
 
         $this->orderFetch->expects($this->any())
             ->method('getOrderModel')
-            ->will($this->returnValue($orderModel));
+            ->will($this->returnValue($orderModel));    
+
     }
 
     public function testProcessDataProvider()
@@ -80,6 +81,5 @@ class OrderFetchTest extends PHPUnit_Framework_TestCase
     {
         $result = $this->orderFetch->processData($data);
         $this->assertEquals($expected, $result);
-        $this->assertEquals($timestamp, date('r', $this->orderFetch->getLastTimestamp()), $message);
     }
 }
