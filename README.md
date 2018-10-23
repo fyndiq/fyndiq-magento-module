@@ -1,6 +1,8 @@
 # fyndiq-magento-module
 Fyndiq's official Magento module
 
+## Open source
+This plugin is open souce and therefore free to use and modify, but it is no longer maintained by Fyndiq. If you want to update it, please fork the repository and do any changes you like in your own repository. 
 
 ### Requirements
 * Magento 1.7-
